@@ -1,7 +1,23 @@
+import { defineNuxtConfig } from "nuxt/config";
+
 // nuxt.config.ts
 export default defineNuxtConfig({
-  // ✅ Configuración compatible con Railpack
   compatibilityDate: '2024-04-03',
+  
+  // ✅ Configuración experimental corregida
+  experimental: {
+    externalVue: false,
+    // inlineSSRStyles no existe en Nuxt 3 - ELIMINADO
+  },
+  
+  // ✅ Usar parser alternativo
+  vite: {
+    esbuild: {
+      supported: {
+        'top-level-await': true
+      }
+    }
+  },
   
   css: [
     '@/assets/css/main.css'
@@ -39,25 +55,12 @@ export default defineNuxtConfig({
     }
   },
   
-  // ✅ Configuración específica para Railpack
   nitro: {
     preset: 'node-server'
   },
   
   typescript: {
-    typeCheck: false,  // ✅ Desactivar para Railpack
+    typeCheck: false,
     shim: false
   }
 })
-
-function defineNuxtConfig(arg0: {
-  // ✅ Configuración compatible con Railpack
-  compatibilityDate: string; css: string[]; app: { head: { link: ({ rel: string; href: string; } | { rel: string; href: string; crossorigin: string; })[]; script: { src: string; defer: boolean; tagPosition: string; }[]; }; };
-  // ✅ Configuración específica para Railpack
-  nitro: { preset: string; }; typescript: {
-    typeCheck: boolean; // ✅ Desactivar para Railpack
-    shim: boolean;
-  };
-}) {
-  throw new Error("Function not implemented.");
-}
