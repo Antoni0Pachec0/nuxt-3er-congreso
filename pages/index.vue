@@ -1,46 +1,55 @@
 <script setup lang="ts">
+import evento2018 from '@/assets/img/gallery/evento2018.jpeg'
+import evento2019 from '@/assets/img/gallery/evento2019.jpeg'
+import evento2021 from '@/assets/img/gallery/evento2021.jpeg'
+import evento2022 from '@/assets/img/gallery/evento2022.jpeg'
+import evento2023 from '@/assets/img/gallery/evento2023.jpeg'
+import evento2024 from '@/assets/img/gallery/evento2024.jpeg'
+
+
 const slides = [
   {
     year: '2024',
     title: '2do Congreso De Tecnología De La Información E Innovación Digital',
     description: 'Se contó con la presencia de invitados externos que compartieron experiencias sobre innovación y tendencias en TI.',
-    image: '/img/gallery/evento2024.jpeg',
-    thumb: '/img/gallery/evento2024.jpeg'
+    image: evento2024,
+    thumb: evento2024
   },
   {
     year: '2023',
     title: '1er Congreso De Tecnología De La Información E Innovación Digital',
     description: 'Un primer esfuerzo por reunir a la comunidad estudiantil con conferencistas invitados del sector tecnológico.',
-    image: '/img/gallery/evento2023.jpeg',
-    thumb: '/img/gallery/evento2023.jpeg'
+    image: evento2023,
+    thumb: evento2023
   },
   {
     year: '2022',
     title: 'Software Freedom Day 2022',
     description: 'Se ofrecieron pláticas introductorias al software libre y a la cultura open source, impartidas por invitados especiales.',
-    image: '/img/gallery/evento2022.jpeg',
-    thumb: '/img/gallery/evento2022.jpeg'
+    image: evento2022,
+    thumb: evento2022
   },
   {
     year: '2021',
     title: 'Software Freedom Day 2021',
     description: 'Invitados presentaron temas básicos de ciberseguridad y programación, fomentando la participación de alumnos.',
-    image: '/img/gallery/evento2021.jpeg',
-    thumb: '/img/gallery/evento2021.jpeg'
+    image: evento2021,
+    thumb: evento2021
   },
   {
     year: '2019',
     title: 'Software Freedom Day 2019',
     description: 'Pequeño encuentro con charlas sobre desarrollo web y la importancia del uso de software libre.',
-    image: '/img/gallery/evento2019.jpeg',
-    thumb: '/img/gallery/evento2019.jpeg'
+    image: evento2019,
+    thumb: evento2019
+
   },
   {
     year: '2018',
     title: 'Software Freedom Day 2018',
     description: 'Primera edición organizada en la universidad con invitados que hablaron sobre herramientas tecnológicas abiertas.',
-    image: '/img/gallery/evento2018.jpeg',
-    thumb: '/img/gallery/evento2018.jpeg'
+    image: evento2018,
+    thumb: evento2018
   },
 ]
 

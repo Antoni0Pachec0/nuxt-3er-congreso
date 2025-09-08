@@ -47,6 +47,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import "/assets/css/FAQuestions.css";
+
 
 type FaqItem = {
   q: string
@@ -88,59 +90,3 @@ const defaultIcon = `
   </defs>
 </svg>`
 </script>
-
-<style scoped>
-.faq { max-width: 900px; margin: 0 auto; padding: 24px 16px 56px; }
-.faq__head { text-align: center; margin-bottom: 18px; }
-.faq__title { font-size: clamp(26px, 4vw, 36px); font-weight: 800; }
-.faq__underline { width: 80px; height: 4px; background:#2563eb; border-radius:999px; margin: 10px auto 0; }
-
-.faq__list { display: grid; gap: 12px; }
-
-.faq__item {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.06);
-  overflow: hidden;
-  border: 1px solid #eef2ff;
-}
-
-.faq__btn {
-  width: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  text-align: left;
-}
-.faq__btn:hover { background: #f8fafc; }
-.faq__icon { width: 38px; height: 38px; display: grid; place-items: center; }
-.faq__q { font-weight: 700; color:#0f172a; }
-.faq__chev { transform: rotate(0deg); transition: transform .2s ease; color:#64748b; font-size: 18px; line-height: 1; }
-.faq__chev--open { transform: rotate(180deg); }
-
-.faq__panel {
-  padding: 0 16px 14px 66px; /* alinea con el texto de la pregunta, dejando espacio del ícono */
-}
-.faq__a {
-  background: rgba(37,99,235,.06);
-  border: 1px solid rgba(37,99,235,.15);
-  color: #475569;
-  padding: 12px 14px;
-  border-radius: 12px;
-  line-height: 1.55;
-  font-size: .95rem;
-}
-
-/* Animación de altura */
-.faq-collapse-enter-from, .faq-collapse-leave-to { max-height: 0; opacity: .0; }
-.faq-collapse-enter-to,   .faq-collapse-leave-from { max-height: 300px; opacity: 1; }
-.faq-collapse-enter-active, .faq-collapse-leave-active { transition: all .22s ease; }
-@media (max-width: 640px){
-  .faq__panel { padding-left: 62px; }
-}
-</style>
