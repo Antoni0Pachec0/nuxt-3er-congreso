@@ -1,5 +1,5 @@
 # ---------- 1) Build ----------
-FROM node:20-bookworm-slim AS builder
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN npm rebuild oxc-parser --build-from-source || true
 RUN npm run build
 
 # ---------- 2) Runtime ----------
-FROM node:20-bookworm-slim AS runner
+FROM node:22-bookworm-slim AS runner
 
 WORKDIR /app
 
