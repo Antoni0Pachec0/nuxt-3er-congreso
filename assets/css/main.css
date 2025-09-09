@@ -24,6 +24,7 @@ html, body {
 
   --color-blue-muted: #596E8F;
   --color-gray: #929CAC;
+  --color-gray-light:rgb(212, 212, 212);
 
   --color-white: #F7F8F9;
 
@@ -75,5 +76,10 @@ html, body {
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-xl: 32px;
-  --radius-full: 1000%;
-}
+  --radius-button: 50px;
+  --radius-full: 100%;
+  }
+
+
+
+

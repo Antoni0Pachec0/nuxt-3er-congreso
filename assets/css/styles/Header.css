@@ -1,0 +1,99 @@
+/* ===== Header Styles ===== */
+.appheader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-xl);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    height: 80px;
+}
+
+.appheader .logo img {
+    height: 48px;
+    width: auto;
+    display: block;
+  filter: invert(100%); /* Inverts white to black */
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.nav-links a {
+    color: var(--color-white);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--color-blue);
+}
+
+.nav-links button {
+    height: 40px;
+    min-width: 120px;
+    border-radius: var(--radius-button);
+    background-color: var(--color-blue);
+    color: var(--color-white);
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 0.4s, color 0.4s;
+    outline: none;
+}
+
+.nav-links button:hover {
+    background: var(--color-blue-hover);
+    color: var(--color-white);
+}
+
+.appheader {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.nav-links a {
+    transition: color 0.4s ease;
+}
+
+.nav-links button {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.appheader.scrolled {
+    background: rgba(255, 255, 255, 0.3); 
+    backdrop-filter: blur(12px); /* desenfoque acrílico */
+    -webkit-backdrop-filter: blur(12px); /* soporte para Safari */
+    transition: background-color 0.4s ease, color 0.4s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* sutil línea inferior */
+}
+.appheader.scrolled .logo img {
+    filter: none;
+}
+
+.appheader.scrolled .nav-links a {
+    color: #1e293b;
+}
+.appheader.scrolled .nav-links a:hover {
+    color: #1e90ff;
+}
+
+.appheader.scrolled .nav-links button {
+    background-color: #1e90ff;
+    color: #fff;
+}
+.appheader.scrolled .nav-links button:hover {
+    background-color: #1c86ee;
+    color: #fff;
+}
