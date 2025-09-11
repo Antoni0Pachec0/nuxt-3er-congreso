@@ -1,7 +1,7 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
   css: [
-    '@/assets/css/main.css' // 👈 tu CSS global
+    '@/assets/css/main.css'
   ],
   app: {
     head: {
@@ -11,6 +11,11 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap'
+        },
+        // Agregar Material Design Icons
+        {
+          rel: 'stylesheet',
+          href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css'
         }
       ],
       script: [
