@@ -1,4 +1,21 @@
+<template>
+    <main>
+    <Hero/>
+    <Description/>
+    <Location/>    
+    <SectionsGalleryCarousel :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
+    <Maps/>
+    <Location_uni />
+    <SectionsFaqAccordion :items="faqItems" :singleOpen="true" />
+  </main>
+</template>
+
 <script setup lang="ts">
+import Hero from '@/components/sections/Hero.vue'
+import Description from '@/components/sections/Description.vue'
+import Maps from '@/components/sections/Mapa.vue'
+import Location_uni from '@/components/sections/Location_Uni.vue'
+
 import evento2018 from '@/assets/img/gallery/evento2018.jpeg'
 import evento2019 from '@/assets/img/gallery/evento2019.jpeg'
 import evento2021 from '@/assets/img/gallery/evento2021.jpeg'
@@ -91,24 +108,4 @@ const faqItems = [
   },
 
 ]
-</script>
-
-<template>
-  <SectionsGalleryCarousel :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
-    <SectionsFaqAccordion :items="faqItems" :singleOpen="true" />
-
-</template>
-
-<!-- pages/index.vue -->
-<template>
-  <main>
-    <Header />
-    <Hero />
-    <Location />
-  </main>
-</template>
-
-<script setup>
-import Hero from '~/components/sections/Hero.vue'
-import Location from '~/components/sections/Location_Uni.vue'
 </script>
