@@ -1,3 +1,4 @@
+
 /* --- HERO base --- */
 .hero{
   position:relative;
@@ -13,6 +14,7 @@
     radial-gradient(900px 500px at 85% 15%, rgba(29,78,216,.18), transparent),
     #0b1220;
   color:#eaf3ff;
+  height: 130vh; 
 }
 #particles-js{ position:absolute; inset:0; z-index:0; pointer-events:none; }
 :deep(#particles-js canvas){
