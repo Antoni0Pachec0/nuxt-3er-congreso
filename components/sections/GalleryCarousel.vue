@@ -205,6 +205,7 @@ watch(
   () => props.autoplay,
   (v) => (v ? startAutoplay() : stopAutoplay())
 );
+
 </script>
 
 

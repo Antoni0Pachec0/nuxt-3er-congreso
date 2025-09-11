@@ -222,9 +222,8 @@
 }
 
 .gc__statNumber {
-    color: #1d4ed8;
-        font-family: 'Sora', sans-serif;
-
+    color: #3374EE;
+    font-family: 'Sora', sans-serif;
     font-size: 1.8rem;
     font-weight: bold;
 }
@@ -243,22 +242,22 @@
 
 @media (max-width: 640px) {
     .gc {
-        padding-top: 36px;
+        padding-top: px;
     }
-
-    .gc__viewport {
-        border-radius: 22px;
+    .gc__statNumber {
+        color: #3374EE;
+        font-family: 'Sora', sans-serif;
+        font-size: 1rem;
+        font-weight: bold;
     }
-
     .gc__slide {
         height: 64vh;
-        max-height: 520px;
-    }
+        max-height: 400px;
 
-    .gc__nav {
-        width: 40px;
-        height: 40px;
-        font-size: 26px;
     }
-
+  .gc__nav {
+    display: none;
+  }
+    
+  
 }
