@@ -5,6 +5,7 @@
     <Hero />
     <Description />
     <LogosUni />
+    <Mapa />
   </main>
 </template>
 
@@ -13,4 +14,5 @@
   import Header from '~/components/layout/Header.vue'
   import  Description from '~/components/sections/Description.vue'
   import LogosUni from '~/components/sections/Logos-uni.vue'
+  import Mapa from '~/components/sections/Mapa.vue'
 </script>

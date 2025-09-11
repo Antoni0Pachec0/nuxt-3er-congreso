@@ -15,13 +15,6 @@
         border: 5px solid #93C5FD;
         text-align: center;
         box-shadow: 0 8px 32px 0 rgba(36, 161, 228, 0.12), 0 1.5px 6px 0 rgba(30, 144, 255, 0.08);
-        animation: floatY 2.8s ease-in-out infinite;
-}
-
-@keyframes floatY {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-    100% { transform: translateY(0); }
 }
 
 .circle {
@@ -37,6 +30,7 @@
     font-size: 1.8rem;
     color: #2563eb;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    animation: floatY 2.5s ease-in-out infinite;
 }
 
 /* Aumenta el tamaño de los iconos SVG dentro de los círculos */
@@ -44,6 +38,13 @@
     width: 1.5em;
     height: 1.5em;
     display: block;
+}
+
+
+@keyframes floatY {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+    100% { transform: translateY(0); }
 }
 
 .circle-top {
