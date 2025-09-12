@@ -23,9 +23,18 @@
           @keydown.enter.prevent="toggle(i)"
           @keydown.space.prevent="toggle(i)"
         >
-          <span class="faq__icon" aria-hidden="true" v-html="item.icon || defaultIcon"></span>
+          <span class="faq__pill">
+            <span
+              class="faq__icon faq__icon--circle faq__icon--blue"
+              aria-hidden="true"
+            >
+              <svg-icon type="mdi" :path="item.icon"></svg-icon>
+            </span>
+          </span>
           <span class="faq__q">{{ item.q }}</span>
-          <span class="faq__chev" :class="{ 'faq__chev--open': isOpen(i) }">⌄</span>
+          <span class="faq__chev" :class="{ 'faq__chev--open': isOpen(i) }"
+            >⌄</span
+          >
         </button>
 
         <!-- Panel respuesta con transición de altura -->
@@ -46,35 +55,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 import "/assets/css/FAQuestions.css";
+import SvgIcon from '@jamescoyle/vue-icon'
+
 
 
 type FaqItem = {
-  q: string
-  a: string  // puedes usar HTML simple (links, <strong>, etc.)
-  icon?: string // SVG inline opcional
-}
+  q: string;
+  a: string; // puedes usar HTML simple (links, <strong>, etc.)
+  icon?: string; // SVG inline opcional
+};
 
-const props = withDefaults(defineProps<{
-  items: FaqItem[]
-  singleOpen?: boolean  // true: solo uno abierto a la vez
-}>(), {
-  singleOpen: true
-})
+const props = withDefaults(
+  defineProps<{
+    items: FaqItem[];
+    singleOpen?: boolean; // true: solo uno abierto a la vez
+  }>(),
+  {
+    singleOpen: true,
+  }
+);
 
-const openSet = ref<Set<number>>(new Set([0])) // abre el primero por defecto (ajusta si no quieres)
+const openSet = ref<Set<number>>(new Set([0])); // abre el primero por defecto (ajusta si no quieres)
 
 function isOpen(i: number) {
-  return openSet.value.has(i)
+  return openSet.value.has(i);
 }
 function toggle(i: number) {
   if (props.singleOpen) {
-    openSet.value = isOpen(i) ? new Set() : new Set([i])
+    openSet.value = isOpen(i) ? new Set() : new Set([i]);
   } else {
-    const s = new Set(openSet.value)
-    isOpen(i) ? s.delete(i) : s.add(i)
-    openSet.value = s
+    const s = new Set(openSet.value);
+    isOpen(i) ? s.delete(i) : s.add(i);
+    openSet.value = s;
   }
 }
 
@@ -88,5 +102,5 @@ const defaultIcon = `
       <stop stop-color="#0EA5E9"/><stop offset="1" stop-color="#1D4ED8"/>
     </linearGradient>
   </defs>
-</svg>`
+</svg>`;
 </script>
