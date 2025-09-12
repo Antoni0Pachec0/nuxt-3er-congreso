@@ -1,6 +1,85 @@
-/* Estilos globales, por ejemplo en assets/css/main.css */
-html, body {
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
+  box-sizing: border-box;
 }
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+}
+
+:root {
+  /*  Paleta base */
+  --color-black: #000000;
+  --color-navy-dark: #0B1534;
+  --color-navy: #132953;
+  --color-navy-light: #184675;
+
+  --color-blue-dark: #1E5A93;
+  --color-blue: #24A1E4;
+  --color-blue-light: #5EA1D8;
+  --color-blue-soft: #B8D8F3;
+
+  --color-blue-muted: #596E8F;
+  --color-gray: #929CAC;
+  --color-gray-light:rgb(212, 212, 212);
+
+  --color-white: #F7F8F9;
+
+  /* Variantes (hover / active) */
+  --color-blue-hover: #1E90D6;
+  --color-blue-active: #1978B6;
+
+  --color-navy-hover: #1C376B;
+  --color-navy-active: #14284E;
+
+  --color-gray-hover: #A0A8B8;
+  --color-gray-active: #7A8494;
+
+  /* Colores de estado */
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-active: #15803d;
+
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-active: #b45309;
+
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-active: #b91c1c;
+
+  --color-info: #3b82f6;
+  --color-info-hover: #2563eb;
+  --color-info-active: #1d4ed8;
+
+  /* Fondos */
+  --color-bg: var(--color-white);
+  --color-bg-dark: var(--color-navy-dark);
+
+  /* 🖋️ Texto */
+  --color-text: var(--color-navy);
+  --color-text-light: var(--color-blue-muted);
+  --color-text-inverse: var(--color-white);
+
+  /* Espaciado (padding / margin) */
+  --space-xs: 0.25rem;  /* 4px */
+  --space-sm: 0.5rem;   /* 8px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+
+  /* Bordes */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-button: 50px;
+  --radius-full: 100%;
+  }
+
+
+
+
