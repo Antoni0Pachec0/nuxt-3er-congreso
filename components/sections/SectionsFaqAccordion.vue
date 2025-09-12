@@ -32,9 +32,22 @@
             </span>
           </span>
           <span class="faq__q">{{ item.q }}</span>
-          <span class="faq__chev" :class="{ 'faq__chev--open': isOpen(i) }"
-            >⌄</span
-          >
+          <span class="faq__chev" :class="{ 'faq__chev--open': isOpen(i) }">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="h-5 w-5 text-gray-600 transition-transform duration-300"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </span>
         </button>
 
         <!-- Panel respuesta con transición de altura -->
@@ -57,9 +70,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import "/assets/css/FAQuestions.css";
-import SvgIcon from '@jamescoyle/vue-icon'
-
-
+import SvgIcon from "@jamescoyle/vue-icon";
 
 type FaqItem = {
   q: string;
