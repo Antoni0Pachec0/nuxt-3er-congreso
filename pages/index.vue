@@ -7,6 +7,7 @@
     <Maps/>
     <Location_uni />
     <SectionsFaqAccordion :items="faqItems" :singleOpen="true" />
+    <Logos/>
   </main>
 </template>
 
@@ -15,6 +16,7 @@ import Hero from '@/components/sections/Hero.vue'
 import Description from '@/components/sections/Description.vue'
 import Maps from '@/components/sections/Mapa.vue'
 import Location_uni from '@/components/sections/Location_Uni.vue'
+import Logos from '@/components/sections/Logos-uni.vue'
 
 import evento2018 from '@/assets/img/gallery/evento2018.jpeg'
 import evento2019 from '@/assets/img/gallery/evento2019.jpeg'
