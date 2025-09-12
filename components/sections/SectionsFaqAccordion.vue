@@ -50,7 +50,6 @@
           </span>
         </button>
 
-        <!-- Panel respuesta con transición de altura -->
         <transition name="faq-collapse">
           <div
             v-show="isOpen(i)"
