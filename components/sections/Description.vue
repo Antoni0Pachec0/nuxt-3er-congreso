@@ -1,7 +1,7 @@
 <template>
     <section id="description" class="description">
         <!-- Título -->
-        <div class="tittle">
+        <div class="tittle-description">
             <h2>El Congreso que Marca el Futuro Digital</h2>
             <div class="line"></div>
         </div>

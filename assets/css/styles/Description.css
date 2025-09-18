@@ -1,6 +1,6 @@
 .description {
     padding: 3rem 2rem;
-    text-align: center;
+    text-align: center; 
 }
 
 .description-text {
@@ -125,7 +125,6 @@
 }
 
 
-/* --- Borde degradado --- */
 .card::before {
     content: '';
     position: absolute;
