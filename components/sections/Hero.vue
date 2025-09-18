@@ -86,10 +86,6 @@
         </div>
       </div>
     </div>
-    <path fill="#fff" fill-opacity="1" d="M0,160 
-      C360,80 1080,240 1440,140 
-      L1440,320 L0,320 Z">
-    </path>
 
     <!-- Ola decorativa inferior -->
     <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 180" preserveAspectRatio="none"
@@ -101,6 +97,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, reactive } from 'vue'
+import '~/assets/css/styles/hero.css'
 import logo from '@/assets/images/Logo.png'
 import '@/assets/css/styles/Hero.css'
 
@@ -140,7 +137,5 @@ onMounted(() => {
   }, 1000)
 })
 
-onUnmounted(() => {
-  clearInterval(timer)
-})
+onUnmounted(() => clearInterval(timer))
 </script>

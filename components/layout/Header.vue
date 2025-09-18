@@ -8,6 +8,7 @@
             <a href="#">Inicio</a>
             <a href="#">Servicios</a>
             <a href="#">Contacto</a>
+            <button href="/login">Login</button>
             <button href="">Registro</button>
         </nav>
     </header>

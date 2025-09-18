@@ -4,13 +4,19 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   
-  // ✅ Configuración experimental corregida
-  experimental: {
-    externalVue: false,
-    // inlineSSRStyles no existe en Nuxt 3 - ELIMINADO
+  // ✅ Configuración de rutas
+  pages: true,
+  routeRules: {
+    // Redirección para SPA behavior
+    '/**': { ssr: false }
   },
   
-  // ✅ Usar parser alternativo
+  // ✅ Configuración experimental
+  experimental: {
+    externalVue: false,
+  },
+  
+  // ✅ Configuración de Vite
   vite: {
     esbuild: {
       supported: {
@@ -38,6 +44,10 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css'
         }
       ],
       script: [
@@ -47,7 +57,7 @@ export default defineNuxtConfig({
           tagPosition: 'bodyClose'
         },
         {
-          src: '/particles-init.js',
+          src: '/public/particles-init.js',
           defer: true,
           tagPosition: 'bodyClose'
         }
