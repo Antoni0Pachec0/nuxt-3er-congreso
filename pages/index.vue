@@ -2,7 +2,7 @@
     <main>
     <Hero/>
     <Description/>
-    <Location/>    
+    <Location_uni/>    
     <SectionsGalleryCarousel :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
     <Maps/>
     <SectionsFaqAccordion :items="faqItems" :singleOpen="true" />
