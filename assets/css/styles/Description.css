@@ -161,11 +161,6 @@
     margin: 0 auto 15px auto;
 }
 
-/* =================================== */
-/* RESPONSIVE STYLES                   */
-/* =================================== */
-
-/* For tablets and smaller devices */
 @media (max-width: 768px) {
     .description {
         padding: 3rem 1rem;
