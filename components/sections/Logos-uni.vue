@@ -16,7 +16,7 @@
 <script setup>
 import '@/assets/css/styles/Logos-uni.css'
 
-import Edu from '@/assets/images/edu.png'
+import Edu from '@/assets/images/Edu.png'
 import Puebla from '@/assets/images/Puebla.png'
 import SecEdu from '@/assets/images/SecEdu.png'
 import Peg from '@/assets/images/Peg.png'
