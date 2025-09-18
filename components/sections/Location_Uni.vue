@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import mapa from '~/assets/images/Map.png'
+import mapa from '~/assets/images/Mapa.png'
 import laptop from '~/assets/images/Lap.png'
 import mascota from '~/assets/images/Mascota.png'
 import '~/assets/css/styles/location_uni.css'
