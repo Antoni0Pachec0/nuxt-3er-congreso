@@ -1,9 +1,13 @@
 <!-- app.vue -->
 <template>
   <div>
-    <Header />
+    <!-- Header solo si NO es login o register -->
+    <Header v-if="$route.path !== '/login' && $route.path !== '/register'" />
+
     <NuxtPage />
-    <Footer />
+
+    <!-- Footer solo si NO es login o register -->
+    <Footer v-if="$route.path !== '/login' && $route.path !== '/register'" />
   </div>
 </template>
 

@@ -22,7 +22,7 @@
       </header>
 
       <!-- Card -->
-      <section class="card" aria-label="Verificación de código">
+      <section class="cardVerify" aria-label="Verificación de código">
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
             <SvgIcon :path="mdiShieldCheckOutline" type="mdi" />

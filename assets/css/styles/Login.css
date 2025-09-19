@@ -106,7 +106,7 @@
 }
 
 /* Card (derecha) */
-.card{
+.cardLogin{
   justify-self:center;
   width:var(--card-w);
   border-radius:var(--radius-xl);

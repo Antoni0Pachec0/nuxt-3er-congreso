@@ -21,7 +21,7 @@
       </header>
 
       <!-- Columna derecha / Card -->
-      <section class="card" aria-label="Formulario de inicio de sesión">
+      <section class="cardLogin" aria-label="Formulario de inicio de sesión">
         <!-- Título centrado -->
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
@@ -158,4 +158,5 @@ function onRegister () {
   // Redirigir al registro
   window.location.href = '/register'
 }
+
 </script>

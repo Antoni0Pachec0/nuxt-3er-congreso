@@ -75,7 +75,7 @@
 .subtitle{ margin-top:.25rem; color:var(--muted); font-weight:600; text-align:center; font-size:var(--fz-sm); }
 
 /* CARD */
-.card{
+.cardVerify{
   justify-self:center; width:var(--card-w);
   border-radius:var(--radius-xl);
   background:linear-gradient(180deg, var(--glass-1), var(--glass-2));

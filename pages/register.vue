@@ -18,7 +18,7 @@
         </h1>
       </header>
 
-      <section class="card" aria-label="Registration form">
+      <section class="cardRegister" aria-label="Registration form">
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
             <SvgIcon :path="mdiAccountPlusOutline" type="mdi" />

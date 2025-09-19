@@ -230,7 +230,7 @@
 /* ==============================
    CARD FORM
 ============================== */
-.card {
+.cardRegister {
   width: var(--card-w);
   border-radius: var(--radius-lg);
   background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
