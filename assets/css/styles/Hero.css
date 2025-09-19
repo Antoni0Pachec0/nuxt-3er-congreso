@@ -326,6 +326,19 @@
   .countdown-label {
     font-size: 14px;
   }
+  
+  /* Ajustes de título para tablet */
+  .kicker {
+    font-size: clamp(2rem, 3.5vw, 2.8rem); /* Aumentado */
+  }
+  
+  .title {
+    font-size: clamp(2.8rem, 5.5vw, 3.8rem); /* Aumentado */
+  }
+  
+  .congreso, .internacional {
+    font-size: 95%; /* Un poco más grande */
+  }
   .hero {
     padding-top: 8rem;
     /* Más espacio para el logo que ahora está arriba */
@@ -430,6 +443,21 @@
   .countdown-label {
     font-size: 0.95rem;
     margin-bottom: 8px;
+  }
+  
+  /* Ajustes de título para móvil */
+  .kicker {
+    font-size: clamp(3rem, 4.5vw, 3.8rem); /* Más pequeño en móvil */
+  }
+  
+  .title {
+    font-size: clamp(3.5rem, 5vw, 3.5rem); /* Más pequeño en móvil */
+    margin-bottom: 0.3rem;
+  }
+  
+  .congreso, .internacional {
+    font-size: 80%; /* Reduce aún más para móvil */
+    line-height: 1.2;
   }
   .hero {
     padding-top: 6rem;
