@@ -97,7 +97,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, reactive } from 'vue'
-import '~/assets/css/styles/hero.css'
+import '~/assets/css/styles/Hero.css'
 import logo from '@/assets/images/Logo.png'
 import '@/assets/css/styles/Hero.css'
 
