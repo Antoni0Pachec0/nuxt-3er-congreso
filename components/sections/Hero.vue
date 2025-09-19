@@ -69,7 +69,7 @@
         </div>
 
         <!-- Ubicación -->
-        <div class="info-card">
+        <div class="info-card cards-info">
           <div class="info-icon" aria-hidden="true">
             <!-- Pin de ubicación -->
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"

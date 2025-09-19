@@ -1,3 +1,4 @@
+/* Estilos base (sin cambios significativos) */
 .footer {
   position: relative;
   overflow: visible;
@@ -11,11 +12,26 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-}
-
-.footer-bg svg {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+.wave-footer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Control de visibilidad de las paths para desktop/mobile */
+.wave-mobile {
+  display: none;
+}
+
+.wave-desktop {
   display: block;
 }
 
@@ -23,14 +39,18 @@
   position: relative;
   z-index: 2;
   display: grid;
+  /* El layout por defecto es de 3 columnas */
   grid-template-columns: 2fr 1fr 1fr;
   gap: 40px;
   max-width: 1200px;
   margin: auto;
 }
 
-.footer-left {
-  max-width: none;
+.footer-left,
+.footer-links,
+.footer-right {
+  /* Añadimos un ancho mínimo para evitar que se compriman demasiado antes de cambiar de layout */
+  min-width: 220px;
 }
 
 /* Logo + Títulos */
@@ -44,8 +64,7 @@
 .footer-logo {
   width: 56px;
   height: auto;
-  flex: 0 0 auto;
-  margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .brand-text {
@@ -140,41 +159,21 @@
   border-right-color: transparent;
 }
 
-.tok-console {
-  color: #2563EB;
-  font-weight: 600;
-}
-
-.tok-log {
-  color: #4CC9EF;
-  font-weight: 600;
-}
-
-.tok-str {
-  color: #ffffff;
-}
+.tok-console { color: #2563EB; font-weight: 600; }
+.tok-log { color: #4CC9EF; font-weight: 600; }
+.tok-str { color: #ffffff; }
 
 @keyframes typing {
-  from {
-    width: 0ch;
-  }
-
-  to {
-    width: var(--ch);
-  }
+  from { width: 0ch; }
+  to { width: var(--ch); }
 }
 
 @keyframes blink {
-  0%,
-  100% {
-    border-right-color: transparent;
-  }
-
-  50% {
-    border-right-color: rgba(255, 255, 255, .7);
-  }
+  0%, 100% { border-right-color: transparent; }
+  50% { border-right-color: rgba(255, 255, 255, .7); }
 }
 
+/* Contacto */
 .contact-item {
   display: grid;
   grid-template-columns: 22px 1fr;
@@ -242,7 +241,7 @@
 
 .footer-links a:hover {
   opacity: 1;
-  color: #51a2ff; 
+  color: #51a2ff;
 }
 
 .social-icons {
@@ -251,7 +250,6 @@
   margin: 10px 0 16px;
 }
 
-/* Iconos sociales */
 .social-icons a {
   display: inline-flex;
   align-items: center;
@@ -259,31 +257,21 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1); /* Fondo ligeramente transparente */
-  color: #fff; /* Blanco por defecto */
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
   font-size: 28px;
   transition: transform 0.15s, color 0.25s;
 }
 
 .social-icons a:hover {
-  transform: translateY(-2px); /* Solo desplazamiento del icono */
+  transform: translateY(-2px);
 }
 
-.social-icons .facebook:hover {
-  color: #0e76ff; /* Azul de Facebook */
-}
+.social-icons .facebook:hover { color: #0e76ff; }
+.social-icons .x:hover { color: #6ec7ff; }
+.social-icons .instagram:hover { color: #ff65f5; }
+.social-icons .youtube:hover { color: #ed0000; }
 
-.social-icons .x:hover {
-  color: #6ec7ff; /* Azul de Twitter (ahora X) */
-}
-
-.social-icons .instagram:hover {
-  color: #ff65f5; /* Rosa de Instagram */
-}
-
-.social-icons .youtube:hover {
-  color: #ed0000; /* Rojo de YouTube */
-}
 .footer-impact {
   background: linear-gradient(135deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
   border: 1px solid rgba(255, 255, 255, .15);
@@ -304,39 +292,27 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px 16px;
-  justify-items: center; /* Centra los elementos horizontalmente */
-  text-align: center; /* Centra el texto dentro de los elementos */
+  justify-items: center;
+  text-align: center;
 }
 
 .footer-impact li {
   font-size: 13px;
   opacity: .9;
-  color: #9CA3AF; /* Color general del texto */
+  color: #9CA3AF;
 }
 
 .footer-impact li span {
   display: block;
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 4px; /* Separación entre el número y el texto */
+  margin-bottom: 4px;
 }
 
-/* Colores específicos */
-.footer-impact li:nth-child(1) span {
-  color: #22D3EE; /* Alumnos */
-}
-
-.footer-impact li:nth-child(2) span {
-  color: #C084FC; /* Ponentes */
-}
-
-.footer-impact li:nth-child(3) span {
-  color: #F472B6; /* Países */
-}
-
-.footer-impact li:nth-child(4) span {
-  color: #FB923C; /* Días */
-}
+.footer-impact li:nth-child(1) span { color: #22D3EE; }
+.footer-impact li:nth-child(2) span { color: #C084FC; }
+.footer-impact li:nth-child(3) span { color: #F472B6; }
+.footer-impact li:nth-child(4) span { color: #FB923C; }
 
 /* Línea inferior */
 .footer-bottom {
@@ -350,33 +326,140 @@
   opacity: .75;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
+
+/* ================================== */
+/* MEDIA QUERIES              */
+/* ================================== */
+
+/* Para tablets y pantallas medianas (hasta 992px) */
+@media (max-width: 992px) {
   .footer-container {
-    grid-template-columns: 1fr;
+    /* CAMBIO: Pasamos a 2 columnas. La columna izquierda ocupará todo el ancho
+       y las otras dos se colocarán debajo. */
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 20px; /* Mantenemos gap vertical y reducimos el horizontal */
+  }
+
+  .footer-left {
+    /* CAMBIO: Hacemos que la columna principal ocupe todo el ancho disponible */
+    grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 600px) {
+/* Para móviles (hasta 768px) */
+@media (max-width: 768px) {
   .footer {
-    padding-top: 140px;
+    /* Reducimos el padding superior en pantallas pequeñas */
+    padding-top: 50px;
+    background: linear-gradient(to bottom, #1E6397, #182D6B, #09122E);
+  }
+  
+  .footer-bg {
+    display: none; /* Ocultamos el SVG en móvil */
   }
 
-  .footer-impact ul {
-    grid-template-columns: 1fr 1fr;
+  .footer-container {
+    /* CAMBIO: Ahora todo se apila en una sola columna */
+    grid-template-columns: 1fr;
+    gap: 30px; /* Reducimos el espacio vertical entre secciones */
+  }
+  
+  .footer-left, .footer-links, .footer-right {
+    /* Reseteamos min-width para que no cause problemas */
+    min-width: 0;
+  }
+
+  .footer-brand {
+    /* CAMBIO: Apilamos el logo y el texto en pantallas muy pequeñas */
+    flex-direction: column;
+    align-items: flex-start; /* Opcional: 'center' para centrar todo */
+    gap: 8px;
+    text-align: left; /* Opcional: 'center' */
   }
 
   .brand-title {
-    font-size: 20px;
+    font-size: 22px;
+  }
+  
+  .brand-subtitle {
+    font-size: 16px;
+  }
+  
+  .footer-code {
+    /* CAMBIO: Hacemos que la tarjeta de código ocupe todo el ancho */
+    width: 100%;
   }
 
-  .brand-subtitle {
-    font-size: 14px;
+  .code-window {
+    font-size: 12px; /* Reducimos el tamaño del texto en móvil */
+  }
+
+
+  .footer-code code {
+    font-size: 10px; /* Aseguramos que el código también se reduzca */
+  }
+
+  .footer-links h4,
+  .footer-right h4 {
+    /* CAMBIO: Centramos los títulos para que coincidan con el layout de una columna */
+    text-align: center;
+  }
+
+  .footer-links ul {
+    /* CAMBIO: Centramos los enlaces rápidos */
+    text-align: center;
+  }
+
+  .social-icons {
+    /* CAMBIO: Centramos los íconos de redes sociales */
+    justify-content: center;
+  }
+
+  .footer-impact ul {
+    /* Mantenemos las dos columnas para el impacto, se ve bien así */
+    grid-template-columns: 1fr 1fr;
   }
 }
 
+/* Preferencias de movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   .footer-code.start .code-typing {
     animation: typing 0.01s steps(var(--n)) 0s forwards;
   }
+  
+  .social-icons a:hover {
+    transform: none; /* Desactivamos la animación de hover */
+  }
 }
+
+/* SVG para versión móvil */
+.wave-mobile {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Ajustes específicos para la ola en móvil */
+@media (max-width: 768px) {
+  .footer-bg {
+    height: 100%;
+  }
+  .wave-desktop { 
+    display: none; 
+  }
+  .wave-mobile { 
+    display: block;
+  }
+  .footer-bg svg {
+    width: 100%;
+    height: 80%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* El preserveAspectRatio se controla desde el SVG */
+  }
+}
+

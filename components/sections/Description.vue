@@ -1,12 +1,10 @@
 <template>
     <section id="description" class="description">
-        <!-- Título -->
         <div class="tittle-description">
             <h2>El Congreso que Marca el Futuro Digital</h2>
             <div class="line"></div>
         </div>
 
-        <!-- Texto -->
         <p class="description-text">
             <span class="circle circle-top">
                 <SvgIcon type="mdi" :path="pathTop" />
@@ -21,7 +19,6 @@
             inteligencia artificial, ciberseguridad, innovación digital y transformación empresarial.
         </p>
 
-        <!-- Cards -->
         <div class="cards-container">
             <div v-for="(item, index) in cards" :key="index" class="card">
                 <div class="icon">

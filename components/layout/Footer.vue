@@ -2,27 +2,32 @@
   <footer class="footer" ref="footerRoot">
     <!-- Fondo del footer: wave + degradado -->
     <div class="footer-bg" aria-hidden="true">
-      <svg
-        viewBox="0 0 1440 800"
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient id="footerGrad" x1="0" y1="0" x2="1440" y2="800" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stop-color="#09122E"/>
-            <stop offset="50%"  stop-color="#182D6B"/>
-            <stop offset="100%" stop-color="#1E6397"/>
-          </linearGradient>
-        </defs>
-        <path
-          d="M0,150
-              C220,55 500,100 740,150
-              C980,185 1220,175 1440,90
-              L1440,800 L0,800 Z"
-          fill="url(#footerGrad)"
-        />
-      </svg>
+<svg
+  class="wave-footer"
+  viewBox="0 0 1440 800"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <linearGradient id="footerGrad" x1="0" y1="0" x2="1440" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#09122E"/>
+      <stop offset="50%"  stop-color="#182D6B"/>
+      <stop offset="100%" stop-color="#1E6397"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Curva para ESCRITORIO (original) -->
+  <path class="wave-desktop"
+        d="M0,150
+            C220,55 500,100 740,150
+            C980,185 1220,175 1440,90
+            L1440,800 L0,800 Z"
+        fill="url(#footerGrad)"/>
+</svg>
+      
     </div>
+    
 
     <!-- Contenido -->
     <div class="footer-container">
@@ -36,7 +41,6 @@
             <p class="brand-subtitle">Tecnologías de la Información e Innovación</p>
           </div>
         </div>
-
         <!-- Descripción -->
         <p>
           Un congreso tecnológico que reúne a especialistas de todo el país para

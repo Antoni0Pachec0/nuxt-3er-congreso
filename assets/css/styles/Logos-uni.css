@@ -41,3 +41,20 @@
         transform: translateX(-50%);
     }
 }
+@media screen and (max-width: 768px) {
+    .logo-uni {
+        width: 120px;
+        height: 60px;
+        padding: 0 1rem;
+        border-width: 3px;
+        margin: auto 10px;
+    }
+
+    .logo-uni img {
+        max-height: 40px;
+        max-width: 100px;
+    }
+    .carousel{
+        padding-bottom: 50px;
+    }
+}
