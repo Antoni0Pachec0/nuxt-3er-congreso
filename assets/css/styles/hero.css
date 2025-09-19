@@ -316,15 +316,15 @@
 
 /* --- Responsive (Tablet) --- */
 @media (max-width: 960px) {
-  /* --- Forzar tamaño countdown --- */
+  /* --- Forzar tamaño countdown (tablet) --- */
   .cd-number {
-    font-size: 40px;
+    font-size: 34px;
   }
   .cd-caption {
-    font-size: 20px;
+    font-size: 16px;
   }
   .countdown-label {
-    font-size: 10px;
+    font-size: 14px;
   }
   .hero {
     padding-top: 8rem;
@@ -388,11 +388,12 @@
     gap: .5rem;
   }
   .cd-card {
-    padding: 0.7rem 0.4rem;
+    padding: 0.55rem 0.35rem;
     min-width: 0;
+    border-radius: 0.8rem;
   }
   .cd-number {
-    font-size: clamp(0.95rem, 4vw, 1.15rem);
+    font-size: clamp(1rem, 5vw, 2.2rem);
   }
   .logo-wrap {
     width: min(280px, 50vw);
@@ -401,7 +402,7 @@
   .countdown {
     grid-template-columns: repeat(2, 1fr);
     /* Pasa a 2x2 */
-    gap: .9rem;
+    gap: .6rem;
   }
 
   .info-row {
@@ -416,15 +417,19 @@
 
 /* --- Responsive (Móvil) --- */
 @media (max-width: 600px) {
-    .cd-number {
-    font-size: 5px;
+  /* Countdown - móvil: tamaños fijos para todas las cards */
+  .cd-number {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
   }
   .cd-caption {
-    font-size: 10px;
+    font-size: 0.75rem;
+    letter-spacing: .1em;
   }
   .countdown-label {
-    font-size: 20px;
-    margin-bottom:10px;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
   }
   .hero {
     padding-top: 6rem;
@@ -443,13 +448,26 @@
   .logo-wrap {
     width: min(240px, 60vw);
   }
+  /* 4 cuadros en una sola fila con tamaño fijo en móvil */
   .countdown {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.3rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.35rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    overflow-x: hidden;
   }
   .cd-card {
-    padding: 0.5rem 0.2rem;
-    min-width: 0;
+    width: 65px;
+    height: 65px;
+    flex: 0 0 65px;
+    padding: 0.25rem;
+    border-radius: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   .banded-title {
     font-size: clamp(0.9rem, 4vw, 1rem);
@@ -461,7 +479,7 @@
   }
 
   .cd-number {
-    font-size: clamp(2.2rem, 10vw, 2.8rem);
+    font-size: clamp(1.4rem, 7.5vw, 2rem);
   }
 
   .info-card {

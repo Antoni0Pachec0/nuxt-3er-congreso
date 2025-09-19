@@ -12,12 +12,16 @@
     width: 100%;
     margin: 0; /* pegado a la izquierda */
     gap: 0; /* sin espacio externo entre columnas */
+    /* Importante: Añadir position: relative para posicionar los íconos flotantes */
+    position: relative; 
 }
 
 /* Columna izquierda → Mapa */
 .mapa-uni-google {
     flex: 1;
     min-width: 320px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0; /* coincide con el iframe */
 }
 
 .mapa-uni-google iframe {
@@ -25,7 +29,7 @@
     height: 100%;
     min-height: 420px;
     border: none;
-    border-radius: 0; /* sin bordes redondeados */
+    border-radius: 16px 16px 0 0; /* bordes redondeados superiores */
 }
 
 /* Columna derecha → Info */
@@ -40,7 +44,7 @@
     justify-content: center; /* centra verticalmente contenido */
 }
 
-/* Icono redondo verde */
+/* Icono redondo verde (original) */
 .info-column-map .icon-wrapper {
     display: inline-flex;
     justify-content: center;
@@ -49,13 +53,12 @@
     height: 55px;
     background-color: white;
     border-radius: 50%;
-    animation: floatY 2.5s ease-in-out infinite;
     margin-top: -50px;
 }
 
 .info-column-map .icon-wrapper svg {
     color: #2ecc71;
-    width: 28px;
+    width: 28px; 
     height: 28px;
 }
 
@@ -108,41 +111,143 @@
     line-height: 1.6;
 }
 
-/* Icono flotante rojo */
+/* Icono flotante rojo (pin) - ahora se posiciona respecto a .mapa-uni-container */
 .floating-pin-icon {
-    position: absolute;
-    bottom: 25px;
-    right: 25px;
+    position: absolute; /* Cambiado a absolute */
+    bottom: 25px; /* Ajusta la posición si es necesario */
+    right: 25px; /* Ajusta la posición si es necesario */
     width: 52px;
     height: 52px;
-    background-color: white;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: floatY 2.5s ease-in-out infinite;
+    z-index: 15; /* Asegura que esté por encima del contenido */
+    background-color: white; /* Fondo transparente por defecto */
 }
 
 .floating-pin-icon svg {
     color: #e74c3c;
 }
 
+/* Icono del mundo superior izquierdo - ahora se posiciona respecto a .mapa-uni-container */
+.map-top-left-icon {
+    display: none; /* Oculto por defecto en escritorio */
+    position: absolute; /* Cambiado a absolute */
+    top: 25px; /* Ajusta la posición si es necesario */
+    left: 25px; /* Ajusta la posición si es necesario */
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    z-index: 15; /* Asegura que esté por encima del contenido */
+    background-color: transparent; /* Fondo transparente por defecto */
+}
+
+.map-top-left-icon svg {
+    color: #2ecc71; /* Color del icono */
+    width: 28px; 
+    height: 28px;
+}
+
+
 /* Responsive */
 @media (max-width: 992px) {
-    .mapa-uni-container {
-        flex-direction: column;
+    /* Add padding to the main section to create space around the card */
+    .mapa-uni {
+        padding: 40px 20px;
     }
 
+    /* Transform the container into the card from your image */
+    .mapa-uni-container {
+        border: 4px solid #ccc;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        overflow: visible; /* Cambiado para permitir que los íconos sobresalgan */
+        max-width: 400px; /* Reducido de 500px */
+        width: 90%; /* Para asegurar margen en pantallas muy pequeñas */
+        margin: 0 auto;
+        /* position: relative; ya está definido arriba */
+    }
 
+    /* Adjust the map container to just hold the iframe */
+    .mapa-uni-google {
+        flex-basis: 200px; /* Reducida la altura */
+        width: 100%;
+        position: relative; /* Mantenerlo relativo si necesitas posicionar elementos DENTRO del mapa en el futuro */
+        border-radius: 16px 16px 0 0; /* Asegurar bordes redondeados superiores */
+    }
+
+    /* Ensure the iframe fills the top part of the card */
+    .mapa-uni-google iframe {
+        width: 100%;
+        height: 100%;
+        display: block; /* Removes any extra space below the map */
+        border-radius: 16px 16px 0 0; /* Asegurar bordes redondeados superiores */
+    }
+
+    /* Style the info section to be the bottom part of the card */
     .info-column-map {
         padding: 40px 25px;
+        text-align: center; /* Centramos el texto y el título en móvil */
     }
-    .mapa-uni-google iframe {
-        min-height: 180px;
-        max-width: 320px;
+
+    /* Centrar el título y el subrayado en móvil */
+    .info-column-map h2 {
+        justify-content: center;
+    }
+    .title-underline {
         margin-left: auto;
         margin-right: auto;
-        display: block;
+    }
+    .info-item {
+        justify-content: center; /* Centra los elementos de la lista */
+        text-align: left; /* Asegura que el texto en sí no se corte */
+    }
+    .info-item p {
+        text-align: left; /* Asegura que el texto en sí no se corte */
+        font-size: 14px; /* Ajusta el tamaño de fuente para pantallas pequeñas */
+    }
+    .info-item svg {
+        min-width: 20px; /* Ajusta el tamaño del icono para pantallas pequeñas */
+        height: 20px;
+        margin-right: 10px;
+        margin-top: 0px;
+    }
 
+    /* Ocultamos el icono original dentro de info-column-map en móvil */
+    .info-column-map .icon-wrapper {
+        display: none; 
+    }
+    
+    /* Mostrar y posicionar el icono del mundo en la esquina superior izquierda del contenedor principal */
+    .map-top-left-icon {
+        display: flex; /* Mostrar en móvil */
+        top: -25px; /* Ajustar para que sobresalga de la tarjeta */
+        left: -25px; /* Ajustar para que sobresalga de la tarjeta */
+        background-color: white; /* Fondo blanco para el círculo */
+        border: 2px solid #ccc; /* Borde para el círculo */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para el círculo */
+        color: var(--color-success); /* Color del icono */
+    }
+    .map-top-left-icon svg {
+        color: var(--color-success); /* Asegura que el icono sea azul */
+    }
+
+    /* Mostrar y posicionar el icono de pin en la esquina inferior derecha del contenedor principal */
+    .floating-pin-icon {
+        display: flex; /* Asegurarse de que esté visible */
+        bottom: -25px; /* Ajustar para que sobresalga de la tarjeta */
+        right: -25px; /* Ajustar para que sobresalga de la tarjeta */
+        background-color: white; /* Fondo blanco para el círculo */
+        border: 2px solid #ccc; /* Borde para el círculo */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para el círculo */
+        color: #e74c3c; /* Color del icono */
+    }
+    .floating-pin-icon svg {
+        color: #e74c3c; /* Asegura que el icono sea rojo */
     }
 }

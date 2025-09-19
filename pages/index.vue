@@ -2,9 +2,9 @@
     <main>
     <Hero/>
     <Description/>
-    <Location/>    
     <SectionsGalleryCarousel :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
     <Maps/>
+    <Location_uni/>
     <SectionsFaqAccordion :items="faqItems" :singleOpen="true" />
     <Logos/>
   </main>
