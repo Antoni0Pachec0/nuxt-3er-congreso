@@ -1,5 +1,5 @@
 <template>
-  <main id="login" class="login-screen" role="main">
+  <main id="login" class="login-screen auth" role="main">
     <!-- Fondo decorativo -->
     <div class="login-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
@@ -11,6 +11,14 @@
     </div>
 
     <div class="login-container">
+      <button
+        type="button"
+        class="btn-back"
+        @click="goHome"
+        aria-label="Regresar"
+      >
+        <SvgIcon :path="mdiArrowLeft" type="mdi" />
+      </button>
       <!-- Columna izquierda / título -->
       <header class="login-hero" aria-label="Identidad del evento">
         <h1 class="hero-title">
@@ -34,7 +42,9 @@
           <!-- Email -->
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
-            <span class="input-icon"><SvgIcon :path="mdiEmailOutline" type="mdi" /></span>
+            <span class="input-icon"
+              ><SvgIcon :path="mdiEmailOutline" type="mdi"
+            /></span>
             <input
               id="email"
               v-model.trim="email"
@@ -49,11 +59,15 @@
           <!-- Password -->
           <div class="row">
             <label class="label" for="password">Contraseña</label>
-            <button class="link" type="button" @click="onForgot">¿Olvidaste tu contraseña?</button>
+            <button class="link" type="button" @click="onForgot">
+              ¿Olvidaste tu contraseña?
+            </button>
           </div>
 
           <div class="input-wrap">
-            <span class="input-icon"><SvgIcon :path="mdiLockOutline" type="mdi" /></span>
+            <span class="input-icon"
+              ><SvgIcon :path="mdiLockOutline" type="mdi"
+            /></span>
             <input
               id="password"
               :type="show ? 'text' : 'password'"
@@ -78,7 +92,7 @@
 
           <!-- CTA -->
           <button class="btn" type="submit" :disabled="loading">
-            {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
+            {{ loading ? "Ingresando…" : "Iniciar Sesión" }}
           </button>
 
           <!-- Divider + Register -->
@@ -88,10 +102,14 @@
             <span class="line"></span>
           </div>
 
-          <button type="button" class="btn ghost" @click="onRegister">Regístrate aquí</button>
+          <button type="button" class="btn ghost" @click="onRegister">
+            Regístrate aquí
+          </button>
 
           <!-- Frase bajo el formulario -->
-          <p class="card-note">Tecnologías de la Información · Innovación Digital</p>
+          <p class="card-note">
+            Tecnologías de la Información · Innovación Digital
+          </p>
         </form>
       </section>
     </div>
@@ -99,64 +117,72 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import SvgIcon from '@jamescoyle/vue-icon'
+import { ref } from "vue";
+import SvgIcon from "@jamescoyle/vue-icon";
 import {
-  mdiArrowRight, mdiEmailOutline, mdiLockOutline, mdiEyeOutline, mdiEyeOffOutline
-} from '@mdi/js'
+  mdiArrowRight,
+  mdiEmailOutline,
+  mdiLockOutline,
+  mdiEyeOutline,
+  mdiEyeOffOutline,
+  mdiArrowLeft,
+} from "@mdi/js";
 
 // Axios + rutas
-import api from '~/plugins/http/api'
-import { ROUTES } from '~/plugins/http/routes'
-import { parseAxiosError } from '~/plugins/http/error'
+import api from "~/plugins/http/api";
+import { ROUTES } from "~/plugins/http/routes";
+import { parseAxiosError } from "~/plugins/http/error";
 
-import '@/assets/css/styles/Login.css'
+import "@/assets/css/styles/Login.css";
 
-const email = ref('')
-const password = ref('')
-const show = ref(false)
-const loading = ref(false)
-const apiError = ref('') // mostrar mensaje si algo falla
+const email = ref("");
+const password = ref("");
+const show = ref(false);
+const loading = ref(false);
+const apiError = ref(""); // mostrar mensaje si algo falla
 
-function onForgot () {
+function onForgot() {
   // Aquí redirige a tu página de recuperación de contraseña
-  window.location.href = '/forgot-password'
+  window.location.href = "/forgot-password";
 }
 
-async function onSubmit () {
+async function onSubmit() {
   if (!email.value || !password.value) {
-    apiError.value = 'Por favor, llena todos los campos.'
-    return
+    apiError.value = "Por favor, llena todos los campos.";
+    return;
   }
-  loading.value = true
-  apiError.value = ''
+  loading.value = true;
+  apiError.value = "";
   try {
     const payload = {
       email: email.value,
-      password: password.value
-    }
+      password: password.value,
+    };
 
-    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload)
+    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload);
 
     // Suponiendo que tu backend devuelve { access_token, user }
     if (data?.access_token) {
-      localStorage.setItem('access_token', data.access_token)
-      localStorage.setItem('user', JSON.stringify(data.user || {}))
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user || {}));
     }
 
     // Redirigir a la vista index
-    window.location.href = '/'
+    window.location.href = "/";
   } catch (e) {
-    console.error(e)
-    apiError.value = parseAxiosError(e) || 'Error al iniciar sesión.'
+    console.error(e);
+    apiError.value = parseAxiosError(e) || "Error al iniciar sesión.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-function onRegister () {
+function onRegister() {
   // Redirigir al registro
-  window.location.href = '/register'
+  window.location.href = "/register";
 }
 
+function goHome() {
+  window.location.href = "/"; // 👈 siempre redirige al index
+}
 </script>

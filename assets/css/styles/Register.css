@@ -42,7 +42,7 @@
   --fz-hero: clamp(2rem, 6vw, 3.5rem);
 
   /* Dimensiones */
-  --card-w: max(300px, min(100%, 500px));
+  --card-w: max(300px, min(100%, 600px));
   --field-h: 44px;
 }
 
@@ -162,6 +162,7 @@
 }
 
 @media (max-width: 420px) {
+
   .blob--tl,
   .ring--1 {
     display: none;
@@ -202,6 +203,8 @@
 }
 
 .hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
   margin: 0 0 var(--space-sm);
   line-height: 1.1;
 }
@@ -243,7 +246,7 @@
 }
 
 @media (min-width: 980px) {
-  .card {
+  .cardRegister {
     flex: none;
     margin-left: auto;
   }
@@ -277,14 +280,15 @@
   list-style: none;
   justify-content: space-between;
   position: relative;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scroll-snap-type: x mandatory;
+  overflow-x: hidden;
+  scroll-snap-type: none;
+  flex-wrap: nowrap;
 }
 
 .stepper::-webkit-scrollbar {
   height: 6px;
 }
+
 
 .stepper::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.18);
@@ -298,11 +302,13 @@
 .stepper--timeline .step {
   position: relative;
   text-align: center;
-  flex: 1 0 140px;
+  flex: 1;
+  /* ocupa espacio proporcional */
+  min-width: auto;
+  /* ya no fuerza ancho fijo */
   padding-top: 30px;
-  min-width: 120px;
-  scroll-snap-align: center;
 }
+
 
 .stepper--timeline .step:not(:last-child)::after {
   content: "";
@@ -369,15 +375,16 @@
 
 /* Compactar labels en pantallas muy pequeñas */
 @media (max-width: 480px) {
-  .stepper--timeline .step .step__label {
-    display: none;
+  .stepper--timeline .step {
+    flex: 1;
+    min-width: 0;
   }
 
-  .stepper--timeline .step {
-    flex-basis: 80px;
-    min-width: 80px;
+  .stepper--timeline .step .step__label {
+    font-size: 0.7rem;
   }
 }
+
 
 /* ==============================
    FORM / CAMPOS
@@ -603,6 +610,7 @@ input:-webkit-autofill:active {
   .nav {
     flex-direction: column;
   }
+
   .btn {
     width: 100%;
     flex-shrink: 0;
