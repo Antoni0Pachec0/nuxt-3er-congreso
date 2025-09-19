@@ -5,7 +5,14 @@ export default defineNuxtConfig({
   css: [
     '@/assets/css/main.css'
   ],
-  
+
+  runtimeConfig: {
+    public: {
+      STRIPE_PUBLISHABLE_KEY: process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      API_BASE: process.env.NUXT_PUBLIC_API_BASE,
+      RETURN_URL: process.env.NUXT_PUBLIC_RETURN_URL,
+    },
+  },
 
   app: {
     head: {
@@ -36,23 +43,23 @@ export default defineNuxtConfig({
       ]
     }
   },
-  
+
   // Asegúrate que Nuxt cargue los plugins correctamente
   plugins: [
     // No necesitas especificar los plugins individualmente si sigues la convención de nombres
   ],
-  
+
   // Configuración para manejar mejor las dependencias de cliente
   build: {
     transpile: ['@vue-stripe/vue-stripe']
   },
-  
+
   // Configuración de alias explícita
   alias: {
     '@': fileURLToPath(new URL('.', import.meta.url)),
     '~': fileURLToPath(new URL('.', import.meta.url))
   },
-  
+
   // Mejorar la resolución de Vite
   vite: {
     resolve: {
