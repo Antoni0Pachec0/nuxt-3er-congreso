@@ -303,9 +303,7 @@
   position: relative;
   text-align: center;
   flex: 1;
-  /* ocupa espacio proporcional */
   min-width: auto;
-  /* ya no fuerza ancho fijo */
   padding-top: 30px;
 }
 
@@ -350,7 +348,7 @@
   transform: translateX(-50%);
   font-size: 0.75rem;
   color: #bde0ff;
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .stepper--timeline .step.active .step__index {
@@ -381,7 +379,7 @@
   }
 
   .stepper--timeline .step .step__label {
-    font-size: 0.7rem;
+    font-size: 0.40rem;
   }
 }
 
@@ -605,7 +603,6 @@ input:-webkit-autofill:active {
   color: #fff;
 }
 
-/* Evitar que los botones se encojan en móviles */
 @media (max-width: 768px) {
   .nav {
     flex-direction: column;
@@ -724,6 +721,7 @@ input:-webkit-autofill:active {
 .pw-reqs li {
   position: relative;
   padding-left: 20px;
+  overflow-wrap: anywhere;
 }
 
 .pw-reqs li::before {
@@ -744,4 +742,74 @@ input:-webkit-autofill:active {
   content: "✓";
   opacity: 1;
   font-weight: 700;
+}
+
+@media (min-width: 900px) {
+  .pw-reqs {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "a b e"
+      "c d .";
+    font-size: 0.70rem;
+  }
+
+  .pw-reqs>li:nth-child(1) {
+    grid-area: a;
+  }
+
+  .pw-reqs>li:nth-child(2) {
+    grid-area: b;
+  }
+
+  .pw-reqs>li:nth-child(3) {
+    grid-area: c;
+  }
+
+  .pw-reqs>li:nth-child(4) {
+    grid-area: d;
+  }
+
+  .pw-reqs>li:nth-child(5) {
+    grid-area: e;
+  }
+  
+  .pw-reqs li {
+    white-space: normal;     /* permite salto de línea */
+    line-height: 1.4;        /* más aire entre renglones */
+    overflow-wrap: anywhere; /* evita que una palabra muy larga rompa */
+  }
+}
+
+
+.btn-back {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 44px;
+  /* cuadrado */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  /* esquinas suaves cuadradas */
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  border: 1px solid var(--glass-br);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  color: var(--blue-400);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, .12);
+  transform: translateY(-1px);
+}
+
+.btn-back svg {
+  width: 22px;
+  height: 22px;
 }

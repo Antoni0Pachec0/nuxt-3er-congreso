@@ -183,6 +183,6 @@ function onRegister() {
 }
 
 function goHome() {
-  window.location.href = "/"; // 👈 siempre redirige al index
+  window.location.href = "/"; // 👈 
 }
 </script>
