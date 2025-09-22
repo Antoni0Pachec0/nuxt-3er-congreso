@@ -1,6 +1,5 @@
 <template>
   <footer class="footer" ref="footerRoot">
-    <!-- Fondo del footer: wave + degradado -->
     <div class="footer-bg" aria-hidden="true">
 <svg
   class="wave-footer"
@@ -17,7 +16,6 @@
     </linearGradient>
   </defs>
 
-  <!-- Curva para ESCRITORIO (original) -->
   <path class="wave-desktop"
         d="M0,150
             C220,55 500,100 740,150
@@ -29,11 +27,8 @@
     </div>
     
 
-    <!-- Contenido -->
     <div class="footer-container">
-      <!-- Columna izquierda -->
       <div class="footer-left">
-        <!-- Logo + Títulos -->
         <div class="footer-brand">
           <img src="@/assets/images/Logo.png" alt="Logo Congreso" class="footer-logo" />
           <div class="brand-text">
@@ -41,38 +36,30 @@
             <p class="brand-subtitle">Tecnologías de la Información e Innovación</p>
           </div>
         </div>
-        <!-- Descripción -->
         <p>
           Un congreso tecnológico que reúne a especialistas de todo el país para
           compartir conocimientos, experiencias y tendencias que impulsan la
           innovación digital en nuestra universidad.
         </p>
 
-        <!-- Código estilo ventana -->
         <div class="footer-code" ref="codeCard">
           <pre class="code-window"><code class="code-typing">
 <span class="tok-console">console</span>.<span class="tok-log">log</span>(<span class="tok-str">"Innovando el futuro, conectando el presente"</span>);</code></pre>
         </div>
 
-        <!-- Contacto -->
         <div class="footer-contact">
-          <!-- Teléfono -->
           <div class="contact-item">
-            <i class="mdi mdi-phone contact-icon"></i> <!-- Icono de teléfono -->
-            <div class="contact-label">Teléfono</div>
+            <i class="mdi mdi-phone contact-icon"></i> <div class="contact-label">Teléfono</div>
             <a href="tel:+522225378503" class="contact-content">+52 222 537 8503</a>
           </div>
 
-          <!-- Ubicación -->
           <div class="contact-item">
-            <i class="mdi mdi-map-marker contact-icon"></i> <!-- Icono de ubicación -->
-            <div class="contact-label">Ubicación</div>
+            <i class="mdi mdi-map-marker contact-icon"></i> <div class="contact-label">Ubicación</div>
             <span class="contact-content">Avenida, Universidad Tecnológica, Barrio la Villita.</span>
           </div>
         </div>
       </div>
 
-      <!-- Enlaces rápidos -->
       <div class="footer-links">
         <h4>Enlaces rápidos</h4>
         <ul>
@@ -85,11 +72,9 @@
         </ul>
       </div>
 
-      <!-- Redes -->
       <div class="footer-right">
         <h4>Síguenos en:</h4>
         <div class="social-icons">
-          <!-- Iconos con MDI -->
           <a href="#" aria-label="Facebook" class="facebook"><i class="mdi mdi-facebook"></i></a>
           <a href="#" aria-label="X" class="x"><i class="mdi mdi-twitter"></i></a>
           <a href="#" aria-label="Instagram" class="instagram"><i class="mdi mdi-instagram"></i></a>
@@ -108,9 +93,8 @@
       </div>
     </div>
 
-    <!-- Línea inferior -->
     <div class="footer-bottom">
-      © 2025 3er Congreso Internacional de Tecnologías de la Información e
+      <span @click="handleCopyrightClick" style="cursor: pointer;">©</span> 2025 3er Congreso Internacional de Tecnologías de la Información e
       Innovación Digital. Todos los derechos reservados.
     </div>
   </footer>
@@ -122,6 +106,15 @@ import { onMounted, onBeforeUnmount, ref } from 'vue'
 const codeCard = ref(null)
 const footerRoot = ref(null)
 let io
+let clickCount = 0
+
+const handleCopyrightClick = () => {
+  clickCount++
+  if (clickCount >= 3) {
+    window.open('https://www.youtube.com/shorts/suTR_Q3KttA', '_blank')
+    clickCount = 0; // Opcional: reiniciar el contador después de la redirección
+  }
+}
 
 onMounted(() => {
   const card = codeCard.value
@@ -155,4 +148,4 @@ onBeforeUnmount(() => {
 })
 </script>
 
-- <style scoped src="@/assets/css/styles/footer.css"></style> 
+<style scoped src="@/assets/css/styles/footer.css"></style>
