@@ -46,7 +46,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'   // 👈 importa ambos hooks
 // Usa la ruta de Nuxt para assets procesados por Vite
-import logoUrl from '~/assets/images/logo.png'
+import logoUrl from '~/assets/images/Logo.png'
 // Importa tu CSS (o muévelo a app.vue/global.css si prefieres)
 import '~/assets/css/styles/Header.css'
 

@@ -46,6 +46,10 @@ export default defineNuxtConfig({
     componentIslands: false
   },
 
+   modules: [
+    'notivue/nuxt'
+  ],
+
   vite: {
     optimizeDeps: {
       exclude: [
