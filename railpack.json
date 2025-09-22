@@ -1,8 +1,0 @@
-{
-  "build": {
-    "builder": "railpack",
-    "buildCommand": "npm run build",
-    "outputDirectory": ".output",
-    "nodeVersion": "20"
-  }
-}
