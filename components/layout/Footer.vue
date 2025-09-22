@@ -76,10 +76,12 @@
       <div class="footer-links">
         <h4>Enlaces rápidos</h4>
         <ul>
-          <li><NuxtLink to="/">Inicio</NuxtLink></li>
-          <li><NuxtLink to="/enfoque">Enfoque</NuxtLink></li>
-          <li><NuxtLink to="/galeria">Galería</NuxtLink></li>
-          <li><NuxtLink to="/ubicacion">Ubicación</NuxtLink></li>
+          <li><NuxtLink to="#Inicio">Inicio</NuxtLink></li>
+          <li><NuxtLink to="#Enfoque">Enfoque</NuxtLink></li>
+          <li><NuxtLink to="#Galeria">Galería</NuxtLink></li>
+          <li><NuxtLink to="#Ubicacion">Ubicación</NuxtLink></li>
+          <li><NuxtLink to="#Ubicacion">Mapa</NuxtLink></li>
+          <li><NuxtLink to="#Ubicacion">Preguntas</NuxtLink></li>
         </ul>
       </div>
 
@@ -108,7 +110,7 @@
 
     <!-- Línea inferior -->
     <div class="footer-bottom">
-      © 2024 3er Congreso Internacional de Tecnologías de la Información e
+      © 2025 3er Congreso Internacional de Tecnologías de la Información e
       Innovación Digital. Todos los derechos reservados.
     </div>
   </footer>
