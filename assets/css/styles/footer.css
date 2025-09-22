@@ -125,7 +125,7 @@
   position: absolute;
   top: 7px;
   left: 60px;
-  font-size: 12px;
+  font-size: 10px;
   letter-spacing: .08em;
   color: rgba(255, 255, 255, .8);
   opacity: .9;
@@ -133,7 +133,7 @@
 
 .code-window {
   margin: 0;
-  font-size: 14px;
+  font-size: 10px;
   line-height: 1.6;
   white-space: pre;
 }
@@ -396,19 +396,14 @@
 
 
   .footer-code code {
-    font-size: 10px; /* Aseguramos que el código también se reduzca */
+    font-size: 8px; /* Aseguramos que el código también se reduzca */
   }
 
-  .footer-links h4,
-  .footer-right h4 {
-    /* CAMBIO: Centramos los títulos para que coincidan con el layout de una columna */
-    text-align: center;
+  .footer-links  {
+    display: none;
   }
 
-  .footer-links ul {
-    /* CAMBIO: Centramos los enlaces rápidos */
-    text-align: center;
-  }
+ 
 
   .social-icons {
     /* CAMBIO: Centramos los íconos de redes sociales */
