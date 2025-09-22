@@ -171,7 +171,6 @@ type Product = {
   sizes?: string[];
 };
 
-
 const props = defineProps<{
   modelValue: boolean;
   product: Product;
@@ -233,7 +232,10 @@ function close() {
 }
 
 function addToCart() {
-  if (!canAdd.value) return;
+  if (!canAdd.value) {
+    alert("⚠️ Selecciona tu color y talla antes de continuar");
+    return;
+  }
   emit("add-to-cart", {
     productId: product.value.id,
     color: selectedColor.value,
@@ -244,20 +246,37 @@ function addToCart() {
   close();
 }
 
-// reset al abrir
+// reset al abrir modal
 watch(open, (v) => {
-  if (v) {
-    selectedColor.value = product.value.colors?.[0] ?? null;
+  if (v && product.value) {
+    if (product.value.colors?.length) {
+      selectedColor.value = product.value.colors[0];
+      activeImage.value =
+        product.value.imagesByColor?.[selectedColor.value] || "";
+    }
     selectedSize.value = product.value.sizes?.[0] ?? null;
     qty.value = 1;
-
-    if (product.value.imagesByColor && selectedColor.value) {
-      activeImage.value = product.value.imagesByColor[selectedColor.value];
-    } else {
-      activeImage.value = "";
-    }
   }
 });
+
+// si cambia el producto (cuando el usuario abre otro), resetear también
+watch(
+  product,
+  (p) => {
+    if (open.value && p) {
+      if (p.colors?.length) {
+        selectedColor.value = p.colors[0];
+        activeImage.value = p.imagesByColor?.[selectedColor.value] || "";
+      } else {
+        selectedColor.value = null;
+        activeImage.value = "";
+      }
+      selectedSize.value = p.sizes?.[0] ?? null;
+      qty.value = 1;
+    }
+  },
+  { immediate: true }
+);
 
 // cambiar imagen al elegir color
 watch(selectedColor, (c) => {
@@ -441,7 +460,6 @@ watch(selectedColor, (c) => {
   font-weight: 500;
   color: #374151;
 }
-
 
 /* CTA */
 .cta {

@@ -139,9 +139,9 @@
                 rounded="xl"
                 :prepend-icon="ShoppingCart"
                 class="btn-solid-custom"
-                @click="onBuy(p)"
+                @click="handleAdd(p)"
               >
-                Comprar
+                Agregar
               </v-btn>
             </div>
           </v-card>
@@ -164,12 +164,19 @@
     @add-to-cart="onAddToCart"
   />
 
-  
+  <!-- Botón flotante de carrito -->
+  <v-btn class="cart-fab" color="primary" @click="showCart = true">
+    <ShoppingCart :size="26" />
+    <span v-if="cartItems.length" class="badge">{{ cartItems.length }}</span>
+  </v-btn>
+
+  <CartDrawer v-model="showCart" v-model:items="cartItems" />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import ProductDetailsDialog from "@/components/sections/store/ProductDetailsDialog.vue";
+import CartDrawer from "@/components/sections/store/CartDrawer.vue";
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 
 type Product = {
@@ -183,10 +190,11 @@ type Product = {
   sizes?: string[];
   imagesByColor: Record<string, string>;
 };
-const selectedSize = ref<Record<number, string>>({})
 
+const selectedSize = ref<Record<number, string>>({});
+const selectedColor = ref<Record<number, string>>({});
 
-
+// Productos de ejemplo
 const products = ref<Product[]>([
   {
     id: 1,
@@ -195,10 +203,10 @@ const products = ref<Product[]>([
     category: "playera",
     price: 450,
     stock: 20,
-    colors: ["#000000", "#1d4ed8", "#ffffff"], // negro, azul, blanco
+    colors: ["#000000", "#1d4ed8", "#ffffff"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     imagesByColor: {
-      "#000000": "https://picsum.photos/seed/shirt-black/800/600",
+      "#000000": "/",
       "#1d4ed8": "https://picsum.photos/seed/shirt-blue/800/600",
       "#ffffff": "https://picsum.photos/seed/shirt-white/800/600",
     },
@@ -234,6 +242,16 @@ const products = ref<Product[]>([
   },
 ]);
 
+// Al montar, asignar primer color por defecto a cada producto
+onMounted(() => {
+  products.value.forEach((p) => {
+    if (p.colors?.length && !selectedColor.value[p.id]) {
+      selectedColor.value[p.id] = p.colors[0]; // primer color por default
+    }
+  });
+});
+
+// Filtro de categorías
 const activeCategory = ref<"all" | "playera" | "termo">("all");
 const filteredProducts = computed(() =>
   activeCategory.value === "all"
@@ -241,37 +259,79 @@ const filteredProducts = computed(() =>
     : products.value.filter((p) => p.category === activeCategory.value)
 );
 
-const selectedColor = ref<Record<number, string>>({});
-
+// Imagen dinámica
 function getImage(p: Product) {
   const color = selectedColor.value[p.id];
   return color ? p.imagesByColor[color] : Object.values(p.imagesByColor)[0];
 }
 
+// --- Modal de detalles (opcional) ---
 const showDialog = ref(false);
 const selected = ref<Product | null>(null);
-
 function onDetails(p: Product) {
   selected.value = p;
   showDialog.value = true;
 }
-function onBuy(p: Product) {
-  onDetails(p);
-}
 
-type AddToCartPayload = {
+// --- Carrito ---
+const showCart = ref(false);
+const cartItems = ref<any[]>([]);
+
+function onAddToCart(payload: {
   productId: number;
   color: string | null;
   size: string | null;
   qty: number;
   unitPrice: number;
-};
-function onAddToCart(payload: AddToCartPayload) {
-  console.log("Add to cart:", payload);
+}) {
+  const product = products.value.find((p) => p.id === payload.productId);
+  if (!product) return;
+
+  cartItems.value.push({
+    product,
+    color: payload.color,
+    size: payload.size,
+    qty: payload.qty,
+    unitPrice: payload.unitPrice,
+    image: payload.color
+      ? product.imagesByColor[payload.color]
+      : Object.values(product.imagesByColor)[0],
+  });
+
+  showCart.value = true;
 }
 
+// --- Validación en botón Agregar ---
+function handleAdd(p: Product) {
+  const color = selectedColor.value[p.id] || null;
+  const size = selectedSize.value[p.id] || null;
 
+  // Playera → necesita color y talla
+  if (p.category === "playera") {
+    if (!color) {
+      return alert("⚠️ Selecciona un color antes de agregar.");
+    }
+    if (!size) {
+      return alert("⚠️ Selecciona una talla antes de agregar.");
+    }
+  }
+
+  // Termo → necesita color
+  if (p.category === "termo" && !color) {
+    return alert("⚠️ Selecciona un color antes de agregar.");
+  }
+
+  // Si pasa validación → agregar directo
+  onAddToCart({
+    productId: p.id,
+    color,
+    size,
+    qty: 1,
+    unitPrice: p.price,
+  });
+}
 </script>
+
 
 <style scoped>
 /* swatches */
@@ -284,7 +344,6 @@ function onAddToCart(payload: AddToCartPayload) {
   outline: 2px solid transparent;
   transition: all 0.2s ease;
   margin: 4px;
-
 }
 .swatch.active {
   outline-color: #2563eb;
@@ -541,7 +600,7 @@ function onAddToCart(payload: AddToCartPayload) {
   min-width: 44px;
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1.5px solid rgba(0,0,0,0.2);
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
   background: #fff;
   font-size: 0.85rem;
   font-weight: 600;
@@ -550,7 +609,7 @@ function onAddToCart(payload: AddToCartPayload) {
   margin: 4px;
 }
 .size-btn:hover {
-  background: rgba(37,99,235,0.08);
+  background: rgba(37, 99, 235, 0.08);
 }
 .size-btn.active {
   background: #2563eb;
@@ -572,5 +631,34 @@ function onAddToCart(payload: AddToCartPayload) {
   .amount {
     font-size: 1.25rem;
   }
+}
+
+.cart-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  width: 64px;
+  height: 64px;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563eb, #1ca2ff);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Badge con contador */
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #100c0c;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
 }
 </style>
