@@ -151,103 +151,104 @@
     height: 28px;
 }
 
-
-/* Responsive */
-@media (max-width: 992px) {
-    /* Add padding to the main section to create space around the card */
+@media (max-width: 600px) {
+    /* Mantener espacio alrededor de la tarjeta */
     .mapa-uni {
-        padding: 40px 20px;
+        padding: 40px 15px; /* un poco menos de padding lateral */
     }
 
-    /* Transform the container into the card from your image */
+    /* Contenedor tipo card */
     .mapa-uni-container {
         border: 4px solid #ccc;
         flex-direction: column;
         background-color: white;
         border-radius: 16px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-        overflow: visible; /* Cambiado para permitir que los íconos sobresalgan */
-        max-width: 400px; /* Reducido de 500px */
-        width: 90%; /* Para asegurar margen en pantallas muy pequeñas */
+        overflow: hidden; /* 🔑 evita desbordes internos */
+        max-width: 380px; /* reducido para móviles más angostos */
+        width: 100%; /* ocupa todo el ancho disponible */
         margin: 0 auto;
-        /* position: relative; ya está definido arriba */
     }
 
-    /* Adjust the map container to just hold the iframe */
+    /* Mapa */
     .mapa-uni-google {
-        flex-basis: 200px; /* Reducida la altura */
+        flex-basis: 200px;
         width: 100%;
-        position: relative; /* Mantenerlo relativo si necesitas posicionar elementos DENTRO del mapa en el futuro */
-        border-radius: 16px 16px 0 0; /* Asegurar bordes redondeados superiores */
+        border-radius: 16px 16px 0 0;
     }
 
-    /* Ensure the iframe fills the top part of the card */
     .mapa-uni-google iframe {
         width: 100%;
         height: 100%;
-        display: block; /* Removes any extra space below the map */
-        border-radius: 16px 16px 0 0; /* Asegurar bordes redondeados superiores */
+        display: block;
+        border-radius: 16px 16px 0 0;
     }
 
-    /* Style the info section to be the bottom part of the card */
+    /* Sección de información */
     .info-column-map {
-        padding: 40px 25px;
-        text-align: center; /* Centramos el texto y el título en móvil */
+        padding: 30px 18px; /* 🔑 menos padding lateral para evitar corte */
+        text-align: center;
+        word-wrap: break-word;     /* 🔑 fuerza salto de palabra si es muy larga */
+        overflow-wrap: break-word; /* 🔑 asegura salto de palabra en todos los navegadores */
     }
 
-    /* Centrar el título y el subrayado en móvil */
     .info-column-map h2 {
+        font-size: 22px; /* 🔑 título más pequeño */
+        line-height: 1.3;
         justify-content: center;
     }
+
     .title-underline {
         margin-left: auto;
         margin-right: auto;
     }
+
+    /* Lista de información */
+    .info-list-map {
+        gap: 18px;
+    }
+
     .info-item {
-        justify-content: center; /* Centra los elementos de la lista */
-        text-align: left; /* Asegura que el texto en sí no se corte */
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
+        max-width: 100%; /* 🔑 no exceder el ancho de la card */
     }
+
     .info-item p {
-        text-align: left; /* Asegura que el texto en sí no se corte */
-        font-size: 14px; /* Ajusta el tamaño de fuente para pantallas pequeñas */
+        font-size: 14px;      /* 🔑 texto más pequeño para móviles */
+        line-height: 1.5;
+        margin: 0;
+        word-break: break-word; /* 🔑 evita que una palabra muy larga rompa el diseño */
     }
+
     .info-item svg {
-        min-width: 20px; /* Ajusta el tamaño del icono para pantallas pequeñas */
+        min-width: 20px;
         height: 20px;
         margin-right: 10px;
-        margin-top: 0px;
     }
 
-    /* Ocultamos el icono original dentro de info-column-map en móvil */
+    /* Icono original oculto */
     .info-column-map .icon-wrapper {
-        display: none; 
-    }
-    
-    /* Mostrar y posicionar el icono del mundo en la esquina superior izquierda del contenedor principal */
-    .map-top-left-icon {
-        display: flex; /* Mostrar en móvil */
-        top: -25px; /* Ajustar para que sobresalga de la tarjeta */
-        left: -25px; /* Ajustar para que sobresalga de la tarjeta */
-        background-color: white; /* Fondo blanco para el círculo */
-        border: 2px solid #ccc; /* Borde para el círculo */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para el círculo */
-        color: var(--color-success); /* Color del icono */
-    }
-    .map-top-left-icon svg {
-        color: var(--color-success); /* Asegura que el icono sea azul */
+        display: none;
     }
 
-    /* Mostrar y posicionar el icono de pin en la esquina inferior derecha del contenedor principal */
-    .floating-pin-icon {
-        display: flex; /* Asegurarse de que esté visible */
-        bottom: -25px; /* Ajustar para que sobresalga de la tarjeta */
-        right: -25px; /* Ajustar para que sobresalga de la tarjeta */
-        background-color: white; /* Fondo blanco para el círculo */
-        border: 2px solid #ccc; /* Borde para el círculo */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para el círculo */
-        color: #e74c3c; /* Color del icono */
+    /* Iconos flotantes */
+    .map-top-left-icon {
+        display: flex;
+        top: -22px;
+        left: -22px;
+        background-color: white;
+        border: 2px solid #ccc;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-    .floating-pin-icon svg {
-        color: #e74c3c; /* Asegura que el icono sea rojo */
+
+    .floating-pin-icon {
+        display: flex;
+        bottom: -22px;
+        right: -22px;
+        background-color: white;
+        border: 2px solid #ccc;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 }

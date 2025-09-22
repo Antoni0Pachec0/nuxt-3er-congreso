@@ -1,11 +1,11 @@
 <template>
     <main>
-    <Hero/>
-    <Description/>
-    <SectionsGalleryCarousel :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
-    <Maps/>
-    <Location_uni/>
-    <SectionsFaqAccordion :items="faqItems" :singleOpen="true" />
+    <Hero id="Inicio"/>
+    <Description id="Enfoque"/>
+    <SectionsGalleryCarousel id="Galeria" :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
+    <Maps id="Ubicacion" />
+    <Location_uni id="Mapa" />
+    <SectionsFaqAccordion id="PregFrec" :items="faqItems" :singleOpen="true" />
     <Logos/>
   </main>
 </template>
