@@ -1,3 +1,4 @@
+<!-- filepath: c:\xampp\htdocs\nuxt-3er-congreso\pages\register.vue -->
 <template>
   <main id="register" class="auth-screen" role="main">
     <div class="auth-bg" aria-hidden="true">
@@ -26,9 +27,7 @@
           <span class="card-title__text">Crear cuenta</span>
         </h2>
 
-        <p v-if="apiError" class="alert alert--error" role="alert">
-          {{ apiError }}
-        </p>
+        <!-- Se eliminó el antiguo apiError porque se usan notificaciones -->
 
         <ol class="stepper stepper--timeline" aria-label="Registration progress">
           <li
@@ -44,6 +43,7 @@
         </ol>
 
         <form class="form" @submit.prevent="nextOrSubmit" novalidate>
+          <!-- Paso 0: Cuenta -->
           <template v-if="step === 0">
             <div class="stack">
               <label class="label" for="email">Email</label>
@@ -136,6 +136,7 @@
             </div>
           </template>
 
+          <!-- Paso 1: Datos personales -->
           <template v-else-if="step === 1">
             <div class="grid resp">
               <div class="stack">
@@ -198,6 +199,7 @@
             </div>
           </template>
 
+          <!-- Paso 2: Tipo y procedencia -->
           <template v-else-if="step === 2">
             <div class="grid resp">
               <div class="stack">
@@ -313,14 +315,18 @@
             </div>
           </template>
 
+          <!-- Paso 3: Talla y términos -->
           <template v-else-if="step === 3">
             <div class="grid resp">
               <div class="stack">
                 <label class="label" for="size_user">Talla de playera</label>
                 <select id="size_user" v-model="form.size_user" class="input" required>
                   <option value="" disabled>Selecciona tu talla</option>
-                  <option>S</option><option>M</option><option>L</option>
-                  <option>XL</option><option>XXL</option>
+                  <option>S</option>
+                  <option>M</option>
+                  <option>L</option>
+                  <option>XL</option>
+                  <option>XXL</option>
                 </select>
               </div>
             </div>
@@ -332,8 +338,8 @@
           </template>
 
           <div class="nav">
-            <button v-if="step>0" type="button" class="btn ghost" @click="prevStep">Atrás</button>
-            <button v-if="step<steps.length-1" type="submit" class="btn" :disabled="!canProceed">
+            <button v-if="step > 0" type="button" class="btn ghost" @click="prevStep">Atrás</button>
+            <button v-if="step < steps.length - 1" type="submit" class="btn" :disabled="!canProceed">
               Continuar
             </button>
             <button v-else type="submit" class="btn" :disabled="loading || !canSubmit">
@@ -350,297 +356,197 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
-  mdiAccountPlusOutline, mdiEmailOutline, mdiLockOutline, mdiEyeOutline, mdiEyeOffOutline, mdiLockCheckOutline
+  mdiAccountPlusOutline, mdiEmailOutline, mdiLockOutline,
+  mdiEyeOutline, mdiEyeOffOutline, mdiLockCheckOutline
 } from '@mdi/js'
 
-// Axios + rutas + parser de errores
 import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
 
-import '@/assets/css/styles/Register.css';
+// 🚀 Importamos helpers de notificaciones
+import {
+  notifySuccess,
+  notifyError,
+  notifyWarning,
+  notifyLoading
+} from '~/utils/notifications'
+
+import '@/assets/css/styles/Register.css'
 
 const STORAGE_KEY = 'register_form_v6'
 
-// ===== Paso / UI =====
+// Paso actual del registro
 const steps = [
-  { key: 'account',  label: 'Cuenta' },
-  { key: 'person',   label: 'Datos personales' },
-  { key: 'kind',     label: 'Tipo y procedencia' },
-  { key: 'terms',    label: 'Talla y términos' }
+  { key: 'account', label: 'Cuenta' },
+  { key: 'person', label: 'Datos personales' },
+  { key: 'kind', label: 'Tipo y procedencia' },
+  { key: 'terms', label: 'Talla y términos' }
 ]
 const step = ref(0)
+
+// Estados
 const showPass = ref(false)
 const showPass2 = ref(false)
 const password2 = ref('')
 const loading = ref(false)
 const accepted = ref(false)
-const apiError = ref('')
-
-// ===== Form (alineado a Prisma) =====
 const form = ref({
-  // requeridos por DB
   email: '',
   password_user: '',
   name_user: '',
   paternal_surname: '',
   maternal_surname: '',
   phone: '',
-
-  // opcionales DB
   emergency_phone: '',
-  provenance: '',                 // 'uttecam' | 'otro'
+  provenance: '',
   educational_program: '',
   grade: '',
   group_user: '',
-  size_user: '',                  // enum en DB; aquí un string del select
-  kit_id: null,                   // BigInt? → usar number o null
-  workshop_id: null,              // BigInt? → usar number o null
-  type_user_id: '',               // BigInt? → en el template usa v-model.number
-  status: 'inactive',             // default en DB; puedes no enviarlo si prefieres
-  matricula: '',                  // VarChar(8)
+  size_user: '',
+  kit_id: null,
+  workshop_id: null,
+  type_user_id: '',
+  status: 'inactive',
+  matricula: ''
 })
 
-// ===== Password strength =====
-const reqs = ref({ len:false, upper:false, lower:false, num:false, sym:false })
-const pwdMatch = computed(() => password2.value === form.value.password_user && password2.value.length>0)
+// Validación de contraseña
+const reqs = ref({ len: false, upper: false, lower: false, num: false, sym: false })
+const pwdMatch = computed(() => password2.value === form.value.password_user && password2.value.length > 0)
 const strengthScore = computed(() => Object.values(reqs.value).filter(Boolean).length)
-const strengthPercent = computed(() => `${(strengthScore.value/5)*100}%`)
-const strengthLabel = computed(() => {
-  const s = strengthScore.value
-  if (s <= 1) return 'Muy débil'
-  if (s === 2) return 'Débil'
-  if (s === 3) return 'Media'
-  if (s === 4) return 'Fuerte'
-  return 'Excelente'
-})
-function touchPwd(){
+const strengthPercent = computed(() => `${(strengthScore.value / 5) * 100}%`)
+const strengthLabel = computed(() => ['Muy débil', 'Débil', 'Media', 'Fuerte', 'Excelente'][strengthScore.value - 1] || 'Muy débil')
+watch(() => form.value.password_user, () => {
   const p = form.value.password_user || ''
-  reqs.value.len   = p.length >= 8
-  reqs.value.upper = /[A-Z]/.test(p)
-  reqs.value.lower = /[a-z]/.test(p)
-  reqs.value.num   = /\d/.test(p)
-  reqs.value.sym   = /[^\w\s]/.test(p)
-}
-watch(() => form.value.password_user, touchPwd)
+  reqs.value = {
+    len: p.length >= 8,
+    upper: /[A-Z]/.test(p),
+    lower: /[a-z]/.test(p),
+    num: /\d/.test(p),
+    sym: /[^\w\s]/.test(p),
+  }
+})
 
-// ===== Reglas condicionales =====
-const isSpeakerLike = computed(() => form.value.type_user_id === 4 || form.value.type_user_id === 5)
-
-// Validación por paso (alineada con campos requeridos del esquema)
+// Validaciones por paso
 const canProceed = computed(() => {
   if (step.value === 0) {
-    // Requisitos fuertes en paso 0 (puedes relajar si prefieres)
-    const allReqs = Object.values(reqs.value).every(Boolean)
-    return !!form.value.email && !!form.value.password_user && allReqs && pwdMatch.value
+    return !!form.value.email && !!form.value.password_user &&
+           Object.values(reqs.value).every(Boolean) && pwdMatch.value
   }
   if (step.value === 1) {
-    // Requeridos en DB
-    return !!form.value.name_user &&
-           !!form.value.paternal_surname &&
-           !!form.value.maternal_surname &&
-           !!form.value.phone
+    return !!form.value.name_user && !!form.value.paternal_surname && !!form.value.maternal_surname && !!form.value.phone
   }
   if (step.value === 2) {
-    // type_user_id es opcional en DB, pero lo pedimos para lógica del front
-    if (!form.value.type_user_id) return false
-    if (!form.value.provenance) return false
-
-    // Condiciones UTTECAM
+    if (!form.value.type_user_id || !form.value.provenance) return false
     if (form.value.provenance === 'uttecam') {
-      if (form.value.type_user_id === 2) { // Docente
-        return !!form.value.educational_program && !!form.value.matricula
-      }
-      if (form.value.type_user_id === 1) { // Estudiante
-        const okGrade = !form.value.grade || String(form.value.grade).length <= 2
-        const okGroup = !form.value.group_user || String(form.value.group_user).length <= 1
-        const okMat   = !!form.value.matricula && String(form.value.matricula).length <= 8
-        return !!form.value.educational_program && okGrade && okGroup && okMat
+      if (form.value.type_user_id === 2) return !!form.value.educational_program && !!form.value.matricula
+      if (form.value.type_user_id === 1) {
+        return !!form.value.educational_program && !!form.value.matricula && !!form.value.grade && !!form.value.group_user
       }
     }
-    
-    // Para externos
-    if (form.value.provenance === 'otro' && (form.value.type_user_id === 1 || form.value.type_user_id === 2 || form.value.type_user_id === 3)) {
-      return !!form.value.provenance && form.value.provenance !== 'uttecam' && form.value.provenance !== 'otro'
+    if (form.value.provenance === 'otro') {
+      return !!form.value.provenance && !['uttecam', 'otro'].includes(form.value.provenance)
     }
-    
-    // Otros casos
-    return true
   }
   return true
 })
 
-// Envío: necesitamos talla y aceptación
 const canSubmit = computed(() => !!form.value.size_user && accepted.value)
 
-// ===== UX de por qué no avanza (opcional, útil para depurar) =====
-const reasons = computed(() => {
-  const r = []
-  if (step.value === 0) {
-    if (!form.value.email) r.push('Falta email')
-    if (!form.value.password_user) r.push('Falta contraseña')
-    if (!reqs.value.len)   r.push('La contraseña debe tener mínimo 8 caracteres')
-    if (!reqs.value.upper) r.push('Falta una mayúscula (A–Z)')
-    if (!reqs.value.lower) r.push('Falta una minúscula (a–z)')
-    if (!reqs.value.num)   r.push('Falta un número (0–9)')
-    if (!reqs.value.sym)   r.push('Falta un símbolo (!@#$%...)')
-    if (!pwdMatch.value)   r.push('La confirmación no coincide')
-  }
-  if (step.value === 1) {
-    if (!form.value.name_user) r.push('Falta nombre')
-    if (!form.value.paternal_surname) r.push('Falta apellido paterno')
-    if (!form.value.maternal_surname) r.push('Falta apellido materno')
-    if (!form.value.phone) r.push('Falta teléfono')
-  }
-  if (step.value === 2) {
-    if (!form.value.type_user_id) r.push('Selecciona tipo de usuario')
-    if (!form.value.provenance) r.push('Selecciona procedencia')
-    
-    if (form.value.provenance === 'uttecam') {
-      if (form.value.type_user_id === 2) {
-        if (!form.value.educational_program) r.push('Falta programa educativo (Docente)')
-        if (!form.value.matricula) r.push('Falta matrícula (Docente)')
-      }
-      if (form.value.type_user_id === 1) {
-        if (!form.value.educational_program) r.push('Falta programa educativo (Estudiante)')
-        if (!form.value.matricula) r.push('Falta matrícula (Estudiante, máx 8)')
-        if (!form.value.grade) r.push('Falta grado (Estudiante, máx 2)')
-        if (!form.value.group_user) r.push('Falta grupo (Estudiante, máx 1)')
-      }
-    }
-    
-    if (form.value.provenance === 'otro' && (form.value.type_user_id === 1 || form.value.type_user_id === 2 || form.value.type_user_id === 3)) {
-      if (!form.value.provenance || form.value.provenance === 'uttecam' || form.value.provenance === 'otro') {
-        r.push('Falta nombre de la institución')
-      }
-    }
-  }
-  if (step.value === 3) {
-    if (!form.value.size_user) r.push('Selecciona tu talla')
-    if (!accepted.value) r.push('Debes aceptar los términos')
-  }
-  return r
-})
-
-// ===== Navegación =====
-function prevStep(){ if (step.value > 0) step.value-- }
-
-function nextOrSubmit(){
-  apiError.value = ''
+// Navegación
+function prevStep() {
+  if (step.value > 0) step.value--
+}
+function nextOrSubmit() {
   if (step.value < steps.length - 1) {
-    if (!canProceed.value) { 
-      alert('Revisa los campos requeridos del paso actual: ' + reasons.value.join(', '))
-      return 
+    if (!canProceed.value) {
+      notifyWarning('Campos incompletos', 'Revisa los campos requeridos antes de continuar')
+      return
     }
     step.value++
-    return
+  } else {
+    submitRegister()
   }
-  submitRegister()
 }
 
-// ===== Persistencia local =====
+// Guardado en localStorage
 onMounted(() => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const saved = JSON.parse(raw)
-      Object.assign(form.value, saved.form || {})
-      step.value = saved.step ?? 0
-      accepted.value = !!saved.accepted
-      password2.value = saved.password2 || ''
-    }
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+    Object.assign(form.value, saved.form || {})
+    step.value = saved.step ?? 0
+    accepted.value = !!saved.accepted
+    password2.value = saved.password2 || ''
   } catch {}
-  touchPwd()
 })
-
 watch([form, step, accepted, password2], () => {
-  const data = {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
     form: form.value,
     step: step.value,
     accepted: accepted.value,
-    password2: password2.value
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    password2: password2.value,
+  }))
 }, { deep: true })
 
-// ===== Helpers =====
-function normalizePhones(payload){
-  const norm = (v) => {
-    if (!v) return v
-    if (v.startsWith('+52')) return v
-    const clean = v.replace(/\D/g, '')
-    return clean.length === 10 ? `+52${clean}` : v
+// Normalización de teléfonos
+function normalizePhones(payload) {
+  const clean = (v) => {
+    const val = v?.replace(/\D/g, '')
+    return val?.length === 10 ? `+52${val}` : v
   }
-  payload.phone = norm(payload.phone)
-  payload.emergency_phone = norm(payload.emergency_phone)
+  payload.phone = clean(payload.phone)
+  payload.emergency_phone = clean(payload.emergency_phone)
 }
 
-// ===== Submit (payload = exactamente campos del modelo) =====
-async function submitRegister(){
-  if (!canSubmit.value) { 
-    alert('Revisa los campos requeridos: ' + reasons.value.join(', '))
-    return 
+// Envío del formulario con manejo de notificaciones
+async function submitRegister() {
+  if (!canSubmit.value) {
+    notifyWarning('Formulario incompleto', 'Debes aceptar los términos y elegir tu talla')
+    return
   }
+
   loading.value = true
-  apiError.value = ''
+
+  // Notificación de carga
+  const loadingToast = notifyLoading('Procesando', 'Creando tu cuenta...')
+
   try {
     const payload = {
-      // requeridos
-      email: form.value.email,
-      password_user: form.value.password_user,
-      name_user: form.value.name_user,
-      paternal_surname: form.value.paternal_surname,
-      maternal_surname: form.value.maternal_surname,
-      phone: form.value.phone,
-
-      // opcionales
-      emergency_phone: form.value.emergency_phone || null,
+      ...form.value,
       provenance: form.value.provenance === 'otro' ? 'Otro' : form.value.provenance,
-      educational_program: form.value.educational_program || null,
-      grade: form.value.grade || null,                 // Char(2)
-      group_user: form.value.group_user || null,       // Char(1)
-      size_user: form.value.size_user || null,         // enum
       kit_id: form.value.kit_id ? Number(form.value.kit_id) : null,
       workshop_id: form.value.workshop_id ? Number(form.value.workshop_id) : null,
-      type_user_id: form.value.type_user_id ? Number(form.value.type_user_id) : null, // BigInt?
-      status: form.value.status || 'inactive',
-      matricula: form.value.matricula || null          // VarChar(8)
+      type_user_id: form.value.type_user_id ? Number(form.value.type_user_id) : null,
+      grade: form.value.grade?.toString().slice(0, 2),
+      group_user: form.value.group_user?.toString().slice(0, 1),
+      matricula: form.value.matricula?.toString().slice(0, 8),
     }
 
-    // Normaliza teléfonos a +52
     normalizePhones(payload)
 
-    // Límites por longitud (defensivo, por si el usuario se pasa)
-    if (payload.matricula && String(payload.matricula).length > 8) {
-      payload.matricula = String(payload.matricula).slice(0, 8)
-    }
-    if (payload.grade && String(payload.grade).length > 2) {
-      payload.grade = String(payload.grade).slice(0, 2)
-    }
-    if (payload.group_user && String(payload.group_user).length > 1) {
-      payload.group_user = String(payload.group_user)[0]
-    }
-
-    // POST
-    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload)
+    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true })
 
     if (data?.verification_token) {
       localStorage.setItem('verification_token', data.verification_token)
     }
-    // 👇 Guardar email en localStorage para la verificación
     localStorage.setItem('verify_email', payload.email)
-
-    // Limpiar form
     localStorage.removeItem(STORAGE_KEY)
 
-    alert('Cuenta creada. Revisa tu correo para verificar.')
-    // 👇 Redirigir a la página de verificación
+    loadingToast.resolve('Cuenta creada con éxito 🎉')
+    notifySuccess('Registro exitoso', 'Revisa tu correo para verificar tu cuenta')
+
     window.location.href = '/verify'
 
-    // Redirigir a la página de verificación o login
-  } catch (e) {
-    console.error(e)
-    apiError.value = parseAxiosError(e)
+  } catch (err) {
+    console.error(err)
+    const msg = err.response?.data?.message
+    if (Array.isArray(msg)) {
+      msg.forEach((m) => notifyError('Error de validación', m))
+    } else {
+      notifyError('Error en registro', parseAxiosError(err) || 'Error desconocido')
+    }
+    loadingToast.reject('Error en la creación de cuenta')
   } finally {
     loading.value = false
   }
