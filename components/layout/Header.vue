@@ -39,7 +39,7 @@
             <a href="#Galeria" @click="closeMenu">Galeria</a>
             <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
             <a href="#Mapa" @click="closeMenu">Mapa</a>
-            <a href="#PregFrec" @click="closeMenu">Preguntas Frecuentes</a>
+            <a href="#PregFrec" @click="closeMenu">Preguntas</a>
             <!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
             <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
         </nav>
