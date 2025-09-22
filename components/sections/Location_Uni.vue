@@ -66,45 +66,66 @@ const mapRef = ref(null)
 const lapRef = ref(null)
 const mascotRef = ref(null)
 
-let tl
+let mm = null // Variable para guardar la instancia de matchMedia
 
 onMounted(async () => {
   const { gsap } = await import('gsap')
   const { ScrollTrigger } = await import('gsap/ScrollTrigger')
   gsap.registerPlugin(ScrollTrigger)
 
+  // Preparación inicial de los elementos (se hace una sola vez)
   gsap.set(stage.value, { transformOrigin: '50% 50%' })
   gsap.set(mapRef.value, { scaleX: 1.4, scaleY: 1, transformOrigin: '50% 50%' })
   gsap.set(lapRef.value, { autoAlpha: 0, yPercent: -8, scale: 1.06 })
   gsap.set(mascotRef.value, { autoAlpha: 0, xPercent: 30, yPercent: 10 })
-
   const points = Array.from(stage.value.querySelectorAll('.point'))
   gsap.set(points, { autoAlpha: 0, y: 10, scale: 0.9 })
 
-  tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: stage.value,
-      start: 'top+=200 center',
-      end: '+=200%',
-      scrub: true,
-      pin: true,
-      pinSpacing: true,
-      anticipatePin: 1,
-    },
-  })
+  // ✅ Usamos ScrollTrigger.matchMedia para crear animaciones responsivas
+  mm = gsap.matchMedia()
 
-  tl.to(mapRef.value, { scaleX: 1.05, ease: 'none', duration: 0.35 }, 0)
-    .to(mapRef.value, { scaleX: 1.00, ease: 'none', duration: 0.15 }, '>-0.05')
-    .to(lapRef.value, { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.35, ease: 'power1.out' }, '>-0.02')
-    .to(points, { autoAlpha: 1, y: 0, scale: 1, duration: 0.30, stagger: 0.08, ease: 'power1.out' }, '>-0.05')
-    .to(mascotRef.value, { autoAlpha: 1, xPercent: 0, yPercent: 0, duration: 0.45, ease: 'power2.out' }, '>-0.05')
+  mm.add({
+    // Condición para pantallas grandes (escritorio)
+    isDesktop: `(min-width: 769px)`,
+    // Condición para pantallas pequeñas (móvil)
+    isMobile: `(max-width: 768px)`
+  }, (context) => {
+    // Obtenemos las condiciones del contexto
+    let { isDesktop, isMobile } = context.conditions
+
+    // Creamos la línea de tiempo (timeline)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: stage.value,
+        // En móvil, la animación empieza un poco antes y dura menos
+        start: isMobile ? 'top center' : 'top+=200 center',
+        // ✅ ¡CLAVE! Reducimos el 'end' para que la animación dure menos scroll en móvil
+        end: isDesktop ? '+=200%' : '+=25%',
+        scrub: true,
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+      },
+    })
+
+    // La secuencia de animación es la misma, solo cambia la duración del scroll
+    tl.to(mapRef.value, { scaleX: 1.05, ease: 'none', duration: 0.35 }, 0)
+      .to(mapRef.value, { scaleX: 1.00, ease: 'none', duration: 0.15 }, '>-0.05')
+      .to(lapRef.value, { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.35, ease: 'power1.out' }, '>-0.02')
+      .to(points, { autoAlpha: 1, y: 0, scale: 1, duration: 0.30, stagger: 0.08, ease: 'power1.out' }, '>-0.05')
+      .to(mascotRef.value, { autoAlpha: 1, xPercent: 0, yPercent: 0, duration: 0.45, ease: 'power2.out' }, '>-0.05')
+
+    // ✅ Función de limpieza: se ejecuta cuando la media query deja de coincidir
+    return () => {
+      tl.kill()
+    }
+  })
 })
 
 onBeforeUnmount(() => {
-  if (tl) { tl.kill(); tl = null }
-  if (typeof window !== 'undefined') {
-    const { ScrollTrigger } = require('gsap/ScrollTrigger')
-    ScrollTrigger.getAll().forEach(t => t.kill())
+  // ✅ Limpiamos la instancia de matchMedia para evitar problemas de memoria
+  if (mm) {
+    mm.revert()
   }
 })
 </script>
