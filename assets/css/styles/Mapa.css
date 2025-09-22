@@ -1,0 +1,280 @@
+/* Contenedor principal de la sección */
+.mapa-uni {
+    background-color: #eaf3ff;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Contenedor flex de dos columnas */
+.mapa-uni-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+    margin: 0; /* pegado a la izquierda */
+    gap: 0; /* sin espacio externo entre columnas */
+    /* Importante: Añadir position: relative para posicionar los íconos flotantes */
+    position: relative; 
+}
+
+/* Columna izquierda → Mapa */
+.mapa-uni-google {
+    flex: 1;
+    min-width: 320px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0; /* coincide con el iframe */
+}
+
+.mapa-uni-google iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: none;
+    border-radius: 16px 16px 0 0; /* bordes redondeados superiores */
+}
+
+/* Columna derecha → Info */
+.info-column-map {
+    flex: 1;
+    min-width: 360px;
+    padding: 60px 50px; /* más espacio interno */
+    text-align: left;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* centra verticalmente contenido */
+}
+
+/* Icono redondo verde (original) */
+.info-column-map .icon-wrapper {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 55px;
+    height: 55px;
+    background-color: white;
+    border-radius: 50%;
+    margin-top: -50px;
+}
+
+.info-column-map .icon-wrapper svg {
+    color: #2ecc71;
+    width: 28px; 
+    height: 28px;
+}
+
+/* Título */
+.info-column-map h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    margin-top: -20px;
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Línea decorativa debajo del título */
+.title-underline {
+    width: 60px;
+    height: 4px;
+    background-color: #3498db;
+    border-radius: 2px;
+    margin: 8px auto 24px auto;
+}
+
+/* Lista de info */
+.info-list-map {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+}
+
+.info-item svg {
+    color: #3498db;
+    min-width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    margin-top: 2px;
+}
+
+.info-item p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Icono flotante rojo (pin) - ahora se posiciona respecto a .mapa-uni-container */
+.floating-pin-icon {
+    position: absolute; /* Cambiado a absolute */
+    bottom: 25px; /* Ajusta la posición si es necesario */
+    right: 25px; /* Ajusta la posición si es necesario */
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 15; /* Asegura que esté por encima del contenido */
+    background-color: white; /* Fondo transparente por defecto */
+}
+
+.floating-pin-icon svg {
+    color: #e74c3c;
+}
+
+/* Icono del mundo superior izquierdo - ahora se posiciona respecto a .mapa-uni-container */
+.map-top-left-icon {
+    display: none; /* Oculto por defecto en escritorio */
+    position: absolute; /* Cambiado a absolute */
+    top: 25px; /* Ajusta la posición si es necesario */
+    left: 25px; /* Ajusta la posición si es necesario */
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    z-index: 15; /* Asegura que esté por encima del contenido */
+    background-color: transparent; /* Fondo transparente por defecto */
+}
+
+.map-top-left-icon svg {
+    color: #2ecc71; /* Color del icono */
+    width: 28px; 
+    height: 28px;
+}
+
+@media (max-width: 600px) {
+    /* Mantener espacio alrededor de la tarjeta */
+    .mapa-uni {
+        padding: 40px 30px;
+    }
+
+    /* Contenedor tipo card */
+    .mapa-uni-container {
+        border: 4px solid #ccc;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        max-width: 380px;
+        width: 100%;
+        margin: 0 auto;
+        position: relative; /* 🔑 para posicionar los iconos */
+        z-index: 0;
+    }
+
+    /* Mapa */
+    .mapa-uni-google {
+        flex-basis: 200px;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .mapa-uni-google iframe {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: 16px 16px 0 0;
+    }
+
+    /* Sección de información */
+    .info-column-map {
+        margin-left: -10px;
+        padding: 30px 18px;
+        text-align: center;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .info-column-map h2 {
+        font-size: 16px;
+        line-height: 1.3;
+        justify-content: center;
+    }
+
+    .title-underline {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Lista de información */
+    .info-list-map {
+        gap: 18px;
+    }
+
+    .info-item {
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
+        max-width: 100%;
+    }
+
+    .info-item p {
+        font-size: 10px;
+        line-height: 1.5;
+        margin: 0;
+        word-break: break-word;
+    }
+
+    .info-item svg {
+        min-width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+
+    /* Icono original oculto */
+    .info-column-map .icon-wrapper {
+        display: none;
+    }
+
+    /* ===== NUEVO estilo de iconos en esquinas ===== */
+    .map-top-left-icon,
+    .floating-pin-icon {
+        display: flex;
+        position: absolute;
+        z-index: 50; /* 🔑 por encima de todo el contenido */
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+
+
+    /* Esquina superior izquierda */
+    .map-top-left-icon {
+        top: -27px;   /* 🔑 sobresale de la esquina */
+        left: -27px;
+    }
+
+    /* Esquina inferior derecha */
+    .floating-pin-icon {
+        bottom: -27px; /* 🔑 sobresale de la esquina */
+        right: -27px;
+    }
+
+    .map-top-left-icon svg,
+    .floating-pin-icon svg {
+        width: 26px;
+        height: 26px;
+    }    
+    .map-top-left-icon svg{
+        color: #00b306; /* 🔑 color azul del ejemplo */
+    }
+
+    .floating-pin-icon svg {
+        color: #db0404;
+    }  
+
+}

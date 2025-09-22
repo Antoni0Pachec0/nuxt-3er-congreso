@@ -1,0 +1,16 @@
+# Dependencias locales (se instalan dentro del contenedor)
+node_modules
+
+# Archivos de build de Nuxt (se generan dentro del contenedor)
+.output
+.nuxt
+dist
+
+# Archivos de configuración y logs locales
+.env
+npm-debug.log*
+yarn-debug.log*
+
+# Archivos de Docker
+Dockerfile
+.dockerignore

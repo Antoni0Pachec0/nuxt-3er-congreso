@@ -1,0 +1,60 @@
+
+.carousel {
+    margin-top: 50px;
+    overflow: hidden;
+    width: 100%;
+    background: #fff;
+}
+
+.logos-track {
+    display: flex;
+    width: calc(200%);
+    animation: scroll 25s linear infinite;
+}
+
+.logo-uni {
+    flex: 0 0 auto;
+    padding: 0 2rem;
+    background-color: #fff;
+    width: 160px;
+    height: 80px;
+    border-radius: 10px;
+    border: 5px solid var(--color-gray-light);
+    margin: auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-uni img {
+    max-height: 60px;
+    max-width: 150px;
+    object-fit: contain;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+@media screen and (max-width: 768px) {
+    .logo-uni {
+        width: 120px;
+        height: 60px;
+        padding: 0 1rem;
+        border-width: 3px;
+        margin: auto 10px;
+    }
+
+    .logo-uni img {
+        max-height: 40px;
+        max-width: 100px;
+    }
+    .carousel{
+        padding-bottom: 50px;
+    }
+}
