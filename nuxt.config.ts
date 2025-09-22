@@ -1,33 +1,19 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-// Desactivar completamente componentes e imports automáticos
-components: false,
-  imports: {
-    autoImport: false
-  },
+  components: false,
+  imports: { autoImport: false },
 
   devtools: { enabled: false },
   ssr: false,
 
-  // Configuración de TypeScript
   typescript: {
     shim: false,
     typeCheck: false
   },
 
-  vite: {
-    server: {
-      fs: {
-        strict: false,
-        allow: ['..', '*']
-      },
-      hmr: { overlay: false }
-    },
-  },
-
   css: ['@/assets/css/main.css'],
-  
+
   app: {
     head: {
       link: [
@@ -45,7 +31,8 @@ components: false,
 
   nitro: { 
     preset: 'node-server',
-    serveStatic: true
+    serveStatic: true,
+    compatibilityDate: '2025-09-22' // 🔹 Aquí es donde debe ir
   },
 
   runtimeConfig: {
@@ -57,5 +44,24 @@ components: false,
   experimental: {
     asyncEntry: false,
     componentIslands: false
+  },
+
+  vite: {
+    optimizeDeps: {
+      exclude: [
+        'plugin-vue:export-helper',
+        'vite/modulepreload-polyfill.js'
+      ]
+    },
+    build: {
+      modulePreload: {
+        polyfill: false // 🔹 corregido: evita el warning deprecated
+      }
+    },
+    server: {
+      fs: {
+        strict: false
+      }
+    }
   }
 })
