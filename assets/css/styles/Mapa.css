@@ -154,7 +154,7 @@
 @media (max-width: 600px) {
     /* Mantener espacio alrededor de la tarjeta */
     .mapa-uni {
-        padding: 40px 15px; /* un poco menos de padding lateral */
+        padding: 40px 30px;
     }
 
     /* Contenedor tipo card */
@@ -164,10 +164,11 @@
         background-color: white;
         border-radius: 16px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-        overflow: hidden; /* 🔑 evita desbordes internos */
-        max-width: 380px; /* reducido para móviles más angostos */
-        width: 100%; /* ocupa todo el ancho disponible */
+        max-width: 380px;
+        width: 100%;
         margin: 0 auto;
+        position: relative; /* 🔑 para posicionar los iconos */
+        z-index: 0;
     }
 
     /* Mapa */
@@ -186,14 +187,15 @@
 
     /* Sección de información */
     .info-column-map {
-        padding: 30px 18px; /* 🔑 menos padding lateral para evitar corte */
+        margin-left: -10px;
+        padding: 30px 18px;
         text-align: center;
-        word-wrap: break-word;     /* 🔑 fuerza salto de palabra si es muy larga */
-        overflow-wrap: break-word; /* 🔑 asegura salto de palabra en todos los navegadores */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     .info-column-map h2 {
-        font-size: 22px; /* 🔑 título más pequeño */
+        font-size: 16px;
         line-height: 1.3;
         justify-content: center;
     }
@@ -212,14 +214,14 @@
         justify-content: flex-start;
         align-items: flex-start;
         text-align: left;
-        max-width: 100%; /* 🔑 no exceder el ancho de la card */
+        max-width: 100%;
     }
 
     .info-item p {
-        font-size: 14px;      /* 🔑 texto más pequeño para móviles */
+        font-size: 10px;
         line-height: 1.5;
         margin: 0;
-        word-break: break-word; /* 🔑 evita que una palabra muy larga rompa el diseño */
+        word-break: break-word;
     }
 
     .info-item svg {
@@ -233,22 +235,46 @@
         display: none;
     }
 
-    /* Iconos flotantes */
-    .map-top-left-icon {
-        display: flex;
-        top: -22px;
-        left: -22px;
-        background-color: white;
-        border: 2px solid #ccc;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
+    /* ===== NUEVO estilo de iconos en esquinas ===== */
+    .map-top-left-icon,
     .floating-pin-icon {
         display: flex;
-        bottom: -22px;
-        right: -22px;
+        position: absolute;
+        z-index: 50; /* 🔑 por encima de todo el contenido */
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
         background-color: white;
-        border: 2px solid #ccc;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
+
+
+
+    /* Esquina superior izquierda */
+    .map-top-left-icon {
+        top: -27px;   /* 🔑 sobresale de la esquina */
+        left: -27px;
+    }
+
+    /* Esquina inferior derecha */
+    .floating-pin-icon {
+        bottom: -27px; /* 🔑 sobresale de la esquina */
+        right: -27px;
+    }
+
+    .map-top-left-icon svg,
+    .floating-pin-icon svg {
+        width: 26px;
+        height: 26px;
+    }    
+    .map-top-left-icon svg{
+        color: #00b306; /* 🔑 color azul del ejemplo */
+    }
+
+    .floating-pin-icon svg {
+        color: #db0404;
+    }  
+
 }
