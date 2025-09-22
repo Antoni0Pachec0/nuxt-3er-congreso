@@ -121,9 +121,6 @@ function stopAutoplay() {
   }
 }
 
-function onTransitionEnd() {
-  // hook si necesitas lazy-load u otros efectos
-}
 
 onMounted(startAutoplay);
 onBeforeUnmount(stopAutoplay);
