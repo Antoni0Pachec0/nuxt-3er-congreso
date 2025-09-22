@@ -427,7 +427,6 @@
     height: 140px;
   }
 }
-
 /* --- Responsive (Móvil) --- */
 @media (max-width: 600px) {
   /* Countdown - móvil: tamaños fijos para todas las cards */
@@ -442,7 +441,7 @@
   }
   .countdown-label {
     font-size: 0.95rem;
-    margin-bottom: 8px;
+    margin-top: -50px;
   }
   
   /* Ajustes de título para móvil */
@@ -460,7 +459,7 @@
     line-height: 1.2;
   }
   .hero {
-    padding-top: 6rem;
+    padding-top: 5rem;
     min-height: 110vh;
     /* Asegura altura en móviles pequeños */
   }
@@ -472,12 +471,19 @@
   .col-left {
     gap: 1rem;
   }
+  
+  /* --- CAMBIO APLICADO AQUÍ --- */
+  .col-right {
+    margin-top: 0; /* Reduce el margen inferior del logo */
+  }
 
   .logo-wrap {
-    width: min(240px, 60vw);
+    width: min(180px, 45vw);
   }
+  
   /* 4 cuadros en una sola fila con tamaño fijo en móvil */
   .countdown {
+    margin-top: -25px;
     display: flex;
     flex-direction: row;
     gap: 0.35rem;

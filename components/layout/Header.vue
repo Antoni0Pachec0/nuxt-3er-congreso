@@ -31,11 +31,14 @@
                     <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
             </button>
-            <a href="#" @click="closeMenu">Inicio</a>
-            <a href="#" @click="closeMenu">Servicios</a>
-            <a href="#" @click="closeMenu">Contacto</a>
-            <button @click="closeMenu" class="sidebar_button">Registro</button>
-            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button>
+            <a href="#Inicio" @click="closeMenu">Inicio</a>
+            <a href="#Enfoque" @click="closeMenu">Enfoque</a>
+            <a href="#Galeria" @click="closeMenu">Galeria</a>
+            <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
+            <a href="#Mapa" @click="closeMenu">Mapa</a>
+            <a href="#PregFrec" @click="closeMenu">Preguntas Frecuentes</a>
+            <!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
+            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
         </nav>
     </div>
 </template>
