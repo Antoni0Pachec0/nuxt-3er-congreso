@@ -6,11 +6,14 @@
             </div>
 
             <nav class="desktop-nav">
-                <a href="#">Inicio</a>
-                <a href="#">Servicios</a>
-                <a href="#">Contacto</a>
-                <button class="desktop-nav_button">Registro</button>
-                <button class="desktop-nav_button">Inicio de Sesión</button>
+            <a href="#Inicio" @click="closeMenu">Inicio</a>
+            <a href="#Enfoque" @click="closeMenu">Enfoque</a>
+            <a href="#Galeria" @click="closeMenu">Galeria</a>
+            <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
+            <a href="#Mapa" @click="closeMenu">Mapa</a>
+            <a href="#PregFrec" @click="closeMenu">Preguntas</a>
+<!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
+            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
             </nav>
 
             <div class="hamburger-menu" :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
