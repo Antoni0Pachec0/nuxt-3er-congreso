@@ -90,7 +90,7 @@
 <script setup>
 // CAMBIO: Importar 'ref' de vue
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
-import '~/assets/css/styles/hero.css'
+import '~/assets/css/styles/Hero.css'
 
 // Fecha del evento
 const target = new Date('2025-09-12T09:00:00')
