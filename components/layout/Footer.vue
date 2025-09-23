@@ -94,7 +94,7 @@
     </div>
 
     <div class="footer-bottom">
-      <span @click="handleCopyrightClick" style="cursor: pointer;">©</span> 2025 3er Congreso Internacional de Tecnologías de la Información e
+      <span @click="handleCopyrightClick">©</span> 2025 3er Congreso Internacional de Tecnologías de la Información e
       Innovación Digital. Todos los derechos reservados.
     </div>
   </footer>
