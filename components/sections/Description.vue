@@ -1,6 +1,6 @@
 <template>
     <section id="description" class="description">
-        <div class="tittle-description">
+        <div class="tittle-description fade-in-bottom" ref="titleRef">
             <h2>El Congreso que Marca el Futuro Digital</h2>
             <div class="line"></div>
         </div>
@@ -32,9 +32,7 @@
         </div>
     </section>
 </template>
-
 <script setup>
-// CAMBIO: Importar las funciones necesarias de Vue
 import { ref, onMounted, onUnmounted } from 'vue';
 import '@/assets/css/styles/Description.css';
 import SvgIcon from '@jamescoyle/vue-icon'
@@ -47,33 +45,32 @@ const pathBook = mdiBookOpenVariantOutline
 const pathConnection = mdiConnection
 const pathDumbbell = mdiDumbbell
 
-// CAMBIO: Lógica para la animación con Intersection Observer
-// 1. Crear referencias para los elementos del DOM que vamos a animar
+// CAMBIO (1/3): Crear una referencia para el título
+const titleRef = ref(null);
 const descriptionRef = ref(null);
 const cardsRef = ref(null);
 
 let observer;
 
-// 2. Usar onMounted para asegurarnos de que el DOM esté listo
 onMounted(() => {
     const options = {
-        root: null, // Observa la intersección con el viewport
-        threshold: 0.1, // La animación se activa cuando el 10% del elemento es visible
+        root: null, 
+        threshold: 0.1,
     };
 
     observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            // Si el elemento está visible en la pantalla...
             if (entry.isIntersecting) {
-                // ...le añadimos la clase que activa la animación CSS
                 entry.target.classList.add('is-visible');
-                // Dejamos de observar el elemento para que la animación no se repita
                 observer.unobserve(entry.target);
             }
         });
     }, options);
 
-    // 3. Empezar a observar los elementos que hemos referenciado
+    // CAMBIO (2/3): Empezar a observar el elemento del título
+    if (titleRef.value) {
+        observer.observe(titleRef.value);
+    }
     if (descriptionRef.value) {
         observer.observe(descriptionRef.value);
     }
@@ -82,13 +79,12 @@ onMounted(() => {
     }
 });
 
-// 4. Limpiar el observador cuando el componente se desmonte para evitar fugas de memoria
 onUnmounted(() => {
     if (observer) {
         observer.disconnect();
     }
 });
-// FIN DEL CAMBIO
+// FIN DEL CAMBIO (3/3): No se necesita hacer nada más.
 
 // Cards (sin cambios)
 const cards = [

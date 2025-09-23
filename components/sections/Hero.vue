@@ -2,7 +2,7 @@
   <section id="hero" class="hero">
     <div id="particles-js" aria-hidden="true"></div>
 
-    <div class="container">
+    <div class="container fade-in-section">
       <div class="col-left">
         <div class="heading orbitron">
           <span class="kicker">3er</span>

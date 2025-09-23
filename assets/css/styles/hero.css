@@ -13,6 +13,7 @@
     radial-gradient(900px 500px at 85% 15%, rgba(29, 78, 216, .18), transparent),
     #0b1220;
   color: #eaf3ff;
+  padding-bottom: 10rem;
 }
 
 #particles-js {
@@ -274,12 +275,9 @@
 }
 
 @keyframes logo-pulse {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
   }
-
   50% {
     transform: scale(1.04);
   }
@@ -427,6 +425,7 @@
     height: 140px;
   }
 }
+
 /* --- Responsive (Móvil) --- */
 @media (max-width: 600px) {
   /* Countdown - móvil: tamaños fijos para todas las cards */
@@ -446,7 +445,7 @@
   
   /* Ajustes de título para móvil */
   .kicker {
-    font-size: clamp(3rem, 4.5vw, 3.8rem); /* Más pequeño en móvil */
+    font-size: clamp(3rem, 4.5vw, 2.5rem); /* Más pequeño en móvil */
   }
   
   .title {
@@ -460,6 +459,7 @@
   }
   .hero {
     padding-top: 5rem;
+    padding-bottom: 5rem;
     min-height: 110vh;
     /* Asegura altura en móviles pequeños */
   }
@@ -475,6 +475,7 @@
   /* --- CAMBIO APLICADO AQUÍ --- */
   .col-right {
     margin-top: 0; /* Reduce el margen inferior del logo */
+    margin-bottom: -15px;
   }
 
   .logo-wrap {
@@ -504,7 +505,7 @@
     justify-content: center;
   }
   .banded-title {
-    font-size: clamp(0.9rem, 4vw, 1rem);
+    font-size: clamp(0.9rem, 4vw, 0.6rem);
     /* Reduce la fuente de la banda */
   }
 
@@ -519,8 +520,11 @@
   .info-card {
     padding: 0.8rem 1rem;
   }
+  .info-main{
+    font-size: 0.8rem;
+  }
 
-  .cardsinfo{
+  .cards-info{
     margin-bottom: 2rem;
   }
 
