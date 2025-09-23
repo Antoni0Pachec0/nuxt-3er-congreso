@@ -177,6 +177,7 @@
 import { ref, computed, onMounted } from "vue";
 import ProductDetailsDialog from "@/components/sections/store/ProductDetailsDialog.vue";
 import CartDrawer from "@/components/sections/store/CartDrawer.vue";
+import tshirtBlack from '~/assets/images/store/t-shirt/t-shirtBlack.webp'
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 
 type Product = {
@@ -206,7 +207,7 @@ const products = ref<Product[]>([
     colors: ["#000000", "#1d4ed8", "#ffffff"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     imagesByColor: {
-      "#000000": "/",
+      "#000000": tshirtBlack,
       "#1d4ed8": "https://picsum.photos/seed/shirt-blue/800/600",
       "#ffffff": "https://picsum.photos/seed/shirt-white/800/600",
     },
@@ -644,7 +645,7 @@ function handleAdd(p: Product) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2563eb, #1ca2ff);
+  background: linear-gradient(135deg, #3B82F6, #06B6D4);
   color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }

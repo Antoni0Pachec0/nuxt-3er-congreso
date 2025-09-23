@@ -35,10 +35,7 @@
           </v-btn>
         </v-col>
 
-        <!-- Imagen pegada a la orilla derecha (sin bleed raro) -->
-        <v-col cols="12" md="5" class="pa-0 d-flex justify-end mt-15">
-          <v-img :src="heroImg" class="hero-img d-block" height="100%" cover />
-        </v-col>
+        <!-- Ola -->
         <svg
           class="wave"
           xmlns="http://www.w3.org/2000/svg"
@@ -51,10 +48,14 @@
             d="M0,150 C220,55 500,100 740,150 C980,185 1220,175 1440,90 L1440,180 L0,180 Z"
           />
         </svg>
+        
+        <!-- Imagen pegada a la orilla derecha -->
+        <v-col cols="12" md="5" class="pa-0 d-flex justify-end mt-15">
+          <v-img :src="heroImg" class="hero-img d-block" height="100%" cover />
+        </v-col>
       </v-row>
     </v-container>
   </v-sheet>
-
 </template>
 
 <script setup lang="ts">
@@ -64,6 +65,7 @@ import { ChevronDown } from "lucide-vue-next";
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&display=swap");
+
 .font-orbitron {
   font-family: "Orbitron", system-ui, sans-serif;
 }
@@ -71,19 +73,20 @@ import { ChevronDown } from "lucide-vue-next";
 .hero {
   position: relative;
   background: linear-gradient(135deg, #10308b 0%, #1e66ff 55%, #1ca2ff 100%);
-  padding-bottom: 120px; /* aumenta para cubrir el espacio que deja la onda */
+  padding-bottom: 120px;
   overflow: hidden;
 }
+
 .hero-subtitle {
-  font-size: 20px; /* ajusta a lo que quieras */
-  font-weight: 600; /* un poco más fuerte */
-  letter-spacing: 0.5px; /* opcional, da aire */
-  text-transform: uppercase; /* si lo quieres en mayúsculas */
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .hero-img {
   width: 100%;
-  aspect-ratio: 4 / 5; /* asegura área visible incluso si no hay altura padre */
+  aspect-ratio: 4 / 5;
   object-position: right center;
   filter: drop-shadow(0 18px 45px rgba(0, 0, 0, 0.35));
   position: relative;
@@ -96,59 +99,91 @@ import { ChevronDown } from "lucide-vue-next";
   bottom: -4px;
   width: 100%;
   height: auto;
-  transform: translateX(-50%, -40px);
-  z-index: 2;
+  transform: translateX(-50%);
+  z-index: 5;
   pointer-events: none;
 }
-@media (min-width: 960px) and (max-width: 1279.98px) {
+
+/* Para pantallas grandes (Macbook, Desktop) */
+@media (min-width: 1280px) {
+  .hero-img {
+    max-height: 120vh;  /* Ajustar la imagen para ocupar el 90% de la pantalla */
+  }
+
   .hero-subtitle {
-    font-size: 17px;
+    font-size: 22px;
   }
+
   .hero-title {
-    font-size: 40px;
+    font-size: 50px;
   }
+
   .hero-blurb {
-    font-size: 16px;
-    margin-bottom: 26px;
+    font-size: 20px;
+    margin-bottom: 30px;
   }
 
   .wave {
-    height: 170px;
-  }
-  .hero-img {
-    aspect-ratio: auto;
-    max-height: 100%;
-    margin-top: 14vh; /* ajusta el valor */
+    height: 180px;
   }
 }
 
-@media (min-width: 600px) and (max-width: 959.98px) {
-  .hero {
-    padding-bottom: 120px;
+/* Para tabletas (iPad, Android Tablets) */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .hero-img {
+    max-height: 80vh;
+    margin-top: 20vh;
   }
-  .hero-copy {
-    padding-left: 32px !important;
-    padding-right: 32px !important;
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .hero-title {
+    font-size: 45px;
+  }
+
+  .hero-blurb {
+    font-size: 18px;
+    margin-bottom: 28px;
+  }
+
+  .wave {
+    height: 160px;
+  }
+}
+
+/* Para móviles (iPhone, Android) */
+@media (max-width: 767px) {
+  .hero-img {
+    max-height: 100vh;
+    margin-top: 35vh;
   }
 
   .hero-subtitle {
     font-size: 16px;
   }
+
   .hero-title {
     font-size: 36px;
   }
+
   .hero-blurb {
-    font-size: 15px;
-    margin-bottom: 24px;
+    font-size: 14px;
   }
 
-  .hero-cta {
-    width: 100%;
-  } /* aún full-width, UX mobile-like */
-  .hero-img {
-    aspect-ratio: auto;
-    max-height: 100%;
-    margin-top: 14vh; /* ajusta el valor */
+  .wave {
+    height: 100px;
+   margin-top: 15vh;
+
   }
+
+  .hero {
+  /* Mantén el padding-bottom para otras vistas, pero puedes ajustarlo */
+  padding-bottom: 10px;
 }
+
+
+}
+
 </style>

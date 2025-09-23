@@ -1,6 +1,12 @@
 <template>
+  <!-- Fondo oscuro con fade -->
+  <transition name="fade">
+    <div v-if="open" class="overlay" @click="open = false"></div>
+  </transition>
+
+  <!-- Carrito con slide -->
   <transition name="slide-cart">
-    <aside v-if="open" class="cart-floating">
+    <aside v-if="open" class="cart-floating" @click.stop>
       <!-- Header -->
       <header class="cart-header">
         <h3 class="cart-title">🛒 Mi carrito</h3>
@@ -26,7 +32,13 @@
 
               <!-- Control de cantidad -->
               <div class="qty-control">
-                <button class="qty-btn" @click="decQty(idx)" :disabled="item.qty <= 1">–</button>
+                <button
+                  class="qty-btn"
+                  @click="decQty(idx)"
+                  :disabled="item.qty <= 1"
+                >
+                  –
+                </button>
                 <span class="qty-num">{{ item.qty }}</span>
                 <button class="qty-btn" @click="incQty(idx)">+</button>
               </div>
@@ -91,23 +103,41 @@ const total = computed(() =>
 </script>
 
 <style scoped>
+/* Fondo oscuro */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9998;
+}
+
+/* Fade del fondo */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.35s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Carrito */
 .cart-floating {
   position: fixed;
-  bottom: 0;
+  top: 0;
   right: 0;
   width: 340px;
-  max-height: 92vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   border-top-left-radius: 16px;
   background: #fff;
   box-shadow: -6px 0 20px rgba(0, 0, 0, 0.18);
-  overflow: hidden;
-  z-index: 10000;
   font-family: system-ui, sans-serif;
+  z-index: 100000;
 }
 
-/* header */
+/* Header */
 .cart-header {
   padding: 12px 14px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -122,7 +152,7 @@ const total = computed(() =>
   font-weight: 700;
 }
 
-/* body */
+/* Body */
 .cart-body {
   flex: 1;
   overflow-y: auto;
@@ -178,7 +208,7 @@ const total = computed(() =>
   color: #999;
 }
 
-/* cantidad */
+/* Cantidad */
 .qty-control {
   display: flex;
   align-items: center;
@@ -188,7 +218,7 @@ const total = computed(() =>
 .qty-btn {
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   background: #fff;
   font-size: 0.8rem;
@@ -207,7 +237,7 @@ const total = computed(() =>
   font-size: 0.8rem;
 }
 
-/* footer */
+/* Footer */
 .cart-footer {
   padding: 12px 14px;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
@@ -220,14 +250,13 @@ const total = computed(() =>
   font-size: 0.9rem;
 }
 
-/* animación slide */
+/* Animación del carrito */
 .slide-cart-enter-active,
 .slide-cart-leave-active {
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  transition: transform 0.35s ease;
 }
 .slide-cart-enter-from,
 .slide-cart-leave-to {
   transform: translateX(100%);
-  opacity: 0;
 }
 </style>
