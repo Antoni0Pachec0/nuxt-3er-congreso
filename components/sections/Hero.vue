@@ -93,7 +93,7 @@ import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import '~/assets/css/styles/Hero.css'
 
 // Fecha del evento
-const target = new Date('2025-09-12T09:00:00')
+const target = new Date('2025-11-12T09:00:00')
 
 const timeLeft = reactive({ days: '00', hours: '00', minutes: '00', seconds: '00' })
 let timer
