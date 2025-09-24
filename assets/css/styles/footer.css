@@ -82,7 +82,7 @@
   margin: 2px 0 0;
   font-size: 18px;
   font-weight: 400;
-  color: #BFDBFE;
+  color: #BFDBFE !important;
 }
 
 /* Párrafo */
@@ -371,18 +371,19 @@
 
   .footer-brand {
     /* CAMBIO: Apilamos el logo y el texto en pantallas muy pequeñas */
-    flex-direction: column;
+    flex-direction:row;
     align-items: flex-start; /* Opcional: 'center' para centrar todo */
     gap: 8px;
     text-align: left; /* Opcional: 'center' */
   }
 
   .brand-title {
-    font-size: 22px;
+    margin-top: 5px;
+    font-size: 14px;
   }
   
   .brand-subtitle {
-    font-size: 16px;
+    font-size: 12px !important;
   }
   
   .footer-code {

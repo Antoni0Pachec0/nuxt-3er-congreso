@@ -10,10 +10,12 @@
     flex-wrap: wrap;
     align-items: stretch;
     width: 100%;
-    margin: 0; /* pegado a la izquierda */
-    gap: 0; /* sin espacio externo entre columnas */
+    margin: 0;
+    /* pegado a la izquierda */
+    gap: 0;
+    /* sin espacio externo entre columnas */
     /* Importante: Añadir position: relative para posicionar los íconos flotantes */
-    position: relative; 
+    position: relative;
 }
 
 /* Columna izquierda → Mapa */
@@ -21,7 +23,8 @@
     flex: 1;
     min-width: 320px;
     overflow: hidden;
-    border-radius: 16px 16px 0 0; /* coincide con el iframe */
+    border-radius: 16px 16px 0 0;
+    /* coincide con el iframe */
 }
 
 .mapa-uni-google iframe {
@@ -29,19 +32,22 @@
     height: 100%;
     min-height: 420px;
     border: none;
-    border-radius: 16px 16px 0 0; /* bordes redondeados superiores */
+    border-radius: 16px 16px 0 0;
+    /* bordes redondeados superiores */
 }
 
 /* Columna derecha → Info */
 .info-column-map {
     flex: 1;
     min-width: 360px;
-    padding: 60px 50px; /* más espacio interno */
+    padding: 60px 50px;
+    /* más espacio interno */
     text-align: left;
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* centra verticalmente contenido */
+    justify-content: center;
+    /* centra verticalmente contenido */
 }
 
 /* Icono redondo verde (original) */
@@ -58,7 +64,7 @@
 
 .info-column-map .icon-wrapper svg {
     color: #2ecc71;
-    width: 28px; 
+    width: 28px;
     height: 28px;
 }
 
@@ -113,17 +119,22 @@
 
 /* Icono flotante rojo (pin) - ahora se posiciona respecto a .mapa-uni-container */
 .floating-pin-icon {
-    position: absolute; /* Cambiado a absolute */
-    bottom: 25px; /* Ajusta la posición si es necesario */
-    right: 25px; /* Ajusta la posición si es necesario */
+    position: absolute;
+    /* Cambiado a absolute */
+    bottom: 25px;
+    /* Ajusta la posición si es necesario */
+    right: 25px;
+    /* Ajusta la posición si es necesario */
     width: 52px;
     height: 52px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 15; /* Asegura que esté por encima del contenido */
-    background-color: white; /* Fondo transparente por defecto */
+    z-index: 15;
+    /* Asegura que esté por encima del contenido */
+    background-color: white;
+    /* Fondo transparente por defecto */
 }
 
 .floating-pin-icon svg {
@@ -132,26 +143,34 @@
 
 /* Icono del mundo superior izquierdo - ahora se posiciona respecto a .mapa-uni-container */
 .map-top-left-icon {
-    display: none; /* Oculto por defecto en escritorio */
-    position: absolute; /* Cambiado a absolute */
-    top: 25px; /* Ajusta la posición si es necesario */
-    left: 25px; /* Ajusta la posición si es necesario */
+    display: none;
+    /* Oculto por defecto en escritorio */
+    position: absolute;
+    /* Cambiado a absolute */
+    top: 25px;
+    /* Ajusta la posición si es necesario */
+    left: 25px;
+    /* Ajusta la posición si es necesario */
     width: 55px;
     height: 55px;
     border-radius: 50%;
     justify-content: center;
     align-items: center;
-    z-index: 15; /* Asegura que esté por encima del contenido */
-    background-color: transparent; /* Fondo transparente por defecto */
+    z-index: 15;
+    /* Asegura que esté por encima del contenido */
+    background-color: transparent;
+    /* Fondo transparente por defecto */
 }
 
 .map-top-left-icon svg {
-    color: #2ecc71; /* Color del icono */
-    width: 28px; 
+    color: #2ecc71;
+    /* Color del icono */
+    width: 28px;
     height: 28px;
 }
 
 @media (max-width: 600px) {
+
     /* Mantener espacio alrededor de la tarjeta */
     .mapa-uni {
         padding: 40px 30px;
@@ -167,7 +186,8 @@
         max-width: 380px;
         width: 100%;
         margin: 0 auto;
-        position: relative; /* 🔑 para posicionar los iconos */
+        position: relative;
+        /* 🔑 para posicionar los iconos */
         z-index: 0;
     }
 
@@ -240,7 +260,8 @@
     .floating-pin-icon {
         display: flex;
         position: absolute;
-        z-index: 50; /* 🔑 por encima de todo el contenido */
+        z-index: 50;
+        /* 🔑 por encima de todo el contenido */
         width: 55px;
         height: 55px;
         border-radius: 50%;
@@ -254,13 +275,15 @@
 
     /* Esquina superior izquierda */
     .map-top-left-icon {
-        top: -27px;   /* 🔑 sobresale de la esquina */
+        top: -27px;
+        /* 🔑 sobresale de la esquina */
         left: -27px;
     }
 
     /* Esquina inferior derecha */
     .floating-pin-icon {
-        bottom: -27px; /* 🔑 sobresale de la esquina */
+        bottom: -27px;
+        /* 🔑 sobresale de la esquina */
         right: -27px;
     }
 
@@ -268,13 +291,39 @@
     .floating-pin-icon svg {
         width: 26px;
         height: 26px;
-    }    
-    .map-top-left-icon svg{
-        color: #00b306; /* 🔑 color azul del ejemplo */
+    }
+
+    .map-top-left-icon svg {
+        color: #00b306;
+        /* 🔑 color azul del ejemplo */
     }
 
     .floating-pin-icon svg {
         color: #db0404;
-    }  
+    }
 
+}
+
+
+/* Estado inicial (oculto y desplazado hacia abajo) */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Estado final (visible y en su posición original) */
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Retraso para el segundo elemento (la columna de información) */
+.fade-in-section.info-column-map {
+    transition-delay: 0.2s;
+}
+
+/* NUEVO: Retraso para el ícono flotante */
+.fade-in-section.floating-pin-icon {
+    transition-delay: 0.4s;
 }
