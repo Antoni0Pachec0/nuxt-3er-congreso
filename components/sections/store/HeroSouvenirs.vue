@@ -36,18 +36,19 @@
         </v-col>
 
         <!-- Ola -->
-        <svg
-          class="wave"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 180"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path
-            fill="#ffffff"
-            d="M0,150 C220,55 500,100 740,150 C980,185 1220,175 1440,90 L1440,180 L0,180 Z"
-          />
-        </svg>
+<svg
+  class="wave"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1440 180"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+>
+  <path
+    fill="#ffffff"
+    d="M0,130 C220,30 500,60 740,130 C980,170 1220,160 1440,120 L1440,180 L0,180 Z"
+  />
+</svg>
+
         
         <!-- Imagen pegada a la orilla derecha -->
         <v-col cols="12" md="5" class="pa-0 d-flex justify-end mt-15">
@@ -70,13 +71,19 @@ import { ChevronDown } from "lucide-vue-next";
   font-family: "Orbitron", system-ui, sans-serif;
 }
 
+/* ============================
+  Estilo general de la hero
+================================ */
 .hero {
   position: relative;
   background: linear-gradient(135deg, #10308b 0%, #1e66ff 55%, #1ca2ff 100%);
-  padding-bottom: 120px;
+  padding-bottom: 120px; /* Espaciado inferior */
   overflow: hidden;
 }
 
+/* ============================
+  Estilo del subtítulo
+================================ */
 .hero-subtitle {
   font-size: 20px;
   font-weight: 600;
@@ -84,15 +91,21 @@ import { ChevronDown } from "lucide-vue-next";
   text-transform: uppercase;
 }
 
+/* ============================
+  Estilo de la imagen principal
+================================ */
 .hero-img {
-  width: 100%;
+  width: 100%; 
   aspect-ratio: 4 / 5;
   object-position: right center;
   filter: drop-shadow(0 18px 45px rgba(0, 0, 0, 0.35));
   position: relative;
-  z-index: -1;
+  z-index: 5;
 }
 
+/* ============================
+  Estilo de la ola
+================================ */
 .wave {
   position: absolute;
   left: 50%;
@@ -100,14 +113,19 @@ import { ChevronDown } from "lucide-vue-next";
   width: 100%;
   height: auto;
   transform: translateX(-50%);
-  z-index: 5;
+  z-index: 10;
   pointer-events: none;
 }
 
-/* Para pantallas grandes (Macbook, Desktop) */
+/* ============================
+  Para pantallas grandes (Macbook, Desktop)
+================================ */
 @media (min-width: 1280px) {
   .hero-img {
-    max-height: 120vh;  /* Ajustar la imagen para ocupar el 90% de la pantalla */
+    max-height: 90vh; /* Altura de la imagen en pantallas grandes */
+    margin-top: 20vh; /* Espaciado superior */
+    object-position: center center; /* Centrar la imagen */
+    object-fit: cover; /* Ajustar la imagen para cubrir el área */
   }
 
   .hero-subtitle {
@@ -124,66 +142,107 @@ import { ChevronDown } from "lucide-vue-next";
   }
 
   .wave {
-    height: 180px;
+    height: 200px;
+    margin-top: 50px; /* Ajuste de la ola */
   }
 }
 
-/* Para tabletas (iPad, Android Tablets) */
-@media (min-width: 768px) and (max-width: 1279px) {
+/* ============================
+  Para tabletas (iPad, Android Tablets)
+================================ */
+@media (min-width: 820px) and (max-width: 1279px) {
   .hero-img {
-    max-height: 80vh;
-    margin-top: 20vh;
+    max-height: 140vh; /* Altura de la imagen en tabletas */
+    margin-top: 10vh; /* Espaciado superior */
   }
 
+  .wave {
+    height: 160px; /* Ajuste de la ola */
+  }
+
+  /* Ajustes del texto en tabletas */
   .hero-subtitle {
     font-size: 18px;
+    line-height: 1.4; /* Mejorar la legibilidad */
   }
 
   .hero-title {
     font-size: 45px;
+    line-height: 1.3;
   }
 
   .hero-blurb {
     font-size: 18px;
     margin-bottom: 28px;
-  }
-
-  .wave {
-    height: 160px;
+    line-height: 1.5;
   }
 }
 
-/* Para móviles (iPhone, Android) */
-@media (max-width: 767px) {
+/* ============================
+================================ */
+@media (min-width: 360px) and (max-width: 819px) {
   .hero-img {
-    max-height: 100vh;
-    margin-top: 35vh;
+    max-height: 80vh; /* Altura de la imagen en smartphones medianos */
+    margin-top: 12.5vh; /* Espaciado superior */
   }
 
+  /* Ajuste de los textos */
   .hero-subtitle {
     font-size: 16px;
+    line-height: 1.4; /* Aumentar el interlineado */
   }
 
   .hero-title {
-    font-size: 36px;
+    font-size: 30px;
+    line-height: 1.3;
   }
 
   .hero-blurb {
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .wave {
     height: 100px;
-   margin-top: 15vh;
+    margin-top: 5vh; /* Ajuste de la ola */
+  }
+}
 
+/* ============================
+  Para pantallas muy pequeñas (iPhone 5, hasta 320px)
+================================ */
+@media (max-width: 320px) {
+  /* Ajuste de la imagen */
+  .hero-img {
+    max-height: 60vh; /* Reduce la altura de la imagen */
+    margin-top: -5vh; 
   }
 
+  /* Ajuste del texto */
+  .hero-subtitle {
+    font-size: 14px;
+    line-height: 1.4; /* Aumentar el interlineado */
+  }
+
+  .hero-title {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .hero-blurb {
+    font-size: 10px;
+    line-height: 1.4; /* Mejorar la legibilidad */
+  }
+
+  /* Ajuste de la ola */
+  .wave {
+    height: 70px; /* Reduce la altura de la ola en pantallas pequeñas */
+    margin-top: 5vh;
+  }
+
+  /* Reducir el padding-bottom para pantallas pequeñas */
   .hero {
-  /* Mantén el padding-bottom para otras vistas, pero puedes ajustarlo */
-  padding-bottom: 10px;
+    padding-bottom: 5px;
+  }
 }
-
-
-}
-
 </style>

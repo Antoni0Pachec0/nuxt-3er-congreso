@@ -662,4 +662,72 @@ function handleAdd(p: Product) {
   border-radius: 50%;
   padding: 2px 6px;
 }
+/* Chips filtro */
+.filter-group {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los chips se ajusten automáticamente a las filas */
+  justify-content: center; /* Centra los chips */
+  gap: 8px; /* Añadimos espacio entre los chips */
+}
+
+/* Chips individuales */
+.filter-group :deep(.v-chip) {
+  border-radius: 999px;
+  background: transparent !important; /* sin fondo cuando NO está seleccionado */
+  color: #6b7280 !important; /* gris texto */
+  justify-content: center; /* centra icono + texto */
+  gap: 8px; /* espacio entre icono y texto */
+  min-width: 150px; /* ancho parejo */
+  font-weight: 600;
+  padding-inline: 14px;
+  font-size: 14px; /* Tamaño de fuente para mejor legibilidad */
+}
+
+/* Hover en no-seleccionado (sutil) */
+.filter-group :deep(.v-chip:hover) {
+  color: #4b5563 !important; /* un gris un poco más oscuro */
+}
+.filter-group :deep(.v-chip:hover .v-icon) {
+  color: #6b7280 !important;
+}
+
+/* Selección activa: degradado + texto/icono blancos */
+.filter-group :deep(.v-chip.chip-active) {
+  background: linear-gradient(90deg, #153885, #3473ff) !important;
+  color: #fff !important;
+}
+.filter-group :deep(.v-chip.chip-active .v-icon) {
+  color: #ffffff !important;
+}
+
+/* Ajuste para pantallas de smartphones medianos (480px a 767px) */
+@media (max-width: 767px) {
+  .filter-group {
+    flex-direction: column; /* Los chips se apilan en pantallas más pequeñas */
+    align-items: center; /* Centra los chips verticalmente */
+    gap: 12px; /* Espaciado adicional para que no estén demasiado juntos */
+  }
+
+  .filter-group :deep(.v-chip) {
+    min-width: 100px; /* Ancho mínimo más pequeño en pantallas de smartphones */
+    font-size: 12px; /* Tamaño de texto más pequeño */
+    padding: 4px 10px; /* Espaciado reducido para chips más pequeños */
+  }
+}
+
+/* Ajuste para pantallas muy pequeñas (iPhone 5, 320px o menos) */
+@media (max-width: 320px) {
+  .filter-group {
+    flex-direction: column; /* Asegura que los chips se apilen verticalmente */
+    align-items: center; /* Centra los chips */
+    gap: 8px; /* Reduce el espacio entre chips para pantallas muy pequeñas */
+  }
+
+  .filter-group :deep(.v-chip) {
+    min-width: 80px; /* Reduce el ancho mínimo para dispositivos pequeños */
+    font-size: 10px; /* Ajuste de tamaño de fuente aún más pequeño */
+    padding: 4px 8px; /* Ajuste de padding para pantallas pequeñas */
+  }
+}
+
 </style>

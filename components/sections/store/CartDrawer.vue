@@ -107,7 +107,7 @@ const total = computed(() =>
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.55); /* Fondo oscuro con opacidad */
   z-index: 9998;
 }
 
@@ -135,6 +135,7 @@ const total = computed(() =>
   box-shadow: -6px 0 20px rgba(0, 0, 0, 0.18);
   font-family: system-ui, sans-serif;
   z-index: 100000;
+  transition: all 0.35s ease; /* Añadimos una transición suave */
 }
 
 /* Header */
@@ -259,4 +260,83 @@ const total = computed(() =>
 .slide-cart-leave-to {
   transform: translateX(100%);
 }
+
+/* ============================
+  RESPONSIVIDAD PARA DISPOSITIVOS MÓVILES
+================================ */
+
+/* Ajuste para pantallas más pequeñas (iPhone 5, dispositivos similares) */
+@media (max-width: 480px) {
+  .cart-floating {
+    width: 100%; /* Hacer el carrito 100% de ancho */
+    height: 100%; /* Hacer el carrito de altura completa */
+    border-top-left-radius: 8px; /* Esquinas más redondeadas */
+  }
+
+  .cart-header {
+    padding: 8px 10px;
+    font-size: 0.9rem; /* Reducir el tamaño de fuente */
+  }
+
+  .cart-title {
+    font-size: 0.85rem;
+  }
+
+  .cart-item {
+    padding: 6px 0;
+    font-size: 0.75rem;
+  }
+
+  .thumb {
+    width: 36px;
+    height: 36px;
+  }
+
+  .price {
+    font-size: 0.8rem;
+  }
+
+  .qty-control {
+    gap: 4px;
+  }
+
+  .qty-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+
+  .qty-num {
+    font-size: 0.7rem;
+  }
+
+  .empty p {
+    font-size: 0.8rem;
+  }
+
+  .cart-footer {
+    padding: 10px 12px;
+  }
+
+  .total {
+    font-size: 0.85rem;
+  }
+
+  .card-footer {
+    grid-template-columns: 1fr; /* Para que los botones del pie de página estén en una sola columna */
+  }
+
+  .btn-outline-custom, .btn-solid-custom {
+    font-size: 0.75rem; /* Reducir el tamaño de los botones */
+  }
+}
+
+/* Ajuste para pantallas más grandes */
+@media (min-width: 1024px) {
+  .cart-floating {
+    width: 380px; /* Ancho mayor en pantallas más grandes */
+    height: 100%;
+  }
+}
+
 </style>
