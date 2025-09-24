@@ -472,9 +472,8 @@
     gap: 1rem;
   }
   
-  /* --- CAMBIO APLICADO AQUÍ --- */
   .col-right {
-    margin-top: 0; /* Reduce el margen inferior del logo */
+    margin-top: 0; 
     margin-bottom: -15px;
   }
 
@@ -530,5 +529,24 @@
 
   .wave {
     height: 100px;
+  }
+
+  /* --- CAMBIO APLICADO AQUÍ --- */
+  /* Oculta el texto original de minutos y segundos y lo reemplaza por abreviaciones */
+  .countdown .cd-card:nth-child(3) .cd-caption,
+  .countdown .cd-card:nth-child(4) .cd-caption {
+    font-size: 0; /* Oculta el texto original (MINUTES/SECONDS) */
+  }
+
+  .countdown .cd-card:nth-child(3) .cd-caption::after {
+    content: 'MIN';
+    font-size: 0.75rem; /* Restaura el tamaño de fuente deseado */
+    letter-spacing: .1em; /* Restaura el espaciado de letra */
+  }
+
+  .countdown .cd-card:nth-child(4) .cd-caption::after {
+    content: 'SEC';
+    font-size: 0.75rem; /* Restaura el tamaño de fuente deseado */
+    letter-spacing: .1em; /* Restaura el espaciado de letra */
   }
 }

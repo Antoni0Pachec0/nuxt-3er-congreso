@@ -32,19 +32,19 @@
       <div class="countdown" v-if="!eventHasStarted">
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.days }}</div>
-          <span class="cd-caption">DÍAS</span>
+          <span class="cd-caption">DAYS</span>
         </div>
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.hours }}</div>
-          <span class="cd-caption">HORAS</span>
+          <span class="cd-caption">HOURS</span>
         </div>
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.minutes }}</div>
-          <span class="cd-caption">MINUTOS</span>
+          <span class="cd-caption">MINUTES</span>
         </div>
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.seconds }}</div>
-          <span class="cd-caption">SEGUNDOS</span>
+          <span class="cd-caption">SECONDS</span>
         </div>
       </div>
 
@@ -88,7 +88,6 @@
 </template>
 
 <script setup>
-// CAMBIO: Importar 'ref' de vue
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import '~/assets/css/styles/Hero.css'
 
@@ -98,7 +97,6 @@ const target = new Date('2025-11-12T09:00:00')
 const timeLeft = reactive({ days: '00', hours: '00', minutes: '00', seconds: '00' })
 let timer
 
-// CAMBIO: Añadir una variable de estado para controlar la visibilidad
 const eventHasStarted = ref(false)
 
 const pad = (n) => String(n).padStart(2, '0')
@@ -107,14 +105,13 @@ const tick = () => {
   const now = new Date().getTime()
   const diff = target.getTime() - now
 
-  // CAMBIO: Lógica para manejar cuando el contador llega a cero
   if (diff <= 0) {
-    eventHasStarted.value = true // Cambiar el estado
+    eventHasStarted.value = true
     timeLeft.days = '00'
     timeLeft.hours = '00'
     timeLeft.minutes = '00'
     timeLeft.seconds = '00'
-    clearInterval(timer) // Detener el temporizador
+    clearInterval(timer)
     return
   }
 
@@ -130,8 +127,8 @@ const tick = () => {
 }
 
 onMounted(() => {
-  tick() // Llama a tick una vez para el estado inicial
-  timer = setInterval(tick, 1000) // Ya no se necesita la lógica de clearInterval aquí
+  tick()
+  timer = setInterval(tick, 1000)
 })
 
 onUnmounted(() => clearInterval(timer))
