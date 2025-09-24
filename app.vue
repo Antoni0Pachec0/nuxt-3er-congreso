@@ -1,25 +1,14 @@
-<!-- app.vue -->
 <template>
   <div>
-    <!-- Header solo si NO es login o register -->
-    <Header
-      v-if="
-        $route.path !== '/login' &&
-        $route.path !== '/register' &&
-        $route.path !== '/verify'
-      "
-    />
-
+    <Header v-if="shouldShowHeader" />
     <NuxtPage />
-
-    <!-- Footer solo si NO es login o register -->
-    <Footer v-if="$route.path !== '/login' && $route.path !== '/register'" />
+    <Footer v-if="shouldShowFooter" />
 
     <!-- Contenedor global de notificaciones -->
     <Notivue v-slot="item">
       <Notification
         :item="item"
-        class="rounded-xl shadow-lg p-4 flex flex-col gap-1"
+        class="notification-container"
         :class="{
           'bg-green-600 text-white': item.type === 'success',
           'bg-red-600 text-white': item.type === 'error',
@@ -27,18 +16,16 @@
           'bg-blue-500 text-white animate-pulse': item.type === 'loading'
         }"
       >
-        <!-- Plantilla personalizada -->
-        <h3 class="font-bold">{{ item.title }}</h3>
-        <p v-if="item.message">{{ item.message }}</p>
+        <div class="notification-header">
+          <span v-if="item.type === 'error'" class="icon">&#9888;</span>
+          <span v-if="item.type === 'success'" class="icon">&#9989;</span>
+          <span v-if="item.type === 'warning'" class="icon">&#9889;</span>
+          <span v-if="item.type === 'loading'" class="icon">&#x1F504;</span>
+          <h3 class="font-bold">{{ item.title }}</h3>
+        </div>
+        <p v-if="item.message" class="message">{{ item.message }}</p>
       </Notification>
     </Notivue>
-    <Footer
-      v-if="
-        $route.path !== '/login' &&
-        $route.path !== '/register' &&
-        $route.path !== '/verify'
-      "
-    />
   </div>
 </template>
 
@@ -46,4 +33,7 @@
 import Header from "@/components/layout/Header.vue";
 import Footer from "@/components/layout/Footer.vue";
 import { Notivue, Notification } from "notivue";
+import 'notivue/notifications.css'; // Importa estilos de notificaciones
+import 'notivue/animations.css'; // Importa animaciones opcionales
+import '@/assets/css/notifications.css'; // Tu archivo de estilos personalizados
 </script>

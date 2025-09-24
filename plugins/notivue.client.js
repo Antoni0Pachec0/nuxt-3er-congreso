@@ -1,3 +1,4 @@
+// plugins/notivue.client.js
 import { defineNuxtPlugin } from '#app'
 import { createNotivue } from 'notivue'
 
@@ -7,7 +8,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     limit: 5,
     notifications: {
       success: { duration: 3000 },
-      error: { duration: 5000 },
+      error: { duration: 5000 }, // Aumentar tiempo para errores
       warning: { duration: 4000 },
       loading: { duration: 0 }
     }
