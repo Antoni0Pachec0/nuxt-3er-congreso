@@ -32,7 +32,7 @@ export default defineNuxtConfig({
   nitro: { 
     preset: 'node-server',
     serveStatic: true,
-    compatibilityDate: '2025-09-22' // 🔹 Aquí es donde debe ir
+    compatibilityDate: '2025-09-23' // 🔹 Aquí es donde debe ir
   },
 
   runtimeConfig: {

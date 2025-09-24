@@ -1,14 +1,42 @@
+// utils/notifications.js
 import { push } from 'notivue'
 
 export function notifySuccess(title, message) {
-  push({ title, message, type: 'success', position: 'top-right', duration: 3000 })
+  push.success({ title, message })
 }
+
 export function notifyError(title, message) {
-  push({ title, message, type: 'error', position: 'bottom-right', duration: 5000 })
+  push.error({ title, message })
 }
+
 export function notifyWarning(title, message) {
-  push({ title, message, type: 'warning', position: 'top-center', duration: 4000 })
+  push.warning({ title, message })
 }
+
+/**
+ * Toast de carga controlado (resolve/reject)
+ * Devuelve un objeto con métodos para resolver/rechazar el estado
+ */
 export function notifyLoading(title, message) {
-  return push({ title, message, type: 'loading', position: 'bottom-center', duration: 0 })
+  let controller
+  const promise = new Promise((resolve, reject) => {
+    controller = { resolve, reject }
+  })
+
+  const toast = push.promise(promise, {
+    loading: { title, message },
+    success: { title: 'Éxito 🎉', message: 'Operación completada' },
+    error: { title: 'Error', message: 'Ocurrió un problema' }
+  })
+
+  return {
+    resolve: (opts) => {
+      controller.resolve()
+      toast.resolve(opts)
+    },
+    reject: (opts) => {
+      controller.reject()
+      toast.reject(opts)
+    }
+  }
 }

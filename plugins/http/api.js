@@ -2,6 +2,8 @@
 import axios from 'axios';
 
 const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+console.log('API base:', baseURL); 
+
 
 const api = axios.create({
   baseURL,
