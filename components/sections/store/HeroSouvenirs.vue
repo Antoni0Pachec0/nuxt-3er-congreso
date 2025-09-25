@@ -175,10 +175,11 @@
 }
 
 @media (max-width: 480px) {
+  .hero{ padding: 5rem 0; }
   .hero-title { font-size: 1.75rem; }
   .hero-description { font-size: 0.95rem; }
   .hero-inner {
-    padding-bottom: calc(1.25rem + 15vh); 
+    padding-bottom: calc(17.25rem + 15vh); 
   }
 }
 </style>
