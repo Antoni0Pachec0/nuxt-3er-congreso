@@ -12,7 +12,9 @@ export default defineNuxtConfig({
     typeCheck: false
   },
 
-  css: ['@/assets/css/main.css'],
+  css: [
+    '@/assets/css/main.css', // Tu archivo principal de estilos
+  ],
 
   app: {
     head: {

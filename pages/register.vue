@@ -123,30 +123,57 @@
               </div>
             </div>
 
-            <div class="grid resp">
-              <div class="stack">
-                <label class="label" for="phone">Teléfono</label>
-                <div class="input-wrap">
-                  <select v-model="form.phone_country" class="input-prefix">
-                    <option value="+52">🇲🇽 +52</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+34">🇪🇸 +34</option>
-                  </select>
-                  <input id="phone" v-model.trim="form.phone" type="tel" required
-                         autocomplete="tel" class="input" placeholder="Ej. 55 1234 5678" />
+            <div class="stack">
+              <label class="label" for="phone">Teléfono</label>
+              <div class="input-wrap input-wrap--phone">
+                <div class="custom-select" @click="toggleDropdown('main')">
+                  <div class="selected-option">
+                    <div class="flag-wrap">
+                      <flag-icon :country="selectedCountryCode"></flag-icon>
+                    </div>
+                    <span class="country-code">
+                      {{ getPhoneCode(selectedCountryCode) }}
+                    </span>
+                  </div>
+                  <ul v-if="isOpen.main" class="options-list">
+                    <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'main')">
+                      <div class="flag-wrap">
+                        <flag-icon :country="country.code"></flag-icon>
+                      </div>
+                      <span class="country-name">{{ country.name }}</span>
+                      <span class="country-code">{{ country.phoneCode }}</span>
+                    </li>
+                  </ul>
                 </div>
+                <input id="phone" v-model.trim="form.phone" type="tel" required
+                       autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
               </div>
-              <div class="stack">
-                <label class="label" for="emergency_phone">Teléfono de emergencia</label>
-                <div class="input-wrap">
-                  <select v-model="form.emergency_phone_country" class="input-prefix">
-                    <option value="+52">🇲🇽 +52</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+34">🇪🇸 +34</option>
-                  </select>
-                  <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel"
-                         autocomplete="tel" class="input" placeholder="Opcional" />
+            </div>
+
+            <div class="stack">
+              <label class="label" for="emergency_phone">Teléfono de emergencia</label>
+              <div class="input-wrap input-wrap--phone">
+                <div class="custom-select" @click="toggleDropdown('emergency')">
+                  <div class="selected-option">
+                    <div class="flag-wrap">
+                      <flag-icon :country="emergencyCountryCode"></flag-icon>
+                    </div>
+                    <span class="country-code">
+                      {{ getPhoneCode(emergencyCountryCode) }}
+                    </span>
+                  </div>
+                  <ul v-if="isOpen.emergency" class="options-list">
+                    <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'emergency')">
+                      <div class="flag-wrap">
+                        <flag-icon :country="country.code"></flag-icon>
+                      </div>
+                      <span class="country-name">{{ country.name }}</span>
+                      <span class="country-code">{{ country.phoneCode }}</span>
+                    </li>
+                  </ul>
                 </div>
+                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" class="input"
+                       placeholder="Teléfono de contacto (opcional)" />
               </div>
             </div>
           </template>
@@ -224,65 +251,85 @@
             </template>
           </template>
 
-          <template v-else-if="step === 3 && isSpeaker">
-            <div class="grid resp">
-              <div class="stack">
-                <label class="label" for="empresa_procedencia">Empresa/Institución de procedencia</label>
-                <input id="empresa_procedencia" v-model.trim="form.empresa_procedencia" type="text" required
-                       class="input" placeholder="Nombre de tu empresa u organización" />
+          <template v-else-if="step === 3">
+            <template v-if="isSpeaker">
+              <div class="grid resp">
+                <div class="stack">
+                  <label class="label" for="empresa_procedencia">Empresa/Institución de procedencia</label>
+                  <input id="empresa_procedencia" v-model.trim="form.empresa_procedencia" type="text" required
+                         class="input" placeholder="Nombre de tu empresa u organización" />
+                </div>
+                <div class="stack">
+                  <label class="label" for="rol_dentro_empresa">Rol/Cargo</label>
+                  <input id="rol_dentro_empresa" v-model.trim="form.rol_dentro_empresa" type="text" required
+                         class="input" placeholder="Tu cargo o rol actual" />
+                </div>
               </div>
-              <div class="stack">
-                <label class="label" for="rol_dentro_empresa">Rol/Cargo</label>
-                <input id="rol_dentro_empresa" v-model.trim="form.rol_dentro_empresa" type="text" required
-                       class="input" placeholder="Tu cargo o rol actual" />
-              </div>
-            </div>
 
-            <div class="stack">
-              <label class="label" for="descripcion_biografia">Biografía profesional</label>
-              <textarea id="descripcion_biografia" v-model.trim="form.descripcion_biografia" rows="4"
-                        maxlength="180" required class="input"
-                        placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"></textarea>
-              <small class="help">{{ form.descripcion_biografia.length }} / 180 caracteres</small>
-            </div>
-
-            <div class="stack">
-              <label class="label" for="tipo_presentacion">Tipo de participación</label>
-              <select id="tipo_presentacion" v-model="form.tipo_presentacion" class="input" required>
-                <option disabled value="">Selecciona el tipo de presentación</option>
-                <option value="conferencia">Conferencia</option>
-                <option value="taller">Taller</option>
-                <option value="ambas">Ambas</option>
-              </select>
-            </div>
-
-            <template v-if="form.tipo_presentacion === 'conferencia' || form.tipo_presentacion === 'ambas'">
               <div class="stack">
-                <label class="label" for="titulo_conferencia">Título de la Conferencia</label>
-                <input id="titulo_conferencia" v-model.trim="form.titulo_conferencia" type="text" required
-                       class="input" placeholder="Título de tu conferencia" />
-              </div>
-              <div class="stack">
-                <label class="label" for="descripcion_conferencia">Descripción de la Conferencia</label>
-                <textarea id="descripcion_conferencia" v-model.trim="form.descripcion_conferencia" rows="4"
+                <label class="label" for="descripcion_biografia">Biografía profesional</label>
+                <textarea id="descripcion_biografia" v-model.trim="form.descripcion_biografia" rows="4"
                           maxlength="180" required class="input"
-                          placeholder="Describe el contenido y objetivos de tu conferencia (máx. 180 caracteres)"></textarea>
-                <small class="help">{{ form.descripcion_conferencia.length }} / 180 caracteres</small>
+                          placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"></textarea>
+                <small class="help">{{ form.descripcion_biografia.length }} / 180 caracteres</small>
               </div>
+
+              <div class="stack">
+                <label class="label" for="tipo_presentacion">Tipo de participación</label>
+                <select id="tipo_presentacion" v-model="form.tipo_presentacion" class="input" required>
+                  <option disabled value="">Selecciona el tipo de presentación</option>
+                  <option value="conferencia">Conferencia</option>
+                  <option value="taller">Taller</option>
+                  <option value="ambas">Ambas</option>
+                </select>
+              </div>
+
+              <template v-if="form.tipo_presentacion === 'conferencia' || form.tipo_presentacion === 'ambas'">
+                <div class="stack">
+                  <label class="label" for="titulo_conferencia">Título de la Conferencia</label>
+                  <input id="titulo_conferencia" v-model.trim="form.titulo_conferencia" type="text" required
+                         class="input" placeholder="Título de tu conferencia" />
+                </div>
+                <div class="stack">
+                  <label class="label" for="descripcion_conferencia">Descripción de la Conferencia</label>
+                  <textarea id="descripcion_conferencia" v-model.trim="form.descripcion_conferencia" rows="4"
+                            maxlength="180" required class="input"
+                            placeholder="Describe el contenido y objetivos de tu conferencia (máx. 180 caracteres)"></textarea>
+                  <small class="help">{{ form.descripcion_conferencia.length }} / 180 caracteres</small>
+                </div>
+              </template>
+
+              <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
+                <div class="stack">
+                  <label class="label" for="titulo_taller">Título del Taller</label>
+                  <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
+                         class="input" placeholder="Título de tu taller" />
+                </div>
+                <div class="stack">
+                  <label class="label" for="descripcion_taller">Descripción del Taller</label>
+                  <textarea id="descripcion_taller" v-model.trim="form.descripcion_taller" rows="4"
+                            maxlength="180" required class="input"
+                            placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"></textarea>
+                  <small class="help">{{ form.descripcion_taller.length }} / 180 caracteres</small>
+                </div>
+              </template>
             </template>
-
-            <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
+            <template v-else>
               <div class="stack">
-                <label class="label" for="titulo_taller">Título del Taller</label>
-                <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
-                       class="input" placeholder="Título de tu taller" />
+                <label class="label" for="size_user">Talla de playera</label>
+                <select id="size_user" v-model="form.size_user" class="input" required>
+                  <option value="" disabled>Selecciona tu talla</option>
+                  <option>S</option>
+                  <option>M</option>
+                  <option>L</option>
+                  <option>XL</option>
+                  <option>XXL</option>
+                </select>
               </div>
-              <div class="stack">
-                <label class="label" for="descripcion_taller">Descripción del Taller</label>
-                <textarea id="descripcion_taller" v-model.trim="form.descripcion_taller" rows="4"
-                          maxlength="180" required class="input"
-                          placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"></textarea>
-                <small class="help">{{ form.descripcion_taller.length }} / 180 caracteres</small>
+
+              <div class="checkline">
+                <input id="terms" v-model="accepted" type="checkbox" required />
+                <label for="terms">Acepto los <a href="#" @click.prevent="showTermsModal = true">términos y aviso de privacidad</a></label>
               </div>
             </template>
           </template>
@@ -318,8 +365,7 @@
             </div>
           </template>
 
-
-          <template v-else-if="(isSpeaker && step === 5) || (!isSpeaker && step === 3)">
+          <template v-else-if="step === 5 && isSpeaker">
             <div class="stack">
               <label class="label" for="size_user">Talla de playera</label>
               <select id="size_user" v-model="form.size_user" class="input" required>
@@ -444,11 +490,11 @@ const form = ref({
   
   // Tipo de usuario y campos asociados
   type_user_id: null,
-  provenance: '',
+  provenance: '',                  // 'uttecam' | 'otra'
   matricula: '',
-  programa_educativo: '',
-  grado: '',
-  grupo: '',
+  educational_program: '', 
+  grade: '',   
+  group_user: '',
   universidad_procedencia: '',
   
   // Campos para Ponente/Tallerista
@@ -520,12 +566,32 @@ onMounted(() => {
       step.value = saved.step ?? 0;
       accepted.value = !!saved.accepted;
       password2.value = saved.password2 || '';
-      
+
+      // MODIFICACIÓN 3: Asegurarse de que los estados reactivos de la bandera se inicialicen
+      // a partir del código de país almacenado en `form.phone_country`.
+      const mainCountry = countries.value.find(c => c.phoneCode === saved.form?.phone_country);
+      if (mainCountry) {
+        selectedCountryCode.value = mainCountry.code;
+      }
+      const emergencyCountry = countries.value.find(c => c.phoneCode === saved.form?.emergency_phone_country);
+      if (emergencyCountry) {
+        emergencyCountryCode.value = emergencyCountry.code;
+      }
+
       // Asegurarse de que los pasos sean correctos al cargar
       steps.value = isSpeaker.value ? [...speakerSteps] : [...baseSteps];
     }
+
   } catch (e) {
     console.error("Error al cargar datos del localStorage:", e);
+  }
+
+  // Si no hay datos cargados, establecer los valores predeterminados (MODIFICACIÓN 3)
+  if (!form.value.phone_country) {
+    form.value.phone_country = getPhoneCode(selectedCountryCode.value); // +52
+  }
+  if (!form.value.emergency_phone_country) {
+    form.value.emergency_phone_country = getPhoneCode(emergencyCountryCode.value); // +52
   }
 });
 
@@ -547,20 +613,43 @@ const canProceed = computed(() => {
     case 1: // Datos personales
       return !!form.value.name_user && !!form.value.paternal_surname && !!form.value.maternal_surname && !!form.value.phone;
 
-    case 2: // Tipo de usuario (Incluye validación de contraseña secreta para ponentes)
+    case 2: { // Tipo de usuario y datos dependientes
       if (!form.value.type_user_id) return false;
-      if (isSpeaker.value) {
-        return isSecretPasswordValid.value;
+
+      if (isSpeaker.value) return isSecretPasswordValid.value;
+
+      const isStudent = Number(form.value.type_user_id) === 1;
+      const isTeacher = Number(form.value.type_user_id) === 2;
+
+      const prov = (form.value.provenance || '').toLowerCase();
+
+      if ((isStudent || isTeacher) && prov === 'uttecam') {
+        const hasMat = !!form.value.matricula;
+        const hasProg = !!form.value.educational_program;
+
+        if (isStudent) {
+          const validGrade = typeof form.value.grade === 'string' && form.value.grade.length >= 1 && form.value.grade.length <= 2;
+          const validGroup = typeof form.value.group_user === 'string' && form.value.group_user.length === 1;
+          return hasMat && hasProg && validGrade && validGroup;
+        }
+        // Docente UTTECAM: matricula + programa educativo
+        return hasMat && hasProg;
       }
+
+      if ((isStudent || isTeacher) && prov === 'otra') {
+        return !!form.value.universidad_procedencia;
+      }
+
       return true;
+    }
 
     case 3: // Datos de Ponente/Tallerista (solo para ponentes)
       // Esta validación solo aplica si el usuario es ponente
       if (isSpeaker.value) {
         const hasBiography = !!form.value.empresa_procedencia && !!form.value.rol_dentro_empresa && !!form.value.descripcion_biografia;
         const hasPresentationInfo = (form.value.tipo_presentacion === 'conferencia' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia) ||
-                                   (form.value.tipo_presentacion === 'taller' && !!form.value.titulo_taller && !!form.value.descripcion_taller) ||
-                                   (form.value.tipo_presentacion === 'ambas' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia && !!form.value.titulo_taller && !!form.value.descripcion_taller);
+                                     (form.value.tipo_presentacion === 'taller' && !!form.value.titulo_taller && !!form.value.descripcion_taller) ||
+                                     (form.value.tipo_presentacion === 'ambas' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia && !!form.value.titulo_taller && !!form.value.descripcion_taller);
         return hasBiography && hasPresentationInfo;
       }
       // Si no es ponente, esta validación no aplica, pero la lógica de la plantilla debería manejarlo.
@@ -580,7 +669,7 @@ const canProceed = computed(() => {
 
 const canSubmit = computed(() => {
   // Determina si el usuario está en el último paso de su flujo y si los campos están llenos
-  const isLastStep = step.value === steps.value.length - 1;
+  const isLastStep = computed(() => step.value === steps.value.length - 1);
   return isLastStep && !!form.value.size_user && accepted.value;
 });
 
@@ -614,56 +703,70 @@ async function nextOrSubmit() {
 
 // Normalización de teléfonos y limpieza del payload
 function normalizePayload(payload) {
-  const clean = (v) => v?.replace(/\D/g, '');
+  const finalPayload = {
+    email: payload.email,
+    password_user: payload.password_user,
+    name_user: payload.name_user,
+    paternal_surname: payload.paternal_surname,
+    maternal_surname: payload.maternal_surname,
+    type_user_id: Number(payload.type_user_id),
+    size_user: payload.size_user
+  };
+
+  // Teléfonos (limpios + lada)
+  const clean = v => v?.replace(/\D/g, '');
   if (payload.phone) {
-    payload.phone = `${payload.phone_country}${clean(payload.phone)}`;
+    finalPayload.phone = `${payload.phone_country}${clean(payload.phone)}`;
   }
   if (payload.emergency_phone) {
-    payload.emergency_phone = `${payload.emergency_phone_country}${clean(payload.emergency_phone)}`;
+    finalPayload.emergency_phone = `${payload.emergency_phone_country}${clean(payload.emergency_phone)}`;
   }
-  delete payload.phone_country;
-  delete payload.emergency_phone_country;
 
-  // Limpiar campos según el tipo de usuario para no enviar datos innecesarios al backend
-  if (!isStudentOrTeacher.value) {
-    delete payload.provenance;
-    delete payload.matricula;
-    delete payload.programa_educativo;
-    delete payload.grado;
-    delete payload.grupo;
-    delete payload.universidad_procedencia;
-  } else {
-    if (payload.provenance !== 'uttecam') {
-      delete payload.matricula;
-      delete payload.programa_educativo;
-      delete payload.grado;
-      delete payload.grupo;
-    }
-    if (payload.provenance !== 'otra') {
-      delete payload.universidad_procedencia;
+  // Estudiante/Docente
+  if ([1, 2].includes(Number(payload.type_user_id))) {
+    finalPayload.provenance = (payload.provenance || '').toLowerCase();
+
+    if (finalPayload.provenance === 'uttecam') {
+      finalPayload.matricula = payload.matricula || '';
+      finalPayload.educational_program = payload.educational_program || '';
+      if (Number(payload.type_user_id) === 1) { // Estudiante
+        finalPayload.grade = payload.grade || '';
+        finalPayload.group_user = payload.group_user || '';
+      }
+    } else if (finalPayload.provenance === 'otra') {
+      finalPayload.universidad_procedencia = payload.universidad_procedencia || '';
     }
   }
 
-  if (!isSpeaker.value) {
-    const speakerFields = ['secret_password', 'empresa_procedencia', 'rol_dentro_empresa', 'descripcion_biografia', 'tipo_presentacion', 'titulo_conferencia', 'descripcion_conferencia', 'titulo_taller', 'descripcion_taller', 'facebook_link', 'instagram_link', 'x_link', 'linkedin_link'];
-    speakerFields.forEach(field => delete payload[field]);
-  } else {
-    // Limpiar campos de conferencia o taller si no aplican
-    if (payload.tipo_presentacion === 'conferencia') {
-      delete payload.titulo_taller;
-      delete payload.descripcion_taller;
-    } else if (payload.tipo_presentacion === 'taller') {
-      delete payload.titulo_conferencia;
-      delete payload.descripcion_conferencia;
+  // Ponente/Tallerista
+  if (Number(payload.type_user_id) === 4) {
+    finalPayload.secret_password = payload.secret_password || '';
+    finalPayload.empresa_procedencia = payload.empresa_procedencia || '';
+    finalPayload.rol_dentro_empresa = payload.rol_dentro_empresa || '';
+    finalPayload.descripcion_biografia = payload.descripcion_biografia || '';
+    finalPayload.tipo_presentacion = payload.tipo_presentacion || '';
+
+    if (['conferencia', 'ambas'].includes(payload.tipo_presentacion)) {
+      finalPayload.titulo_conferencia = payload.titulo_conferencia || '';
+      finalPayload.descripcion_conferencia = payload.descripcion_conferencia || '';
     }
-    delete payload.secret_password; // La contraseña secreta no debe enviarse al backend
+    if (['taller', 'ambas'].includes(payload.tipo_presentacion)) {
+      finalPayload.titulo_taller = payload.titulo_taller || '';
+      finalPayload.descripcion_taller = payload.descripcion_taller || '';
+    }
+
+    finalPayload.facebook_link = payload.facebook_link || '';
+    finalPayload.instagram_link = payload.instagram_link || '';
+    finalPayload.x_link = payload.x_link || '';
+    finalPayload.linkedin_link = payload.linkedin_link || '';
   }
-  
-  return payload;
+
+  return finalPayload;
 }
 
 // Envío del formulario
 async function submitRegister() {
+  if (loading.value) return; // ⬅️ evita doble envío por doble click/enter
   if (!canSubmit.value) {
     notifyWarning('Formulario incompleto', 'Debes aceptar los términos y elegir tu talla.');
     return;
@@ -673,40 +776,93 @@ async function submitRegister() {
   const loadingToast = notifyLoading('Procesando', 'Creando tu cuenta...');
 
   try {
-    const payload = normalizePayload({ ...form.value });
-    
-    // Verificación de notificación duplicada
-    if (loading.value) {
-      // Esta verificación es para asegurar que no se envíe la misma notificación dos veces
-      // La variable `loadingToast` ya existe en el `try`
-    }
+    const payload = normalizePayload(form.value);
 
-    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true });
+    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, {
+      withCredentials: true, // quítalo si no usas cookies aquí
+    });
 
+    // (Opcional) si algún día devuelves verification_token:
     if (data?.verification_token) {
-      localStorage.setItem("verification_token", data.verification_token);
+      localStorage.setItem('verification_token', data.verification_token);
     }
+
     localStorage.setItem('verify_email', payload.email);
     localStorage.removeItem(STORAGE_KEY);
 
     loadingToast.resolve({ title: 'Éxito 🎉', message: 'Cuenta creada con éxito' });
     router.push('/verify');
-
   } catch (err) {
     console.error(err);
-    const msg = err.response?.data?.message;
-    let errorMessage = 'Error desconocido.';
 
-    if (Array.isArray(msg)) {
-      errorMessage = 'Error de validación: ' + msg.join(', ');
-    } else {
-      errorMessage = parseAxiosError(err) || 'Error desconocido.';
+    // Si el back devolvió 409 por P2002, muéstralo claro
+    const status = err?.response?.status;
+    const serverMsg = err?.response?.data?.message;
+    let errorMessage = parseAxiosError(err) || 'Error desconocido.';
+
+    if (status === 409 && serverMsg) {
+      errorMessage = Array.isArray(serverMsg) ? serverMsg.join('\n') : serverMsg;
     }
+
     loadingToast.reject({ title: 'Error en registro', message: errorMessage });
   } finally {
     loading.value = false;
   }
 }
+
+// ... importaciones y estados iniciales
+
+// Nuevos estados para el selector de país
+const isOpen = ref({ // Modificado a objeto para manejar ambos dropdowns
+  main: false,
+  emergency: false
+});
+const selectedCountryCode = ref('mx'); // Código inicial para la bandera principal
+const emergencyCountryCode = ref('mx'); // Código inicial para la bandera de emergencia
+
+const countries = ref([
+  { code: 'mx', name: 'México', phoneCode: '+52' },
+  { code: 'us', name: 'Estados Unidos', phoneCode: '+1' },
+  { code: 'es', name: 'España', phoneCode: '+34' },
+  // Agrega más países si es necesario
+]);
+
+// Inicializa el código de país en el formulario al cargar
+onMounted(() => {
+  // ... tu lógica de onMounted
+  if (!form.value.phone_country) {
+    // Asume que el código de país se almacena en `phone_country` en el formulario
+    form.value.phone_country = getPhoneCode(selectedCountryCode.value);
+  }
+});
+
+// Función para obtener la lada
+const getPhoneCode = (code) => {
+  const country = countries.value.find(c => c.code === code);
+  return country ? country.phoneCode : '+52';
+};
+
+// Funciones de interacción del selector
+const toggleDropdown = (type) => {
+  // Cierra el otro dropdown si está abierto
+  const otherType = type === 'main' ? 'emergency' : 'main';
+  if (isOpen.value[otherType]) {
+    isOpen.value[otherType] = false;
+  }
+  isOpen.value[type] = !isOpen.value[type];
+};
+
+const selectCountry = (country, type) => {
+  if (type === 'main') {
+    selectedCountryCode.value = country.code;
+    form.value.phone_country = country.phoneCode; // Actualiza el código en el formulario
+    isOpen.value.main = false;
+  } else if (type === 'emergency') {
+    emergencyCountryCode.value = country.code;
+    form.value.emergency_phone_country = country.phoneCode; // Actualiza el código en el formulario
+    isOpen.value.emergency = false;
+  }
+};
 
 function goLogin() {
   router.push("/login");

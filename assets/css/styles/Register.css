@@ -776,3 +776,16 @@ input:-webkit-autofill:active {
   color: var(--ink);
   background: rgba(255, 255, 255, 0.1);
 }
+
+.flag-wrap {
+    display: inline-flex;
+    width: 24px; /* Ajusta el tamaño de la bandera */
+    height: 18px; /* Proporción 4:3 */
+    margin-right: 8px;
+    overflow: hidden;
+    border-radius: 2px;
+    align-items: center;
+}
+.flag-wrap > .flag-icon { /* Si flag-icon es un componente wrapper */
+     font-size: 1.5em; /* O el tamaño que necesites */
+}

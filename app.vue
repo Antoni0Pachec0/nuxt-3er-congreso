@@ -33,7 +33,8 @@
 import Header from "@/components/layout/Header.vue";
 import Footer from "@/components/layout/Footer.vue";
 import { Notivue, Notification } from "notivue";
-import 'notivue/notifications.css'; // Importa estilos de notificaciones
-import 'notivue/animations.css'; // Importa animaciones opcionales
+import 'notivue/notifications.css';
+import 'notivue/animations.css';
 import '@/assets/css/notifications.css'; // Tu archivo de estilos personalizados
+
 </script>
