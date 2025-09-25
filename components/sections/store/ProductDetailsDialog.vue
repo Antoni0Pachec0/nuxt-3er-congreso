@@ -157,7 +157,6 @@
 </template>
 
 <script setup lang="ts">
-import "/assets/css/styles/store/ProductDetailsDialog.css";
 import { computed, ref, watch, toRefs } from "vue";
 import { X, CheckCircle } from "lucide-vue-next";
 
