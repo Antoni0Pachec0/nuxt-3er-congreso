@@ -1,248 +1,184 @@
 <template>
-  <v-sheet class="hero py-10 py-md-14">
-    <v-container fluid class="px-0">
-      <v-row align="center" no-gutters class="mt-8">
-        <!-- Texto -->
-        <v-col cols="12" md="" class="px-6 px-md-10 pe-md-8">
-          <div class="text-white hero-subtitle mb-2">Souvenirs oficiales</div>
+  <div class="hero">
+    <!-- Contenedor Principal -->
+    <div class="hero-inner">
+      <!-- Texto del Hero -->
+      <div class="hero-text">
+        <p class="hero-subtitle">Souvenirs oficiales</p>
+        <h1 class="hero-title">Innovación que trasciende</h1>
+        <p class="hero-description">
+          Playeras, termos y accesorios del Congreso de TI. Un detalle para
+          recordar la experiencia más allá del evento.
+        </p>
+        <button class="hero-btn" @click="$emit('go-products')">
+          <span class="icon">🛒</span> Ver productos
+        </button>
+      </div>
+    </div>
 
-          <div
-            class="text-white font-orbitron text-h3 text-md-h2 font-weight-black mb-5"
-          >
-            Innovación que trasciende
-          </div>
+    <!-- Imagen decorativa detrás de la ola -->
+    <div class="bg-graphic">
+      <img
+        src="~/assets/images/store/heroStore.png"
+        alt="Decoración"
+        class="bg-img"
+        loading="eager"
+      />
+    </div>
 
-          <div
-            class="text-white text-body-2 text-md-body-1 mb-8"
-            style="opacity: 0.95"
-          >
-            Playeras, termos y accesorios del Congreso de TI. Un detalle para
-            recordar la experiencia más allá del evento.
-          </div>
-
-          <v-btn
-            variant="outlined"
-            rounded="xl"
-            size="large"
-            class="text-white"
-            color="white"
-            @click="$emit('go-products')"
-          >
-            <template v-slot:prepend>
-              <ShoppingCart :size="20" stroke-width="2" class="lucide mr-2" />
-            </template>
-            Ver productos
-          </v-btn>
-        </v-col>
-
-        <!-- Ola -->
-<svg
-  class="wave"
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 1440 180"
-  preserveAspectRatio="none"
-  aria-hidden="true"
->
-  <path
-    fill="#ffffff"
-    d="M0,130 C220,30 500,60 740,130 C980,170 1220,160 1440,120 L1440,180 L0,180 Z"
-  />
-</svg>
-
-        
-        <!-- Imagen pegada a la orilla derecha -->
-        <v-col cols="12" md="5" class="pa-0 d-flex justify-end mt-15">
-          <v-img :src="heroImg" class="hero-img d-block" height="100%" cover />
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-sheet>
+    <!-- Ola en la parte inferior -->
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="wave">
+      <path
+        d="M0,224 L60,212 C120,200 240,176 360,176 
+           C480,176 600,200 720,200 
+           C840,200 960,176 1080,170 
+           C1200,164 1320,176 1380,184 
+           L1440,192 L1440,320 L0,320 Z"
+        fill="#ffffff"
+      />
+    </svg>
+  </div>
 </template>
 
 <script setup lang="ts">
-import heroImg from "~/assets/images/store/heroStore.png";
-import { ChevronDown } from "lucide-vue-next";
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
-.font-orbitron {
-  font-family: "Orbitron", system-ui, sans-serif;
-}
-
-/* ============================
-  Estilo general de la hero
-================================ */
+/* Contenedor del Hero */
 .hero {
   position: relative;
   background: linear-gradient(135deg, #10308b 0%, #1e66ff 55%, #1ca2ff 100%);
-  padding-bottom: 120px; /* Espaciado inferior */
   overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
+  min-height: 85vh;
 }
 
-/* ============================
-  Estilo del subtítulo
-================================ */
-.hero-subtitle {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-/* ============================
-  Estilo de la imagen principal
-================================ */
-.hero-img {
-  width: 100%; 
-  aspect-ratio: 4 / 5;
-  object-position: right center;
-  filter: drop-shadow(0 18px 45px rgba(0, 0, 0, 0.35));
+/* Contenido del Hero */
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 4rem);
+  min-height: inherit;
   position: relative;
-  z-index: 5;
+  z-index: 2;
 }
 
-/* ============================
-  Estilo de la ola
-================================ */
-.wave {
+/* Texto dentro del Hero */
+.hero-text {
+  max-width: 600px;
+}
+
+/* Subtítulo */
+.hero-subtitle {
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.9;
+  margin-bottom: 0.75rem;
+}
+
+/* Título principal */
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Descripción */
+.hero-description {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.6;
+  opacity: 0.95;
+  margin-bottom: 1.75rem;
+}
+
+/* Botón */
+.hero-btn {
+  background-color: #fff;
+  color: #1e66ff;
+  border: 2px solid #fff;
+  padding: 0.85rem 1.75rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: clamp(0.9rem, 1.1vw, 1rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+
+.hero-btn:hover {
+  background-color: #1e66ff;
+  color: #fff;
+  border-color: #1e66ff;
+  transform: translateY(-2px);
+}
+
+/* Imagen detrás del Hero */
+.bg-graphic {
   position: absolute;
-  left: 50%;
-  bottom: -4px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end; /* derecha en PC */
+}
+
+/* Imagen */
+.bg-img {
+  max-width: 600px;
   width: 100%;
   height: auto;
-  transform: translateX(-50%);
-  z-index: 10;
-  pointer-events: none;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.25));
+  z-index: 1;
 }
 
-/* ============================
-  Para pantallas grandes (Macbook, Desktop)
-================================ */
-@media (min-width: 1280px) {
-  .hero-img {
-    max-height: 90vh; /* Altura de la imagen en pantallas grandes */
-    margin-top: 20vh; /* Espaciado superior */
-    object-position: center center; /* Centrar la imagen */
-    object-fit: cover; /* Ajustar la imagen para cubrir el área */
-  }
+/* Ola */
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;  /* Tamaño de la ola */
+  z-index: 5;    /* Delante de la imagen */
+  display: block;
+}
 
-  .hero-subtitle {
-    font-size: 22px;
+/* Responsive */
+@media (max-width: 1023px) {
+  .hero-inner {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.25rem;
+    padding-bottom: calc(2rem + 12vh); /* Ajuste el fondo de la ola */
   }
-
-  .hero-title {
-    font-size: 50px;
-  }
-
-  .hero-blurb {
-    font-size: 20px;
-    margin-bottom: 30px;
-  }
-
-  .wave {
-    height: 200px;
-    margin-top: 50px; /* Ajuste de la ola */
+  .hero-text { padding-right: 0; margin-bottom: 2rem; }
+  .hero-img-container { width: 100%; justify-content: center; }
+  .bg-graphic { justify-content: center; }
+  .bg-img {
+    max-width: 400px;
   }
 }
 
-/* ============================
-  Para tabletas (iPad, Android Tablets)
-================================ */
-@media (min-width: 820px) and (max-width: 1279px) {
-  .hero-img {
-    max-height: 140vh; /* Altura de la imagen en tabletas */
-    margin-top: 10vh; /* Espaciado superior */
-  }
-
-  .wave {
-    height: 160px; /* Ajuste de la ola */
-  }
-
-  /* Ajustes del texto en tabletas */
-  .hero-subtitle {
-    font-size: 18px;
-    line-height: 1.4; /* Mejorar la legibilidad */
-  }
-
-  .hero-title {
-    font-size: 45px;
-    line-height: 1.3;
-  }
-
-  .hero-blurb {
-    font-size: 18px;
-    margin-bottom: 28px;
-    line-height: 1.5;
-  }
-}
-
-/* ============================
-================================ */
-@media (min-width: 360px) and (max-width: 819px) {
-  .hero-img {
-    max-height: 80vh; /* Altura de la imagen en smartphones medianos */
-    margin-top: 12.5vh; /* Espaciado superior */
-  }
-
-  /* Ajuste de los textos */
-  .hero-subtitle {
-    font-size: 16px;
-    line-height: 1.4; /* Aumentar el interlineado */
-  }
-
-  .hero-title {
-    font-size: 30px;
-    line-height: 1.3;
-  }
-
-  .hero-blurb {
-    font-size: 12px;
-    line-height: 1.4;
-  }
-
-  .wave {
-    height: 100px;
-    margin-top: 5vh; /* Ajuste de la ola */
-  }
-}
-
-/* ============================
-  Para pantallas muy pequeñas (iPhone 5, hasta 320px)
-================================ */
-@media (max-width: 320px) {
-  /* Ajuste de la imagen */
-  .hero-img {
-    max-height: 60vh; /* Reduce la altura de la imagen */
-    margin-top: -5vh; 
-  }
-
-  /* Ajuste del texto */
-  .hero-subtitle {
-    font-size: 14px;
-    line-height: 1.4; /* Aumentar el interlineado */
-  }
-
-  .hero-title {
-    font-size: 24px;
-    line-height: 1.3;
-  }
-
-  .hero-blurb {
-    font-size: 10px;
-    line-height: 1.4; /* Mejorar la legibilidad */
-  }
-
-  /* Ajuste de la ola */
-  .wave {
-    height: 70px; /* Reduce la altura de la ola en pantallas pequeñas */
-    margin-top: 5vh;
-  }
-
-  /* Reducir el padding-bottom para pantallas pequeñas */
-  .hero {
-    padding-bottom: 5px;
+@media (max-width: 480px) {
+  .hero-title { font-size: 1.75rem; }
+  .hero-description { font-size: 0.95rem; }
+  .hero-inner {
+    padding-bottom: calc(1.25rem + 15vh); 
   }
 }
 </style>
