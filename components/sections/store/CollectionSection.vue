@@ -149,6 +149,8 @@
 </template>
 
 <script setup lang="ts">
+import "/assets/css/styles/store/CollectionSection.css";
+
 import { computed, ref } from 'vue'
 
 // Demo: reemplaza con tus datos reales
@@ -245,60 +247,3 @@ function onBuy(p: Product) {
 }
 </script>
 
-<style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&display=swap");
-.font-orbitron { font-family: "Orbitron", system-ui, sans-serif; }
-
-/* Encabezado */
-.underline {
-  width: 120px;
-  height: 4px;
-  background: linear-gradient(90deg, #1e66ff, #1ca2ff);
-  border-radius: 999px;
-}
-
-/* Filtros */
-.filter-group :deep(.v-chip) {
-  border-radius: 999px;
-}
-.filter-group :deep(.v-chip.chip-active) {
-  color: white !important;
-  background: linear-gradient(90deg, #1e66ff, #1ca2ff) !important;
-}
-
-/* Tarjeta producto */
-.product-card {
-  border-radius: 18px;
-  box-shadow: 0 6px 24px rgba(5, 30, 90, 0.08);
-  border: 1px solid rgba(30, 102, 255, 0.08);
-  overflow: hidden;
-}
-.card-badges {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-}
-
-/* Swatches de color */
-.swatch {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid rgba(0,0,0,.12);
-  outline: 3px solid rgba(0,0,0,0);
-  transition: outline-color .2s ease;
-}
-.swatch:hover { outline-color: rgba(30, 102, 255, .25); }
-
-/* Chips de talla */
-.size-chip { border-radius: 10px; }
-
-/* Precio */
-.price { display: inline-flex; align-items: baseline; gap: 4px; }
-
-/* Responsivo fino */
-@media (max-width: 360px) {
-  .product-card :deep(.v-img) { height: 180px !important; }
-}
-</style>

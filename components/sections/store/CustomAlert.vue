@@ -1,70 +1,44 @@
-<template>
-  <transition name="fade">
-    <div
-      v-if="show"
-      :class="['custom-alert', alertClass]"
-      @mouseenter="pauseHide"
-      @mouseleave="resumeHide"
-      role="alert"
-    >
-      <!-- Icono -->
-      <div class="icon-container">
-        <slot name="icon">
-          <svg v-if="alertType === 'success'" xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <svg v-else-if="alertType === 'warning'" xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1 4h.01M12 8v.01M12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z" />
-          </svg>
-          <svg v-else-if="alertType === 'error'" xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1 4h.01M12 8v.01"/>
-          </svg>
-        </slot>
-      </div>
-
-      <!-- Contenido -->
-      <div class="content">
-        <h3 class="title">{{ title }}</h3>
-        <p class="message">{{ message }}</p>
-      </div>
-
-      <!-- Cerrar -->
-      <button class="close-btn" @click="close">✕</button>
-    </div>
-  </transition>
-</template>
-
 <script setup lang="ts">
-import { defineProps, defineEmits, computed, watch, ref } from "vue";
+import { ref, computed, defineProps, defineEmits, onMounted, onBeforeUnmount } from "vue";
 
 const props = defineProps({
   show: { type: Boolean, default: false },
   title: { type: String, default: "¡Aviso!" },
   message: { type: String, required: true },
   alertType: { type: String, default: "info" }, // success, warning, error, info
-  autoHide: { type: Number, default: 2500 }, // duración en ms
+  autoHide: { type: Number, default: 2500 },
 });
 
 const emit = defineEmits(["update:show"]);
 
-let timer: any = null;
+let hideTimer: number | null = null;
 
+// Cierra la alerta
 function close() {
   emit("update:show", false);
-  clearTimeout(timer);
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
 }
 
-// Pausar auto-hide al pasar el mouse
+// Muestra la alerta y configura auto-hide
+function showAlert() {
+  if (hideTimer) clearTimeout(hideTimer);
+  hideTimer = window.setTimeout(close, props.autoHide);
+}
+
+// Pausar auto-hide al pasar el cursor
 function pauseHide() {
-  clearTimeout(timer);
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
 }
 
 // Reanudar auto-hide
 function resumeHide() {
-  timer = setTimeout(close, props.autoHide);
+  if (!hideTimer) hideTimer = window.setTimeout(close, props.autoHide);
 }
 
 // Computed para clase según tipo
@@ -77,15 +51,17 @@ const alertClass = computed(() => {
   }
 });
 
-// Auto-hide cuando se muestra
-watch(() => props.show, (val) => {
-  if (val) {
-    timer = setTimeout(close, props.autoHide);
-  } else {
-    clearTimeout(timer);
-  }
+// Cuando la propiedad show cambia a true, iniciamos el timer
+onMounted(() => {
+  if (props.show) showAlert();
+});
+
+// Limpiar timer al desmontar
+onBeforeUnmount(() => {
+  if (hideTimer) clearTimeout(hideTimer);
 });
 </script>
+
 
 <style scoped>
 .custom-alert {

@@ -175,12 +175,15 @@
     <!-- Alerta -->
 <v-card class="product-card d-flex flex-column flex-grow-1">
   <!-- ALERTA -->
-<CustomAlert
-  v-model:show="showAlert"
-  :title="alertType === 'success' ? '✔️ Éxito' : '⚠️ Advertencia'"
-  :message="alertMessage"
-/>
-
+  <v-alert
+    v-if="showAlert"
+    :type="alertType"
+    dismissible
+    @input="showAlert = false"
+    class="notification-alert"
+  >
+    {{ alertMessage }}
+  </v-alert>
 
   <!-- Badge, Imagen, Contenido, Botones... (tu código existente) -->
 </v-card>
@@ -190,7 +193,6 @@
 import { ref, computed, onMounted } from "vue";
 import ProductDetailsDialog from "@/components/sections/store/ProductDetailsDialog.vue";
 import CartDrawer from "@/components/sections/store/CartDrawer.vue";
-import CustomAlert from "@/components/sections/store/CustomAlert.vue";
 import tshirtBlack from "~/assets/images/store/t-shirt/t-shirtBlack.webp";
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 
@@ -206,16 +208,16 @@ type Product = {
   imagesByColor: Record<string, string>;
 };
 
-// --- Selección ---
+// Selección de color y talla
 const selectedSize = ref<Record<number, string>>({});
 const selectedColor = ref<Record<number, string>>({});
 
-// --- ALERTA ---
+// ALERTAS
 const showAlert = ref(false);
 const alertMessage = ref("");
-const alertType = ref<"success" | "warning" | "info" | "error">("info");
+const alertType = ref<"success" | "error" | "info" | "warning">("info");
 
-// --- Productos de ejemplo ---
+// Productos de ejemplo
 const products = ref<Product[]>([
   {
     id: 1,
@@ -263,7 +265,7 @@ const products = ref<Product[]>([
   },
 ]);
 
-// --- Inicializar color por defecto ---
+// Asignar primer color por defecto al montar
 onMounted(() => {
   products.value.forEach((p) => {
     if (p.colors?.length && !selectedColor.value[p.id]) {
@@ -272,7 +274,7 @@ onMounted(() => {
   });
 });
 
-// --- Filtro de categoría ---
+// Filtrar por categoría
 const activeCategory = ref<"all" | "playera" | "termo">("all");
 const filteredProducts = computed(() =>
   activeCategory.value === "all"
@@ -280,7 +282,7 @@ const filteredProducts = computed(() =>
     : products.value.filter((p) => p.category === activeCategory.value)
 );
 
-// --- Obtener imagen según color ---
+// Obtener imagen según color seleccionado
 function getImage(p: Product) {
   const color = selectedColor.value[p.id];
   return color ? p.imagesByColor[color] : Object.values(p.imagesByColor)[0];
@@ -371,7 +373,6 @@ function handleAdd(p: Product) {
   showAlert.value = true;
 }
 </script>
-
 
 
 <style scoped>
@@ -684,21 +685,7 @@ function handleAdd(p: Product) {
   }
 }
 
-.cart-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 10000;
-  width: 64px;
-  height: 64px;
-  border-radius: 50% !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
-  color: #fff;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-}
+
 
 /* Badge con contador */
 .badge {
@@ -778,5 +765,20 @@ function handleAdd(p: Product) {
     font-size: 10px; /* Ajuste de tamaño de fuente aún más pequeño */
     padding: 4px 8px; /* Ajuste de padding para pantallas pequeñas */
   }
+}
+.cart-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  width: 64px;
+  height: 64px;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 </style>
