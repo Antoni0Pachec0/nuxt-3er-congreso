@@ -3,7 +3,9 @@ import { fileURLToPath } from 'url'
 
 export default defineNuxtConfig({
   css: [
-    '@/assets/css/main.css'
+    '@/assets/css/main.css',
+    'vuetify/styles' 
+    
   ],
 
   runtimeConfig: {
@@ -51,7 +53,7 @@ export default defineNuxtConfig({
 
   // Configuración para manejar mejor las dependencias de cliente
   build: {
-    transpile: ['@vue-stripe/vue-stripe']
+    transpile: ['@vue-stripe/vue-stripe', 'vuetify']
   },
 
   // Configuración de alias explícita

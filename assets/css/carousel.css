@@ -52,7 +52,7 @@
 .gc__slide {
     position: relative;
     min-width: 100%;
-    height: clamp(360px, 55vw, 520px);
+    height: clamp(300px, 55vw, 520px);
 }
 
 .gc__img {
@@ -222,9 +222,8 @@
 }
 
 .gc__statNumber {
-    color: #1d4ed8;
-        font-family: 'Sora', sans-serif;
-
+    color: #3374EE;
+    font-family: 'Sora', sans-serif;
     font-size: 1.8rem;
     font-weight: bold;
 }
@@ -242,23 +241,27 @@
 }
 
 @media (max-width: 640px) {
-    .gc {
-        padding-top: 36px;
-    }
+.gc__statLabel {
+    color: #555;
+    font-size: 0.75rem;
+}
+    .gc__statNumber {
 
-    .gc__viewport {
-        border-radius: 22px;
+        font-size: 1rem;
     }
-
     .gc__slide {
         height: 64vh;
-        max-height: 520px;
+
     }
 
-    .gc__nav {
-        width: 40px;
-        height: 40px;
-        font-size: 26px;
-    }
+ 
+ .gc__nav {
+        width: 30px;
+        height: 30px;
+        font-size: 24px;
+        color: #1d4ed8;
+        }
 
+    
+  
 }

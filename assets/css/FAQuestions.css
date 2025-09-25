@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap');
 
 .faq {
-    padding: 24px;
+    padding: 100px;
     background-color: #F4F4F4;
 }
 
@@ -64,14 +64,30 @@
     font-weight: 700;
     color: #0f172a;
 }
+.faq__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0EA5E9, #1D4ED8);
+  color: #fff;
+}
+
+.faq__icon svg {
+  width: 60%;
+  height: 60%;
+  fill: currentColor;
+}
+
 
 .faq__chev {
     transform: rotate(0deg);
     transition: transform .2s ease;
-    color: #64748b;
-    font-family: 'Sora', sans-serif;
-    font-size: 20px;
+    color: #0062ff;
     line-height: 1;
+    width: 30px;
 }
 
 .faq__chev--open {

@@ -79,35 +79,53 @@ const stats = [
   { number: '2160+', label: 'Participantes' },
   { number: '3+', label: 'Países' }
 ]
+import {
+  mdiCash,
+  mdiAccountGroup,
+  mdiMapMarker,
+  mdiClipboardList,
+  mdiCertificate,
+  mdiCreditCard,
+  mdiGift
+} from '@mdi/js'
+
 const faqItems = [
   {
     q: '¿Tiene algún costo la inscripción?',
-    a: 'Sí, la inscripción tiene un costo de <strong>$380 MXN</strong>.'
+    a: 'Sí, la inscripción tiene un costo de <strong>$380 MXN</strong>.',
+    icon: mdiCash
   },
   {
     q: '¿Quiénes pueden asistir al congreso?',
-    a: 'Cualquier persona interesada y apasionada en la tecnología puede participar.'
+    a: 'Cualquier persona interesada y apasionada en la tecnología puede participar.',
+    icon: mdiAccountGroup
   },
   {
     q: '¿El evento será presencial, en línea o híbrido?',
-    a: 'El congreso será <strong>totalmente presencial</strong> dentro de la universidad.'
+    a: 'El congreso será <strong>totalmente presencial</strong> dentro de la universidad.',
+    icon: mdiMapMarker
   },
   {
     q: '¿Puedo inscribirme a todos los talleres o tienen cupo limitado?',
-    a: 'Con tu inscripción pagada puedes elegir <strong>un taller</strong> con cupo para <strong>20 personas</strong>. En caso de que se llene, se te asignará otro disponible.'
+    a: 'Con tu inscripción pagada puedes elegir <strong>un taller</strong> con cupo para <strong>20 personas</strong>...',
+    icon: mdiClipboardList
   },
   {
     q: '¿Habrá constancia o certificado de participación?',
-    a: 'Sí, se habilitará tu constancia si cumples con al menos el <strong>80% de asistencia</strong> al evento.'
+    a: 'Sí, se habilitará tu constancia si cumples con al menos el <strong>80% de asistencia</strong>.',
+    icon: mdiCertificate
   },
   {
     q: '¿Qué métodos de pago aceptan?',
-    a: 'Aceptamos <strong>efectivo</strong> y <strong>pago en línea</strong>.'
+    a: 'Aceptamos <strong>efectivo</strong> y <strong>pago en línea</strong>.',
+    icon: mdiCreditCard
   },
   {
     q: '¿Qué incluye mi registro?',
-    a: 'Tu registro incluye: <strong>Conferencia, taller, souvenirs</strong> (playera oficial, cilindro y regalo sorpresa) y <strong>snacks</strong>.'
-  },
-
+    a: 'Tu registro incluye: <strong>Conferencia, taller, souvenirs</strong> (playera oficial, cilindro y regalo sorpresa) y <strong>snacks</strong>.',
+    icon: mdiGift
+  }
 ]
+
+
 </script>
