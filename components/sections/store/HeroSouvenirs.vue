@@ -45,14 +45,13 @@
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;800&display=swap');
 /* Contenedor del Hero */
 .hero {
 padding: 1.2rem 0; 
   position: relative;
   background: linear-gradient(135deg, #10308b 0%, #1e66ff 55%, #1ca2ff 100%);
   overflow: hidden;
-  font-family: 'Roboto', sans-serif;
   color: #fff;
   min-height: 85vh;
 }
@@ -83,11 +82,14 @@ padding: 1.2rem 0;
   letter-spacing: 0.08em;
   opacity: 0.9;
   margin-bottom: 0.75rem;
+   font-family: 'Orbitron', sans-serif; font-weight: 800; 
+
 }
 
 /* Título principal */
 .hero-title {
   font-size: clamp(2rem, 5vw, 3.5rem);
+  font-family: 'Orbitron', sans-serif; /* Usar Orbitron para el título */
   font-weight: 900;
   line-height: 1.15;
   margin-bottom: 1rem;
