@@ -27,14 +27,16 @@
     </div>
 
     <!-- Ola en la parte inferior -->
-    <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="wave">
+    <svg
+      class="wave"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 180"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
       <path
-        d="M0,224 L60,212 C120,200 240,176 360,176 
-           C480,176 600,200 720,200 
-           C840,200 960,176 1080,170 
-           C1200,164 1320,176 1380,184 
-           L1440,192 L1440,320 L0,320 Z"
         fill="#ffffff"
+        d="M0,150 C220,55 500,100 740,150 C980,185 1220,175 1440,90 L1440,180 L0,180 Z"
       />
     </svg>
   </div>
@@ -42,5 +44,4 @@
 
 <script setup lang="ts">
 import "/assets/css/styles/store/HeroSouvenirs.css";
-
 </script>
