@@ -1,4 +1,5 @@
 <template>
+
   <section class="collection">
     <v-container class="py-12">
       <!-- Encabezado -->
@@ -171,13 +172,26 @@
   </v-btn>
 
   <CartDrawer v-model="showCart" v-model:items="cartItems" />
+    <!-- Alerta -->
+<v-card class="product-card d-flex flex-column flex-grow-1">
+  <!-- ALERTA -->
+<CustomAlert
+  v-model:show="showAlert"
+  :title="alertType === 'success' ? '✔️ Éxito' : '⚠️ Advertencia'"
+  :message="alertMessage"
+/>
+
+
+  <!-- Badge, Imagen, Contenido, Botones... (tu código existente) -->
+</v-card>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import ProductDetailsDialog from "@/components/sections/store/ProductDetailsDialog.vue";
 import CartDrawer from "@/components/sections/store/CartDrawer.vue";
-import tshirtBlack from '~/assets/images/store/t-shirt/t-shirtBlack.webp'
+import CustomAlert from "@/components/sections/store/CustomAlert.vue";
+import tshirtBlack from "~/assets/images/store/t-shirt/t-shirtBlack.webp";
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 
 type Product = {
@@ -192,10 +206,16 @@ type Product = {
   imagesByColor: Record<string, string>;
 };
 
+// --- Selección ---
 const selectedSize = ref<Record<number, string>>({});
 const selectedColor = ref<Record<number, string>>({});
 
-// Productos de ejemplo
+// --- ALERTA ---
+const showAlert = ref(false);
+const alertMessage = ref("");
+const alertType = ref<"success" | "warning" | "info" | "error">("info");
+
+// --- Productos de ejemplo ---
 const products = ref<Product[]>([
   {
     id: 1,
@@ -243,16 +263,16 @@ const products = ref<Product[]>([
   },
 ]);
 
-// Al montar, asignar primer color por defecto a cada producto
+// --- Inicializar color por defecto ---
 onMounted(() => {
   products.value.forEach((p) => {
     if (p.colors?.length && !selectedColor.value[p.id]) {
-      selectedColor.value[p.id] = p.colors[0]; // primer color por default
+      selectedColor.value[p.id] = p.colors[0];
     }
   });
 });
 
-// Filtro de categorías
+// --- Filtro de categoría ---
 const activeCategory = ref<"all" | "playera" | "termo">("all");
 const filteredProducts = computed(() =>
   activeCategory.value === "all"
@@ -260,13 +280,13 @@ const filteredProducts = computed(() =>
     : products.value.filter((p) => p.category === activeCategory.value)
 );
 
-// Imagen dinámica
+// --- Obtener imagen según color ---
 function getImage(p: Product) {
   const color = selectedColor.value[p.id];
   return color ? p.imagesByColor[color] : Object.values(p.imagesByColor)[0];
 }
 
-// --- Modal de detalles (opcional) ---
+// --- Modal de detalles ---
 const showDialog = ref(false);
 const selected = ref<Product | null>(null);
 function onDetails(p: Product) {
@@ -302,27 +322,42 @@ function onAddToCart(payload: {
   showCart.value = true;
 }
 
-// --- Validación en botón Agregar ---
+// --- Manejo de color y talla ---
+function selectColor(id: number, color: string) {
+  selectedColor.value[id] = color;
+}
+function selectSize(id: number, size: string) {
+  selectedSize.value[id] = size;
+}
+
+// --- Agregar al carrito con alertas ---
 function handleAdd(p: Product) {
   const color = selectedColor.value[p.id] || null;
   const size = selectedSize.value[p.id] || null;
 
-  // Playera → necesita color y talla
   if (p.category === "playera") {
     if (!color) {
-      return alert("⚠️ Selecciona un color antes de agregar.");
+      alertMessage.value = "⚠️ Selecciona un color antes de agregar.";
+      alertType.value = "warning";
+      showAlert.value = true;
+      return;
     }
     if (!size) {
-      return alert("⚠️ Selecciona una talla antes de agregar.");
+      alertMessage.value = "⚠️ Selecciona una talla antes de agregar.";
+      alertType.value = "warning";
+      showAlert.value = true;
+      return;
     }
   }
 
-  // Termo → necesita color
   if (p.category === "termo" && !color) {
-    return alert("⚠️ Selecciona un color antes de agregar.");
+    alertMessage.value = "⚠️ Selecciona un color antes de agregar.";
+    alertType.value = "warning";
+    showAlert.value = true;
+    return;
   }
 
-  // Si pasa validación → agregar directo
+  // Agregar al carrito
   onAddToCart({
     productId: p.id,
     color,
@@ -330,8 +365,13 @@ function handleAdd(p: Product) {
     qty: 1,
     unitPrice: p.price,
   });
+
+  alertMessage.value = "✔️ Producto agregado al carrito";
+  alertType.value = "success";
+  showAlert.value = true;
 }
 </script>
+
 
 
 <style scoped>
@@ -524,6 +564,16 @@ function handleAdd(p: Product) {
   font-size: 0.78rem;
 }
 
+.notification-alert {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* ====== footer anclado (botones alineados SIEMPRE) ====== */
 .card-footer {
   display: grid;
@@ -645,7 +695,7 @@ function handleAdd(p: Product) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #3B82F6, #06B6D4);
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
   color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
@@ -729,5 +779,4 @@ function handleAdd(p: Product) {
     padding: 4px 8px; /* Ajuste de padding para pantallas pequeñas */
   }
 }
-
 </style>

@@ -48,7 +48,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;800&display=swap');
 /* Contenedor del Hero */
 .hero {
-padding: 1.2rem 0; 
+padding: 1.8rem 0; 
   position: relative;
   background: linear-gradient(135deg, #10308b 0%, #1e66ff 55%, #1ca2ff 100%);
   overflow: hidden;
