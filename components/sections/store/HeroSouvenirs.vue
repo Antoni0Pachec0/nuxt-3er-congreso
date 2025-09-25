@@ -48,6 +48,7 @@
 
 /* Contenedor del Hero */
 .hero {
+padding: 1.2rem 0; 
   position: relative;
   background: linear-gradient(135deg, #10308b 0%, #1e66ff 55%, #1ca2ff 100%);
   overflow: hidden;
@@ -171,6 +172,29 @@
   .bg-graphic { justify-content: center; }
   .bg-img {
     max-width: 400px;
+  }
+}
+@media (max-width: 1023px) {
+    .hero{ padding: 5rem 0; }
+  .hero-inner {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.25rem;
+    padding-bottom: calc(2rem + 12vh); /* Ajusta el fondo de la ola */
+  }
+
+  .hero-text {
+    padding-right: 0;
+    margin-bottom: 2rem;
+  }
+
+  .bg-graphic {
+    justify-content: center; /* Centra la imagen en tabletas */
+  }
+
+  .bg-img {
+    max-width: 550px; /* Tamaño ajustado para tabletas */
+    margin-top: 30px;  /* Ajusta la imagen para que no se quede pegada al texto */
   }
 }
 
