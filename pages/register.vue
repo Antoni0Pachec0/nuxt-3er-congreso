@@ -984,7 +984,6 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
-    console.log('payload:', payload);
     const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true });
 
     // Caso: el back responde 200 con registro pendiente (correo inactivo)

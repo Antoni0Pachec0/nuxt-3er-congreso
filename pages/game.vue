@@ -148,27 +148,22 @@ class CarRacing {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       this.userId = parseInt(storedUserId, 10);
-      console.log('UserId cargado desde localStorage:', this.userId);
       return;
     }
     const sessionUserId = sessionStorage.getItem('userId');
     if (sessionUserId) {
       this.userId = parseInt(sessionUserId, 10);
-      console.log('UserId cargado desde sessionStorage:', this.userId);
       return;
     }
     if (window.currentUserId) {
       this.userId = parseInt(window.currentUserId, 10);
-      console.log('UserId cargado desde variable global:', this.userId);
       return;
     }
     const gameContainer = document.getElementById('gameContainer') || document.body;
     if (gameContainer.dataset.userId) {
       this.userId = parseInt(gameContainer.dataset.userId, 10);
-      console.log('UserId cargado desde data attribute:', this.userId);
       return;
     }
-    console.log('No se encontró userId desde el login, intentará obtenerlo del backend.');
   }
   
   fetchUserId() {
@@ -181,18 +176,17 @@ class CarRacing {
       .then(data => {
         if (data.userId) {
           this.userId = parseInt(data.userId, 10);
-          console.log('UserId obtenido del backend:', this.userId);
           localStorage.setItem('userId', this.userId.toString());
         } else {
-          console.error('No se pudo obtener userId desde el backend:', data.error);
+         
           this.userId = Date.now() + Math.floor(Math.random() * 1000);
-          console.log('UserId temporal generado:', this.userId);
+        
         }
       })
       .catch(err => {
-        console.error('Error al conectar con el backend para userId:', err);
+       
         this.userId = Date.now() + Math.floor(Math.random() * 1000);
-        console.log('UserId temporal generado:', this.userId);
+
       });
   }
   
@@ -399,10 +393,8 @@ class CarRacing {
         body: JSON.stringify({ value: this.score })
       })
       .then(res => res.json())
-      .then(data => console.log('Puntaje guardado via HTTP:', data))
-      .catch(err => console.error('Error al enviar puntaje via HTTP:', err));
+
     } else {
-      console.error('No se pudo enviar puntaje: userId no asignado');
     }
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
