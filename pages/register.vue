@@ -311,7 +311,7 @@
                 <div class="stack">
                   <label class="label" for="titulo_taller">Título del Taller</label>
                   <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
-                         class="input" placeholder="Título de tu taller" />
+                        class="input" placeholder="Título de tu taller" />
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_taller">Descripción del Taller</label>
