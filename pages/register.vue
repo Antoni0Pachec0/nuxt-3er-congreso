@@ -59,9 +59,9 @@
                 <div class="input-wrap">
                   <span class="input-icon"><SvgIcon :path="mdiLockOutline" type="mdi" /></span>
                   <input id="password_user" :type="showPass ? 'text' : 'password'"
-                         v-model.trim="form.password_user" required minlength="8"
-                         autocomplete="new-password" placeholder="••••••••"
-                         class="input input--pass" @input="touchPwd()" />
+                        v-model.trim="form.password_user" required minlength="8"
+                        autocomplete="new-password" placeholder="••••••••"
+                        class="input input--pass" @input="touchPwd()" />
                   <button type="button" class="eye"
                           :aria-pressed="showPass ? 'true' : 'false'"
                           :title="showPass ? 'Ocultar' : 'Mostrar'"
@@ -984,7 +984,6 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
-    console.log('payload:', payload);
     const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true });
 
     // Caso: el back responde 200 con registro pendiente (correo inactivo)
