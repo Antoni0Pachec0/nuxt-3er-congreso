@@ -7,10 +7,10 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "start": "node .output/server/index.mjs"
+    "start": "node .output/server/index.mjs",
+    "cleanup": "nuxi cleanup"
   },
   "dependencies": {
-    "@jamescoyle/vue-icon": "0.1.2",
     "@mdi/font": "7.4.47",
     "@mdi/js": "7.4.47",
     "@vitejs/plugin-vue": "^6.0.1",

@@ -30,7 +30,11 @@
           <span class="card-title__text">Crear cuenta</span>
         </h2>
 
-        <ol class="stepper stepper--timeline" aria-label="Registration progress">
+        <ol
+          class="stepper stepper--timeline"
+          :style="{ '--step-count': steps.length }"
+          aria-label="Registration progress"
+        >
           <li v-for="(s, i) in steps" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
             <span class="step__dot" aria-hidden="true"></span>
             <span class="step__index" aria-hidden="true">{{ i + 1 }}</span>
@@ -123,57 +127,45 @@
               </div>
             </div>
 
+            <!-- Teléfono principal -->
             <div class="stack">
               <label class="label" for="phone">Teléfono</label>
-              <div class="input-wrap input-wrap--phone">
-                <div class="custom-select" @click="toggleDropdown('main')">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }">
+                <div class="custom-select" @click="toggleDropdown('main')" :aria-expanded="isOpen.main">
                   <div class="selected-option">
-                    <div class="flag-wrap">
-                      <FlagIcon :country="selectedCountryCode" />
-                    </div>
-                    <span class="country-code">
-                      {{ getPhoneCode(selectedCountryCode) }}
-                    </span>
+                    <div class="flag-wrap"><FlagIcon :country="selectedCountryCode" /></div>
+                    <span class="country-code">{{ getPhoneCode(selectedCountryCode) }}</span>
                   </div>
-                  <ul v-if="isOpen.main" class="options-list">
+                  <ul v-if="isOpen.main" class="options-list" role="listbox">
                     <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'main')">
-                      <div class="flag-wrap">
-                        <FlagIcon :country="country.code" />
-                      </div>
+                      <div class="flag-wrap"><FlagIcon :country="country.code" /></div>
                       <span class="country-name">{{ country.name }}</span>
                       <span class="country-code">{{ country.phoneCode }}</span>
                     </li>
                   </ul>
                 </div>
-                <input id="phone" v-model.trim="form.phone" type="tel" required
-                       autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
+                <input id="phone" v-model.trim="form.phone" type="tel" required autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
               </div>
             </div>
 
+            <!-- Teléfono de emergencia -->
             <div class="stack">
               <label class="label" for="emergency_phone">Teléfono de emergencia</label>
-              <div class="input-wrap input-wrap--phone">
-                <div class="custom-select" @click="toggleDropdown('emergency')">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }">
+                <div class="custom-select" @click="toggleDropdown('emergency')" :aria-expanded="isOpen.emergency">
                   <div class="selected-option">
-                    <div class="flag-wrap">
-                      <FlagIcon :country="emergencyCountryCode" />
-                    </div>
-                    <span class="country-code">
-                      {{ getPhoneCode(emergencyCountryCode) }}
-                    </span>
+                    <div class="flag-wrap"><FlagIcon :country="emergencyCountryCode" /></div>
+                    <span class="country-code">{{ getPhoneCode(emergencyCountryCode) }}</span>
                   </div>
-                  <ul v-if="isOpen.emergency" class="options-list">
+                  <ul v-if="isOpen.emergency" class="options-list" role="listbox">
                     <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'emergency')">
-                      <div class="flag-wrap">
-                        <FlagIcon :country="country.code" />
-                      </div>
+                      <div class="flag-wrap"><FlagIcon :country="country.code" /></div>
                       <span class="country-name">{{ country.name }}</span>
                       <span class="country-code">{{ country.phoneCode }}</span>
                     </li>
                   </ul>
                 </div>
-                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" class="input"
-                       placeholder="Teléfono de contacto (opcional)" />
+                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" class="input" placeholder="Teléfono de contacto (opcional)" />
               </div>
             </div>
           </template>
@@ -199,7 +191,7 @@
               </div>
             </template>
             
-            <template v-if="[1, 2].includes(form.type_user_id)">
+            <template v-if="[1, 2].includes(form.type_user_id as number)">
               <div class="stack">
                 <label class="label" for="provenance">Procedencia</label>
                 <select id="provenance" v-model="form.provenance" class="input" required>
@@ -418,7 +410,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue"; 
 import { useRouter } from "vue-router";
 import SvgIcon from "@jamescoyle/vue-icon";
 import {
@@ -441,6 +433,8 @@ import { ROUTES } from '~/plugins/http/routes';
 import { parseAxiosError } from '~/plugins/http/error';
 import { notifyError, notifyWarning, notifyLoading } from '~/utils/notifications';
 import '@/assets/css/styles/Register.css';
+// Importa las rutas desde tu archivo app-routes.js
+import { APP_ROUTES, R } from '~/utils/app-routes';
 
 const router = useRouter();
 const STORAGE_KEY = "register_form_v7";
@@ -544,6 +538,18 @@ const canSubmit = computed(() => isLastStep.value && !!form.value.size_user && a
 const secretValidated = ref(false);
 const secretValidating = ref(false);
 
+const stepperRef = ref<HTMLOListElement | null>(null);
+
+function centerActiveStep() {
+  nextTick(() => {
+    const el = stepperRef.value?.querySelectorAll<HTMLElement>('.step')[step.value];
+    el?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  });
+}
+
+onMounted(centerActiveStep);
+watch(step, centerActiveStep);
+
 // Cuando cambie tipo o el texto de la clave, reinicia validación
 watch([() => form.value.type_user_id, () => form.value.secret_password], () => {
   secretValidated.value = false;
@@ -631,13 +637,13 @@ const isOpen = ref({ main: false, emergency: false });
 const selectedCountryCode = ref('mx');
 const emergencyCountryCode = ref('mx');
 const countries = ref([
-  { code: 'mx', name: 'México',         phoneCode: '+52' },
-  { code: 'us', name: 'Estados Unidos', phoneCode: '+1'  },
-  { code: 'ca', name: 'Canadá',         phoneCode: '+1'  },
-  { code: 'es', name: 'España',         phoneCode: '+34' },
-  { code: 'ar', name: 'Argentina',      phoneCode: '+54' },
-  { code: 'co', name: 'Colombia',       phoneCode: '+57' },
-  { code: 'cl', name: 'Chile',          phoneCode: '+56' },
+  { code: 'mx', name: 'México',         phoneCode: '+52' },
+  { code: 'us', name: 'Estados Unidos', phoneCode: '+1'  },
+  { code: 'ca', name: 'Canadá',         phoneCode: '+1'  },
+  { code: 'es', name: 'España',         phoneCode: '+34' },
+  { code: 'ar', name: 'Argentina',      phoneCode: '+54' },
+  { code: 'co', name: 'Colombia',       phoneCode: '+57' },
+  { code: 'cl', name: 'Chile',          phoneCode: '+56' },
 ]);
 const getPhoneCode = (code:string) => countries.value.find(c => c.code === code)?.phoneCode || '+52';
 
@@ -780,7 +786,9 @@ function guessFieldFromServerError(payload: any): { field?: string; message?: st
   if (Array.isArray(payload)) {
     const first = payload[0];
     if (first?.property) {
-      const msg = first?.constraints ? Object.values(first.constraints)[0] : undefined;
+      const msg = first?.constraints
+        ? (Object.values(first.constraints)[0] as string)
+        : undefined;
       return { field: first.property, message: msg };
     }
     if (typeof first === 'string') return guessFieldFromMessage(first);
@@ -791,7 +799,9 @@ function guessFieldFromServerError(payload: any): { field?: string; message?: st
       const first = payload.message[0];
       if (typeof first === 'string') return guessFieldFromMessage(first);
       if (first?.property) {
-        const msg = first?.constraints ? Object.values(first.constraints)[0] : undefined;
+        const msg = first?.constraints
+          ? (Object.values(first.constraints)[0] as string)
+          : undefined;
         return { field: first.property, message: msg };
       }
     } else if (typeof payload.message === 'string') {
@@ -908,10 +918,10 @@ function normalizePayload(payload:any) {
     }
 
     // 👉 redes SOLO si traen contenido real
-    if (payload.facebook_link?.trim())  finalPayload.facebook_link  = payload.facebook_link.trim();
+    if (payload.facebook_link?.trim())   finalPayload.facebook_link   = payload.facebook_link.trim();
     if (payload.instagram_link?.trim()) finalPayload.instagram_link = payload.instagram_link.trim();
-    if (payload.x_link?.trim())         finalPayload.x_link         = payload.x_link.trim();
-    if (payload.linkedin_link?.trim())  finalPayload.linkedin_link  = payload.linkedin_link.trim();
+    if (payload.x_link?.trim())          finalPayload.x_link         = payload.x_link.trim();
+    if (payload.linkedin_link?.trim())   finalPayload.linkedin_link   = payload.linkedin_link.trim();
   }
 
   return finalPayload;
@@ -939,7 +949,7 @@ async function submitRegister() {
     if (data?.already_exists) {
       localStorage.setItem('verify_email', payload.email);
       loadingToast.resolve({ title: 'Registro pendiente', message: data.message || 'Te reenviamos el código de verificación.' });
-      router.push('/verify');
+      router.push(R.to('verify'));
       return;
     }
 
@@ -950,7 +960,7 @@ async function submitRegister() {
     localStorage.removeItem(STORAGE_KEY);
 
     loadingToast.resolve({ title: 'Éxito 🎉', message: 'Cuenta creada con éxito' });
-    router.push('/verify');
+    router.push(R.to('verify'));
   } catch (err: any) {
     const status = err?.response?.status;
     const server = err?.response?.data;
@@ -974,5 +984,7 @@ async function submitRegister() {
   }
 }
 
-function goLogin() { router.push("/login"); }
+function goLogin() {
+  router.push(R.to('login'));
+}
 </script>

@@ -789,3 +789,201 @@ input:-webkit-autofill:active {
 .flag-wrap > .flag-icon { /* Si flag-icon es un componente wrapper */
      font-size: 1.5em; /* O el tamaño que necesites */
 }
+
+/* ====== PHONE INPUT dentro del campo ====== */
+.input-wrap--phone {
+  position: relative;
+  isolation: isolate;         /* 👈 crea contexto de apilamiento para el dropdown */
+}
+
+/* “pill” de país/código dentro del input */
+.input-wrap--phone .custom-select {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(var(--field-h) - 12px);
+  min-width: 92px;            /* 👈 ancho consistente para que no “salte” */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-br);
+  background: rgba(11, 21, 52, 0.85);
+  cursor: pointer;
+  z-index: 3;
+  line-height: 1;             /* evita “espacios raros” verticales */
+}
+
+/* input con padding a la izquierda para no pisar la pill */
+.input-wrap--phone .input {
+  padding-left: 122px;        /* ajusta con la min-width de arriba */
+}
+
+/* lista de países (dropdown) */
+.input-wrap--phone .options-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 8px;
+  width: 320px;
+  max-width: min(360px, calc(100vw - 56px)); /* no se sale del viewport */
+  max-height: 260px;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid var(--glass-br);
+  background: rgba(11, 21, 52, 0.98);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 60px rgba(5, 20, 40, 0.45);
+  padding: 6px 0;
+  z-index: 999;               /* por encima de todo */
+}
+
+.input-wrap--phone .options-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  line-height: 1;             /* compacta verticalmente */
+}
+.input-wrap--phone .options-list li:hover {
+  background: rgba(184, 216, 243, 0.08);
+}
+
+/* bandera y textos */
+.input-wrap--phone .flag-wrap {
+  width: 22px; height: 16px;
+  border-radius: 3px;
+  overflow: hidden;
+  flex: 0 0 22px;
+}
+.input-wrap--phone .country-name {
+  font-size: 0.9rem;
+  color: var(--ink);
+  flex: 1;
+  min-width: 120px;
+}
+.input-wrap--phone .country-code {
+  font-weight: 700;
+  color: #bde0ff;
+}
+
+/* cuando una lista está abierta, dale un poco de “aire” abajo para que no tape el siguiente campo */
+.input-wrap--phone.open { margin-bottom: 12px; }
+
+/* versión mobile: pill y padding más compactos */
+@media (max-width: 480px) {
+  .input-wrap--phone .custom-select {
+    min-width: 82px;
+    padding: 0 8px;
+    height: calc(var(--field-h) - 14px);
+  }
+  .input-wrap--phone .input { padding-left: 108px; }
+}
+
+/* ====== STEPPER limpio y responsivo ====== */
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(var(--step-count, 4), 1fr);
+  align-items: start;
+  gap: 0;
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  list-style: none;
+  overflow: visible;           /* 👈 sin barras */
+}
+
+.stepper--timeline { position: relative; }
+
+/* rail de fondo */
+.stepper--timeline::before {
+  content: "";
+  position: absolute;
+  left: 8px; right: 8px;
+  top: 16px;
+  height: 2px;
+  background: rgba(255,255,255,.14);
+  z-index: 0;
+}
+
+/* cada paso */
+.stepper--timeline .step {
+  position: relative;
+  text-align: center;
+  padding-top: 28px;
+}
+
+/* conector hacia la izquierda (solo si hay paso previo) */
+.stepper--timeline .step:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: -50%;
+  right: 50%;
+  top: 16px;
+  height: 2px;
+  background: rgba(255,255,255,.15);
+  z-index: 1;
+}
+.stepper--timeline .step.done:not(:first-child)::before {
+  background: linear-gradient(90deg, var(--blue-primary), var(--blue-accent));
+}
+
+/* punto */
+.stepper--timeline .step .step__dot {
+  position: absolute;
+  top: 7px; left: 50%;
+  transform: translateX(-50%);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  border: 2px solid rgba(255,255,255,.22);
+  z-index: 2;
+}
+
+/* paso activo destacado */
+.stepper--timeline .step.active .step__dot {
+  width: 22px; height: 22px;
+  background: var(--blue-accent);
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 6px rgba(36, 161, 228, 0.18);
+}
+
+/* índice pequeño bajo el punto (opcional) */
+.stepper--timeline .step .step__index {
+  position: absolute;
+  top: 34px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #bde0ff; font-weight: 900;
+}
+.stepper--timeline .step.active .step__index { color: #fff; }
+
+/* mostramos SOLO el label del activo como “pill” al lado del punto */
+.stepper--timeline .step .step__label { display: none; }
+.stepper--timeline .step.active .step__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 18px);
+  transform: translateX(10px);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(11, 21, 52, 0.85);
+  border: 1px solid var(--glass-br);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+/* más compacto en móviles */
+@media (max-width: 480px) {
+  .stepper--timeline .step.active .step__label {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
+}
