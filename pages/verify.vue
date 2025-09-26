@@ -242,7 +242,10 @@ async function onVerify () {
   error.value = ''
   const toast = notifyLoading('Verificando código', 'Estamos validando tu código…')
   try {
-    const payload = { email: String(email.value).toLowerCase().trim(), code: code.value }
+    const payload = { 
+      email: String(email.value).toLowerCase().trim(), 
+      code: code.value 
+    }
     await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
 
     // listo
@@ -324,12 +327,6 @@ async function pasteFromClipboard () {
 onMounted(async () => {
   canUseClipboard.value = typeof navigator !== 'undefined' && !!navigator.clipboard
   readCooldown()
-
-  // Pre-rellenar si viene ?code=XXXXXX
-  const qCode = String(route.query.code || '').trim()
-  if (/^\d{6}$/.test(qCode)) {
-    distribute(qCode)
-  }
 
   await nextTick()
   focusIndex(firstEmptyIndex())
