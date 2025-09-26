@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap');
 
-
 .gc {
     max-width: 1200px;
     margin: 0 auto;
@@ -32,6 +31,38 @@
     font-family: 'Sora', sans-serif;
 }
 
+/* --- ESTILOS PARA LA ANIMACIÓN DE SCROLL --- */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Retraso escalonado para cada sección */
+.gc>.fade-in-section:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.gc>.fade-in-section:nth-child(3) {
+    transition-delay: 0.2s;
+}
+
+.gc>.fade-in-section:nth-child(4) {
+    transition-delay: 0.3s;
+}
+
+.gc>.fade-in-section:nth-child(5) {
+    transition-delay: 0.4s;
+}
+
+/* --- FIN DE ESTILOS DE ANIMACIÓN --- */
+
+
 /* -------- stage / carrusel -------- */
 .gc__stage {
     position: relative;
@@ -52,7 +83,7 @@
 .gc__slide {
     position: relative;
     min-width: 100%;
-    height: clamp(360px, 55vw, 520px);
+    height: clamp(300px, 55vw, 520px);
 }
 
 .gc__img {
@@ -88,12 +119,12 @@
     display: inline-block;
     font-weight: 700;
     font-size: 15px;
-    width: 60px;
     letter-spacing: 0.3px;
     background: #1d4ed8;
     color: #fff;
     padding: 6px 10px;
     border-radius: 8px;
+    width: fit-content;
 }
 
 .gc__heading {
@@ -208,7 +239,6 @@
     white-space: nowrap;
 }
 
-
 .gc__thumb--active {
     outline: 3px solid #2563eb;
 }
@@ -222,9 +252,8 @@
 }
 
 .gc__statNumber {
-    color: #1d4ed8;
-        font-family: 'Sora', sans-serif;
-
+    color: #3374EE;
+    font-family: 'Sora', sans-serif;
     font-size: 1.8rem;
     font-weight: bold;
 }
@@ -242,23 +271,23 @@
 }
 
 @media (max-width: 640px) {
-    .gc {
-        padding-top: 36px;
+    .gc__statLabel {
+        color: #555;
+        font-size: 0.75rem;
     }
 
-    .gc__viewport {
-        border-radius: 22px;
+    .gc__statNumber {
+        font-size: 1rem;
     }
 
     .gc__slide {
         height: 64vh;
-        max-height: 520px;
     }
 
     .gc__nav {
-        width: 40px;
-        height: 40px;
-        font-size: 26px;
+        width: 30px;
+        height: 30px;
+        font-size: 24px;
+        color: #1d4ed8;
     }
-
 }

@@ -1,20 +1,35 @@
 .description {
     padding: 3rem 2rem;
-    text-align: center; 
+    text-align: center;
+}
+
+.tittle-description h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222;
+}
+
+.line {
+    width: 60px;
+    height: 4px;
+    background: #1e90ff;
+    margin: 0.5rem auto 2rem auto;
+    border-radius: 2px;
 }
 
 .description-text {
-        position: relative;
-        max-width: 80vw;
-        margin: 5rem auto ;
-        font-size: 1.6rem;
-        line-height: 1.6;
-        padding: 50px;
-        border-radius: var(--space-lg);
-        background-color: var(--color-white);
-        border: 5px solid #93C5FD;
-        text-align: center;
-        box-shadow: 0 8px 32px 0 rgba(36, 161, 228, 0.12), 0 1.5px 6px 0 rgba(30, 144, 255, 0.08);
+    position: relative;
+    width: 80%;
+    max-width: 960px;
+    margin: 5rem auto;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    padding: 50px;
+    border-radius: var(--space-lg);
+    background-color: var(--color-white);
+    border: 5px solid #93C5FD;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(36, 161, 228, 0.12), 0 1.5px 6px 0 rgba(30, 144, 255, 0.08);
 }
 
 .circle {
@@ -31,104 +46,85 @@
     color: #2563eb;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     animation: floatY 2.5s ease-in-out infinite;
+    z-index: 1;
 }
 
-/* Aumenta el tamaño de los iconos SVG dentro de los círculos */
+.circle-top {
+    top: -20px;
+    left: -20px;
+    z-index: 999;
+}
+
+.circle-bottom {
+    bottom: -20px;
+    right: -20px;
+    z-index: 999;
+}
+
+.circle-top {
+    top: -20px;
+    left: -20px;
+    z-index: 999;
+}
+
+.circle-bottom {
+    bottom: -20px;
+    right: -20px;
+    z-index: 999;
+}
+
 .circle svg {
     width: 1.5em;
     height: 1.5em;
     display: block;
 }
 
-
 @keyframes floatY {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-    100% { transform: translateY(0); }
-}
+    0% {
+        transform: translateY(0);
+    }
 
-.circle-top {
-    top: -20px;
-    left: -20px;
-}
+    50% {
+        transform: translateY(-12px);
+    }
 
-.circle-bottom {
-    bottom: -20px;
-    right: -20px;
+    100% {
+        transform: translateY(0);
+    }
 }
 
 
-.tittle h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #222;
-}
-
-.line {
-    width: 60px;
-    height: 4px;
-    background: #1e90ff;
-    margin: 0.5rem auto 2rem auto;
-    border-radius: 2px;
-}
 .cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-    gap: 2rem; 
-    width: 80vw; 
-    margin: 0 auto; 
-}
-
-.line-card{
-    height: 4px;
-    background: linear-gradient(to right, #ACD1FF, #95C3FD, #60A5FA, #60A5FA, #2170F2);
-    border-radius: 2px;
-    width: 100px;
-    margin: 0 auto 15px auto;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .card {
     position: relative;
     background: #fff;
     border-radius: 24px;
-    overflow: hidden;
-    padding: 1.5rem;
+    overflow: visible;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     box-shadow: 0 1px 24px 0 rgba(36, 161, 228, 0.5), 0 1.5px 6px 0 rgba(30, 144, 255, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card:hover{
+.card:hover {
     transform: translateY(-5px);
-    transition: transform 0.3s ease;
     box-shadow: 0 12px 32px 0 rgba(36, 161, 228, 0.8), 0 4.5px 12px 0 rgba(30, 144, 255, 0.2);
-    
 }
-
-.card h3 {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    min-height: 3rem; /* 👈 asegura altura uniforme para los títulos */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.card .line {
-    margin: 0 auto 1rem auto; /* 👈 espacio inferior uniforme */
-    width: 60px;
-    height: 4px;
-    background: #1e90ff;
-    border-radius: 2px;
-}
-
 
 .card::before {
     content: '';
     position: absolute;
-    inset: 0; /* top, right, bottom, left */
+    inset: 0;
     padding: 4px;
     background: linear-gradient(to bottom, #ACD1FF, #95C3FD, #60A5FA, #60A5FA, #2170F2);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -150,10 +146,160 @@
     margin: 1rem auto;
     font-size: 2rem;
     color: #fff;
-    svg {
-        width: 1.2em;
-        height: 1.2em;
-        display: block;
+}
+
+.card .icon svg {
+    width: 1.2em;
+    height: 1.2em;
+    display: block;
+}
+
+.card h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card p {
+    font-size: 1rem;
+    line-height: 1.4;
+    padding: 0 1rem 2rem 1rem;
+}
+
+.line-card {
+    height: 4px;
+    background: linear-gradient(to right, #ACD1FF, #95C3FD, #60A5FA, #60A5FA, #2170F2);
+    border-radius: 2px;
+    width: 100px;
+    margin: 0 auto 15px auto;
+}
+
+@media (max-width: 768px) {
+    .description {
+        padding: 3rem 1rem;
     }
 
+    .tittle-description h2 {
+        font-size: 1.8rem;
+    }
+
+    .description-text {
+        width: 90%;
+        margin: 4rem auto;
+        padding: 40px 25px;
+        font-size: 1.2rem;
+    }
+
+    .circle {
+        width: 50px;
+        height: 50px;
+    }
+
+    .circle svg {
+        width: 1.2em;
+        height: 1.2em;
+    }
+
+    .circle-top {
+        top: -15px;
+        left: -15px;
+    }
+
+    .circle-bottom {
+        bottom: -15px;
+        right: -15px;
+    }
+
+    .cards-container {
+        width: 90%;
+        gap: 1.5rem;
+    }
+}
+
+/* For mobile phones */
+@media (max-width: 480px) {
+    .description {
+        padding: 2rem 1rem;
+    }
+
+    .description-text {
+        font-size: .8rem;
+        padding: 30px 20px;
+        border-width: 3px;
+    }
+
+    .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        /* Aumentamos el gap un poco para que no se vea tan apretado */
+    }
+
+    .card {
+        padding: 1.5rem 1rem 1rem 1rem;
+        align-items: flex-start;
+        text-align: left;
+        padding-top: 3rem;
+    }
+
+    .card .icon {
+        position: absolute;
+        top: -20px;
+        left: -15px;
+        width: 55px;
+        height: 55px;
+        font-size: 1.4rem;
+        margin: 0;
+        border: 3px solid #93C5FD;
+        background-color: #eff6ff;
+        color: #2563eb;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .card .icon svg {
+        width: 1.2em;
+        height: 1.2em;
+    }
+
+    .card h3 {
+        font-size: .8rem;
+        min-height: 1.5rem;
+        margin-top: -10px;
+        margin-bottom: 0.5rem;
+        justify-content: flex-start;
+    }
+
+    .line-card {
+        width: 60px;
+        margin: 0 0 10px 0;
+    }
+
+    .card p {
+        font-size: 0.5rem;
+        line-height: 1.3;
+    }
+}
+
+/* --- ESTILOS PARA LA ANIMACIÓN DE SCROLL --- */
+
+/*
+  Clase para el estado inicial de los elementos que animaremos.
+  Están invisibles (opacity: 0) y ligeramente desplazados hacia abajo.
+*/
+.fade-in-bottom {
+    opacity: 0;
+    transform: translateY(30px);
+    /* Desplazamiento inicial hacia abajo */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/*
+  Clase que se añadirá con JavaScript cuando el elemento sea visible.
+  Hace que el elemento aparezca en su posición original.
+*/
+.fade-in-bottom.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
