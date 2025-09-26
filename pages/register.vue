@@ -182,14 +182,32 @@
               </select>
             </div>
 
-            <template v-if="form.type_user_id === 4">
-              <div class="stack">
-                <label class="label" for="secret_password">Contraseña Secreta</label>
-                <input id="secret_password" v-model.trim="form.secret_password" type="password" required
-                       class="input" placeholder="Ingresa la contraseña para continuar" />
-                <small class="help">Esta contraseña es proporcionada por los organizadores del evento.</small>
+          <template v-if="form.type_user_id === 4">
+            <div class="stack">
+              <label class="label" for="secret_password">Contraseña Secreta</label>
+              <div class="input-wrap">
+                <input
+                  id="secret_password"
+                  v-model.trim="form.secret_password"
+                  :type="showSecretPass ? 'text' : 'password'"
+                  required
+                  class="input input--pass"
+                  placeholder="Ingresa la contraseña para continuar"
+                />
+                <button
+                  type="button"
+                  class="eye"
+                  :aria-pressed="showSecretPass ? 'true' : 'false'"
+                  :title="showSecretPass ? 'Ocultar' : 'Mostrar'"
+                  @click="showSecretPass = !showSecretPass"
+                >
+                  <SvgIcon v-if="showSecretPass" :path="mdiEyeOffOutline" type="mdi" />
+                  <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
+                </button>
               </div>
-            </template>
+              <small class="help">Esta contraseña es proporcionada por los organizadores del evento.</small>
+            </div>
+          </template>
             
             <template v-if="[1, 2].includes(form.type_user_id as number)">
               <div class="stack">
@@ -445,6 +463,7 @@ const STORAGE_KEY = "register_form_v7";
 const step = ref(0);
 const showPass = ref(false);
 const showPass2 = ref(false);
+const showSecretPass = ref(false)
 const password2 = ref('');
 const loading = ref(false);
 const accepted = ref(false);
@@ -525,11 +544,20 @@ const isSecretPasswordValid = computed(() => (form.value.secret_password || '').
 // Password meter
 const reqs = ref({ len: false, upper: false, lower: false, num: false, sym: false });
 const pwdMatch = computed(() => password2.value === form.value.password_user && password2.value.length > 0);
-const strengthScore = computed(() => Object.values(reqs.value).filter(Boolean).length);
+const strengthScore = computed(() => {
+  const validCount = Object.values(reqs.value).filter(Boolean).length;
+  // Solo considerar la contraseña como válida si tiene al menos 3 criterios
+  return validCount;
+});
 const strengthPercent = computed(() => `${(strengthScore.value / 5) * 100}%`);
-const strengthLabel = computed(() =>
-  ['Muy débil', 'Débil', 'Media', 'Fuerte', 'Excelente'][strengthScore.value] || 'Muy débil'
-);
+const strengthLabel = computed(() => {
+  const score = strengthScore.value;
+  // Etiquetas más realistas
+  if (score <= 2) return 'Muy débil';
+  if (score === 3) return 'Media';
+  if (score === 4) return 'Fuerte';
+  return 'Excelente';
+});
 
 const isLastStep = computed(() => step.value === steps.value.length - 1);
 const canSubmit = computed(() => isLastStep.value && !!form.value.size_user && accepted.value);
@@ -616,8 +644,12 @@ watch(() => form.value.secret_password, () => { speakerSecretOk.value = false; }
  * Persistencia (sin password)
  * =================== */
 const PERSIST_KEYS = [
-  'email','name_user','paternal_surname','maternal_surname',
-  'phone','phone_country','emergency_phone','emergency_phone_country',
+  'email',
+  'password_user', // 👈 AGREGAR
+  'secret_password', // 👈 AGREGAR
+  'name_user','paternal_surname','maternal_surname',
+  // ... (el resto de tus campos)
+  'phone_country','emergency_phone','emergency_phone_country',
   'type_user_id','provenance','matricula','educational_program','grade','group_user',
   'universidad_procedencia',
   'empresa_procedencia','rol_dentro_empresa','descripcion_biografia','tipo_presentacion',
@@ -674,6 +706,15 @@ onMounted(() => {
       Object.assign(form.value, saved.form);
       step.value = saved.step ?? 0;
       accepted.value = !!saved.accepted;
+      
+      // RESTAURAR PASSWORD DE CONFIRMACIÓN
+      // Como password2 no está en el form, lo buscamos en localStorage
+      password2.value = saved.form.password_user || '';
+      
+      // Si la contraseña de ponente fue guardada, asumimos que fue validada
+      if (form.value.secret_password && isSpeaker.value) {
+        secretValidated.value = true;
+      }
 
       const mainCountry = countries.value.find(c => c.phoneCode === saved.form?.phone_country);
       if (mainCountry) selectedCountryCode.value = mainCountry.code;
@@ -682,6 +723,7 @@ onMounted(() => {
       if (emerCountry) emergencyCountryCode.value = emerCountry.code;
     }
   } catch {}
+  
   if (!form.value.phone_country) form.value.phone_country = getPhoneCode(selectedCountryCode.value);
   if (!form.value.emergency_phone_country) form.value.emergency_phone_country = getPhoneCode(emergencyCountryCode.value);
   steps.value = isSpeaker.value ? [...speakerSteps] : [...baseSteps];
@@ -701,14 +743,14 @@ watch([persistable, step, accepted], () => {
 const canProceed = computed(() => {
   switch (step.value) {
     case 0:
-      return !!form.value.email && Object.values(reqs.value).every(Boolean) && pwdMatch.value;
+      return !!form.value.email && form.value.password_user.length >= 8 && strengthScore.value >= 3 && pwdMatch.value;
     case 1:
       return !!form.value.name_user && !!form.value.paternal_surname && !!form.value.maternal_surname && !!form.value.phone;
     case 2: {
       if (!form.value.type_user_id) return false;
 
       // Para ponente: que haya escrito la contraseña
-      if (isSpeaker.value) return secretValidated.value;
+      if (isSpeaker.value) return secretValidated.value || isSecretPasswordValid.value;
 
       // UTTECAM / Otra (alumno o docente)
       const t = Number(form.value.type_user_id);
