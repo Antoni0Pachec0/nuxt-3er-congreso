@@ -129,7 +129,7 @@
                 <div class="custom-select" @click="toggleDropdown('main')">
                   <div class="selected-option">
                     <div class="flag-wrap">
-                      <flag-icon :country="selectedCountryCode"></flag-icon>
+                      <FlagIcon :country="selectedCountryCode" />
                     </div>
                     <span class="country-code">
                       {{ getPhoneCode(selectedCountryCode) }}
@@ -138,7 +138,7 @@
                   <ul v-if="isOpen.main" class="options-list">
                     <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'main')">
                       <div class="flag-wrap">
-                        <flag-icon :country="country.code"></flag-icon>
+                        <FlagIcon :country="country.code" />
                       </div>
                       <span class="country-name">{{ country.name }}</span>
                       <span class="country-code">{{ country.phoneCode }}</span>
@@ -156,7 +156,7 @@
                 <div class="custom-select" @click="toggleDropdown('emergency')">
                   <div class="selected-option">
                     <div class="flag-wrap">
-                      <flag-icon :country="emergencyCountryCode"></flag-icon>
+                      <FlagIcon :country="emergencyCountryCode" />
                     </div>
                     <span class="country-code">
                       {{ getPhoneCode(emergencyCountryCode) }}
@@ -165,7 +165,7 @@
                   <ul v-if="isOpen.emergency" class="options-list">
                     <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'emergency')">
                       <div class="flag-wrap">
-                        <flag-icon :country="country.code"></flag-icon>
+                        <FlagIcon :country="country.code" />
                       </div>
                       <span class="country-name">{{ country.name }}</span>
                       <span class="country-code">{{ country.phoneCode }}</span>
@@ -218,7 +218,7 @@
                   </div>
                   <div class="stack">
                     <label class="label" for="programa_educativo">Programa Educativo</label>
-                    <select id="programa_educativo" v-model.trim="form.programa_educativo" class="input" required>
+                    <select id="programa_educativo" v-model.trim="form.educational_program" class="input" required>
                       <option disabled value="">Selecciona tu programa</option>
                       <option value="TI">Tecnologías de la Información</option>
                       <option value="MCC">Mecatrónica</option>
@@ -230,13 +230,11 @@
                 <div class="grid resp" v-if="form.type_user_id === 1">
                   <div class="stack">
                     <label class="label" for="grado">Grado</label>
-                    <input id="grado" v-model.trim="form.grado" type="text" required
-                           class="input" placeholder="Ej. 7" />
+                    <input id="grado"  v-model.trim="form.grade"  type="text" required class="input" placeholder="Ej. 7" />
                   </div>
                   <div class="stack">
                     <label class="label" for="grupo">Grupo</label>
-                    <input id="grupo" v-model.trim="form.grupo" type="text" required
-                           class="input" placeholder="Ej. C" />
+                    <input id="grupo"  v-model.trim="form.group_user" type="text" required class="input" placeholder="Ej. C" />
                   </div>
                 </div>
               </template>
@@ -419,34 +417,37 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import SvgIcon from "@jamescoyle/vue-icon";
-import { 
-  mdiAccountPlusOutline, 
-  mdiEmailOutline, 
-  mdiLockOutline, 
-  mdiLockCheckOutline, 
-  mdiEyeOutline, 
-  mdiEyeOffOutline, 
-  mdiArrowLeft, 
+import {
+  mdiAccountPlusOutline,
+  mdiEmailOutline,
+  mdiLockOutline,
+  mdiLockCheckOutline,
+  mdiEyeOutline,
+  mdiEyeOffOutline,
+  mdiArrowLeft,
   mdiClose,
   mdiFacebook,
   mdiInstagram,
   mdiTwitter,
   mdiLinkedin
 } from '@mdi/js';
+import FlagIcon from "@/components/atoms/FlagIcon.vue";
 import api from '~/plugins/http/api';
 import { ROUTES } from '~/plugins/http/routes';
 import { parseAxiosError } from '~/plugins/http/error';
-import { notifySuccess, notifyError, notifyWarning, notifyLoading } from '~/utils/notifications';
-import '@/assets/css/styles/Register.css'; 
+import { notifyError, notifyWarning, notifyLoading } from '~/utils/notifications';
+import '@/assets/css/styles/Register.css';
 
 const router = useRouter();
 const STORAGE_KEY = "register_form_v7";
 
-// Estados reactivos
+/* ===================
+ * Estados
+ * =================== */
 const step = ref(0);
 const showPass = ref(false);
 const showPass2 = ref(false);
@@ -455,15 +456,23 @@ const loading = ref(false);
 const accepted = ref(false);
 const showTermsModal = ref(false);
 
-// Definición de pasos para cada flujo
-const steps = ref([]);
+// Password meter: mostrar sólo tras tocar
+const passwordTouched = ref(false);
+function touchPwd() { passwordTouched.value = true; }
+
+// Verificación remota de contraseña de ponente
+const speakerSecretOk = ref(false);
+
+/* ===================
+ * Stepper
+ * =================== */
+const steps = ref<{key:string;label:string}[]>([]);
 const baseSteps = [
   { key: 'account', label: 'Cuenta' },
   { key: 'personal', label: 'Datos personales' },
   { key: 'user_type', label: 'Tipo de usuario' },
   { key: 'final', label: 'Finalizar' }
 ];
-
 const speakerSteps = [
   { key: 'account', label: 'Cuenta' },
   { key: 'personal', label: 'Datos personales' },
@@ -473,13 +482,12 @@ const speakerSteps = [
   { key: 'final', label: 'Finalizar' }
 ];
 
-// Formulario completo
+/* ===================
+ * Form
+ * =================== */
 const form = ref({
-  // Datos de cuenta
   email: '',
   password_user: '',
-  
-  // Datos personales
   name_user: '',
   paternal_surname: '',
   maternal_surname: '',
@@ -487,18 +495,15 @@ const form = ref({
   phone_country: '+52',
   emergency_phone: '',
   emergency_phone_country: '+52',
-  
-  // Tipo de usuario y campos asociados
-  type_user_id: null,
-  provenance: '',                  // 'uttecam' | 'otra'
+  type_user_id: null as number | null,
+  provenance: '',
   matricula: '',
-  educational_program: '', 
-  grade: '',   
+  educational_program: '',
+  grade: '',
   group_user: '',
   universidad_procedencia: '',
-  
-  // Campos para Ponente/Tallerista
-  secret_password: '', // He cambiado el nombre de la variable para que coincida con el template
+  // Ponente
+  secret_password: '',
   empresa_procedencia: '',
   rol_dentro_empresa: '',
   descripcion_biografia: '',
@@ -507,36 +512,74 @@ const form = ref({
   descripcion_conferencia: '',
   titulo_taller: '',
   descripcion_taller: '',
-
-  // Redes sociales (nuevo)
+  // Redes
   facebook_link: '',
   instagram_link: '',
   x_link: '',
   linkedin_link: '',
-  
   // Final
   size_user: ''
 });
 
-// Computed properties
+/* ===================
+ * Computed
+ * =================== */
 const isSpeaker = computed(() => form.value.type_user_id === 4);
-const isStudentOrTeacher = computed(() => [1, 2].includes(form.value.type_user_id));
-// La contraseña secreta debe ser validada en el backend en un entorno real,
-// pero para el ejemplo, la validación se hace en el frontend.
-const isSecretPasswordValid = computed(() => form.value.secret_password === 'ponente2024');
+const isStudentOrTeacher = computed(() => [1, 2].includes(Number(form.value.type_user_id)));
+const isSecretPasswordValid = computed(() => (form.value.secret_password || '').trim().length > 0);
 
-// Validación de contraseña
+// Password meter
 const reqs = ref({ len: false, upper: false, lower: false, num: false, sym: false });
 const pwdMatch = computed(() => password2.value === form.value.password_user && password2.value.length > 0);
 const strengthScore = computed(() => Object.values(reqs.value).filter(Boolean).length);
 const strengthPercent = computed(() => `${(strengthScore.value / 5) * 100}%`);
-const strengthLabel = computed(() => 
+const strengthLabel = computed(() =>
   ['Muy débil', 'Débil', 'Media', 'Fuerte', 'Excelente'][strengthScore.value] || 'Muy débil'
 );
 
-// Watchers
-watch(() => form.value.password_user, (newPwd) => {
-  const p = newPwd || '';
+const isLastStep = computed(() => step.value === steps.value.length - 1);
+const canSubmit = computed(() => isLastStep.value && !!form.value.size_user && accepted.value);
+
+// --- NUEVO: estado para secret remoto
+const secretValidated = ref(false);
+const secretValidating = ref(false);
+
+// Cuando cambie tipo o el texto de la clave, reinicia validación
+watch([() => form.value.type_user_id, () => form.value.secret_password], () => {
+  secretValidated.value = false;
+});
+
+/* ===================
+ * Validación remota de contraseña de ponente
+ * =================== */
+// --- NUEVO: valida contra tu endpoint
+async function validateSpeakerSecret() {
+  if (!isSpeaker.value) return true;
+  const secret = (form.value.secret_password || '').trim();
+  if (!secret) {
+    notifyWarning('Contraseña requerida', 'Ingresa la contraseña de ponente.');
+    return false;
+  }
+
+  try {
+    secretValidating.value = true;
+    await api.post(ROUTES.AUTH.CHECK_SPEAKER_SECRET, { secret_password: secret });
+    secretValidated.value = true;
+    return true;
+  } catch (err: any) {
+    secretValidated.value = false;
+    const msg = err?.response?.data?.message || 'Contraseña de ponente inválida';
+    notifyError('Contraseña inválida', msg);
+    return false;
+  } finally {
+    secretValidating.value = false;
+  }
+}
+
+/* ===================
+ * Watchers
+ * =================== */
+watch(() => form.value.password_user, (p = '') => {
   reqs.value = {
     len: p.length >= 8,
     upper: /[A-Z]/.test(p),
@@ -546,164 +589,275 @@ watch(() => form.value.password_user, (newPwd) => {
   };
 });
 
-// Watcher para cambiar los pasos al cambiar el tipo de usuario
-watch(isSpeaker, (isNowSpeaker) => {
-  steps.value = isNowSpeaker ? [...speakerSteps] : [...baseSteps];
-  // Resetear campos de ponente si se cambia a otro tipo de usuario
-  if (!isNowSpeaker) {
-    // Lista de campos específicos de ponente para limpiar
-    const ponenteFields = ['secret_password', 'empresa_procedencia', 'rol_dentro_empresa', 'descripcion_biografia', 'tipo_presentacion', 'titulo_conferencia', 'descripcion_conferencia', 'titulo_taller', 'descripcion_taller', 'facebook_link', 'instagram_link', 'x_link', 'linkedin_link'];
-    ponenteFields.forEach(field => form.value[field] = '');
+watch(isSpeaker, (now) => {
+  steps.value = now ? [...speakerSteps] : [...baseSteps];
+  // al cambiar tipo → invalidar verificación y limpiar campos de ponente
+  speakerSecretOk.value = false;
+  if (!now) {
+    const fields = [
+      'secret_password','empresa_procedencia','rol_dentro_empresa','descripcion_biografia',
+      'tipo_presentacion','titulo_conferencia','descripcion_conferencia','titulo_taller',
+      'descripcion_taller','facebook_link','instagram_link','x_link','linkedin_link'
+    ];
+    fields.forEach(k => (form.value as any)[k] = '');
   }
 });
 
-// Persistencia en localStorage
+// si cambia la clave secreta, hay que revalidar
+watch(() => form.value.secret_password, () => { speakerSecretOk.value = false; });
+
+/* ===================
+ * Persistencia (sin password)
+ * =================== */
+const PERSIST_KEYS = [
+  'email','name_user','paternal_surname','maternal_surname',
+  'phone','phone_country','emergency_phone','emergency_phone_country',
+  'type_user_id','provenance','matricula','educational_program','grade','group_user',
+  'universidad_procedencia',
+  'empresa_procedencia','rol_dentro_empresa','descripcion_biografia','tipo_presentacion',
+  'titulo_conferencia','descripcion_conferencia','titulo_taller','descripcion_taller',
+  'facebook_link','instagram_link','x_link','linkedin_link','size_user'
+];
+const persistable = computed(() => {
+  const out:any = {};
+  for (const k of PERSIST_KEYS) out[k] = (form.value as any)[k] ?? '';
+  return out;
+});
+
+/* ===================
+ * Países / ladas
+ * =================== */
+const isOpen = ref({ main: false, emergency: false });
+const selectedCountryCode = ref('mx');
+const emergencyCountryCode = ref('mx');
+const countries = ref([
+  { code: 'mx', name: 'México',         phoneCode: '+52' },
+  { code: 'us', name: 'Estados Unidos', phoneCode: '+1'  },
+  { code: 'ca', name: 'Canadá',         phoneCode: '+1'  },
+  { code: 'es', name: 'España',         phoneCode: '+34' },
+  { code: 'ar', name: 'Argentina',      phoneCode: '+54' },
+  { code: 'co', name: 'Colombia',       phoneCode: '+57' },
+  { code: 'cl', name: 'Chile',          phoneCode: '+56' },
+]);
+const getPhoneCode = (code:string) => countries.value.find(c => c.code === code)?.phoneCode || '+52';
+
+const toggleDropdown = (type:'main'|'emergency') => {
+  const other = type === 'main' ? 'emergency' : 'main';
+  if (isOpen.value[other]) isOpen.value[other] = false;
+  isOpen.value[type] = !isOpen.value[type];
+};
+const selectCountry = (country:{code:string; phoneCode:string}, type:'main'|'emergency') => {
+  if (type === 'main') {
+    selectedCountryCode.value = country.code;
+    form.value.phone_country = country.phoneCode;
+    isOpen.value.main = false;
+  } else {
+    emergencyCountryCode.value = country.code;
+    form.value.emergency_phone_country = country.phoneCode;
+    isOpen.value.emergency = false;
+  }
+};
+
+/* ===================
+ * Carga inicial
+ * =================== */
 onMounted(() => {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (Object.keys(saved).length > 0) {
-      Object.assign(form.value, saved.form || {});
+    if (saved?.form) {
+      Object.assign(form.value, saved.form);
       step.value = saved.step ?? 0;
       accepted.value = !!saved.accepted;
-      password2.value = saved.password2 || '';
 
-      // MODIFICACIÓN 3: Asegurarse de que los estados reactivos de la bandera se inicialicen
-      // a partir del código de país almacenado en `form.phone_country`.
       const mainCountry = countries.value.find(c => c.phoneCode === saved.form?.phone_country);
-      if (mainCountry) {
-        selectedCountryCode.value = mainCountry.code;
-      }
-      const emergencyCountry = countries.value.find(c => c.phoneCode === saved.form?.emergency_phone_country);
-      if (emergencyCountry) {
-        emergencyCountryCode.value = emergencyCountry.code;
-      }
+      if (mainCountry) selectedCountryCode.value = mainCountry.code;
 
-      // Asegurarse de que los pasos sean correctos al cargar
-      steps.value = isSpeaker.value ? [...speakerSteps] : [...baseSteps];
+      const emerCountry = countries.value.find(c => c.phoneCode === saved.form?.emergency_phone_country);
+      if (emerCountry) emergencyCountryCode.value = emerCountry.code;
     }
-
-  } catch (e) {
-    console.error("Error al cargar datos del localStorage:", e);
-  }
-
-  // Si no hay datos cargados, establecer los valores predeterminados (MODIFICACIÓN 3)
-  if (!form.value.phone_country) {
-    form.value.phone_country = getPhoneCode(selectedCountryCode.value); // +52
-  }
-  if (!form.value.emergency_phone_country) {
-    form.value.emergency_phone_country = getPhoneCode(emergencyCountryCode.value); // +52
-  }
+  } catch {}
+  if (!form.value.phone_country) form.value.phone_country = getPhoneCode(selectedCountryCode.value);
+  if (!form.value.emergency_phone_country) form.value.emergency_phone_country = getPhoneCode(emergencyCountryCode.value);
+  steps.value = isSpeaker.value ? [...speakerSteps] : [...baseSteps];
 });
 
-watch([form, step, accepted, password2], () => {
+watch([persistable, step, accepted], () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    form: form.value,
+    form: persistable.value,
     step: step.value,
-    accepted: accepted.value,
-    password2: password2.value
+    accepted: accepted.value
   }));
 }, { deep: true });
 
-// Validación para avanzar
+/* ===================
+ * Validación por paso (FE)
+ * =================== */
 const canProceed = computed(() => {
   switch (step.value) {
-    case 0: // Cuenta
+    case 0:
       return !!form.value.email && Object.values(reqs.value).every(Boolean) && pwdMatch.value;
-
-    case 1: // Datos personales
+    case 1:
       return !!form.value.name_user && !!form.value.paternal_surname && !!form.value.maternal_surname && !!form.value.phone;
-
-    case 2: { // Tipo de usuario y datos dependientes
+    case 2: {
       if (!form.value.type_user_id) return false;
 
-      if (isSpeaker.value) return isSecretPasswordValid.value;
+      // Para ponente: que haya escrito la contraseña
+      if (isSpeaker.value) return secretValidated.value;
 
-      const isStudent = Number(form.value.type_user_id) === 1;
-      const isTeacher = Number(form.value.type_user_id) === 2;
-
+      // UTTECAM / Otra (alumno o docente)
+      const t = Number(form.value.type_user_id);
       const prov = (form.value.provenance || '').toLowerCase();
+      const isStudent = t === 1, isTeacher = t === 2;
 
       if ((isStudent || isTeacher) && prov === 'uttecam') {
         const hasMat = !!form.value.matricula;
         const hasProg = !!form.value.educational_program;
-
         if (isStudent) {
           const validGrade = typeof form.value.grade === 'string' && form.value.grade.length >= 1 && form.value.grade.length <= 2;
           const validGroup = typeof form.value.group_user === 'string' && form.value.group_user.length === 1;
           return hasMat && hasProg && validGrade && validGroup;
         }
-        // Docente UTTECAM: matricula + programa educativo
         return hasMat && hasProg;
       }
-
       if ((isStudent || isTeacher) && prov === 'otra') {
         return !!form.value.universidad_procedencia;
       }
-
       return true;
     }
 
-    case 3: // Datos de Ponente/Tallerista (solo para ponentes)
-      // Esta validación solo aplica si el usuario es ponente
+    case 3:
       if (isSpeaker.value) {
-        const hasBiography = !!form.value.empresa_procedencia && !!form.value.rol_dentro_empresa && !!form.value.descripcion_biografia;
-        const hasPresentationInfo = (form.value.tipo_presentacion === 'conferencia' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia) ||
-                                     (form.value.tipo_presentacion === 'taller' && !!form.value.titulo_taller && !!form.value.descripcion_taller) ||
-                                     (form.value.tipo_presentacion === 'ambas' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia && !!form.value.titulo_taller && !!form.value.descripcion_taller);
-        return hasBiography && hasPresentationInfo;
+        const hasBio = !!form.value.empresa_procedencia && !!form.value.rol_dentro_empresa && !!form.value.descripcion_biografia;
+        const tp = form.value.tipo_presentacion;
+        const confOk = tp === 'conferencia' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia;
+        const tallOk = tp === 'taller' && !!form.value.titulo_taller && !!form.value.descripcion_taller;
+        const ambasOk = tp === 'ambas' && !!form.value.titulo_conferencia && !!form.value.descripcion_conferencia && !!form.value.titulo_taller && !!form.value.descripcion_taller;
+        return hasBio && (confOk || tallOk || ambasOk);
       }
-      // Si no es ponente, esta validación no aplica, pero la lógica de la plantilla debería manejarlo.
       return true;
-
-    case 4: // Redes Sociales (solo para ponentes)
-      // Este paso no tiene campos obligatorios, por lo que siempre se puede avanzar
-      return true;
-
-    case 5: // Finalizar (Ponente)
+    case 4:
+      return true; // Redes opcionales
+    case 5:
       return isSpeaker.value && !!form.value.size_user && accepted.value;
-      
     default:
       return true;
   }
 });
 
-const canSubmit = computed(() => {
-  // Determina si el usuario está en el último paso de su flujo y si los campos están llenos
-  const isLastStep = computed(() => step.value === steps.value.length - 1);
-  return isLastStep && !!form.value.size_user && accepted.value;
-});
 
-// Navegación
-function prevStep() {
-  if (step.value > 0) step.value--;
+
+/* ===================
+ * Navegación
+ * =================== */
+function prevStep() { if (step.value > 0) step.value--; }
+
+// focus helper
+function focusField(field?: string) {
+  if (!field) return;
+  const fieldStepMap: Record<string, number> = {
+    email:0, password_user:0,
+    name_user:1, paternal_surname:1, maternal_surname:1, phone:1,
+    type_user_id:2, provenance:2, educational_program:2, matricula:2, grade:2, group_user:2, universidad_procedencia:2, secret_password:2,
+    empresa_procedencia:3, rol_dentro_empresa:3, descripcion_biografia:3, tipo_presentacion:3,
+    titulo_conferencia:3, descripcion_conferencia:3, titulo_taller:3, descripcion_taller:3,
+    size_user: isSpeaker.value ? 5 : 3
+  };
+  const to = fieldStepMap[field];
+  if (typeof to === 'number') step.value = to;
+  requestAnimationFrame(() => {
+    const el = document.getElementById(field);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      (el as HTMLInputElement).focus?.();
+    }
+  });
 }
 
-// Lógica de avance y envío de formulario
+/* ===================
+ * Parseo de errores del back (DTO / ValidationPipe)
+ * =================== */
+function guessFieldFromServerError(payload: any): { field?: string; message?: string } {
+  if (Array.isArray(payload)) {
+    const first = payload[0];
+    if (first?.property) {
+      const msg = first?.constraints ? Object.values(first.constraints)[0] : undefined;
+      return { field: first.property, message: msg };
+    }
+    if (typeof first === 'string') return guessFieldFromMessage(first);
+  }
+  if (typeof payload === 'string') return guessFieldFromMessage(payload);
+  if (payload?.message) {
+    if (Array.isArray(payload.message)) {
+      const first = payload.message[0];
+      if (typeof first === 'string') return guessFieldFromMessage(first);
+      if (first?.property) {
+        const msg = first?.constraints ? Object.values(first.constraints)[0] : undefined;
+        return { field: first.property, message: msg };
+      }
+    } else if (typeof payload.message === 'string') {
+      return guessFieldFromMessage(payload.message);
+    }
+  }
+  return {};
+}
+
+function guessFieldFromMessage(msg: string) {
+  const pairs: Array<{ re: RegExp; field: string }> = [
+    { re: /email/i, field: 'email' },
+    { re: /(password|contrase[ñn]a)/i, field: 'password_user' },
+    { re: /(nombre|name)/i, field: 'name_user' },
+    { re: /(paterno)/i, field: 'paternal_surname' },
+    { re: /(materno)/i, field: 'maternal_surname' },
+    { re: /(tel[eé]fono|phone)/i, field: 'phone' },
+    { re: /(tipo.*usuario|type_user)/i, field: 'type_user_id' },
+    { re: /(provenien|proceden)/i, field: 'provenance' },
+    { re: /(matr[ií]cula)/i, field: 'matricula' },
+    { re: /(programa)/i, field: 'educational_program' },
+    { re: /(grado)/i, field: 'grade' },
+    { re: /(grupo)/i, field: 'group_user' },
+    { re: /(universidad)/i, field: 'universidad_procedencia' },
+    { re: /(secreta|secret)/i, field: 'secret_password' },
+    { re: /(empresa)/i, field: 'empresa_procedencia' },
+    { re: /(rol)/i, field: 'rol_dentro_empresa' },
+    { re: /(biograf[ií]a)/i, field: 'descripcion_biografia' },
+    { re: /(presentaci[oó]n|tipo_presentaci[oó]n)/i, field: 'tipo_presentacion' },
+    { re: /(conferencia)/i, field: 'titulo_conferencia' },
+    { re: /(taller)/i, field: 'titulo_taller' },
+    { re: /(talla)/i, field: 'size_user' },
+  ];
+  for (const { re, field } of pairs) {
+    if (re.test(msg)) return { field, message: msg };
+  }
+  return { message: msg };
+}
+
+/* ===================
+ * Avance / Submit
+ * =================== */
 async function nextOrSubmit() {
   if (!canProceed.value) {
     notifyWarning('Campos incompletos', 'Revisa los campos requeridos antes de continuar.');
     return;
   }
 
-  // Si estamos en el último paso, enviar el formulario
-  if (step.value === steps.value.length - 1) {
-    submitRegister();
-    return;
+  // 👉 Paso 2: si es ponente y aún no validamos, validamos ahora
+  if (step.value === 2 && isSpeaker.value && !secretValidated.value) {
+    const ok = await validateSpeakerSecret();
+    if (!ok) return; // no avances
   }
 
-  // Lógica de salto de pasos
-  // Si es un ponente y está en el paso de tipo de usuario
-  if (isSpeaker.value && step.value === 2) {
-    // La validación de la contraseña ya se hizo en `canProceed`
-    step.value++; // Avanzar al siguiente paso del flujo de ponente (Datos de Ponente)
+  if (isLastStep.value) {
+    submitRegister();
   } else {
     step.value++;
   }
 }
 
-// Normalización de teléfonos y limpieza del payload
-function normalizePayload(payload) {
-  const finalPayload = {
+/* ===================
+ * Payload normalizado
+ * =================== */
+function normalizePayload(payload:any) {
+  const finalPayload:any = {
     email: payload.email,
     password_user: payload.password_user,
     name_user: payload.name_user,
@@ -713,23 +867,22 @@ function normalizePayload(payload) {
     size_user: payload.size_user
   };
 
-  // Teléfonos (limpios + lada)
-  const clean = v => v?.replace(/\D/g, '');
+  const clean = (v:string) => v?.replace(/\D/g, '');
+
   if (payload.phone) {
     finalPayload.phone = `${payload.phone_country}${clean(payload.phone)}`;
   }
-  if (payload.emergency_phone) {
+  // emergencia OPCIONAL: solo si trae algo
+  if (payload.emergency_phone?.trim()) {
     finalPayload.emergency_phone = `${payload.emergency_phone_country}${clean(payload.emergency_phone)}`;
   }
 
-  // Estudiante/Docente
-  if ([1, 2].includes(Number(payload.type_user_id))) {
+  if ([1,2].includes(Number(payload.type_user_id))) {
     finalPayload.provenance = (payload.provenance || '').toLowerCase();
-
     if (finalPayload.provenance === 'uttecam') {
       finalPayload.matricula = payload.matricula || '';
       finalPayload.educational_program = payload.educational_program || '';
-      if (Number(payload.type_user_id) === 1) { // Estudiante
+      if (Number(payload.type_user_id) === 1) {
         finalPayload.grade = payload.grade || '';
         finalPayload.group_user = payload.group_user || '';
       }
@@ -738,7 +891,6 @@ function normalizePayload(payload) {
     }
   }
 
-  // Ponente/Tallerista
   if (Number(payload.type_user_id) === 4) {
     finalPayload.secret_password = payload.secret_password || '';
     finalPayload.empresa_procedencia = payload.empresa_procedencia || '';
@@ -746,27 +898,30 @@ function normalizePayload(payload) {
     finalPayload.descripcion_biografia = payload.descripcion_biografia || '';
     finalPayload.tipo_presentacion = payload.tipo_presentacion || '';
 
-    if (['conferencia', 'ambas'].includes(payload.tipo_presentacion)) {
+    if (['conferencia','ambas'].includes(payload.tipo_presentacion)) {
       finalPayload.titulo_conferencia = payload.titulo_conferencia || '';
       finalPayload.descripcion_conferencia = payload.descripcion_conferencia || '';
     }
-    if (['taller', 'ambas'].includes(payload.tipo_presentacion)) {
+    if (['taller','ambas'].includes(payload.tipo_presentacion)) {
       finalPayload.titulo_taller = payload.titulo_taller || '';
       finalPayload.descripcion_taller = payload.descripcion_taller || '';
     }
 
-    finalPayload.facebook_link = payload.facebook_link || '';
-    finalPayload.instagram_link = payload.instagram_link || '';
-    finalPayload.x_link = payload.x_link || '';
-    finalPayload.linkedin_link = payload.linkedin_link || '';
+    // 👉 redes SOLO si traen contenido real
+    if (payload.facebook_link?.trim())  finalPayload.facebook_link  = payload.facebook_link.trim();
+    if (payload.instagram_link?.trim()) finalPayload.instagram_link = payload.instagram_link.trim();
+    if (payload.x_link?.trim())         finalPayload.x_link         = payload.x_link.trim();
+    if (payload.linkedin_link?.trim())  finalPayload.linkedin_link  = payload.linkedin_link.trim();
   }
 
   return finalPayload;
 }
 
-// Envío del formulario
+/* ===================
+ * Submit
+ * =================== */
 async function submitRegister() {
-  if (loading.value) return; // ⬅️ evita doble envío por doble click/enter
+  if (loading.value) return;
   if (!canSubmit.value) {
     notifyWarning('Formulario incompleto', 'Debes aceptar los términos y elegir tu talla.');
     return;
@@ -777,94 +932,47 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
+    console.log('payload:', payload);
+    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true });
 
-    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, {
-      withCredentials: true, // quítalo si no usas cookies aquí
-    });
-
-    // (Opcional) si algún día devuelves verification_token:
-    if (data?.verification_token) {
-      localStorage.setItem('verification_token', data.verification_token);
+    // Caso: el back responde 200 con registro pendiente (correo inactivo)
+    if (data?.already_exists) {
+      localStorage.setItem('verify_email', payload.email);
+      loadingToast.resolve({ title: 'Registro pendiente', message: data.message || 'Te reenviamos el código de verificación.' });
+      router.push('/verify');
+      return;
     }
 
+    if (data?.verification_token) {
+      // localStorage.setItem('verification_token', data.verification_token);
+    }
     localStorage.setItem('verify_email', payload.email);
     localStorage.removeItem(STORAGE_KEY);
 
     loadingToast.resolve({ title: 'Éxito 🎉', message: 'Cuenta creada con éxito' });
     router.push('/verify');
-  } catch (err) {
-    console.error(err);
-
-    // Si el back devolvió 409 por P2002, muéstralo claro
+  } catch (err: any) {
     const status = err?.response?.status;
-    const serverMsg = err?.response?.data?.message;
-    let errorMessage = parseAxiosError(err) || 'Error desconocido.';
+    const server = err?.response?.data;
 
-    if (status === 409 && serverMsg) {
-      errorMessage = Array.isArray(serverMsg) ? serverMsg.join('\n') : serverMsg;
+    if (status === 409) {
+      const msg = Array.isArray(server?.message) ? server.message.join('\n') : (server?.message || 'Conflicto');
+      loadingToast.reject({ title: 'Registro pendiente', message: msg });
+    } else {
+      const picked = guessFieldFromServerError(server?.errors || server?.message || server);
+      if (picked?.field) {
+        focusField(picked.field);
+        notifyError('Corrige este campo', picked.message || 'Dato inválido');
+        loadingToast.reject({ title: 'Validación', message: picked.message || 'Corrige el campo indicado' });
+      } else {
+        const msg = parseAxiosError(err) || 'Ocurrió un error al registrar.';
+        loadingToast.reject({ title: 'Error en registro', message: msg });
+      }
     }
-
-    loadingToast.reject({ title: 'Error en registro', message: errorMessage });
   } finally {
     loading.value = false;
   }
 }
 
-// ... importaciones y estados iniciales
-
-// Nuevos estados para el selector de país
-const isOpen = ref({ // Modificado a objeto para manejar ambos dropdowns
-  main: false,
-  emergency: false
-});
-const selectedCountryCode = ref('mx'); // Código inicial para la bandera principal
-const emergencyCountryCode = ref('mx'); // Código inicial para la bandera de emergencia
-
-const countries = ref([
-  { code: 'mx', name: 'México', phoneCode: '+52' },
-  { code: 'us', name: 'Estados Unidos', phoneCode: '+1' },
-  { code: 'es', name: 'España', phoneCode: '+34' },
-  // Agrega más países si es necesario
-]);
-
-// Inicializa el código de país en el formulario al cargar
-onMounted(() => {
-  // ... tu lógica de onMounted
-  if (!form.value.phone_country) {
-    // Asume que el código de país se almacena en `phone_country` en el formulario
-    form.value.phone_country = getPhoneCode(selectedCountryCode.value);
-  }
-});
-
-// Función para obtener la lada
-const getPhoneCode = (code) => {
-  const country = countries.value.find(c => c.code === code);
-  return country ? country.phoneCode : '+52';
-};
-
-// Funciones de interacción del selector
-const toggleDropdown = (type) => {
-  // Cierra el otro dropdown si está abierto
-  const otherType = type === 'main' ? 'emergency' : 'main';
-  if (isOpen.value[otherType]) {
-    isOpen.value[otherType] = false;
-  }
-  isOpen.value[type] = !isOpen.value[type];
-};
-
-const selectCountry = (country, type) => {
-  if (type === 'main') {
-    selectedCountryCode.value = country.code;
-    form.value.phone_country = country.phoneCode; // Actualiza el código en el formulario
-    isOpen.value.main = false;
-  } else if (type === 'emergency') {
-    emergencyCountryCode.value = country.code;
-    form.value.emergency_phone_country = country.phoneCode; // Actualiza el código en el formulario
-    isOpen.value.emergency = false;
-  }
-};
-
-function goLogin() {
-  router.push("/login");
-}
+function goLogin() { router.push("/login"); }
 </script>
