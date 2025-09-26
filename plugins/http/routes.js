@@ -2,6 +2,7 @@
 export const ROUTES = {
   AUTH: {
     REGISTER: '/auth/register',
+    CHECK_SPEAKER_SECRET: '/auth/speakers/check-secret',
     VERIFY: '/auth/verify',
     RESEND: '/auth/resend', // 👈 si tienes endpoint para reenvío
     LOGIN: '/auth/login',

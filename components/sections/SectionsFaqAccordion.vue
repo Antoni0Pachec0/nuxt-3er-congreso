@@ -1,6 +1,6 @@
 <!-- components/sections/FaqAccordion.vue -->
 <template>
-  <section class="faq">
+  <section class="faq fade-in-section">
     <header class="faq__head">
       <h2 class="faq__title">Preguntas Frecuentes</h2>
       <div class="faq__underline"></div>

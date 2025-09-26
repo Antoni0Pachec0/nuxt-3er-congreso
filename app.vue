@@ -1,4 +1,3 @@
-<!-- app.vue -->
 <template>
   <div>
     <!-- Header solo si NO es login o register -->
@@ -39,4 +38,17 @@
 import Header from "@/components/layout/Header.vue";
 import Footer from "@/components/layout/Footer.vue";
 import { Notivue, Notification } from "notivue";
+import 'notivue/notifications.css';
+import 'notivue/animations.css';
+import '@/assets/css/notifications.css'; // Tu archivo de estilos personalizados
+
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+
+const route = useRoute()
+const hideOn = new Set(['/login', '/register', '/verify'])
+const shouldShowHeader = computed(() => !hideOn.has(route.path))
+const shouldShowFooter = computed(() => !hideOn.has(route.path))
+
+
 </script>

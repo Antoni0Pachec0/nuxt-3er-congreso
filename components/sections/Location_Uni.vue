@@ -1,6 +1,6 @@
 <template>
-  <section id="location-uni" class="location-uni">
-    <div class="loc-head">
+  <section id="location-uni" class="location-uni  ">
+    <div class="loc-head fade-in-section">
       <h2 class="loc-title">Ubicación dentro de la Universidad</h2>
       <span class="loc-underline" aria-hidden="true"></span>
       <p class="loc-desc">

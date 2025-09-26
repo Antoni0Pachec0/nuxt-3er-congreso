@@ -2,29 +2,39 @@
    TOKENS (consistentes)
 ============================== */
 :root {
-  --bg-900: #071320;
-  --bg-800: #0b1e33;
-  --ink: #eaf3ff;
-  --muted: #b6c4da;
-  --blue-300: #4db8ff;
-  --blue-400: #2a9bff;
-  --blue-500: #0e82ff;
-  --blue-600: #2160e6;
-  --glass-1: rgba(255, 255, 255, .08);
-  --glass-2: rgba(255, 255, 255, .05);
-  --glass-br: rgba(120, 170, 255, .38);
-  --ring-in: rgba(60, 130, 255, .22);
-  --ring-in2: rgba(20, 160, 255, .18);
+  /* Paleta - ACTUALIZADA a la nueva paleta */
+  --bg-900: #0B1534; /* Fondo más oscuro */
+  --bg-800: #132953; /* Tono intermedio para el hero */
+  --ink: #F7F8F9; /* Texto principal */
+  --muted: #929CAC; /* Texto secundario */
+  
+  /* Colores de acento */
+  --blue-primary: #1E5A93; /* Azul para botones y elementos clave */
+  --blue-accent: #24A1E4; /* Azul vibrante para acentos */
+  --blue-ghost-bg: rgba(184, 216, 243, 0.1);
+  --blue-ghost-border: rgba(184, 216, 243, 0.4);
 
+  /* Vidrio - Ajustados a la paleta */
+  --glass-1: rgba(184, 216, 243, 0.08);
+  --glass-2: rgba(184, 216, 243, 0.05);
+  --glass-br: rgba(184, 216, 243, 0.38);
+
+  /* Anillos - Ajustados a la paleta */
+  --ring-in: rgba(30, 90, 147, 0.22);
+  --ring-in2: rgba(36, 161, 228, 0.18);
+
+  /* Bordes / sombras */
   --radius-md: 14px;
   --radius-xl: 22px;
-  --shadow: 0 18px 60px rgba(5, 20, 40, .35);
+  --shadow: 0 18px 60px rgba(5, 20, 40, 0.35);
 
+  /* Tipografía fluida */
   --fz-sm: clamp(.85rem, .75rem + .2vw, .95rem);
   --fz-base: clamp(.95rem, .9rem + .3vw, 1rem);
   --fz-lg: clamp(1.1rem, 1rem + .6vw, 1.25rem);
   --fz-hero: clamp(2rem, 6vw, 3.5rem);
 
+  /* Dimensiones */
   --field-h: 56px;
   /* un poco más alto en móvil para tacto */
   --otp-size: 64px;
@@ -57,14 +67,16 @@
   min-height: 100svh;
   color: var(--ink);
   padding: clamp(16px, 3vw, 48px);
+  /* ACTUALIZADO a la nueva paleta de gradientes */
   background:
-    radial-gradient(1200px 600px at 70% 15%, rgba(46, 130, 255, .22), transparent 60%),
-    radial-gradient(900px 800px at -10% 90%, rgba(20, 180, 255, .16), transparent 60%),
+    radial-gradient(1200px 600px at 70% 15%, rgba(30, 90, 147, 0.22), transparent 60%),
+    radial-gradient(900px 800px at -10% 90%, rgba(36, 161, 228, 0.16), transparent 60%),
     linear-gradient(135deg, var(--bg-800), var(--bg-900));
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .verify-bg {
@@ -86,7 +98,7 @@
   height: 420px;
   left: -140px;
   top: -120px;
-  background: var(--blue-400);
+  background: var(--blue-accent); /* ACTUALIZADO */
 }
 
 .blob--br {
@@ -94,7 +106,7 @@
   height: 460px;
   right: -120px;
   bottom: -120px;
-  background: var(--blue-500);
+  background: var(--blue-primary); /* ACTUALIZADO */
 }
 
 .ring {
@@ -109,7 +121,7 @@
   height: 520px;
   right: -200px;
   top: -40px;
-  box-shadow: inset 0 0 0 2px var(--ring-in), inset 0 0 40px 10px rgba(60, 130, 255, .08);
+  box-shadow: inset 0 0 0 2px var(--ring-in), inset 0 0 40px 10px rgba(30, 90, 147, 0.08); /* ACTUALIZADO */
 }
 
 .ring--2 {
@@ -117,7 +129,7 @@
   height: 360px;
   right: -40px;
   top: 100px;
-  box-shadow: inset 0 0 0 2px var(--ring-in2), inset 0 0 40px 10px rgba(20, 160, 255, .06);
+  box-shadow: inset 0 0 0 2px var(--ring-in2), inset 0 0 40px 10px rgba(36, 161, 228, 0.06); /* ACTUALIZADO */
 }
 
 .shape {
@@ -131,7 +143,7 @@
   top: 140px;
   width: 22px;
   height: 22px;
-  border: 2px solid var(--blue-400);
+  border: 2px solid var(--blue-accent); /* ACTUALIZADO */
   transform: rotate(45deg);
   border-radius: 4px;
 }
@@ -141,7 +153,7 @@
   top: 220px;
   width: 8px;
   height: 8px;
-  background: var(--blue-400);
+  background: var(--blue-accent); /* ACTUALIZADO */
   border-radius: 50%;
 }
 
@@ -177,13 +189,12 @@
   line-height: 1.1;
   font-family: 'Orbitron', sans-serif;
   font-weight: 800;
-
 }
 
 .kicker {
   display: block;
   margin-bottom: .5rem;
-  color: var(--blue-300);
+  color: var(--blue-accent); /* ACTUALIZADO */
   letter-spacing: .3em;
   font-weight: 800;
   text-transform: uppercase;
@@ -198,7 +209,7 @@
 }
 
 .hero-title .line2 {
-  color: #38bdf8;
+  color: var(--blue-accent); /* ACTUALIZADO */
 }
 
 .subtitle {
@@ -214,6 +225,7 @@
   justify-self: center;
   width: var(--card-w);
   border-radius: var(--radius-xl);
+  /* ACTUALIZADO a la nueva paleta de vidrio */
   background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
   border: 1px solid var(--glass-br);
   box-shadow: var(--shadow);
@@ -236,7 +248,7 @@
 .card-title .arrow svg {
   width: 22px;
   height: 22px;
-  color: var(--blue-400);
+  color: var(--blue-accent); /* ACTUALIZADO */
 }
 
 /* ==============================
@@ -269,19 +281,18 @@
   font-size: clamp(1.25rem, 6vw, 1.75rem);
   font-weight: 800;
   border-radius: 16px;
-  border: 1px solid rgba(120, 170, 255, .32);
-  background: rgba(5, 10, 20, .58);
+  border: 1px solid rgba(30, 90, 147, 0.5); /* ACTUALIZADO */
+  background: rgba(11, 21, 52, 0.5); /* ACTUALIZADO */
   color: var(--ink);
   outline: none;
   caret-color: transparent;
-  /* sin caret visible para que no “salte” */
   transition: border-color .2s, box-shadow .2s, background .2s, transform .04s ease;
 }
 
 .otp-input:focus {
-  border-color: var(--blue-500);
-  box-shadow: 0 0 0 4px rgba(14, 130, 255, .18);
-  background: rgba(10, 18, 35, .7);
+  border-color: var(--blue-primary); /* ACTUALIZADO */
+  box-shadow: 0 0 0 4px rgba(36, 161, 228, 0.18); /* ACTUALIZADO */
+  background: rgba(11, 21, 52, 0.8); /* ACTUALIZADO */
   transform: translateY(-1px);
 }
 
@@ -314,8 +325,8 @@
   height: var(--field-h);
   width: 100%;
   border-radius: var(--radius-md);
-  border: 1px solid var(--blue-500);
-  background: linear-gradient(180deg, var(--blue-500), var(--blue-600));
+  border: 1px solid var(--blue-accent); /* ACTUALIZADO */
+  background: linear-gradient(180deg, var(--blue-primary), var(--blue-accent)); /* ACTUALIZADO */
   color: #fff;
   font-weight: 800;
   letter-spacing: .2px;
@@ -352,7 +363,7 @@
   background: none;
   border: 0;
   cursor: pointer;
-  color: var(--blue-300);
+  color: var(--blue-accent); /* ACTUALIZADO */
   font-weight: 800;
   padding: 0;
   font-size: var(--fz-sm);
@@ -368,7 +379,7 @@
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--blue-500);
+  outline: 2px solid var(--blue-primary); /* ACTUALIZADO */
   border-radius: 6px;
   outline-offset: 2px;
 }
@@ -384,9 +395,8 @@
   padding-top: clamp(.6rem, 1.2vw, .9rem);
 }
 
-
 /* ============================
-   RESPONSIVE 
+   RESPONSIVE
 ============================ */
 
 @media (max-width: 767px) {
@@ -415,10 +425,11 @@
   }
 
   :root {
-    --otp-size: 48px; 
-    --otp-gap: 8px;   
+    --otp-size: 48px;
+    --otp-gap: 8px;
   }
 }
+
 @media (max-width: 360px) {
   .otp-grid {
     grid-template-columns: repeat(6, 1fr);

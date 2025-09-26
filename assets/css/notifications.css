@@ -1,0 +1,67 @@
+/* assets/css/notifications.css */
+
+/* Contenedor de la notificación */
+.notification-container {
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  padding: 15px;
+  transition: transform 0.3s ease; /* Suaviza la transición */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Animación de entrada y salida */
+.notification-enter-active,
+.notification-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.notification-enter, .notification-leave-to {
+  opacity: 0;
+  transform: translateY(-10px); /* Deslizar hacia arriba */
+}
+
+/* Encabezado de la notificación */
+.notification-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  font-size: 1.5rem;
+}
+
+/* Estilos para cada tipo de notificación */
+.notification.success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.notification.error {
+  background-color: #F44336;
+  color: white;
+}
+
+.notification.warning {
+  background-color: #FF9800;
+  color: black;
+}
+
+.notification.loading {
+  background-color: #2196F3;
+  color: white;
+}
+
+/* Efecto hover */
+.notification-container:hover {
+  transform: translateY(-5px); /* Efecto hover */
+}
+
+/* Estilo para el mensaje */
+.message {
+  font-size: 1rem;
+  line-height: 1.5;
+}

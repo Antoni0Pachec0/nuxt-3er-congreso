@@ -12,12 +12,9 @@
                 </svg>
             </div>
             <div class="mapa-uni-google">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30202.882301691618!2d-97.72136954999999!3d18.8710912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfbf640db83211%3A0x86fce97bd24ed08e!2sUniversidad%20Tecnol%C3%B3gica%20de%20Tecamachalco!5e0!3m2!1ses-419!2smx!4v1757627957707!5m2!1ses-419!2smx"
-                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15101.977598695532!2d-97.7332616323778!3d18.865135822388957!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfbf640db83211%3A0x86fce97bd24ed08e!2sUniversidad%20Tecnol%C3%B3gica%20de%20Tecamachalco!5e0!3m2!1ses-419!2smx!4v1758661616781!5m2!1ses-419!2smx" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
-            <div class="info-column-map">
+            <div class="info-column-map fade-in-section">
                 <div class="info-map-content">
                     <div class="icon-wrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -31,7 +28,6 @@
                     </div>
                     <h2>Ubicación del Evento</h2>
                     <div class="title-underline"></div>
-
                     <div class="info-list-map">
                         <div class="info-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -66,8 +62,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="floating-pin-icon">
+            <div class="floating-pin-icon fade-in-section">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -79,5 +74,27 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import '@/assets/css/styles/Mapa.css';
+
+onMounted(() => {
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.1,
+        }
+    );
+
+    const sectionsToAnimate = document.querySelectorAll(".fade-in-section");
+    sectionsToAnimate.forEach((section) => {
+        observer.observe(section);
+    });
+});
 </script>
