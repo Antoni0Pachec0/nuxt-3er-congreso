@@ -8,6 +8,7 @@ export const ROUTES = {
     LOGIN: '/auth/login',
     ME: '/auth/me',
     REFRESH: '/auth/refresh',
+    SCORE: '/auth/game',
   },
   USERS: {
     LIST: '/users',

@@ -48,22 +48,25 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import fondo1 from '@/assets/images/images/funds/fondo.png';
-import fondo2 from '@/assets/images/images/funds/fondoTarde.png';
-import fondo3 from '@/assets/images/images/funds/fondoNoche.png';
-import carMotocle from '@/assets/images/images/cars/motocle.png';
-import combi from '@/assets/images/images/cars/combi.png';
-import carro from '@/assets/images/images/cars/carro.png';
-import hinfinitum from '@/assets/images/images/cars/hinfinitum.png';
-import moto from '@/assets/images/images/cars/moto.png';
-import bici from '@/assets/images/images/cars/bici.png';
-import Pedraza from '@/assets/images/images/professors/Pedraza.png';
-import Elvis from '@/assets/images/images/professors/Elvis.png';
-import Julio from '@/assets/images/images/professors/Julio.png';
-import Victor from '@/assets/images/images/professors/Victor.png';
-import Elit from '@/assets/images/images/logos/elit.png';
-import LogoCongreso from '@/assets/images/images/logos/LogoCongreso.png';
-
+import fondo1 from '@/assets/images/images/funds/fondo.webp';
+import fondo2 from '@/assets/images/images/funds/fondoTarde.webp';
+import fondo3 from '@/assets/images/images/funds/fondoNoche.webp';
+import carMotocle from '@/assets/images/images/cars/motocle.webp';
+import combi from '@/assets/images/images/cars/combi.webp';
+import carro from '@/assets/images/images/cars/carro.webp';
+import hinfinitum from '@/assets/images/images/cars/hinfinitum.webp';
+import moto from '@/assets/images/images/cars/moto.webp';
+import bici from '@/assets/images/images/cars/bici.webp';
+import Pedraza from '@/assets/images/images/professors/Pedraza.webp';
+import Elvis from '@/assets/images/images/professors/Elvis.webp';
+import Julio from '@/assets/images/images/professors/Julio.webp';
+import Victor from '@/assets/images/images/professors/Victor.webp';
+import Elit from '@/assets/images/images/logos/elit.webp';
+import LogoCongreso from '@/assets/images/images/logos/LogoCongreso.webp';
+import api from '@/plugins/http/api'; 
+import cancion1 from '@/assets/sounds/elAmordeSuVida.mp3';
+import cancion2 from '@/assets/sounds/LaCumbiaDelRio.mp3';
+import cancion3 from '@/assets/sounds/LaCumbiaDelRio2.mp3';
 
 const entryPage = ref(null);
 const gameContainer = ref(null);
@@ -135,7 +138,7 @@ class CarRacing {
     this.canvas.addEventListener("touchmove", (e) => this.handleTouchMove(e));
     this.canvas.addEventListener("touchend", (e) => this.handleTouchEnd(e));
     window.addEventListener("resize", () => this.resizeCanvas());
-    this.songs = ["../assets/sounds/elAmordeSuVida.mp3", "../assets/sounds/hablamedeti.mp3", "../assets/sounds/coqueta.mp3", "../assets/sounds/lasnoches.mp3", "../assets/sounds/MALPORTA.mp3", "../assets/sounds/SabanasBlancas.mp3", "../assets/sounds/Secunena.mp3", "../assets/sounds/MIÉNTELE.mp3", "../assets/sounds/TUSANCHO.mp3", "../assets/sounds/CAPERUZA.mp3", "../assets/sounds/SERPIENTE.mp3", "../assets/sounds/goosebumps.mp3", "../assets/sounds/ENALTAVOZ.mp3"];
+    this.songs = [cancion1, cancion2, cancion3];
     this.songPool = Array.from({ length: this.songs.length }, (_, i) => i);
     this.shuffleSongs();
     this.currentSongIndex = 0;
@@ -165,29 +168,22 @@ class CarRacing {
       return;
     }
   }
-  
   fetchUserId() {
-    fetch('http://localhost:3000/auth/user-id', {
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('jwtToken') || ''}` },
-      credentials: 'include'
+    const token = localStorage.getItem('jwtToken') || '';
+    if (!token) return;
+    fetch('http://localhost:3001/scores', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data.userId) {
-          this.userId = parseInt(data.userId, 10);
-          localStorage.setItem('userId', this.userId.toString());
-        } else {
-         
-          this.userId = Date.now() + Math.floor(Math.random() * 1000);
-        
-        }
-      })
-      .catch(err => {
-       
-        this.userId = Date.now() + Math.floor(Math.random() * 1000);
-
-      });
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.id) {
+        this.userId = data.id;
+        localStorage.setItem('userId', data.id);
+      }
+    })
+    .catch(err => {
+    });
   }
   
   shuffleSongs() {
@@ -383,22 +379,27 @@ class CarRacing {
       const logoSize = 120;
       this.ctx.drawImage(this.congresoLogo, 10, this.base_height - logoSize - 10, logoSize, logoSize);
     }
-    if (this.userId !== null) {
-      fetch('http://localhost:3001/scores', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwtToken') || ''}`
-        },
-        body: JSON.stringify({ value: this.score })
-      })
-      .then(res => res.json())
-
+     if (this.userId !== null) {
+        console.log('Intentando enviar puntaje via Axios (con cookie)...');
+        
+        // Usa la instancia 'api' de Axios para enviar la petición
+        api.post('/scores', { 
+            value: this.score 
+        })
+        .then(response => {
+            console.log('Puntaje guardado con éxito (Axios):', response.data);
+        })
+        .catch(error => {
+            console.error('Error al enviar puntaje via Axios:', error.message);
+        });
+        
     } else {
+        console.error('No se pudo enviar puntaje: userId no asignado');
     }
+
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
-  
+
   check_collision() {
     const hitboxScale = 0.5;
     const car_rect = {
