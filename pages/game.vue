@@ -64,9 +64,9 @@ import Victor from '@/assets/images/images/professors/Victor.webp';
 import Elit from '@/assets/images/images/logos/elit.webp';
 import LogoCongreso from '@/assets/images/images/logos/LogoCongreso.webp';
 import api from '@/plugins/http/api'; 
-import cancion1 from '@/assets/sounds/elAmordeSuVida.mp3';
-import cancion2 from '@/assets/sounds/LaCumbiaDelRio.mp3';
-import cancion3 from '@/assets/sounds/LaCumbiaDelRio2.mp3';
+import cancion1 from '@/assets/sounds_game/SabanasBlancas.mp3';
+import cancion2 from '@/assets/sounds_game/Serpiente.mp3';
+import cancion3 from '@/assets/sounds_game/ENALTAVOZ.mp3';
 
 const entryPage = ref(null);
 const gameContainer = ref(null);
