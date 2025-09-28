@@ -1,10 +1,8 @@
-<!-- components/sections/Hero.vue -->
 <template>
   <section id="hero" class="hero">
     <div id="particles-js" aria-hidden="true"></div>
 
-    <div class="container">
-      <!-- Columna izquierda: título + banda -->
+    <div class="container fade-in-section">
       <div class="col-left">
         <div class="heading orbitron">
           <span class="kicker">3er</span>
@@ -14,13 +12,11 @@
           </h1>
         </div>
 
-        <!-- Banda ahora dentro de col-left -->
         <div class="banded-title sora">
           Tecnologías de la Información • Innovación Digital
         </div>
       </div>
 
-      <!-- Columna derecha: logo -->
       <div class="col-right">
         <div class="logo-wrap">
           <div class="logo-glow"></div>
@@ -30,30 +26,29 @@
         </div>
       </div>
 
-      <!-- Countdown -->
-      <p class="countdown-label">El evento comienza en</p>
-      <div class="countdown">
+      <p class="countdown-label" v-if="!eventHasStarted">El evento comienza en</p>
+      <p class="countdown-label" v-if="eventHasStarted">El evento ha comenzado!!!</p>
+      
+      <div class="countdown" v-if="!eventHasStarted">
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.days }}</div>
-          <span class="cd-caption">DÍAS</span>
+          <span class="cd-caption">DAYS</span>
         </div>
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.hours }}</div>
-          <span class="cd-caption">HORAS</span>
+          <span class="cd-caption">HOURS</span>
         </div>
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.minutes }}</div>
-          <span class="cd-caption">MINUTOS</span>
+          <span class="cd-caption">MINUTES</span>
         </div>
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.seconds }}</div>
-          <span class="cd-caption">SEGUNDOS</span>
+          <span class="cd-caption">SECONDS</span>
         </div>
       </div>
 
-      <!-- Info cards -->
       <div class="info-row">
-        <!-- Fechas -->
         <div class="info-card">
           <div class="info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,10 +63,8 @@
           </div>
         </div>
 
-        <!-- Ubicación -->
-        <div class="info-card">
+        <div class="info-card cards-info">
           <div class="info-icon" aria-hidden="true">
-            <!-- Pin de ubicación -->
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 21s-6-5.4-6-10a6 6 0 1 1 12 0c0 4.6-6 10-6 10z" />
@@ -87,7 +80,6 @@
       </div>
     </div>
 
-    <!-- Ola decorativa inferior -->
     <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 180" preserveAspectRatio="none"
       aria-hidden="true">
       <path fill="#ffffff" d="M0,150 C220,55 500,100 740,150 C980,185 1220,175 1440,90 L1440,180 L0,180 Z" />
@@ -96,10 +88,8 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, reactive } from 'vue'
-import '~/assets/css/styles/hero.css'
-import logo from '@/assets/images/Logo.png'
-import '@/assets/css/styles/Hero.css'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import '~/assets/css/styles/Hero.css'
 
 // Fecha del evento
 const target = new Date('2025-11-12T09:00:00')
@@ -107,11 +97,23 @@ const target = new Date('2025-11-12T09:00:00')
 const timeLeft = reactive({ days: '00', hours: '00', minutes: '00', seconds: '00' })
 let timer
 
+const eventHasStarted = ref(false)
+
 const pad = (n) => String(n).padStart(2, '0')
 
 const tick = () => {
   const now = new Date().getTime()
-  const diff = Math.max(0, target.getTime() - now)
+  const diff = target.getTime() - now
+
+  if (diff <= 0) {
+    eventHasStarted.value = true
+    timeLeft.days = '00'
+    timeLeft.hours = '00'
+    timeLeft.minutes = '00'
+    timeLeft.seconds = '00'
+    clearInterval(timer)
+    return
+  }
 
   const d = Math.floor(diff / (1000 * 60 * 60 * 24))
   const h = Math.floor((diff / (1000 * 60 * 60)) % 24)
@@ -126,15 +128,7 @@ const tick = () => {
 
 onMounted(() => {
   tick()
-  timer = setInterval(() => {
-    tick()
-    if (
-      timeLeft.days === '00' &&
-      timeLeft.hours === '00' &&
-      timeLeft.minutes === '00' &&
-      timeLeft.seconds === '00'
-    ) clearInterval(timer)
-  }, 1000)
+  timer = setInterval(tick, 1000)
 })
 
 onUnmounted(() => clearInterval(timer))

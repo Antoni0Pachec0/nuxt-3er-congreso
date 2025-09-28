@@ -1,22 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap');
 
 .faq {
-    padding: 24px;
+    padding: 60px 20px;
     background-color: #F4F4F4;
 }
 
 .faq__head {
     text-align: center;
     margin-bottom: 18px;
+    padding: 0 10px;
 }
 
 .faq__title {
     font-family: 'Sora', sans-serif;
     font-weight: 800;
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    /* responsivo */
 }
 
 .faq__underline {
-    width: 80px;
+    width: 60px;
     height: 4px;
     background: #2563eb;
     border-radius: 999px;
@@ -54,24 +57,34 @@
 }
 
 .faq__icon {
-    width: 38px;
-    height: 38px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0EA5E9, #1D4ED8);
+    color: #fff;
+}
+
+.faq__icon svg {
+    width: 60%;
+    height: 60%;
+    fill: currentColor;
 }
 
 .faq__q {
     font-weight: 700;
     color: #0f172a;
+    font-size: clamp(0.95rem, 1.8vw, 1.1rem);
 }
 
 .faq__chev {
     transform: rotate(0deg);
     transition: transform .2s ease;
-    color: #64748b;
-    font-family: 'Sora', sans-serif;
-    font-size: 20px;
+    color: #0062ff;
     line-height: 1;
+    width: 26px;
 }
 
 .faq__chev--open {
@@ -80,12 +93,18 @@
 
 .faq__panel {
     padding: 0 16px 14px 66px;
-    /* alinea con el texto de la pregunta, dejando espacio del ícono */
+    /* espacio alineado con ícono */
 }
 
+
+
 .faq__a {
-    background: rgba(37, 99, 235, .06);
-    border: 1px solid rgba(37, 99, 235, .15);
+    border-left: solid 4px #3b82f6;
+background: linear-gradient(
+    135deg,
+  rgba(59, 130, 246, 0.2) 0%,   /* #3B82F6 con 20% */
+  rgba(147, 197, 253, 0.1) 100% /* #93C5FD con 10% */
+);
     color: #475569;
     padding: 12px 14px;
     border-radius: 12px;
@@ -94,7 +113,7 @@
     font-size: 15px;
 }
 
-/* Animación de altura */
+/* Animación */
 .faq-collapse-enter-from,
 .faq-collapse-leave-to {
     max-height: 0;
@@ -112,8 +131,24 @@
     transition: all .22s ease;
 }
 
-@media (max-width: 640px) {
-    .faq__panel {
-        padding-left: 62px;
+/* ================== RESPONSIVE ================== */
+
+/* Tablets */
+@media (min-width: 640px) {
+    .faq {
+        padding: 80px 40px;
+    }
+
+    .faq__list {
+        gap: 16px;
+    }
+
+    .faq__icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .faq__q {
+        font-size: 1.1rem;
     }
 }

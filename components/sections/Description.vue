@@ -1,13 +1,11 @@
 <template>
     <section id="description" class="description">
-        <!-- Título -->
-        <div class="tittle-description">
+        <div class="tittle-description fade-in-bottom" ref="titleRef">
             <h2>El Congreso que Marca el Futuro Digital</h2>
             <div class="line"></div>
         </div>
 
-        <!-- Texto -->
-        <p class="description-text">
+        <p class="description-text fade-in-bottom" ref="descriptionRef">
             <span class="circle circle-top">
                 <SvgIcon type="mdi" :path="pathTop" />
             </span>
@@ -21,8 +19,7 @@
             inteligencia artificial, ciberseguridad, innovación digital y transformación empresarial.
         </p>
 
-        <!-- Cards -->
-        <div class="cards-container">
+        <div class="cards-container fade-in-bottom" ref="cardsRef">
             <div v-for="(item, index) in cards" :key="index" class="card">
                 <div class="icon">
                     <SvgIcon v-if="item.iconType && item.iconPath" :type="item.iconType" :path="item.iconPath" />
@@ -35,11 +32,11 @@
         </div>
     </section>
 </template>
-
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import '@/assets/css/styles/Description.css';
 import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiWeb, mdiCloudUploadOutline, mdiBrain,mdiBookOpenVariantOutline,mdiConnection,mdiDumbbell } from '@mdi/js'
+import { mdiWeb, mdiCloudUploadOutline, mdiBrain, mdiBookOpenVariantOutline, mdiConnection, mdiDumbbell } from '@mdi/js'
 
 const pathTop = mdiWeb
 const pathBottom = mdiCloudUploadOutline
@@ -48,8 +45,48 @@ const pathBook = mdiBookOpenVariantOutline
 const pathConnection = mdiConnection
 const pathDumbbell = mdiDumbbell
 
+// CAMBIO (1/3): Crear una referencia para el título
+const titleRef = ref(null);
+const descriptionRef = ref(null);
+const cardsRef = ref(null);
 
-// Cards
+let observer;
+
+onMounted(() => {
+    const options = {
+        root: null, 
+        threshold: 0.1,
+    };
+
+    observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+
+    // CAMBIO (2/3): Empezar a observar el elemento del título
+    if (titleRef.value) {
+        observer.observe(titleRef.value);
+    }
+    if (descriptionRef.value) {
+        observer.observe(descriptionRef.value);
+    }
+    if (cardsRef.value) {
+        observer.observe(cardsRef.value);
+    }
+});
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect();
+    }
+});
+// FIN DEL CAMBIO (3/3): No se necesita hacer nada más.
+
+// Cards (sin cambios)
 const cards = [
     {
         title: "Difusión del conocimiento",
