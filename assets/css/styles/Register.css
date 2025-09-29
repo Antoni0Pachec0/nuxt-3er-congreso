@@ -1,12 +1,12 @@
-/* ==============================
-   VARIABLES – Diseño fluido
-============================== */
+/* ====================================================================
+   I. VARIABLES - Diseño Fluido y Paleta
+==================================================================== */
 :root {
   /* Colores base - Alineados con tu paleta */
   --bg-900: #0B1534; /* Fondo más oscuro */
   --bg-800: #132953; /* Tono intermedio para el hero */
   --ink: #F7F8F9; /* Texto principal */
-  --muted: #929CAC; /* Texto secundario */
+  --muted: #929CAC; /* Texto secundario (ayuda, etc.) */
 
   /* Colores de acento */
   --blue-primary: #1E5A93; /* Azul para botones y elementos clave */
@@ -14,22 +14,23 @@
   --blue-ghost-bg: rgba(184, 216, 243, 0.1);
   --blue-ghost-border: rgba(184, 216, 243, 0.4);
 
-  /* Colores de estado */
+  /* Colores de estado (Password Meter, Alerts) */
   --error: #ef4444;
   --warning: #f59e0b;
   --success: #22c55e;
-  --info: #0ea5e9;
+  --info: #0ea5e9; /* Usado para "Fuerte" */
 
-  /* Vidrio - Ajustados a la paleta */
+  /* Estilos de Cristal (Glassmorphism) */
   --glass-1: rgba(184, 216, 243, 0.08);
   --glass-2: rgba(184, 216, 243, 0.05);
-  --glass-br: rgba(184, 216, 243, 0.38);
+  --glass-br: rgba(184, 216, 243, 0.38); /* Borde */
 
-  /* Anillos - Ajustados a la paleta */
+  /* Efectos de fondo */
   --ring-in: rgba(30, 90, 147, 0.22);
   --ring-in2: rgba(36, 161, 228, 0.18);
+  --shadow: 0 18px 60px rgba(5, 20, 40, 0.35);
 
-  /* Espaciado / radios / sombras */
+  /* Espaciado / radios / alturas */
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
   --space-md: 1rem;
@@ -37,22 +38,21 @@
   --space-xl: 2rem;
   --radius-md: 14px;
   --radius-lg: 22px;
-  --shadow: 0 18px 60px rgba(5, 20, 40, 0.35);
+  --field-h: 44px; /* Altura de campos */
 
-  /* Tipografía fluida */
+  /* Tipografía fluida (min, preferred, max) */
   --fz-sm: clamp(0.8rem, 0.75rem + 0.2vw, 0.9rem);
   --fz-base: clamp(0.9rem, 0.85rem + 0.3vw, 1rem);
   --fz-lg: clamp(1.05rem, 1rem + 0.6vw, 1.2rem);
   --fz-hero: clamp(2rem, 6vw, 3.5rem);
 
-  /* Dimensiones */
+  /* Dimensiones del Layout */
   --card-w: max(300px, min(100%, 600px));
-  --field-h: 44px;
 }
 
-/* ==============================
-   RESET / BASE
-============================== */
+/* ====================================================================
+   II. BASE / RESET
+==================================================================== */
 .auth-screen * {
   box-sizing: border-box;
   margin: 0;
@@ -64,8 +64,8 @@
   min-height: 100vh;
   padding: clamp(var(--space-sm), 2vw, var(--space-xl));
   color: var(--ink);
-  background: radial-gradient(1200px 600px at 70% 15%, rgba(30, 90, 147, 0.22), transparent 60%),
-    radial-gradient(900px 800px at -10% 90%, rgba(36, 161, 228, 0.16), transparent 60%),
+  background: radial-gradient(1200px 600px at 70% 15%, var(--ring-in), transparent 60%),
+    radial-gradient(900px 800px at -10% 90%, var(--ring-in2), transparent 60%),
     linear-gradient(135deg, var(--bg-800), var(--bg-900));
   display: flex;
   align-items: center;
@@ -73,7 +73,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Reducir animaciones si el usuario lo pide */
+/* Accesibilidad: Reducir animaciones */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -83,9 +83,11 @@
   }
 }
 
-/* ==============================
-   FONDO DECORATIVO
-============================== */
+/* ====================================================================
+   III. LAYOUT / ESTRUCTURA PRINCIPAL
+==================================================================== */
+
+/* --- A. Fondo Decorativo --- */
 .auth-bg {
   position: absolute;
   inset: 0;
@@ -100,22 +102,8 @@
   opacity: 0.25;
   pointer-events: none;
 }
-
-.blob--tl {
-  width: 420px;
-  height: 420px;
-  left: -140px;
-  top: -120px;
-  background: var(--blue-accent);
-}
-
-.blob--br {
-  width: 460px;
-  height: 460px;
-  right: -120px;
-  bottom: -120px;
-  background: var(--blue-primary);
-}
+.blob--tl { width: 420px; height: 420px; left: -140px; top: -120px; background: var(--blue-accent); }
+.blob--br { width: 460px; height: 460px; right: -120px; bottom: -120px; background: var(--blue-primary); }
 
 .ring {
   position: absolute;
@@ -123,58 +111,14 @@
   pointer-events: none;
   opacity: 0.9;
 }
+.ring--1 { width: 520px; height: 520px; right: -200px; top: -40px; box-shadow: inset 0 0 0 2px var(--ring-in), inset 0 0 40px 10px rgba(30, 90, 147, 0.08); }
+.ring--2 { width: 360px; height: 360px; right: -40px; top: 100px; box-shadow: inset 0 0 0 2px var(--ring-in2), inset 0 0 40px 10px rgba(36, 161, 228, 0.06); }
 
-.ring--1 {
-  width: 520px;
-  height: 520px;
-  right: -200px;
-  top: -40px;
-  box-shadow: inset 0 0 0 2px var(--ring-in), inset 0 0 40px 10px rgba(30, 90, 147, 0.08);
-}
+.shape { position: absolute; opacity: 0.25; pointer-events: none; }
+.shape--sq { right: 24px; top: 140px; width: 22px; height: 22px; border: 2px solid var(--blue-accent); transform: rotate(45deg); border-radius: 4px; }
+.shape--dot { left: 26px; top: 220px; width: 8px; height: 8px; background: var(--blue-accent); border-radius: 50%; }
 
-.ring--2 {
-  width: 360px;
-  height: 360px;
-  right: -40px;
-  top: 100px;
-  box-shadow: inset 0 0 0 2px var(--ring-in2), inset 0 0 40px 10px rgba(36, 161, 228, 0.06);
-}
-
-.shape {
-  position: absolute;
-  opacity: 0.25;
-  pointer-events: none;
-}
-
-.shape--sq {
-  right: 24px;
-  top: 140px;
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--blue-accent);
-  transform: rotate(45deg);
-  border-radius: 4px;
-}
-
-.shape--dot {
-  left: 26px;
-  top: 220px;
-  width: 8px;
-  height: 8px;
-  background: var(--blue-accent);
-  border-radius: 50%;
-}
-
-@media (max-width: 420px) {
-  .blob--tl,
-  .ring--1 {
-    display: none;
-  }
-}
-
-/* ==============================
-   CONTENEDOR / HERO
-============================== */
+/* --- B. Contenedor Principal (Hero + Form) --- */
 .auth-container {
   width: min(1180px, 100%);
   display: flex;
@@ -184,7 +128,6 @@
   z-index: 2;
   position: relative;
 }
-
 @media (min-width: 980px) {
   .auth-container {
     flex-direction: row;
@@ -192,26 +135,24 @@
   }
 }
 
+/* --- C. Hero / Título del Evento --- */
 .auth-hero {
   flex: 1;
   text-align: center;
   padding: var(--space-md);
 }
-
 @media (min-width: 980px) {
   .auth-hero {
     text-align: left;
     padding-top: var(--space-lg);
   }
 }
-
 .hero-title {
   font-family: 'Orbitron', sans-serif;
   font-weight: 800;
   margin: 0 0 var(--space-sm);
   line-height: 1.1;
 }
-
 .kicker {
   display: block;
   margin-bottom: var(--space-xs);
@@ -221,21 +162,17 @@
   text-transform: uppercase;
   font-size: clamp(0.9rem, 0.8rem + 0.4vw, 1.125rem);
 }
-
 .hero-title .line1,
 .hero-title .line2 {
   display: block;
   font-weight: 800;
   font-size: var(--fz-hero);
 }
-
 .hero-title .line2 {
   color: var(--blue-accent);
 }
 
-/* ==============================
-   CARD FORM
-============================== */
+/* --- D. Card de Registro --- */
 .cardRegister {
   width: var(--card-w);
   border-radius: var(--radius-lg);
@@ -247,7 +184,6 @@
   color-scheme: dark;
   margin: 0 auto;
 }
-
 @media (min-width: 980px) {
   .cardRegister {
     flex: none;
@@ -265,147 +201,121 @@
   margin: 0 0 var(--space-lg);
   position: relative;
 }
-
 .card-title .arrow svg {
   width: 24px;
   height: 24px;
   color: var(--blue-accent);
 }
 
-/* ==============================
-   STEPPER – LÍNEA DE TIEMPO
-============================== */
+/* ====================================================================
+   IV. MÓDULOS / COMPONENTES ESPECÍFICOS
+==================================================================== */
+
+/* --- A. Stepper (Línea de Tiempo / Responsivo) --- */
 .stepper {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(var(--step-count, 4), 1fr);
+  align-items: start;
   gap: 0;
   margin: 0 0 var(--space-lg);
   padding: 0;
   list-style: none;
-  justify-content: space-between;
-  position: relative;
-  overflow-x: hidden;
-  scroll-snap-type: none;
-  flex-wrap: nowrap;
+  overflow: visible;
 }
+.stepper--timeline { position: relative; }
 
-.stepper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.stepper::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-}
-
-.stepper--timeline {
-  counter-reset: step;
-}
-
-.stepper--timeline .step {
-  position: relative;
-  text-align: center;
-  flex: 1;
-  min-width: auto;
-  padding-top: 30px;
-}
-
-.stepper--timeline .step:not(:last-child)::after {
+/* Rail de fondo */
+.stepper--timeline::before {
   content: "";
   position: absolute;
+  left: 8px; right: 8px;
   top: 16px;
-  left: 50%;
-  right: -50%;
   height: 2px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,.14);
+  z-index: 0;
 }
 
-.stepper--timeline .step.done:not(:last-child)::after {
+/* Conector hacia la izquierda (progreso) */
+.stepper--timeline .step:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: -50%;
+  right: 50%;
+  top: 16px;
+  height: 2px;
+  background: rgba(255,255,255,.15);
+  z-index: 1;
+}
+.stepper--timeline .step.done:not(:first-child)::before {
   background: linear-gradient(90deg, var(--blue-primary), var(--blue-accent));
 }
 
+/* Punto */
+.stepper--timeline .step {
+  position: relative;
+  text-align: center;
+  padding-top: 28px; /* Espacio para el label activo */
+}
 .stepper--timeline .step .step__dot {
   position: absolute;
-  top: 8px;
-  left: 50%;
+  top: 7px; left: 50%;
   transform: translateX(-50%);
-  width: 18px;
-  height: 18px;
+  width: 18px; height: 18px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
-  border: 2px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255,255,255,.14);
+  border: 2px solid rgba(255,255,255,.22);
+  z-index: 2;
+  transition: all 0.2s ease-out;
 }
 
-.stepper--timeline .step.done .step__dot,
+/* Estilos de paso activo */
 .stepper--timeline .step.active .step__dot {
+  width: 22px; height: 22px; /* Ligeramente más grande */
   background: var(--blue-accent);
   border-color: var(--blue-primary);
   box-shadow: 0 0 0 6px rgba(36, 161, 228, 0.18);
 }
+.stepper--timeline .step.done .step__dot {
+    background: var(--blue-accent);
+    border-color: var(--blue-primary);
+}
 
+/* Índice pequeño bajo el punto */
 .stepper--timeline .step .step__index {
   position: absolute;
-  top: 34px;
-  left: 50%;
+  top: 34px; left: 50%;
   transform: translateX(-50%);
   font-size: 0.75rem;
-  color: #bde0ff;
-  font-weight: 900;
+  color: #bde0ff; font-weight: 900;
 }
+.stepper--timeline .step.active .step__index { color: #fff; }
 
-.stepper--timeline .step.active .step__index {
-  color: #fff;
-}
-
-.stepper--timeline .step .step__label {
-  display: block;
-  margin-top: 24px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 0.25rem;
-}
-
+/* Label (solo visible en el paso activo como "pill") */
+.stepper--timeline .step .step__label { display: none; }
 .stepper--timeline .step.active .step__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 18px); /* A la derecha del punto */
+  transform: translateX(10px);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(11, 21, 52, 0.85);
+  border: 1px solid var(--glass-br);
   color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  z-index: 3;
 }
 
-/* Compactar labels en pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .stepper--timeline .step {
-    flex: 1;
-    min-width: 0;
-  }
 
-  .stepper--timeline .step .step__label {
-    font-size: 0.40rem;
-  }
-}
-
-/* ==============================
-   FORM / CAMPOS
-============================== */
+/* --- B. Formularios y Campos --- */
 .form {
   display: grid;
   gap: var(--space-lg);
-}
-
-.grid.resp {
-  display: grid;
-  gap: var(--space-md);
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 640px) {
-  .grid.resp {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.col-span-2 {
-  grid-column: 1 / -1;
 }
 
 .stack {
@@ -432,16 +342,13 @@
   color: var(--muted);
   z-index: 1;
 }
-
-.input-icon svg {
-  width: 20px;
-  height: 20px;
-}
+.input-icon svg { width: 20px; height: 20px; }
 
 .input,
-select {
+select,
+textarea {
   width: 100%;
-  height: var(--field-h);
+  min-height: var(--field-h);
   border-radius: var(--radius-md);
   border: 1px solid rgba(30, 90, 147, 0.5);
   background: rgba(11, 21, 52, 0.5);
@@ -453,6 +360,17 @@ select {
   appearance: none;
   font-size: var(--fz-base);
   font-family: inherit;
+  resize: vertical;
+  line-height: 1.5; /* Para textarea */
+}
+
+textarea {
+  padding: 10px 12px;
+}
+
+.input:not(textarea) {
+    height: var(--field-h);
+    padding: 0 12px 0 40px;
 }
 
 select {
@@ -463,12 +381,11 @@ select {
   background-size: 16px;
 }
 
-.input::placeholder {
-  color: #798da2;
-}
+.input::placeholder { color: #798da2; }
 
 .input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   border-color: var(--blue-accent);
   box-shadow: 0 0 0 4px rgba(36, 161, 228, 0.18);
   background: rgba(11, 21, 52, 0.8);
@@ -478,20 +395,6 @@ select:focus {
   color: var(--muted);
   font-size: 0.8rem;
   margin-top: 0.25rem;
-}
-
-.alert {
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  font-size: var(--fz-sm);
-  margin-bottom: var(--space-lg);
-  border-left: 4px solid;
-}
-
-.alert--error {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: var(--error);
-  color: var(--error);
 }
 
 /* Autofill fixes */
@@ -507,7 +410,7 @@ input:-webkit-autofill:active {
   font-size: var(--fz-base) !important;
 }
 
-/* Password */
+/* --- C. Campo de Contraseña con Eye Icon --- */
 .input--pass {
   padding-right: 48px;
 }
@@ -528,20 +431,129 @@ input:-webkit-autofill:active {
   justify-content: center;
   z-index: 2;
 }
+.eye svg { width: 20px; height: 20px; }
+.eye:focus-visible { outline: 2px solid var(--blue-accent); border-radius: 8px; }
 
-.eye svg {
-  width: 20px;
-  height: 20px;
+
+/* --- D. Medidor de Fortaleza de Contraseña --- */
+.pw-meter {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: 0.25rem;
+}
+.pw-meter__bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.pw-meter__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--error), var(--warning), var(--blue-accent));
+  transition: width 0.25s ease;
+}
+.pw-meter__legend {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.pw-reqs {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+.pw-reqs li.ok {
+    color: var(--success);
+}
+.pw-debil { color: var(--error); }
+.pw-media { color: var(--warning); }
+.pw-fuerte { color: var(--blue-accent); }
+
+
+/* --- E. Input de Teléfono (con selector de país) --- */
+.input-wrap--phone {
+  position: relative;
+  isolation: isolate;
+}
+/* Estilo del "pill" de país/código */
+.input-wrap--phone .custom-select {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(var(--field-h) - 12px);
+  min-width: 92px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-br);
+  background: rgba(11, 21, 52, 0.85);
+  cursor: pointer;
+  z-index: 3; /* Valor base */
+  line-height: 1;
+  transition: z-index 0s;
 }
 
-.eye:focus-visible {
-  outline: 2px solid var(--blue-accent);
-  border-radius: 8px;
+/* **AJUSTE CLAVE:** Aumentar el Z-index del contenedor de la pill cuando está abierto. */
+.input-wrap--phone.open  {
+    z-index: 9999; /* Eleva el contexto de apilamiento sobre el input de texto */
 }
 
-/* ==============================
-   TÉRMINOS / CHECK
-============================== */
+/* Contenido seleccionado (bandera y código) */
+.input-wrap--phone .selected-option {
+    display: flex;
+    align-items: center;
+}
+
+/* Ajuste de padding para el input */
+.input-wrap--phone .input {
+  padding-left: 122px;
+}
+/* Dropdown de países */
+.input-wrap--phone .options-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 8px;
+  width: 320px;
+  max-width: min(360px, calc(100vw - 56px));
+  max-height: 150px; /* ¡MODIFICADO! Altura máxima de 200px */
+  overflow: auto; /* Se mantiene el scroll */
+  border-radius: 12px;
+  border: 1px solid var(--glass-br);
+  background: rgba(11, 21, 52, 0.98);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 60px rgba(5, 20, 40, 0.45);
+  padding: 6px 0;
+  z-index: 10;
+}
+.input-wrap--phone .options-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  line-height: 1;
+}
+.input-wrap--phone .options-list li:hover { background: rgba(184, 216, 243, 0.08); }
+.input-wrap--phone .flag-wrap { width: 22px; height: 16px; border-radius: 3px; overflow: hidden; flex: 0 0 22px; }
+.input-wrap--phone .country-name { font-size: 0.9rem; color: var(--ink); flex: 1; min-width: 120px; }
+.input-wrap--phone .country-code { font-weight: 700; color: #bde0ff; }
+/* Espacio cuando el dropdown está abierto */
+.input-wrap--phone.open { margin-bottom: 12px; }
+
+
+/* --- F. Checkbox de Términos --- */
 .checkline {
   display: flex;
   gap: var(--space-xs);
@@ -550,16 +562,14 @@ input:-webkit-autofill:active {
   font-size: 0.875rem;
   margin-top: var(--space-xs);
 }
-
 .checkline input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
 }
 
-/* ==============================
-   NAVEGACIÓN / BOTONES
-============================== */
+
+/* --- G. Navegación y Botones --- */
 .nav {
   display: flex;
   gap: var(--space-sm);
@@ -583,19 +593,9 @@ input:-webkit-autofill:active {
   align-items: center;
   justify-content: center;
 }
-
-.btn:hover {
-  filter: brightness(1.06);
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 .btn.ghost {
   background: var(--blue-ghost-bg);
@@ -606,7 +606,7 @@ input:-webkit-autofill:active {
 /* Botón de retroceso (BACK) */
 .btn-back {
   position: absolute;
-  top: 1.5rem; /* Ajuste para un espaciado más limpio */
+  top: 1.5rem;
   left: 1.5rem;
   width: 44px;
   height: 44px;
@@ -622,105 +622,14 @@ input:-webkit-autofill:active {
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
 }
-
 .btn-back:hover {
   background: rgba(184, 216, 243, 0.12);
   transform: translateY(-1px);
 }
+.btn-back svg { width: 22px; height: 22px; }
 
-.btn-back svg {
-  width: 22px;
-  height: 22px;
-}
 
-@media (max-width: 768px) {
-  .nav {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-    flex-shrink: 0;
-  }
-}
-
-/* ==============================
-   CARD NOTE
-============================== */
-.card-note {
-  margin-top: var(--space-lg);
-  text-align: center;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding-top: var(--space-md);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ==============================
-   RESPONSIVE – ajustes finos
-============================== */
-@media (max-width: 480px) {
-  .auth-screen {
-    padding: var(--space-sm);
-  }
-
-  .card {
-    padding: var(--space-md);
-  }
-
-  .grid.resp {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Desktop (mejora densidad sin romper) */
-@media (min-width: 1200px) {
-  .card {
-    --card-w: 720px;
-  }
-}
-
-/* ==============================
-   PASSWORD METER (genérico)
-============================== */
-.pw-meter {
-  display: grid;
-  gap: var(--space-sm);
-  margin-top: 0.25rem;
-}
-
-.pw-meter__bar {
-  position: relative;
-  width: 100%;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.pw-meter__fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  background: linear-gradient(90deg, var(--error), var(--warning), var(--success), var(--info));
-  transition: width 0.25s ease;
-}
-
-.pw-meter__legend {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.pw-debil { color: var(--error); }
-.pw-media { color: var(--warning); }
-.pw-fuerte { color: var(--blue-accent); }
-
-/* ==============================
-   MODAL
-============================== */
+/* --- H. Modal --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -732,7 +641,6 @@ input:-webkit-autofill:active {
   z-index: 1000;
   padding: 1rem;
 }
-
 .modal-content {
   background: var(--bg-800);
   border: 1px solid var(--glass-br);
@@ -742,18 +650,8 @@ input:-webkit-autofill:active {
   width: 100%;
   position: relative;
 }
-
-.modal-title {
-  font-size: var(--fz-lg);
-  margin-bottom: var(--space-md);
-}
-
-.modal-body {
-  font-size: var(--fz-base);
-  line-height: 1.6;
-  color: var(--muted);
-}
-
+.modal-title { font-size: var(--fz-lg); margin-bottom: var(--space-md); }
+.modal-body { font-size: var(--fz-base); line-height: 1.6; color: var(--muted); }
 .modal-close {
   position: absolute;
   top: var(--space-md);
@@ -771,219 +669,74 @@ input:-webkit-autofill:active {
   border-radius: 50%;
   transition: color 0.2s, background 0.2s;
 }
+.modal-close:hover { color: var(--ink); background: rgba(255, 255, 255, 0.1); }
 
-.modal-close:hover {
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.1);
-}
+/* ====================================================================
+   V. UTILIDADES / RESPONSIVE
+==================================================================== */
 
-.flag-wrap {
-    display: inline-flex;
-    width: 24px; /* Ajusta el tamaño de la bandera */
-    height: 18px; /* Proporción 4:3 */
-    margin-right: 8px;
-    overflow: hidden;
-    border-radius: 2px;
-    align-items: center;
+/* --- A. Utilidades de Grid/Layout --- */
+.grid.resp {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
 }
-.flag-wrap > .flag-icon { /* Si flag-icon es un componente wrapper */
-     font-size: 1.5em; /* O el tamaño que necesites */
+@media (min-width: 640px) {
+  .grid.resp {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-
-/* ====== PHONE INPUT dentro del campo ====== */
-.input-wrap--phone {
-  position: relative;
-  isolation: isolate;         /* 👈 crea contexto de apilamiento para el dropdown */
+.col-span-2 {
+  grid-column: 1 / -1;
 }
 
-/* “pill” de país/código dentro del input */
-.input-wrap--phone .custom-select {
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: calc(var(--field-h) - 12px);
-  min-width: 92px;            /* 👈 ancho consistente para que no “salte” */
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px;
-  border-radius: 10px;
-  border: 1px solid var(--glass-br);
-  background: rgba(11, 21, 52, 0.85);
-  cursor: pointer;
-  z-index: 3;
-  line-height: 1;             /* evita “espacios raros” verticales */
+/* --- B. Responsive Móvil (max-width) --- */
+@media (max-width: 768px) {
+  /* MODIFICACIÓN PRINCIPAL: Invertir el orden de los botones en móvil */
+  .nav {
+    flex-direction: column-reverse; /* El último elemento (Continuar) va arriba */
+  }
+  .btn {
+    width: 100%;
+    flex-shrink: 0;
+  }
 }
 
-/* input con padding a la izquierda para no pisar la pill */
-.input-wrap--phone .input {
-  padding-left: 122px;        /* ajusta con la min-width de arriba */
-}
-
-/* lista de países (dropdown) */
-.input-wrap--phone .options-list {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 8px;
-  width: 320px;
-  max-width: min(360px, calc(100vw - 56px)); /* no se sale del viewport */
-  max-height: 260px;
-  overflow: auto;
-  border-radius: 12px;
-  border: 1px solid var(--glass-br);
-  background: rgba(11, 21, 52, 0.98);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 60px rgba(5, 20, 40, 0.45);
-  padding: 6px 0;
-  z-index: 999;               /* por encima de todo */
-}
-
-.input-wrap--phone .options-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  cursor: pointer;
-  line-height: 1;             /* compacta verticalmente */
-}
-.input-wrap--phone .options-list li:hover {
-  background: rgba(184, 216, 243, 0.08);
-}
-
-/* bandera y textos */
-.input-wrap--phone .flag-wrap {
-  width: 22px; height: 16px;
-  border-radius: 3px;
-  overflow: hidden;
-  flex: 0 0 22px;
-}
-.input-wrap--phone .country-name {
-  font-size: 0.9rem;
-  color: var(--ink);
-  flex: 1;
-  min-width: 120px;
-}
-.input-wrap--phone .country-code {
-  font-weight: 700;
-  color: #bde0ff;
-}
-
-/* cuando una lista está abierta, dale un poco de “aire” abajo para que no tape el siguiente campo */
-.input-wrap--phone.open { margin-bottom: 12px; }
-
-/* versión mobile: pill y padding más compactos */
 @media (max-width: 480px) {
+  .auth-screen {
+    padding: var(--space-sm);
+  }
+  .cardRegister {
+    padding: var(--space-md);
+  }
+
+  /* Ajuste de Input de Teléfono */
   .input-wrap--phone .custom-select {
     min-width: 82px;
     padding: 0 8px;
     height: calc(var(--field-h) - 14px);
   }
   .input-wrap--phone .input { padding-left: 108px; }
-}
 
-/* ====== STEPPER limpio y responsivo ====== */
-.stepper {
-  display: grid;
-  grid-template-columns: repeat(var(--step-count, 4), 1fr);
-  align-items: start;
-  gap: 0;
-  margin: 0 0 var(--space-lg);
-  padding: 0;
-  list-style: none;
-  overflow: visible;           /* 👈 sin barras */
-}
-
-.stepper--timeline { position: relative; }
-
-/* rail de fondo */
-.stepper--timeline::before {
-  content: "";
-  position: absolute;
-  left: 8px; right: 8px;
-  top: 16px;
-  height: 2px;
-  background: rgba(255,255,255,.14);
-  z-index: 0;
-}
-
-/* cada paso */
-.stepper--timeline .step {
-  position: relative;
-  text-align: center;
-  padding-top: 28px;
-}
-
-/* conector hacia la izquierda (solo si hay paso previo) */
-.stepper--timeline .step:not(:first-child)::before {
-  content: "";
-  position: absolute;
-  left: -50%;
-  right: 50%;
-  top: 16px;
-  height: 2px;
-  background: rgba(255,255,255,.15);
-  z-index: 1;
-}
-.stepper--timeline .step.done:not(:first-child)::before {
-  background: linear-gradient(90deg, var(--blue-primary), var(--blue-accent));
-}
-
-/* punto */
-.stepper--timeline .step .step__dot {
-  position: absolute;
-  top: 7px; left: 50%;
-  transform: translateX(-50%);
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.14);
-  border: 2px solid rgba(255,255,255,.22);
-  z-index: 2;
-}
-
-/* paso activo destacado */
-.stepper--timeline .step.active .step__dot {
-  width: 22px; height: 22px;
-  background: var(--blue-accent);
-  border-color: var(--blue-primary);
-  box-shadow: 0 0 0 6px rgba(36, 161, 228, 0.18);
-}
-
-/* índice pequeño bajo el punto (opcional) */
-.stepper--timeline .step .step__index {
-  position: absolute;
-  top: 34px; left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  color: #bde0ff; font-weight: 900;
-}
-.stepper--timeline .step.active .step__index { color: #fff; }
-
-/* mostramos SOLO el label del activo como “pill” al lado del punto */
-.stepper--timeline .step .step__label { display: none; }
-.stepper--timeline .step.active .step__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  position: absolute;
-  top: 2px;
-  left: calc(50% + 18px);
-  transform: translateX(10px);
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(11, 21, 52, 0.85);
-  border: 1px solid var(--glass-br);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  z-index: 3;
-}
-
-/* más compacto en móviles */
-@media (max-width: 480px) {
+  /* Ajuste de Stepper */
   .stepper--timeline .step.active .step__label {
     font-size: 0.72rem;
     padding: 3px 8px;
+  }
+  .pw-reqs {
+      gap: 0.5rem 0.5rem; /* Compactar requerimientos de contraseña */
+      font-size: 0.65rem;
+  }
+
+  .blob--tl,
+  .ring--1 {
+    display: none;
+  }
+}
+
+/* --- C. Responsive Desktop (min-width) --- */
+@media (min-width: 1200px) {
+  .cardRegister {
+    --card-w: 720px;
   }
 }
