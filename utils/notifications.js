@@ -47,7 +47,7 @@ export function notifyLoading(title, message) {
 
   const toast = push.promise(promise, {
     loading: { title, message },
-    success: { title: 'Éxito 🎉', message: 'Operación completada' },
+    success: { title: 'Éxito', message: 'Operación completada' },
     error: { title: 'Error', message: 'Ocurrió un problema' }
   });
 

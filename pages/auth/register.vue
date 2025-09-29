@@ -48,7 +48,7 @@
               <label class="label" for="email">Email</label>
               <div class="input-wrap">
                 <span class="input-icon"><SvgIcon :path="mdiEmailOutline" type="mdi" /></span>
-                <input id="email" v-model.trim="form.email" type="email" required
+                <input id="email" v-model.trim="form.email" maxlenght="100" type="email" required
                        autocomplete="email" placeholder="tu@email.com" class="input" />
               </div>
             </div>
@@ -59,9 +59,9 @@
                 <div class="input-wrap">
                   <span class="input-icon"><SvgIcon :path="mdiLockOutline" type="mdi" /></span>
                   <input id="password_user" :type="showPass ? 'text' : 'password'"
-                         v-model.trim="form.password_user" required minlength="8"
-                         autocomplete="new-password" placeholder="••••••••"
-                         class="input input--pass" @input="touchPwd()" />
+                        v-model.trim="form.password_user" required minlength="8"
+                        autocomplete="new-password" minlenght="8" maxlenght="50" placeholder="••••••••"
+                        class="input input--pass" @input="touchPwd()" />
                   <button type="button" class="eye"
                           :aria-pressed="showPass ? 'true' : 'false'"
                           :title="showPass ? 'Ocultar' : 'Mostrar'"
@@ -93,7 +93,7 @@
                   <span class="input-icon"><SvgIcon :path="mdiLockCheckOutline" type="mdi" /></span>
                   <input id="password2" :type="showPass2 ? 'text' : 'password'"
                          v-model.trim="password2" required minlength="8"
-                         autocomplete="new-password" placeholder="••••••••"
+                         autocomplete="new-password" minlenght="8" maxlenght="50" placeholder="••••••••"
                          class="input input--pass" />
                   <button type="button" class="eye"
                           :aria-pressed="showPass2 ? 'true' : 'false'"
@@ -113,16 +113,16 @@
               <div class="stack">
                 <label class="label" for="name_user">Nombre(s)</label>
                 <input id="name_user" v-model.trim="form.name_user" type="text" required
-                       autocomplete="given-name" class="input" placeholder="Tu nombre" />
+                       autocomplete="given-name" maxlenght="50" class="input" placeholder="Tu nombre" />
               </div>
               <div class="stack">
                 <label class="label" for="paternal_surname">Apellido paterno</label>
                 <input id="paternal_surname" v-model.trim="form.paternal_surname" type="text" required
-                       autocomplete="family-name" class="input" placeholder="Paterno" />
+                       autocomplete="family-name" maxlenght="50" class="input" placeholder="Paterno" />
               </div>
               <div class="stack">
                 <label class="label" for="maternal_surname">Apellido materno</label>
-                <input id="maternal_surname" v-model.trim="form.maternal_surname" type="text" required
+                <input id="maternal_surname" maxlenght="50" v-model.trim="form.maternal_surname" type="text" required
                        class="input" placeholder="Materno" />
               </div>
             </div>
@@ -144,7 +144,7 @@
                     </li>
                   </ul>
                 </div>
-                <input id="phone" v-model.trim="form.phone" type="tel" required autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
+                <input id="phone" v-model.trim="form.phone" type="tel" required maxlenght="10" autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
               </div>
             </div>
 
@@ -165,7 +165,7 @@
                     </li>
                   </ul>
                 </div>
-                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" class="input" placeholder="Teléfono de contacto (opcional)" />
+                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" maxlenght="10" class="input" placeholder="Teléfono de contacto (opcional)" />
               </div>
             </div>
           </template>
@@ -191,6 +191,8 @@
                   v-model.trim="form.secret_password"
                   :type="showSecretPass ? 'text' : 'password'"
                   required
+                  minlenght="8"
+                  maxlenght="30"
                   class="input input--pass"
                   placeholder="Ingresa la contraseña para continuar"
                 />
@@ -224,7 +226,7 @@
                   <div class="stack">
                     <label class="label" for="matricula">Matrícula</label>
                     <input id="matricula" v-model.trim="form.matricula" type="text" required
-                           class="input" placeholder="Tu matrícula" />
+                           class="input" maxlenght="20" placeholder="Tu matrícula" />
                   </div>
                   <div class="stack">
                     <label class="label" for="programa_educativo">Programa Educativo</label>
@@ -240,11 +242,11 @@
                 <div class="grid resp" v-if="form.type_user_id === 1">
                   <div class="stack">
                     <label class="label" for="grado">Grado</label>
-                    <input id="grado"  v-model.trim="form.grade"  type="text" required class="input" placeholder="Ej. 7" />
+                    <input id="grado"  v-model.trim="form.grade"  maxlenght="5" type="text" required class="input" placeholder="Ej. 7" />
                   </div>
                   <div class="stack">
                     <label class="label" for="grupo">Grupo</label>
-                    <input id="grupo"  v-model.trim="form.group_user" type="text" required class="input" placeholder="Ej. C" />
+                    <input id="grupo"  v-model.trim="form.group_user" maxlenght="5" type="text" required class="input" placeholder="Ej. C" />
                   </div>
                 </div>
               </template>
@@ -252,7 +254,7 @@
               <template v-if="form.provenance === 'otra'">
                 <div class="stack">
                   <label class="label" for="universidad_procedencia">Universidad de procedencia</label>
-                  <input id="universidad_procedencia" v-model.trim="form.universidad_procedencia" type="text" required
+                  <input id="universidad_procedencia" maxlenght="100" v-model.trim="form.universidad_procedencia" type="text" required
                          class="input" placeholder="Nombre de tu universidad" />
                 </div>
               </template>
@@ -265,11 +267,11 @@
                 <div class="stack">
                   <label class="label" for="empresa_procedencia">Empresa/Institución de procedencia</label>
                   <input id="empresa_procedencia" v-model.trim="form.empresa_procedencia" type="text" required
-                         class="input" placeholder="Nombre de tu empresa u organización" />
+                         class="input" maxlenght="100"  placeholder="Nombre de tu empresa u organización" />
                 </div>
                 <div class="stack">
                   <label class="label" for="rol_dentro_empresa">Rol/Cargo</label>
-                  <input id="rol_dentro_empresa" v-model.trim="form.rol_dentro_empresa" type="text" required
+                  <input id="rol_dentro_empresa" maxlenght="100" v-model.trim="form.rol_dentro_empresa" type="text" required
                          class="input" placeholder="Tu cargo o rol actual" />
                 </div>
               </div>
@@ -295,7 +297,7 @@
               <template v-if="form.tipo_presentacion === 'conferencia' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_conferencia">Título de la Conferencia</label>
-                  <input id="titulo_conferencia" v-model.trim="form.titulo_conferencia" type="text" required
+                  <input id="titulo_conferencia" maxlenght="100" v-model.trim="form.titulo_conferencia" type="text" required
                          class="input" placeholder="Título de tu conferencia" />
                 </div>
                 <div class="stack">
@@ -310,8 +312,8 @@
               <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_taller">Título del Taller</label>
-                  <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
-                         class="input" placeholder="Título de tu taller" />
+                  <input id="titulo_taller" maxlenght="50"  v-model.trim="form.titulo_taller" type="text" required
+                        class="input" placeholder="Título de tu taller" />
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_taller">Descripción del Taller</label>
@@ -347,28 +349,28 @@
               <label class="label" for="facebook_link">Facebook</label>
               <div class="input-wrap">
                 <span class="input-icon"><SvgIcon :path="mdiFacebook" type="mdi" /></span>
-                <input id="facebook_link" v-model.trim="form.facebook_link" type="url" class="input" placeholder="Link a tu perfil de Facebook (opcional)" />
+                <input id="facebook_link" maxlenght="200" v-model.trim="form.facebook_link" type="url" class="input" placeholder="Link a tu perfil de Facebook (opcional)" />
               </div>
             </div>
             <div class="stack">
               <label class="label" for="instagram_link">Instagram</label>
               <div class="input-wrap">
                 <span class="input-icon"><SvgIcon :path="mdiInstagram" type="mdi" /></span>
-                <input id="instagram_link" v-model.trim="form.instagram_link" type="url" class="input" placeholder="Link a tu perfil de Instagram (opcional)" />
+                <input id="instagram_link" maxlenght="200" v-model.trim="form.instagram_link" type="url" class="input" placeholder="Link a tu perfil de Instagram (opcional)" />
               </div>
             </div>
             <div class="stack">
               <label class="label" for="x_link">X (Twitter)</label>
               <div class="input-wrap">
                 <span class="input-icon"><SvgIcon :path="mdiTwitter" type="mdi" /></span>
-                <input id="x_link" v-model.trim="form.x_link" type="url" class="input" placeholder="Link a tu perfil de X (opcional)" />
+                <input id="x_link" maxlenght="200" v-model.trim="form.x_link" type="url" class="input" placeholder="Link a tu perfil de X (opcional)" />
               </div>
             </div>
             <div class="stack">
               <label class="label" for="linkedin_link">LinkedIn</label>
               <div class="input-wrap">
                 <span class="input-icon"><SvgIcon :path="mdiLinkedin" type="mdi" /></span>
-                <input id="linkedin_link" v-model.trim="form.linkedin_link" type="url" class="input" placeholder="Link a tu perfil de LinkedIn (opcional)" />
+                <input id="linkedin_link" maxlenght="200" v-model.trim="form.linkedin_link" type="url" class="input" placeholder="Link a tu perfil de LinkedIn (opcional)" />
               </div>
             </div>
           </template>
@@ -428,9 +430,17 @@
 </template>
 
 <script setup lang="ts">
+import { definePageMeta } from '#imports';
+
+definePageMeta({
+  name: 'register',
+  path: '/register',
+  guestOnly: true,
+})
+
 import { ref, computed, watch, onMounted, nextTick } from "vue"; 
 import { useRouter } from "vue-router";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiAccountPlusOutline,
   mdiEmailOutline,
@@ -649,7 +659,7 @@ const PERSIST_KEYS = [
   'secret_password', // 👈 AGREGAR
   'name_user','paternal_surname','maternal_surname',
   // ... (el resto de tus campos)
-  'phone_country','emergency_phone','emergency_phone_country',
+  'phone','phone_country','emergency_phone','emergency_phone_country',
   'type_user_id','provenance','matricula','educational_program','grade','group_user',
   'universidad_procedencia',
   'empresa_procedencia','rol_dentro_empresa','descripcion_biografia','tipo_presentacion',
@@ -737,15 +747,36 @@ watch([persistable, step, accepted], () => {
   }));
 }, { deep: true });
 
+function isValidEmail(email: string) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+function isValidPhone(phone: string) {
+  return /^\d{10}$/.test(phone);
+}
+
 /* ===================
  * Validación por paso (FE)
  * =================== */
 const canProceed = computed(() => {
   switch (step.value) {
     case 0:
-      return !!form.value.email && form.value.password_user.length >= 8 && strengthScore.value >= 3 && pwdMatch.value;
+      return (
+          !!form.value.email &&
+          isValidEmail(form.value.email) && // validar email
+          form.value.password_user.length >= 8 &&
+          strengthScore.value >= 3 &&
+          pwdMatch.value
+        );
     case 1:
-      return !!form.value.name_user && !!form.value.paternal_surname && !!form.value.maternal_surname && !!form.value.phone;
+      return (
+          !!form.value.name_user &&
+          !!form.value.paternal_surname &&
+          !!form.value.maternal_surname &&
+          !!form.value.phone &&
+          isValidPhone(form.value.phone)
+        );
     case 2: {
       if (!form.value.type_user_id) return false;
 
@@ -908,64 +939,75 @@ async function nextOrSubmit() {
 /* ===================
  * Payload normalizado
  * =================== */
-function normalizePayload(payload:any) {
-  const finalPayload:any = {
-    email: payload.email,
+function normalizePayload(payload: any) {
+  console.log('[Frontend] Normalizando payload...');
+  
+  const finalPayload: any = {
+    email: payload.email?.trim().toLowerCase(),
     password_user: payload.password_user,
-    name_user: payload.name_user,
-    paternal_surname: payload.paternal_surname,
-    maternal_surname: payload.maternal_surname,
+    name_user: payload.name_user?.trim(),
+    paternal_surname: payload.paternal_surname?.trim(),
+    maternal_surname: payload.maternal_surname?.trim(),
     type_user_id: Number(payload.type_user_id),
     size_user: payload.size_user
   };
 
-  const clean = (v:string) => v?.replace(/\D/g, '');
+  // Limpiar y formatear teléfonos
+  const clean = (v: string) => v?.replace(/\D/g, '') || '';
 
   if (payload.phone) {
     finalPayload.phone = `${payload.phone_country}${clean(payload.phone)}`;
   }
-  // emergencia OPCIONAL: solo si trae algo
+
   if (payload.emergency_phone?.trim()) {
     finalPayload.emergency_phone = `${payload.emergency_phone_country}${clean(payload.emergency_phone)}`;
   }
 
-  if ([1,2].includes(Number(payload.type_user_id))) {
+  // Datos específicos por tipo de usuario
+  const userType = Number(payload.type_user_id);
+  
+  if ([1, 2].includes(userType)) {
     finalPayload.provenance = (payload.provenance || '').toLowerCase();
+    
     if (finalPayload.provenance === 'uttecam') {
-      finalPayload.matricula = payload.matricula || '';
-      finalPayload.educational_program = payload.educational_program || '';
-      if (Number(payload.type_user_id) === 1) {
-        finalPayload.grade = payload.grade || '';
-        finalPayload.group_user = payload.group_user || '';
+      finalPayload.matricula = payload.matricula?.trim() || '';
+      finalPayload.educational_program = payload.educational_program?.trim() || '';
+      
+      if (userType === 1) { // Estudiante
+        finalPayload.grade = payload.grade?.trim() || '';
+        finalPayload.group_user = payload.group_user?.trim() || '';
       }
     } else if (finalPayload.provenance === 'otra') {
-      finalPayload.universidad_procedencia = payload.universidad_procedencia || '';
+      finalPayload.universidad_procedencia = payload.universidad_procedencia?.trim() || '';
     }
   }
 
-  if (Number(payload.type_user_id) === 4) {
-    finalPayload.secret_password = payload.secret_password || '';
-    finalPayload.empresa_procedencia = payload.empresa_procedencia || '';
-    finalPayload.rol_dentro_empresa = payload.rol_dentro_empresa || '';
-    finalPayload.descripcion_biografia = payload.descripcion_biografia || '';
+  // Datos de ponente
+  if (userType === 4) {
+    finalPayload.secret_password = payload.secret_password?.trim() || '';
+    finalPayload.empresa_procedencia = payload.empresa_procedencia?.trim() || '';
+    finalPayload.rol_dentro_empresa = payload.rol_dentro_empresa?.trim() || '';
+    finalPayload.descripcion_biografia = payload.descripcion_biografia?.trim() || '';
     finalPayload.tipo_presentacion = payload.tipo_presentacion || '';
 
-    if (['conferencia','ambas'].includes(payload.tipo_presentacion)) {
-      finalPayload.titulo_conferencia = payload.titulo_conferencia || '';
-      finalPayload.descripcion_conferencia = payload.descripcion_conferencia || '';
+    if (['conferencia', 'ambas'].includes(payload.tipo_presentacion)) {
+      finalPayload.titulo_conferencia = payload.titulo_conferencia?.trim() || '';
+      finalPayload.descripcion_conferencia = payload.descripcion_conferencia?.trim() || '';
     }
-    if (['taller','ambas'].includes(payload.tipo_presentacion)) {
-      finalPayload.titulo_taller = payload.titulo_taller || '';
-      finalPayload.descripcion_taller = payload.descripcion_taller || '';
+    
+    if (['taller', 'ambas'].includes(payload.tipo_presentacion)) {
+      finalPayload.titulo_taller = payload.titulo_taller?.trim() || '';
+      finalPayload.descripcion_taller = payload.descripcion_taller?.trim() || '';
     }
 
-    // 👉 redes SOLO si traen contenido real
-    if (payload.facebook_link?.trim())   finalPayload.facebook_link   = payload.facebook_link.trim();
+    // Redes sociales (solo si tienen contenido)
+    if (payload.facebook_link?.trim())   finalPayload.facebook_link = payload.facebook_link.trim();
     if (payload.instagram_link?.trim()) finalPayload.instagram_link = payload.instagram_link.trim();
-    if (payload.x_link?.trim())          finalPayload.x_link         = payload.x_link.trim();
-    if (payload.linkedin_link?.trim())   finalPayload.linkedin_link   = payload.linkedin_link.trim();
+    if (payload.x_link?.trim())          finalPayload.x_link = payload.x_link.trim();
+    if (payload.linkedin_link?.trim())   finalPayload.linkedin_link = payload.linkedin_link.trim();
   }
 
+  console.log('[Frontend] Payload normalizado:', finalPayload);
   return finalPayload;
 }
 
@@ -984,45 +1026,202 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
-    console.log('payload:', payload);
-    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true });
+    console.log('[Frontend] Enviando registro al backend...', { 
+      email: payload.email, 
+      type_user_id: payload.type_user_id 
+    });
 
-    // Caso: el back responde 200 con registro pendiente (correo inactivo)
-    if (data?.already_exists) {
-      localStorage.setItem('verify_email', payload.email);
-      loadingToast.resolve({ title: 'Registro pendiente', message: data.message || 'Te reenviamos el código de verificación.' });
-      router.push(R.to('verify'));
+    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { 
+      withCredentials: true,
+      timeout: 30000 // 30 segundos timeout
+    });
+
+    console.log('[Frontend] Respuesta recibida del backend:', data);
+
+    // ✅ CASO 1: Registro exitoso completo
+    if (data?.email_sent && data?.user) {
+      sessionStorage.setItem('verify_email', payload.email);
+      localStorage.removeItem(STORAGE_KEY);
+      
+      console.log('[Frontend] Registro exitoso, redirigiendo a verificación...');
+      
+      loadingToast.resolve({ 
+        title: '¡Registro exitoso!', 
+        message: data.message || 'Cuenta creada correctamente. Revisa tu correo para el código de verificación.' 
+      });
+      
+      // Pequeño delay para que el usuario vea el mensaje
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 1500);
       return;
     }
 
-    if (data?.verification_token) {
-      // localStorage.setItem('verification_token', data.verification_token);
+    // ✅ CASO 2: Usuario existente inactivo (reenvío de código)
+    if (data?.already_exists && data?.email_sent) {
+      sessionStorage.setItem('verify_email', payload.email);
+      
+      console.log('[Frontend] Usuario inactivo existente, redirigiendo...');
+      
+      loadingToast.resolve({ 
+        title: 'Registro pendiente', 
+        message: data.message || 'Este correo ya tenía un registro pendiente. Te reenviamos el código de verificación.' 
+      });
+      
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 1500);
+      return;
     }
-    localStorage.setItem('verify_email', payload.email);
-    localStorage.removeItem(STORAGE_KEY);
 
-    loadingToast.resolve({ title: 'Éxito 🎉', message: 'Cuenta creada con éxito' });
-    router.push(R.to('verify'));
+    // ❌ CASO 3: Respuesta inesperada del servidor
+    console.warn('[Frontend] Respuesta inesperada del servidor:', data);
+    throw new Error('El servidor respondió con un formato inesperado');
+
   } catch (err: any) {
+    console.error('[Frontend] Error en registro:', err);
     const status = err?.response?.status;
-    const server = err?.response?.data;
+    const serverData = err?.response?.data;
 
+    // ✅ MANEJO ESPECÍFICO DE ERRORES DE CONEXIÓN/RED
+    if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+      console.log('[Frontend] Timeout de conexión detectado');
+      
+      loadingToast.reject({ 
+        title: 'Solicitud en proceso', 
+        message: 'El servidor está procesando tu registro. Revisa tu correo electrónico para el código de verificación. Si no recibes nada en unos minutos, intenta iniciar sesión.' 
+      });
+      
+      // Redirigir a verificación de todas formas
+      const email = form.value.email;
+      sessionStorage.setItem('verify_email', email);
+      
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 2000);
+      return;
+    }
+
+    if (err.message?.includes('Network Error') || !err.response) {
+      console.log('[Frontend] Error de red detectado');
+      
+      loadingToast.reject({ 
+        title: 'Problema de conexión', 
+        message: 'No se pudo conectar al servidor. Tu registro pudo haberse procesado. Revisa tu correo electrónico y si no recibes el código en unos minutos, intenta nuevamente.' 
+      });
+      
+      // Redirigir a verificación como precaución
+      const email = form.value.email;
+      sessionStorage.setItem('verify_email', email);
+      
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 2000);
+      return;
+    }
+
+    // ✅ MANEJO DE ERRORES HTTP ESPECÍFICOS
     if (status === 409) {
-      const msg = Array.isArray(server?.message) ? server.message.join('\n') : (server?.message || 'Conflicto');
-      loadingToast.reject({ title: 'Registro pendiente', message: msg });
-    } else {
-      const picked = guessFieldFromServerError(server?.errors || server?.message || server);
+      // Conflicto - usuario ya existe
+      const message = Array.isArray(serverData?.message) 
+        ? serverData.message.join('\n') 
+        : (serverData?.message || 'El correo ya está registrado.');
+      
+      console.log('[Frontend] Error 409 - Conflicto:', message);
+      
+      loadingToast.reject({ 
+        title: 'Correo ya registrado', 
+        message 
+      });
+      
+      // Enfocar el campo de email
+      focusField('email');
+      return;
+    }
+
+    if (status === 400) {
+      // Bad Request - validación fallida
+      const picked = guessFieldFromServerError(serverData?.errors || serverData?.message || serverData);
+      
+      console.log('[Frontend] Error 400 - Validación:', picked);
+      
       if (picked?.field) {
         focusField(picked.field);
-        notifyError('Corrige este campo', picked.message || 'Dato inválido');
-        loadingToast.reject({ title: 'Validación', message: picked.message || 'Corrige el campo indicado' });
+        notifyError('Campo inválido', picked.message || 'Por favor corrige este campo');
+        loadingToast.reject({ 
+          title: 'Datos incorrectos', 
+          message: picked.message || 'Revisa los datos del formulario' 
+        });
       } else {
-        const msg = parseAxiosError(err) || 'Ocurrió un error al registrar.';
-        loadingToast.reject({ title: 'Error en registro', message: msg });
+        const message = serverData?.message || 'Datos del formulario inválidos';
+        loadingToast.reject({ title: 'Datos incorrectos', message });
       }
+      return;
     }
+
+    if (status === 401) {
+      // Unauthorized - contraseña de ponente inválida
+      const message = serverData?.message || 'Credenciales inválidas';
+      
+      console.log('[Frontend] Error 401 - No autorizado:', message);
+      
+      loadingToast.reject({ 
+        title: 'Acceso denegado', 
+        message 
+      });
+      
+      if (isSpeaker.value) {
+        focusField('secret_password');
+      }
+      return;
+    }
+
+    if (status >= 500) {
+      // Error del servidor
+      console.error('[Frontend] Error del servidor:', status, serverData);
+      
+      loadingToast.reject({ 
+        title: 'Error del servidor', 
+        message: 'El servidor tiene problemas temporales. Tu registro pudo haberse procesado. Revisa tu correo electrónico.' 
+      });
+      
+      // Redirigir a verificación como precaución
+      const email = form.value.email;
+      sessionStorage.setItem('verify_email', email);
+      
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 2000);
+      return;
+    }
+
+    // ✅ MANEJO DE ERRORES DE VALIDACIÓN DEL BACKEND
+    const picked = guessFieldFromServerError(serverData?.errors || serverData?.message || serverData);
+    
+    if (picked?.field) {
+      console.log('[Frontend] Error de validación en campo:', picked.field);
+      
+      focusField(picked.field);
+      notifyError('Error en formulario', picked.message || 'Por favor corrige este campo');
+      loadingToast.reject({ 
+        title: 'Error en formulario', 
+        message: picked.message || 'Revisa los datos ingresados' 
+      });
+    } else {
+      // ✅ ERROR GENÉRICO
+      const errorMessage = parseAxiosError(err) || 'Ocurrió un error inesperado al registrar.';
+      
+      console.error('[Frontend] Error genérico:', errorMessage);
+      
+      loadingToast.reject({ 
+        title: 'Error en registro', 
+        message: errorMessage 
+      });
+    }
+
   } finally {
     loading.value = false;
+    console.log('[Frontend] Finalizado proceso de registro');
   }
 }
 

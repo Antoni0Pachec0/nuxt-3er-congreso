@@ -1,0 +1,29 @@
+/* Pantalla de reset */
+.reset-screen {
+  composes: auth-screen;
+}
+
+.reset-bg {
+  composes: auth-bg;
+}
+
+.reset-container {
+  composes: auth-container;
+}
+
+.reset-hero {
+  composes: auth-hero;
+}
+
+/* Card Reset */
+.cardReset {
+  composes: cardRegister;
+}
+
+.cardReset .card-title {
+  composes: card-title;
+}
+
+.cardReset .card-note {
+  composes: card-note;
+}

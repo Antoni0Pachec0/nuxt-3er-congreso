@@ -1,19 +1,56 @@
 import { defineNuxtConfig } from 'nuxt/config'
+// Importamos 'node:process' para asegurarnos de que el runtimeConfig
+// y el define de Vite reconozcan la variable 'process.env'.
+import * as nodeProcess from 'node:process'; 
+
 
 export default defineNuxtConfig({
-  components: false,
-  imports: { autoImport: false },
-
-  devtools: { enabled: false },
+  // Desactiva explícitamente el SSR para funcionar en modo SPA (Cliente)
   ssr: false,
 
-  typescript: {
-    shim: false,
-    typeCheck: false
+  // ----------------
+  // MÓDULOS Y CARACTERÍSTICAS
+  // ----------------
+  // Desactiva completamente la auto-importación de componentes (CRÍTICO para el error)
+  components: false,
+  // Desactiva la auto-importación de composición
+  imports: { autoImport: false },
+
+  modules: [
+    'notivue/nuxt'
+  ],
+  
+  devtools: { enabled: false },
+  
+  experimental: {
+    asyncEntry: false,
+    componentIslands: false
   },
 
+  // ----------------
+  // RUTAS Y REDIRECCIONAMIENTOS
+  // ----------------
+  routeRules: {
+    '/auth/login':   { redirect: '/login' },
+    '/auth/register':{ redirect: '/register' },
+    '/auth/verify':  { redirect: '/verify' },
+  },
+
+  // ----------------
+  // CONFIGURACIÓN AMBIENTAL
+  // ----------------
+  runtimeConfig: {
+    public: {
+      // Usamos nodeProcess.env para asegurar la correcta resolución
+      apiBase: nodeProcess.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'
+    }
+  },
+
+  // ----------------
+  // ESTILOS Y HEAD
+  // ----------------
   css: [
-    '@/assets/css/main.css', // Tu archivo principal de estilos
+    '@/assets/css/main.css',
   ],
 
   app: {
@@ -31,43 +68,54 @@ export default defineNuxtConfig({
     }
   },
 
+  // ----------------
+  // CONFIGURACIÓN DEL SERVIDOR (NITRO)
+  // ----------------
   nitro: { 
-    preset: 'node-server',
     serveStatic: true,
-    compatibilityDate: '2025-09-23' // 🔹 Aquí es donde debe ir
+    // Elimina la advertencia del log al usar la fecha recomendada
+    compatibilityDate: '2025-09-28' 
   },
 
-  runtimeConfig: {
-    public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'
-    }
-  },
-
-  experimental: {
-    asyncEntry: false,
-    componentIslands: false
-  },
-
-   modules: [
-    'notivue/nuxt'
-  ],
-
+  // ----------------
+  // CONFIGURACIÓN DE VITE (CRÍTICA - SOLUCIONES DE PATHING)
+  // ----------------
   vite: {
     optimizeDeps: {
+      // CRÍTICO 1: Excluye el helper de la pre-optimización
       exclude: [
         'plugin-vue:export-helper',
-        'vite/modulepreload-polyfill.js'
+        'vite/modulepreload-polyfill'
       ]
     },
+    
     build: {
       modulePreload: {
-        polyfill: false // 🔹 corregido: evita el warning deprecated
+        polyfill: false
+      },
+      rollupOptions: {
+         // CRÍTICO 2: Excluye el helper de Rollup durante el build/transformación
+        external: ['plugin-vue:export-helper'] 
       }
     },
+    
     server: {
       fs: {
         strict: false
       }
+    },
+    
+    // CRÍTICO 3: Asegura que el pathing se resuelve correctamente
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(nodeProcess.env.NODE_ENV || 'development')
     }
+  },
+
+  // ----------------
+  // CONFIGURACIÓN DE TYPESCRIPT
+  // ----------------
+  typescript: {
+    shim: false,
+    typeCheck: false
   }
 })

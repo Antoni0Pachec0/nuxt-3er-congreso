@@ -1,67 +1,120 @@
 /* assets/css/notifications.css */
 
-/* Contenedor de la notificación */
-.notification-container {
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  padding: 15px;
-  transition: transform 0.3s ease; /* Suaviza la transición */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
+/* Contenedor principal de notificaciones */
+.notivue__container {
+  position: fixed;
+  z-index: 10000;
+  width: 100%;
+  max-width: 400px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px;
 }
 
-/* Animación de entrada y salida */
-.notification-enter-active,
-.notification-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
+/* Para desktop - posicionar a la derecha */
+@media (min-width: 768px) {
+  .notivue__container {
+    left: auto;
+    right: 16px;
+    transform: none;
+    max-width: 420px;
+  }
 }
 
-.notification-enter, .notification-leave-to {
-  opacity: 0;
-  transform: translateY(-10px); /* Deslizar hacia arriba */
+/* Contenedor de cada notificación */
+.notivue__notification {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  width: 100%;
+}
+
+/* Efecto hover solo en desktop */
+@media (min-width: 768px) {
+  .notivue__notification:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* Encabezado de la notificación */
-.notification-header {
+.notivue__header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
-.icon {
-  font-size: 1.5rem;
+.notivue__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
-/* Estilos para cada tipo de notificación */
-.notification.success {
-  background-color: #4CAF50;
+.notivue__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.notivue__message {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  opacity: 0.9;
+  margin-left: 28px; /* Alinear con el título considerando el icono */
+}
+
+/* Tipos de notificación */
+.notivue__notification--success {
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
 }
 
-.notification.error {
-  background-color: #F44336;
+.notivue__notification--error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
 }
 
-.notification.warning {
-  background-color: #FF9800;
-  color: black;
-}
-
-.notification.loading {
-  background-color: #2196F3;
+.notivue__notification--warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
 }
 
-/* Efecto hover */
-.notification-container:hover {
-  transform: translateY(-5px); /* Efecto hover */
+.notivue__notification--info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
 }
 
-/* Estilo para el mensaje */
-.message {
-  font-size: 1rem;
-  line-height: 1.5;
+.notivue__notification--loading {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: white;
+}
+
+/* Animaciones */
+.notivue__enter-active,
+.notivue__leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notivue__enter-from {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+
+.notivue__leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+}
+
+/* Barra de progreso (opcional) */
+.notivue__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0 0 12px 12px;
 }

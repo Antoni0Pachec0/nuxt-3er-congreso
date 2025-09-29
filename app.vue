@@ -1,6 +1,15 @@
 <template>
   <div>
-    <Header v-if="shouldShowHeader" />
+    <!-- Header solo si NO es login o register -->
+    <Header v-if="
+      $route.path !== '/login' &&
+      $route.path !== '/register' &&
+      $route.path !== '/verify' &&
+      $route.path !== '/reset' &&
+      $route.path !== '/forgot' &&
+      $route.path !== '/game'
+    " />
+
     <NuxtPage />
     <Footer v-if="shouldShowFooter" />
 
@@ -26,6 +35,15 @@
         <p v-if="item.message" class="message">{{ item.message }}</p>
       </Notification>
     </Notivue>
+    <Footer v-if="
+      $route.path !== '/login' &&
+      $route.path !== '/register' &&
+      $route.path !== '/verify' &&
+      $route.path !== '/reset' &&
+      $route.path !== '/forgot' &&
+      $route.path !== '/game'
+
+    " />
   </div>
 </template>
 
@@ -41,7 +59,7 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 
 const route = useRoute()
-const hideOn = new Set(['/login', '/register', '/verify'])
+const hideOn = new Set(['/login', '/register', '/verify', '/forgot', '/reset'])
 const shouldShowHeader = computed(() => !hideOn.has(route.path))
 const shouldShowFooter = computed(() => !hideOn.has(route.path))
 

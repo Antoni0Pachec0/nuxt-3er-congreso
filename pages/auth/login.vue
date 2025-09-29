@@ -19,6 +19,7 @@
       >
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
       </button>
+
       <!-- Columna izquierda / título -->
       <header class="login-hero" aria-label="Identidad del evento">
         <h1 class="hero-title">
@@ -30,7 +31,6 @@
 
       <!-- Columna derecha / Card -->
       <section class="cardLogin" aria-label="Formulario de inicio de sesión">
-        <!-- Título centrado -->
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
             <SvgIcon :path="mdiArrowRight" type="mdi" />
@@ -42,9 +42,9 @@
           <!-- Email -->
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
-            <span class="input-icon"
-              ><SvgIcon :path="mdiEmailOutline" type="mdi"
-            /></span>
+            <span class="input-icon">
+              <SvgIcon :path="mdiEmailOutline" type="mdi" />
+            </span>
             <input
               id="email"
               v-model.trim="email"
@@ -65,15 +65,15 @@
           </div>
 
           <div class="input-wrap">
-            <span class="input-icon"
-              ><SvgIcon :path="mdiLockOutline" type="mdi"
-            /></span>
+            <span class="input-icon">
+              <SvgIcon :path="mdiLockOutline" type="mdi" />
+            </span>
             <input
               id="password"
               :type="show ? 'text' : 'password'"
               v-model.trim="password"
               required
-              minlength="6"
+              minlength="8"
               autocomplete="current-password"
               placeholder="••••••••"
               class="input input--pass"
@@ -90,9 +90,12 @@
             </button>
           </div>
 
+          <!-- Error -->
+          <p v-if="apiError" class="help error">{{ apiError }}</p>
+
           <!-- CTA -->
           <button class="btn" type="submit" :disabled="loading">
-            {{ loading ? "Ingresando…" : "Iniciar Sesión" }}
+            {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
           </button>
 
           <!-- Divider + Register -->
@@ -106,7 +109,6 @@
             Regístrate aquí
           </button>
 
-          <!-- Frase bajo el formulario -->
           <p class="card-note">
             Tecnologías de la Información · Innovación Digital
           </p>
@@ -117,72 +119,90 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import SvgIcon from "@jamescoyle/vue-icon";
+import { definePageMeta } from '#imports'
+import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
+import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiArrowRight,
   mdiEmailOutline,
   mdiLockOutline,
   mdiEyeOutline,
   mdiEyeOffOutline,
-  mdiArrowLeft,
-} from "@mdi/js";
+  mdiArrowLeft
+} from '@mdi/js'
 
-// Axios + rutas
-import api from "~/plugins/http/api";
-import { ROUTES } from "~/plugins/http/routes";
-import { parseAxiosError } from "~/plugins/http/error";
+import api from '~/plugins/http/api'
+import { ROUTES } from '~/plugins/http/routes'
+import { parseAxiosError } from '~/plugins/http/error'
+import '@/assets/css/styles/Login.css'
 
-import "@/assets/css/styles/Login.css";
+definePageMeta({
+  name: 'login',
+  path: '/login',
+  guestOnly: true, // si ya está logueado, middleware lo manda a '/'
+})
 
-const email = ref("");
-const password = ref("");
-const show = ref(false);
-const loading = ref(false);
-const apiError = ref(""); // mostrar mensaje si algo falla
+const router = useRouter()
+const route  = useRoute()
 
-function onForgot() {
-  // Aquí redirige a tu página de recuperación de contraseña
-  window.location.href = "/forgot-password";
-}
+const email = ref('')
+const password = ref('')
+const show = ref(false)
+const loading = ref(false)
+const apiError = ref('')
 
-async function onSubmit() {
-  if (!email.value || !password.value) {
-    apiError.value = "Por favor, llena todos los campos.";
-    return;
-  }
-  loading.value = true;
-  apiError.value = "";
-  try {
-    const payload = {
-      email: email.value,
-      password: password.value,
-    };
-
-    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload);
-
-    // Suponiendo que tu backend devuelve { access_token, user }
-    if (data?.access_token) {
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user || {}));
-    }
-
-    // Redirigir a la vista index
-    window.location.href = "/";
-  } catch (e) {
-    console.error(e);
-    apiError.value = parseAxiosError(e) || "Error al iniciar sesión.";
-  } finally {
-    loading.value = false;
-  }
+function goHome() {
+  router.push({ name: 'index' })
 }
 
 function onRegister() {
-  // Redirigir al registro
-  window.location.href = "/register";
+  router.push({ name: 'register' })
 }
 
-function goHome() {
-  window.location.href = "/"; // 👈 
+function onForgot() {
+  // Ajusta si tu página se llama distinto
+  router.push({ name: 'forgot' }) // o router.push('/forgot')
+}
+
+async function onSubmit() {
+  apiError.value = ''
+  if (!email.value || !password.value) {
+    apiError.value = 'Por favor, llena todos los campos.'
+    return
+  }
+
+  loading.value = true
+  try {
+    const payload = { email: email.value.toLowerCase().trim(), password: password.value }
+    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
+
+    // Caso: cuenta inactiva -> requiere verificación
+    if (data?.require_verification) {
+      // El backend te devuelve user: { email, user_id, name_user }
+      const pendingEmail = data?.user?.email || payload.email
+      sessionStorage.setItem('verify_email', pendingEmail)
+      // Redirige a verificar
+      router.push({ name: 'verify' })
+      return
+    }
+
+    // Caso: login exitoso
+    // Tu backend devuelve: { message, accessToken, refreshToken, user_id }
+    if (data?.accessToken) {
+      // IMPORTANTE: la clave que lee tu middleware es 'accessToken'
+      localStorage.setItem('accessToken', data.accessToken)
+      if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+    }
+
+    // Redirige a la ruta original si venía de una protegida (?redirect=/…)
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+    router.push(redirect || '/')
+  } catch (e) {
+    console.error('[Login] Error:', e)
+    apiError.value = parseAxiosError(e) || 'Error al iniciar sesión.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
