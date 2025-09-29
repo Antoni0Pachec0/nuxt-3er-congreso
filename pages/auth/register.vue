@@ -222,7 +222,7 @@
                   <div class="stack">
                     <label class="label" for="matricula">Matrícula</label>
                     <input id="matricula" v-model.trim="form.matricula" type="text" required class="input"
-                      maxlength="20" placeholder="Tu matrícula" />
+                      maxlength="10" placeholder="Tu matrícula" />
                   </div>
                   <div class="stack">
                     <label class="label" for="programa_educativo">Programa Educativo</label>
@@ -1044,7 +1044,7 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
-    console.log('[Frontend] Enviando registro al backend...', {
+    console.log('[Frontend] Enviando registro al servidor...', {
       email: payload.email,
       type_user_id: payload.type_user_id
     });
@@ -1054,7 +1054,7 @@ async function submitRegister() {
       timeout: 30000 // 30 segundos timeout
     });
 
-    console.log('[Frontend] Respuesta recibida del backend:', data);
+    console.log('[Frontend] Respuesta recibida del servidor:', data);
 
     // ✅ CASO 1: Registro exitoso completo
     if (data?.email_sent && data?.user) {

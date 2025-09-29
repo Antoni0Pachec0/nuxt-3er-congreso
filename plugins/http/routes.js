@@ -6,6 +6,7 @@ export const ROUTES = {
     VERIFY: '/auth/verify',
     RESEND: '/auth/resend-code',
     LOGIN: '/auth/login',
+    FORGOT_PASSWORD: '/auth/forgot-password',
     ME: '/auth/me',
     REFRESH: '/auth/refresh',
   },

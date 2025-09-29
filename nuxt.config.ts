@@ -12,9 +12,9 @@ export default defineNuxtConfig({
   // MÓDULOS Y CARACTERÍSTICAS
   // ----------------
   // Desactiva completamente la auto-importación de componentes (CRÍTICO para el error)
-  components: false,
+  components: true,
   // Desactiva la auto-importación de composición
-  imports: { autoImport: false },
+  imports: { autoImport: true },
 
   modules: [
     'notivue/nuxt'
@@ -34,6 +34,8 @@ export default defineNuxtConfig({
     '/auth/login':   { redirect: '/login' },
     '/auth/register':{ redirect: '/register' },
     '/auth/verify':  { redirect: '/verify' },
+    '/auth/forgot':  { redirect: '/forgot' },
+    '/auth/reset':  { redirect: '/reset' },
   },
 
   // ----------------

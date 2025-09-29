@@ -34,6 +34,12 @@
 </template>
 
 <script setup>
+definePageMeta({
+  name: 'forgot',
+  path: '/forgot',
+  guestOnly: true,
+})
+
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import SvgIcon from "@jamescoyle/vue-icon";
@@ -55,22 +61,24 @@ async function onSubmit() {
     notifyError('Error', 'Por favor ingresa un correo electrónico válido');
     return;
   }
-  
+
   loading.value = true;
   const toast = notifyLoading('Enviando código', 'Procesando tu solicitud...');
-  
+
   try {
     await api.post(ROUTES.AUTH.FORGOT_PASSWORD, { email: email.value.toLowerCase().trim() });
-    
-    // Guardar email para la página de verificación
-    localStorage.setItem("verify_email", email.value.toLowerCase().trim());
-    
+
+    // Guardar email y PROPÓSITO para la página de verificación
+    const emailTrimmed = email.value.toLowerCase().trim();
+    localStorage.setItem("verify_email", emailTrimmed);
+    localStorage.setItem("verification_purpose", "reset_password"); // <--- AÑADIDO: Indica que el flujo es para reestablecer
+
     // Resolver el toast con éxito
     toast.resolve({
       title: 'Código enviado',
       message: 'Revisa tu correo electrónico para continuar'
     });
-    
+
     // Redirigir después de un breve momento para que se vea la notificación
     setTimeout(() => {
       router.push(R.to('verify'));

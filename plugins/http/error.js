@@ -1,7 +1,7 @@
 // utils/http/error.js
 export function parseAxiosError(err) {
   if (err?.code === 'ERR_NETWORK') {
-    return 'No se puede conectar al servidor. Verifica tu conexión o que el backend esté activo.';
+    return 'No se puede conectar al servidor. Verifica tu conexión o que el servidor esté activo.';
   }
   const res = err?.response;
   if (!res) return 'Error de conexión con el servidor';

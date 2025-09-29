@@ -164,7 +164,7 @@ function onRegister() {
 }
 
 function onForgot() {
-  router.push(R.to('verify'))
+  router.push(R.to('forgot'))
 }
 
 async function onSubmit() {

@@ -1,9 +1,7 @@
-// /middleware/auth.global.js
 import { defineNuxtRouteMiddleware, navigateTo, useCookie } from 'nuxt/app'
 
 export default defineNuxtRouteMiddleware((to) => {
-  // Solo corre en cliente
-  if (import.meta.server) return
+  if (process.server) return
 
   // 1) Token (cookie o localStorage)
   const accessTokenCookie = useCookie('access_token')
@@ -20,14 +18,32 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo('/')
   }
 
-  // 4) Protección /verify (requiere contexto en sessionStorage)
+  // 4) Protección /verify
   if (to.name === 'verify' || to.path === '/verify') {
-    const emailToVerify =
-      sessionStorage.getItem('verify_email') ||
-      localStorage.getItem('verify_email') // fallback por si quedó de sesiones viejas
-
+    const emailToVerify = sessionStorage.getItem('verify_email') || localStorage.getItem('verify_email')
     if (!emailToVerify) {
-      return navigateTo('/register')
+      const verificationPurpose = localStorage.getItem('verification_purpose')
+      return navigateTo(verificationPurpose === 'reset_password' ? '/forgot' : '/register')
+    }
+  }
+
+  // 5) Protección /reset - MÁS SEGURO
+  if (to.name === 'reset' || to.path === '/reset') {
+    // Verificar si hay un token temporal válido para reset
+    const resetToken = sessionStorage.getItem('reset_token')
+    const resetEmail = sessionStorage.getItem('reset_email')
+    
+    if (!resetToken || !resetEmail) {
+      return navigateTo('/forgot')
+    }
+    
+    // Opcional: verificar expiración del token
+    const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
+    if (tokenExpiry && Date.now() > parseInt(tokenExpiry)) {
+      sessionStorage.removeItem('reset_token')
+      sessionStorage.removeItem('reset_email')
+      sessionStorage.removeItem('reset_token_expiry')
+      return navigateTo('/forgot')
     }
   }
 })

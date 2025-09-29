@@ -27,3 +27,26 @@
 .cardReset .card-note {
   composes: card-note;
 }
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #333;
+  background: rgba(0,0,0,0.05);
+}

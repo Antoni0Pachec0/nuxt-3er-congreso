@@ -111,7 +111,7 @@
 
 <script setup>
 import { definePageMeta } from '#imports'
-import { useRouter, useRoute } from 'vue-router' // auto-import desactivado => importar explícitamente
+import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 import api from '~/plugins/http/api'
@@ -124,7 +124,7 @@ import '@/assets/css/styles/Verify.css'
 definePageMeta({
   name: 'verify',
   path: '/verify',
-  guestOnly: true, // si hay token válido, el middleware te puede mandar al home
+  guestOnly: true,
 })
 
 /* =========================
@@ -140,7 +140,18 @@ const loading = ref(false)
 const error   = ref('')
 const cooldown = ref(0)
 
-const email = ref(import.meta.client ? (sessionStorage.getItem('verify_email') || '') : '')
+// Obtener email y propósito de la verificación
+const email = ref(
+  import.meta.client
+    ? (sessionStorage.getItem('verify_email') || localStorage.getItem('verify_email') || '')
+    : ''
+)
+const verificationPurpose = ref(
+  import.meta.client
+    ? localStorage.getItem('verification_purpose') || 'email_verification'
+    : 'email_verification'
+)
+
 const safeEmail = computed(() =>
   email.value
     ? email.value.replace(/(.{2}).+(@.+)/, (_, a, b) => a + '•••••' + b)
@@ -174,7 +185,6 @@ function onInput(e, i) {
   error.value = ''
   const v = e.target.value
 
-  // Si pega 2+ chars en un campo (iOS/Android) lo distribuimos
   if (v && v.length > 1) {
     distribute(v)
     return
@@ -240,8 +250,21 @@ function distribute(text) {
   focusIndex(nextEmpty)
 }
 
+// Función para pegar desde portapapeles
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText()
+    if (text) {
+      distribute(text)
+    }
+  } catch (err) {
+    console.error('Error al pegar desde portapapeles:', err)
+    notifyError('Error', 'No se pudo pegar desde el portapapeles')
+  }
+}
+
 /* =========================
- * Acciones
+ * Acciones - CORREGIDO Y MEJORADO
  * ========================= */
 async function onVerify() {
   if (!email.value) {
@@ -260,12 +283,40 @@ async function onVerify() {
 
   try {
     const payload = { email: email.value.toLowerCase().trim(), code: code.value }
-    await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
+    const response = await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
 
-    // Éxito
+    // Éxito - determinar redirección basada en el tipo de token
     sessionStorage.removeItem('verify_email')
-    toast.resolve({ title: '¡Listo!', message: 'Código verificado. Ahora inicia sesión.' })
-    router.push({ name: 'login' })
+    localStorage.removeItem('verify_email')
+    
+    // Determinar el mensaje y redirección basado en el propósito
+    if (verificationPurpose.value === 'reset_password') {
+      localStorage.removeItem('verification_purpose')
+      
+      // ✅ MÉTODO SEGURO: Usar token temporal en lugar de email en URL
+      const resetToken = generateResetToken()
+      sessionStorage.setItem('reset_token', resetToken)
+      sessionStorage.setItem('reset_email', email.value)
+      sessionStorage.setItem('reset_token_expiry', (Date.now() + 15 * 60 * 1000).toString()) // 15 min
+      
+      toast.resolve({ 
+        title: '¡Código verificado!', 
+        message: 'Ahora puedes establecer tu nueva contraseña.' 
+      })
+      
+      setTimeout(() => {
+        router.push('/reset')
+      }, 1500)
+    } else {
+      // Verificación de registro normal
+      toast.resolve({ 
+        title: '¡Listo!', 
+        message: 'Cuenta verificada exitosamente. Ahora inicia sesión.' 
+      })
+      setTimeout(() => {
+        router.push('/login')
+      }, 1500)
+    }
   } catch (err) {
     const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.'
     error.value = msg
@@ -276,6 +327,11 @@ async function onVerify() {
   } finally {
     loading.value = false
   }
+}
+
+// Generar token temporal seguro
+function generateResetToken() {
+  return 'reset_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36)
 }
 
 /* ======= Cooldown ======= */
@@ -311,23 +367,24 @@ async function resend() {
   if (!email.value || cooldown.value > 0 || loading.value) return
   const toast = notifyLoading('Reenviando código', 'Generando un nuevo código de verificación…')
   try {
-    await api.post(
-      ROUTES.AUTH.RESEND,
-      { email: email.value.toLowerCase().trim() },
-      { withCredentials: true }
-    )
-    // Solo mostrar notificación desde el toast, no una adicional
+    // Determinar qué endpoint usar basado en el propósito
+    const endpoint = verificationPurpose.value === 'reset_password' 
+      ? ROUTES.AUTH.FORGOT_PASSWORD 
+      : ROUTES.AUTH.RESEND
+    
+    const payload = { email: email.value.toLowerCase().trim() }
+    await api.post(endpoint, payload, { withCredentials: true })
+    
     toast.resolve({ 
       title: 'Código reenviado', 
       message: 'Revisa tu correo. Puede tardar unos segundos.',
-      duration: 4000 // Asegurar que tenga suficiente tiempo para ser leída
+      duration: 4000
     })
     startCooldown()
   } catch (err) {
     const status = err?.response?.status
     const msg = parseAxiosError(err) || 'No se pudo reenviar el código.'
     if (status === 429) {
-      // Respeta el cooldown del servidor también en el cliente
       toast.reject({ title: 'Espera un momento', message: msg })
       startCooldown()
       return
@@ -342,7 +399,12 @@ async function resend() {
 onMounted(async () => {
   // Si entró sin contexto (por si el middleware no corrió)
   if (!email.value) {
-    router.replace({ name: 'register' })
+    const verificationPurpose = localStorage.getItem('verification_purpose')
+    if (verificationPurpose === 'reset_password') {
+      router.replace('/forgot')
+    } else {
+      router.replace('/register')
+    }
     return
   }
 
