@@ -4,6 +4,9 @@ export const APP_ROUTES = {
   login:    { name: 'login',    path: '/login' },
   register: { name: 'register', path: '/register' },
   verify:   { name: 'verify',   path: '/verify' },
+  forgot:   { name: 'forgot',   path: '/forgot' },
+  reset:    { name: 'reset',    path: '/reset' },
+  userHome: { name: 'user-home', path: '/user/home' },
   // agrega más rutas aquí
 }
 

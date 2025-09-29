@@ -7,11 +7,12 @@
       $route.path !== '/verify' &&
       $route.path !== '/reset' &&
       $route.path !== '/forgot' &&
+      $route.path !== '/home' &&
       $route.path !== '/game'
+
     " />
 
     <NuxtPage />
-    <Footer v-if="shouldShowFooter" />
 
     <!-- Contenedor global de notificaciones -->
     <Notivue v-slot="item">
@@ -41,6 +42,7 @@
       $route.path !== '/verify' &&
       $route.path !== '/reset' &&
       $route.path !== '/forgot' &&
+      $route.path !== '/home' &&
       $route.path !== '/game'
 
     " />

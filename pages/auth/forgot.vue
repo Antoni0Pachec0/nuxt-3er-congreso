@@ -21,7 +21,7 @@
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
             <span class="input-icon"><SvgIcon :path="mdiEmailOutline" type="mdi" /></span>
-            <input id="email" v-model.trim="email" type="email" required placeholder="tu@email.com" class="input" />
+            <input id="email" v-model.trim="email" type="email" required maxlength="100" placeholder="tu@email.com" class="input" />
           </div>
 
           <button class="btn" type="submit" :disabled="loading">
@@ -35,23 +35,52 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiEmailOutline } from "@mdi/js";
 import api from "~/plugins/http/api";
 import { ROUTES } from "~/plugins/http/routes";
+import { parseAxiosError } from '~/plugins/http/error';
+import { notifyLoading, notifyError } from '~/utils/notifications';
+import { R } from '~/utils/app-routes';
 import '@/assets/css/styles/Register.css';
 import '@/assets/css/styles/Forgot.css';
 
+const router = useRouter();
 const email = ref("");
 const loading = ref(false);
 
 async function onSubmit() {
+  if (!email.value || !email.value.includes('@')) {
+    notifyError('Error', 'Por favor ingresa un correo electrónico válido');
+    return;
+  }
+  
   loading.value = true;
+  const toast = notifyLoading('Enviando código', 'Procesando tu solicitud...');
+  
   try {
-    await api.post(ROUTES.AUTH.FORGOT_PASSWORD, { email: email.value });
-    localStorage.setItem("verify_email", email.value);
-    window.location.href = "/verify"; // ir al mismo verify
-  } finally {
+    await api.post(ROUTES.AUTH.FORGOT_PASSWORD, { email: email.value.toLowerCase().trim() });
+    
+    // Guardar email para la página de verificación
+    localStorage.setItem("verify_email", email.value.toLowerCase().trim());
+    
+    // Resolver el toast con éxito
+    toast.resolve({
+      title: 'Código enviado',
+      message: 'Revisa tu correo electrónico para continuar'
+    });
+    
+    // Redirigir después de un breve momento para que se vea la notificación
+    setTimeout(() => {
+      router.push(R.to('verify'));
+    }, 1500);
+  } catch (error) {
+    const errorMsg = parseAxiosError(error) || 'No se pudo procesar tu solicitud';
+    toast.reject({
+      title: 'Error',
+      message: errorMsg
+    });
     loading.value = false;
   }
 }

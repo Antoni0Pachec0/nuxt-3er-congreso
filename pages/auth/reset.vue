@@ -19,10 +19,20 @@
         <h2 class="card-title card-title--center">Nueva contraseña</h2>
         <form class="form" @submit.prevent="onSubmit">
           <label class="label" for="password">Contraseña</label>
-          <input id="password" v-model="password" type="password" minlength="8" required class="input" placeholder="••••••••" />
+          <div class="input-wrap">
+            <span class="input-icon">
+              <SvgIcon :path="mdiLockOutline" type="mdi" />
+            </span>
+            <input id="password" v-model="password" type="password" minlength="8" maxlength="50" required class="input" placeholder="••••••••" />
+          </div>
 
           <label class="label" for="password2">Confirmar contraseña</label>
-          <input id="password2" v-model="password2" type="password" minlength="8" required class="input" placeholder="••••••••" />
+          <div class="input-wrap">
+            <span class="input-icon">
+              <SvgIcon :path="mdiLockCheckOutline" type="mdi" />
+            </span>
+            <input id="password2" v-model="password2" type="password" minlength="8" maxlength="50" required class="input" placeholder="••••••••" />
+          </div>
 
           <small v-if="password2 && password2 !== password" class="help error">
             Las contraseñas no coinciden.
@@ -40,8 +50,13 @@
 <script setup>
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiLockOutline, mdiLockCheckOutline } from '@mdi/js';
 import api from "~/plugins/http/api";
 import { ROUTES } from "~/plugins/http/routes";
+import { parseAxiosError } from '~/plugins/http/error';
+import { notifyLoading, notifyError } from '~/utils/notifications';
+import { R } from '~/utils/app-routes';
 import '@/assets/css/styles/Register.css';
 import '@/assets/css/styles/Reset.css';
 
@@ -52,14 +67,34 @@ const password2 = ref("");
 const loading = ref(false);
 
 async function onSubmit() {
+  if (password.value !== password2.value) {
+    return; // Form validation should prevent this anyway
+  }
+
   loading.value = true;
+  const toast = notifyLoading('Guardando contraseña', 'Procesando tu solicitud...');
+
   try {
     await api.post(ROUTES.AUTH.RESET_PASSWORD, {
       email: route.query.email,
       password: password.value,
     });
-    router.push("/login");
-  } finally {
+
+    toast.resolve({
+      title: 'Contraseña actualizada',
+      message: 'Tu contraseña ha sido restablecida con éxito'
+    });
+
+    // Redirigir después de un breve momento para que se vea la notificación
+    setTimeout(() => {
+      router.push(R.to('login'));
+    }, 1500);
+  } catch (error) {
+    const errorMsg = parseAxiosError(error) || 'No se pudo restablecer la contraseña';
+    toast.reject({
+      title: 'Error',
+      message: errorMsg
+    });
     loading.value = false;
   }
 }

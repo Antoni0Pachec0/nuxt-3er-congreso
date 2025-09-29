@@ -12,8 +12,8 @@
             <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
             <a href="#Mapa" @click="closeMenu">Mapa</a>
             <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-<!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
-            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
+            <button @click="goToRegister" class="sidebar_button">Registro</button>
+            <!-- <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button> -->
             </nav>
 
       <div
@@ -43,8 +43,8 @@
             <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
             <a href="#Mapa" @click="closeMenu">Mapa</a>
             <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-            <!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
-            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
+            <button @click="goToRegister" class="sidebar_button">Registro</button>
+            <!-- <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button> -->
         </nav>
     </div>
 </template>
@@ -55,13 +55,18 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'   // 👈 importa ambos ho
 import logoUrl from '~/assets/images/Logo.png'
 // Importa tu CSS (o muévelo a app.vue/global.css si prefieres)
 import '~/assets/css/styles/Header.css'
+import { R } from '~/utils/app-routes'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const logo = logoUrl
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 
 const closeMenu = () => { isMenuOpen.value = false }
 const toggleMenu = () => { isMenuOpen.value = !isMenuOpen.value }
+const goToRegister = () => { router.push(R.to('register')); closeMenu() }
+const goToLogin = () => { router.push(R.to('login')); closeMenu() }
 
 const handleScroll = () => {
   if (typeof window === 'undefined') return

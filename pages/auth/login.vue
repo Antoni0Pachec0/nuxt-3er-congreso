@@ -50,6 +50,7 @@
               v-model.trim="email"
               type="email"
               required
+              maxlength="100"
               autocomplete="email"
               placeholder="tu@email.com"
               class="input"
@@ -74,6 +75,7 @@
               v-model.trim="password"
               required
               minlength="8"
+              maxlength="50"
               autocomplete="current-password"
               placeholder="••••••••"
               class="input input--pass"
@@ -135,6 +137,7 @@ import {
 import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
+import { R } from '~/utils/app-routes'
 import '@/assets/css/styles/Login.css'
 
 definePageMeta({
@@ -153,16 +156,15 @@ const loading = ref(false)
 const apiError = ref('')
 
 function goHome() {
-  router.push({ name: 'index' })
+  router.push(R.to('home'))
 }
 
 function onRegister() {
-  router.push({ name: 'register' })
+  router.push(R.to('register'))
 }
 
 function onForgot() {
-  // Ajusta si tu página se llama distinto
-  router.push({ name: 'forgot' }) // o router.push('/forgot')
+  router.push(R.to('verify'))
 }
 
 async function onSubmit() {
@@ -183,7 +185,7 @@ async function onSubmit() {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
       // Redirige a verificar
-      router.push({ name: 'verify' })
+      router.push(R.to('verify'))
       return
     }
 
@@ -195,9 +197,8 @@ async function onSubmit() {
       if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
     }
 
-    // Redirige a la ruta original si venía de una protegida (?redirect=/…)
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-    router.push(redirect || '/')
+    // Redirige a la vista home.vue en la carpeta user
+    router.push(R.to('userHome'))
   } catch (e) {
     console.error('[Login] Error:', e)
     apiError.value = parseAxiosError(e) || 'Error al iniciar sesión.'

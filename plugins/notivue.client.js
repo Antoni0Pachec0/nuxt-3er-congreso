@@ -8,12 +8,31 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const notivue = createNotivue({
     position: 'top-right',
-    limit: 5,
+    limit: 3, // Reducimos el límite para evitar amontonar demasiados
+    pauseOnHover: true, // Pausa la duración cuando se hace hover
     notifications: {
-      success: { duration: 3000 },
-      error:   { duration: 5000 },
-      warning: { duration: 4000 },
-      loading: { duration: 0 }
+      success: { 
+        duration: 4000, 
+        showIcon: true,
+      },
+      error: { 
+        duration: 6000, // Mayor duración para errores
+        showIcon: true,
+        dismissible: true, // Permitir cerrar con click
+      },
+      warning: { 
+        duration: 5000,
+        showIcon: true,
+        dismissible: true,
+      },
+      loading: { 
+        duration: 0, // Infinito hasta que se resuelva
+        showIcon: true,
+      },
+      info: {
+        duration: 4000,
+        showIcon: true,
+      }
     }
   })
 

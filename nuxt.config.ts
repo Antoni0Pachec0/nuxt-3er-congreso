@@ -74,7 +74,7 @@ export default defineNuxtConfig({
   nitro: { 
     serveStatic: true,
     // Elimina la advertencia del log al usar la fecha recomendada
-    compatibilityDate: '2025-09-28' 
+    compatibilityDate: '2025-09-29' 
   },
 
   // ----------------

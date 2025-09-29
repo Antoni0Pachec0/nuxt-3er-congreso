@@ -118,6 +118,7 @@ import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
 import { notifyError, notifyWarning, notifyLoading } from '~/utils/notifications'
+import { R } from '~/utils/app-routes'
 import '@/assets/css/styles/Verify.css'
 
 definePageMeta({
@@ -310,11 +311,27 @@ async function resend() {
   if (!email.value || cooldown.value > 0 || loading.value) return
   const toast = notifyLoading('Reenviando código', 'Generando un nuevo código de verificación…')
   try {
-    await api.post(ROUTES.AUTH.RESEND, { email: email.value.toLowerCase().trim() }, { withCredentials: true })
-    toast.resolve({ title: 'Código reenviado', message: 'Revisa tu correo. Puede tardar unos segundos.' })
+    await api.post(
+      ROUTES.AUTH.RESEND,
+      { email: email.value.toLowerCase().trim() },
+      { withCredentials: true }
+    )
+    // Solo mostrar notificación desde el toast, no una adicional
+    toast.resolve({ 
+      title: 'Código reenviado', 
+      message: 'Revisa tu correo. Puede tardar unos segundos.',
+      duration: 4000 // Asegurar que tenga suficiente tiempo para ser leída
+    })
     startCooldown()
   } catch (err) {
+    const status = err?.response?.status
     const msg = parseAxiosError(err) || 'No se pudo reenviar el código.'
+    if (status === 429) {
+      // Respeta el cooldown del servidor también en el cliente
+      toast.reject({ title: 'Espera un momento', message: msg })
+      startCooldown()
+      return
+    }
     toast.reject({ title: 'No se pudo reenviar', message: msg })
   }
 }
