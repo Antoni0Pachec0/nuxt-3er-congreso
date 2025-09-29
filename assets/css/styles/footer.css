@@ -459,3 +459,34 @@
   }
 }
 
+/* Solo en tableta (769px–992px) */
+@media (max-width: 992px) and (min-width: 769px) {
+  .footer-left {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  /* Párrafo ocupa todo el ancho arriba */
+  .footer-left p {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  /* Tres columnas debajo del texto */
+  .footer-code-contact {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr; /* Aumentamos el espacio para el código */
+    gap: 40px;
+    align-items: start;
+  }
+
+  .footer-code {
+    margin: 0;
+    width: 100%;
+  }
+
+  .footer-contact, .footer-location {
+    margin: 0;
+  }
+}
