@@ -264,12 +264,12 @@ async function pasteFromClipboard() {
 }
 
 /* =========================
- * Acciones - CORREGIDO Y MEJORADO
+ * Acciones
  * ========================= */
 async function onVerify() {
   if (!email.value) {
-    notifyWarning('Falta email', 'Vuelve al registro para obtener tu código.')
-    router.push({ name: 'register' })
+    notifyWarning('Falta email', 'Debes iniciar el flujo desde registro o recuperación.')
+    router.push('/register')
     return
   }
   if (!isComplete.value) {
@@ -282,40 +282,32 @@ async function onVerify() {
   const toast = notifyLoading('Verificando código', 'Estamos validando tu código…')
 
   try {
-    const payload = { email: email.value.toLowerCase().trim(), code: code.value }
-    const response = await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
+    const payload = { 
+      email: email.value.toLowerCase().trim(), 
+      code: code.value,
+      token_type: verificationPurpose.value   // 👈 IMPORTANTE
+    }
+    await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
 
-    // Éxito - determinar redirección basada en el tipo de token
+    // Limpieza
     sessionStorage.removeItem('verify_email')
     localStorage.removeItem('verify_email')
-    
-    // Determinar el mensaje y redirección basado en el propósito
+
     if (verificationPurpose.value === 'reset_password') {
       localStorage.removeItem('verification_purpose')
-      
-      // ✅ MÉTODO SEGURO: Usar token temporal en lugar de email en URL
+
       const resetToken = generateResetToken()
       sessionStorage.setItem('reset_token', resetToken)
       sessionStorage.setItem('reset_email', email.value)
-      sessionStorage.setItem('reset_token_expiry', (Date.now() + 15 * 60 * 1000).toString()) // 15 min
-      
-      toast.resolve({ 
-        title: '¡Código verificado!', 
-        message: 'Ahora puedes establecer tu nueva contraseña.' 
-      })
-      
-      setTimeout(() => {
-        router.push('/reset')
-      }, 1500)
+      sessionStorage.setItem('reset_code', code.value)
+      sessionStorage.setItem('reset_token_expiry', (Date.now() + 15 * 60 * 1000).toString())
+
+      toast.resolve({ title: '¡Código verificado!', message: 'Ahora puedes establecer tu nueva contraseña.' })
+      setTimeout(() => router.push('/reset'), 1500)
     } else {
-      // Verificación de registro normal
-      toast.resolve({ 
-        title: '¡Listo!', 
-        message: 'Cuenta verificada exitosamente. Ahora inicia sesión.' 
-      })
-      setTimeout(() => {
-        router.push('/login')
-      }, 1500)
+      localStorage.removeItem('verification_purpose')
+      toast.resolve({ title: '¡Listo!', message: 'Cuenta verificada exitosamente. Ahora inicia sesión.' })
+      setTimeout(() => router.push('/login'), 1500)
     }
   } catch (err) {
     const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.'
@@ -367,8 +359,7 @@ async function resend() {
   if (!email.value || cooldown.value > 0 || loading.value) return
   const toast = notifyLoading('Reenviando código', 'Generando un nuevo código de verificación…')
   try {
-    // Determinar qué endpoint usar basado en el propósito
-    const endpoint = verificationPurpose.value === 'reset_password' 
+    const endpoint = verificationPurpose.value === 'reset_password'
       ? ROUTES.AUTH.FORGOT_PASSWORD 
       : ROUTES.AUTH.RESEND
     
@@ -397,10 +388,10 @@ async function resend() {
  * Lifecycle
  * ========================= */
 onMounted(async () => {
-  // Si entró sin contexto (por si el middleware no corrió)
+  // Si entró sin contexto
   if (!email.value) {
-    const verificationPurpose = localStorage.getItem('verification_purpose')
-    if (verificationPurpose === 'reset_password') {
+    const purpose = localStorage.getItem('verification_purpose')
+    if (purpose === 'reset_password') {
       router.replace('/forgot')
     } else {
       router.replace('/register')

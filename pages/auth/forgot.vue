@@ -40,56 +40,46 @@ definePageMeta({
   guestOnly: true,
 })
 
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import SvgIcon from "@jamescoyle/vue-icon";
-import { mdiEmailOutline } from "@mdi/js";
-import api from "~/plugins/http/api";
-import { ROUTES } from "~/plugins/http/routes";
-import { parseAxiosError } from '~/plugins/http/error';
-import { notifyLoading, notifyError } from '~/utils/notifications';
-import { R } from '~/utils/app-routes';
-import '@/assets/css/styles/Register.css';
-import '@/assets/css/styles/Forgot.css';
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import api from "~/plugins/http/api"
+import { ROUTES } from "~/plugins/http/routes"
+import { parseAxiosError } from '~/plugins/http/error'
+import { notifyLoading, notifyError } from '~/utils/notifications'
+import { R } from '~/utils/app-routes'
+import '@/assets/css/styles/Forgot.css'
 
-const router = useRouter();
-const email = ref("");
-const loading = ref(false);
+const router = useRouter()
+const email = ref("")
+const loading = ref(false)
 
 async function onSubmit() {
   if (!email.value || !email.value.includes('@')) {
-    notifyError('Error', 'Por favor ingresa un correo electrónico válido');
-    return;
+    notifyError('Error', 'Por favor ingresa un correo válido')
+    return
   }
 
-  loading.value = true;
-  const toast = notifyLoading('Enviando código', 'Procesando tu solicitud...');
+  loading.value = true
+  const toast = notifyLoading('Enviando código', 'Procesando tu solicitud...')
 
   try {
-    await api.post(ROUTES.AUTH.FORGOT_PASSWORD, { email: email.value.toLowerCase().trim() });
+    await api.post(ROUTES.AUTH.FORGOT_PASSWORD, { email: email.value.toLowerCase().trim() })
 
-    // Guardar email y PROPÓSITO para la página de verificación
-    const emailTrimmed = email.value.toLowerCase().trim();
-    localStorage.setItem("verify_email", emailTrimmed);
-    localStorage.setItem("verification_purpose", "reset_password"); // <--- AÑADIDO: Indica que el flujo es para reestablecer
+    localStorage.setItem("verify_email", email.value.toLowerCase().trim())
+    localStorage.setItem("verification_purpose", "reset_password") // 👈 IMPORTANTE
 
-    // Resolver el toast con éxito
     toast.resolve({
       title: 'Código enviado',
-      message: 'Revisa tu correo electrónico para continuar'
-    });
+      message: 'Revisa tu correo electrónico'
+    })
 
-    // Redirigir después de un breve momento para que se vea la notificación
     setTimeout(() => {
-      router.push(R.to('verify'));
-    }, 1500);
+      router.push(R.to('verify'))
+    }, 1500)
   } catch (error) {
-    const errorMsg = parseAxiosError(error) || 'No se pudo procesar tu solicitud';
-    toast.reject({
-      title: 'Error',
-      message: errorMsg
-    });
-    loading.value = false;
+    const errorMsg = parseAxiosError(error) || 'No se pudo procesar tu solicitud'
+    toast.reject({ title: 'Error', message: errorMsg })
+    loading.value = false
   }
 }
 </script>

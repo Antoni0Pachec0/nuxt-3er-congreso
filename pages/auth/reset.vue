@@ -82,7 +82,15 @@
 </template>
 
 <script setup>
-import { definePageMeta } from '#imports';
+import { definePageMeta } from '#imports'
+import { ref, onMounted } from "vue"
+import { useRouter } from "vue-router"
+import api from "~/plugins/http/api"
+import { ROUTES } from "~/plugins/http/routes"
+import { parseAxiosError } from '~/plugins/http/error'
+import { notifyLoading, notifyError } from '~/utils/notifications'
+import { R } from '~/utils/app-routes'
+import '@/assets/css/styles/Reset.css'
 
 definePageMeta({
   name: 'reset',
@@ -90,109 +98,69 @@ definePageMeta({
   guestOnly: true,
 })
 
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiLockOutline, mdiLockCheckOutline, mdiEye, mdiEyeOff } from '@mdi/js';
-import api from "~/plugins/http/api";
-import { ROUTES } from "~/plugins/http/routes";
-import { parseAxiosError } from '~/plugins/http/error';
-import { notifyLoading, notifyError } from '~/utils/notifications';
-import { R } from '~/utils/app-routes';
-import '@/assets/css/styles/Register.css';
-import '@/assets/css/styles/Reset.css';
-
-const route = useRoute();
-const router = useRouter();
-const password = ref("");
-const password2 = ref("");
-const loading = ref(false);
-const userEmail = ref("");
-const showPassword = ref(false);
-const showPassword2 = ref(false);
+const router = useRouter()
+const password = ref("")
+const password2 = ref("")
+const userEmail = ref("")
+const resetCode = ref("")   // 👈 nuevo
+const loading = ref(false)
 
 onMounted(() => {
-  console.log('🔍 Reset page mounted')
-  
-  // ✅ MÉTODO MÁS SEGURO: Usar token temporal en lugar de email en URL
   const resetToken = sessionStorage.getItem('reset_token')
   const resetEmail = sessionStorage.getItem('reset_email')
   const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
-  
-  console.log('🔍 Reset token:', resetToken ? 'Present' : 'Missing')
-  console.log('🔍 Reset email:', resetEmail ? 'Present' : 'Missing')
-  
-  if (!resetToken || !resetEmail) {
-    console.log('❌ No reset token found, redirecting to forgot')
-    notifyError('Error', 'Sesión expirada. Por favor, solicita un nuevo código.')
+  const code = sessionStorage.getItem('reset_code')   // 👈 recuperar
+
+  if (!resetToken || !resetEmail || !code) {
+    notifyError('Error', 'Sesión expirada. Solicita un nuevo código.')
     router.push('/forgot')
     return
   }
-  
-  // Verificar expiración
+
   if (tokenExpiry && Date.now() > parseInt(tokenExpiry)) {
-    console.log('❌ Reset token expired')
-    sessionStorage.removeItem('reset_token')
-    sessionStorage.removeItem('reset_email')
-    sessionStorage.removeItem('reset_token_expiry')
-    notifyError('Error', 'Sesión expirada. Por favor, solicita un nuevo código.')
+    sessionStorage.clear()
+    notifyError('Error', 'Sesión expirada. Solicita un nuevo código.')
     router.push('/forgot')
     return
   }
-  
+
   userEmail.value = resetEmail
-  console.log('✅ Valid reset session found for:', userEmail.value)
-});
+  resetCode.value = code
+})
 
 async function onSubmit() {
   if (password.value !== password2.value) {
     notifyError('Error', 'Las contraseñas no coinciden.')
-    return;
+    return
   }
 
-  if (!userEmail.value) {
-    notifyError('Error', 'No se pudo identificar tu cuenta. Por favor, intenta nuevamente.');
-    router.push('/forgot');
-    return;
+  if (!userEmail.value || !resetCode.value) {
+    notifyError('Error', 'No se pudo identificar tu cuenta.')
+    router.push('/forgot')
+    return
   }
 
-  loading.value = true;
-  const toast = notifyLoading('Guardando contraseña', 'Procesando tu solicitud...');
+  loading.value = true
+  const toast = notifyLoading('Guardando contraseña', 'Procesando...')
 
   try {
-    console.log('🔍 Sending reset request for:', userEmail.value)
-    const response = await api.post(ROUTES.AUTH.RESET_PASSWORD, {
+    await api.post(ROUTES.AUTH.RESET_PASSWORD, {
       email: userEmail.value,
       password: password.value,
-    });
+      code: resetCode.value   // 👈 enviar el código de 6 dígitos
+    })
 
-    console.log('✅ Reset successful:', response)
+    toast.resolve({ title: 'Contraseña actualizada', message: 'Tu contraseña ha sido restablecida.' })
 
-    toast.resolve({
-      title: 'Contraseña actualizada',
-      message: 'Tu contraseña ha sido restablecida con éxito'
-    });
+    sessionStorage.clear()
+    localStorage.removeItem('verify_email')
+    localStorage.removeItem('verification_purpose')
 
-    // Limpiar todo el contexto
-    sessionStorage.removeItem('verify_email');
-    localStorage.removeItem('verify_email');
-    localStorage.removeItem('verification_purpose');
-    sessionStorage.removeItem('reset_token');
-    sessionStorage.removeItem('reset_email');
-    sessionStorage.removeItem('reset_token_expiry');
-
-    // Redirigir al login
-    setTimeout(() => {
-      router.push(R.to('login'));
-    }, 1500);
+    setTimeout(() => router.push(R.to('login')), 1500)
   } catch (error) {
-    console.error('❌ Reset error:', error)
-    const errorMsg = parseAxiosError(error) || 'No se pudo restablecer la contraseña';
-    toast.reject({
-      title: 'Error',
-      message: errorMsg
-    });
-    loading.value = false;
+    const errorMsg = parseAxiosError(error) || 'No se pudo restablecer la contraseña'
+    toast.reject({ title: 'Error', message: errorMsg })
+    loading.value = false
   }
 }
 </script>

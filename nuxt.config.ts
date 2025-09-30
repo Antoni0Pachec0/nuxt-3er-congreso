@@ -31,11 +31,11 @@ export default defineNuxtConfig({
   // RUTAS Y REDIRECCIONAMIENTOS
   // ----------------
   routeRules: {
-    '/auth/login':   { redirect: '/login' },
+    /* '/auth/login':   { redirect: '/login' },
     '/auth/register':{ redirect: '/register' },
     '/auth/verify':  { redirect: '/verify' },
     '/auth/forgot':  { redirect: '/forgot' },
-    '/auth/reset':  { redirect: '/reset' },
+    '/auth/reset':  { redirect: '/reset' }, */
 
     '/user/home':  { redirect: '/user-home' },
 

@@ -1,43 +1,45 @@
-import { defineNuxtRouteMiddleware, navigateTo, useCookie } from 'nuxt/app'
+import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
 
 export default defineNuxtRouteMiddleware((to) => {
   if (process.server) return
 
-  // 1) Token (cookie o localStorage)
-  const accessTokenCookie = useCookie('access_token')
-  const localStorageToken = localStorage.getItem('accessToken')
-  const token = accessTokenCookie.value || localStorageToken
+  // 1) Token de sesión (localStorage)
+  const token = localStorage.getItem('accessToken')
 
-  // 2) Rutas protegidas
+  // 2) Rutas protegidas (requieren login)
   if (to.meta?.requiresAuth && !token) {
     return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 
-  // 3) Rutas solo invitados
+  // 3) Rutas solo invitados (login, register, forgot, verify, reset)
   if (to.meta?.guestOnly && token) {
-    return navigateTo('/')
+    return navigateTo('/user-home')
   }
 
-  // 4) Protección /verify
+  // 4) Protección para /verify
   if (to.name === 'verify' || to.path === '/verify') {
-    const emailToVerify = sessionStorage.getItem('verify_email') || localStorage.getItem('verify_email')
+    const emailToVerify =
+      sessionStorage.getItem('verify_email') ||
+      localStorage.getItem('verify_email')
+
     if (!emailToVerify) {
-      const verificationPurpose = localStorage.getItem('verification_purpose')
-      return navigateTo(verificationPurpose === 'reset_password' ? '/forgot' : '/register')
+      const purpose = localStorage.getItem('verification_purpose')
+      return navigateTo(
+        purpose === 'reset_password' ? '/forgot' : '/register'
+      )
     }
   }
 
-  // 5) Protección /reset - MÁS SEGURO
+  // 5) Protección para /reset
   if (to.name === 'reset' || to.path === '/reset') {
-    // Verificar si hay un token temporal válido para reset
     const resetToken = sessionStorage.getItem('reset_token')
     const resetEmail = sessionStorage.getItem('reset_email')
-    
+
     if (!resetToken || !resetEmail) {
       return navigateTo('/forgot')
     }
-    
-    // Opcional: verificar expiración del token
+
+    // Verificar expiración
     const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
     if (tokenExpiry && Date.now() > parseInt(tokenExpiry)) {
       sessionStorage.removeItem('reset_token')

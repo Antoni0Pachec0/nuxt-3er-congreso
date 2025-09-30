@@ -1058,10 +1058,11 @@ async function submitRegister() {
 
     // ✅ CASO 1: Registro exitoso completo
     if (data?.email_sent && data?.user) {
-      sessionStorage.setItem('verify_email', payload.email);
-      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.setItem('verify_email', payload.email)
+      localStorage.setItem('verify_email', payload.email)
+      localStorage.setItem('verification_purpose', 'email_verification')
 
-      console.log('[Frontend] Registro exitoso, redirigiendo a verificación...');
+      localStorage.removeItem(STORAGE_KEY)
 
       loadingToast.resolve({
         title: '¡Registro exitoso!',

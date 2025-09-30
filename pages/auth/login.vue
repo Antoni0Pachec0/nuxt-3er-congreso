@@ -170,40 +170,52 @@ function onForgot() {
 async function onSubmit() {
   apiError.value = ''
   if (!email.value || !password.value) {
-    apiError.value = 'Por favor, llena todos los campos.'
+    notifyError('Campos incompletos', 'Por favor, llena todos los campos.')
     return
   }
 
   loading.value = true
+  const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
+
   try {
-    const payload = { email: email.value.toLowerCase().trim(), password: password.value }
+    const payload = {
+      email: email.value.toLowerCase().trim(),
+      password: password.value,
+    }
+    // 👇 importante: enviar cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
-    // Caso: cuenta inactiva -> requiere verificación
+    console.log('[Login] Respuesta backend:', data)
+
     if (data?.require_verification) {
-      // El backend te devuelve user: { email, user_id, name_user }
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
-      // Redirige a verificar
-      router.push(R.to('verify'))
-      return
+      localStorage.setItem('verification_purpose', 'email_verification')
+      toast.resolve({
+        title: 'Verificación requerida',
+        message: 'Tu cuenta aún no está activa. Revisa tu correo.',
+      })
+      return router.push(R.to('verify'))
     }
 
-    // Caso: login exitoso
-    // Tu backend devuelve: { message, accessToken, refreshToken, user_id }
-    if (data?.accessToken) {
-      // IMPORTANTE: la clave que lee tu middleware es 'accessToken'
-      localStorage.setItem('accessToken', data.accessToken)
-      if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+    // ✔️ ahora el backend siempre devuelve solo { message }
+    if (data?.message?.toLowerCase().includes('exitoso')) {
+      toast.resolve({ title: '¡Bienvenido!', message: data.message })
+
+      const redirect = route.query?.redirect || R.path('userHome')
+      return router.push(redirect)
     }
 
-    // Redirige a la vista home.vue en la carpeta user
-    router.push(R.to('userHome'))
+    notifyError('Error', data?.message || 'Respuesta inesperada del servidor.')
+    apiError.value = data?.message || 'Respuesta inesperada del servidor.'
   } catch (e) {
     console.error('[Login] Error:', e)
-    apiError.value = parseAxiosError(e) || 'Error al iniciar sesión.'
+    const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
+    notifyError('No se pudo iniciar sesión', msg)
+    apiError.value = msg
   } finally {
     loading.value = false
   }
 }
+
 </script>
