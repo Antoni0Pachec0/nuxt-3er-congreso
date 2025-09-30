@@ -30,15 +30,12 @@
           <span class="card-title__text">Crear cuenta</span>
         </h2>
 
-        <ol
-          class="stepper stepper--timeline"
-          :style="{ '--step-count': steps.length }"
-          aria-label="Registration progress"
-        >
-          <li v-for="(s, i) in steps" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
+        <ol class="stepper stepper--timeline" :style="{ '--step-count': isSpeaker ? 6 : 4 }"
+          aria-label="Registration progress">
+          <li v-for="(s, i) in steps.slice(0, totalSteps)" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
+            <span class="step__label">{{ s.label }}</span>
             <span class="step__dot" aria-hidden="true"></span>
             <span class="step__index" aria-hidden="true">{{ i + 1 }}</span>
-            <span class="step__label">{{ s.label }}</span>
           </li>
         </ol>
 
@@ -47,9 +44,11 @@
             <div class="stack">
               <label class="label" for="email">Email</label>
               <div class="input-wrap">
-                <span class="input-icon"><SvgIcon :path="mdiEmailOutline" type="mdi" /></span>
-                <input id="email" v-model.trim="form.email" type="email" required
-                       autocomplete="email" placeholder="tu@email.com" class="input" />
+                <span class="input-icon">
+                  <SvgIcon :path="mdiEmailOutline" type="mdi" />
+                </span>
+                <input id="email" v-model.trim="form.email" maxlength="100" type="email" required autocomplete="email"
+                  placeholder="tu@email.com" class="input" />
               </div>
             </div>
 
@@ -57,15 +56,14 @@
               <div class="stack">
                 <label class="label" for="password_user">Contraseña</label>
                 <div class="input-wrap">
-                  <span class="input-icon"><SvgIcon :path="mdiLockOutline" type="mdi" /></span>
-                  <input id="password_user" :type="showPass ? 'text' : 'password'"
-                        v-model.trim="form.password_user" required minlength="8"
-                        autocomplete="new-password" placeholder="••••••••"
-                        class="input input--pass" @input="touchPwd()" />
-                  <button type="button" class="eye"
-                          :aria-pressed="showPass ? 'true' : 'false'"
-                          :title="showPass ? 'Ocultar' : 'Mostrar'"
-                          @click="showPass = !showPass">
+                  <span class="input-icon">
+                    <SvgIcon :path="mdiLockOutline" type="mdi" />
+                  </span>
+                  <input id="password_user" :type="showPass ? 'text' : 'password'" v-model.trim="form.password_user"
+                    required minlength="8" autocomplete="new-password" maxlength="50"
+                    placeholder="••••••••" class="input input--pass" @input="touchPwd()" />
+                  <button type="button" class="eye" :aria-pressed="showPass ? 'true' : 'false'"
+                    :title="showPass ? 'Ocultar' : 'Mostrar'" @click="showPass = !showPass">
                     <SvgIcon v-if="showPass" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
@@ -90,15 +88,14 @@
               <div class="stack">
                 <label class="label" for="password2">Confirmar contraseña</label>
                 <div class="input-wrap">
-                  <span class="input-icon"><SvgIcon :path="mdiLockCheckOutline" type="mdi" /></span>
-                  <input id="password2" :type="showPass2 ? 'text' : 'password'"
-                         v-model.trim="password2" required minlength="8"
-                         autocomplete="new-password" placeholder="••••••••"
-                         class="input input--pass" />
-                  <button type="button" class="eye"
-                          :aria-pressed="showPass2 ? 'true' : 'false'"
-                          :title="showPass2 ? 'Ocultar' : 'Mostrar'"
-                          @click="showPass2 = !showPass2">
+                  <span class="input-icon">
+                    <SvgIcon :path="mdiLockCheckOutline" type="mdi" />
+                  </span>
+                  <input id="password2" :type="showPass2 ? 'text' : 'password'" v-model.trim="password2" required
+                    minlength="8" autocomplete="new-password" maxlength="50" placeholder="••••••••"
+                    class="input input--pass" />
+                  <button type="button" class="eye" :aria-pressed="showPass2 ? 'true' : 'false'"
+                    :title="showPass2 ? 'Ocultar' : 'Mostrar'" @click="showPass2 = !showPass2">
                     <SvgIcon v-if="showPass2" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
@@ -112,60 +109,69 @@
             <div class="grid resp">
               <div class="stack">
                 <label class="label" for="name_user">Nombre(s)</label>
-                <input id="name_user" v-model.trim="form.name_user" type="text" required
-                       autocomplete="given-name" class="input" placeholder="Tu nombre" />
+                <input id="name_user" v-model.trim="form.name_user" type="text" required autocomplete="given-name"
+                  maxlength="50" class="input" placeholder="Tu nombre" />
               </div>
               <div class="stack">
                 <label class="label" for="paternal_surname">Apellido paterno</label>
                 <input id="paternal_surname" v-model.trim="form.paternal_surname" type="text" required
-                       autocomplete="family-name" class="input" placeholder="Paterno" />
+                  autocomplete="family-name" maxlength="50" class="input" placeholder="Paterno" />
               </div>
               <div class="stack">
                 <label class="label" for="maternal_surname">Apellido materno</label>
-                <input id="maternal_surname" v-model.trim="form.maternal_surname" type="text" required
-                       class="input" placeholder="Materno" />
+                <input id="maternal_surname" maxlength="50" v-model.trim="form.maternal_surname" type="text" required
+                  class="input" placeholder="Materno" />
               </div>
             </div>
 
-            <!-- Teléfono principal -->
             <div class="stack">
               <label class="label" for="phone">Teléfono</label>
-              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }" ref="mainPhoneRef">
                 <div class="custom-select" @click="toggleDropdown('main')" :aria-expanded="isOpen.main">
                   <div class="selected-option">
-                    <div class="flag-wrap"><FlagIcon :country="selectedCountryCode" /></div>
+                    <div class="flag-wrap">
+                      <FlagIcon :country="selectedCountryCode" />
+                    </div>
                     <span class="country-code">{{ getPhoneCode(selectedCountryCode) }}</span>
                   </div>
                   <ul v-if="isOpen.main" class="options-list" role="listbox">
                     <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'main')">
-                      <div class="flag-wrap"><FlagIcon :country="country.code" /></div>
+                      <div class="flag-wrap">
+                        <FlagIcon :country="country.code" />
+                      </div>
                       <span class="country-name">{{ country.name }}</span>
                       <span class="country-code">{{ country.phoneCode }}</span>
                     </li>
                   </ul>
                 </div>
-                <input id="phone" v-model.trim="form.phone" type="tel" required autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
+                <input id="phone" v-model.trim="form.phone" type="tel" required maxlength="10"
+                  autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
               </div>
             </div>
 
-            <!-- Teléfono de emergencia -->
             <div class="stack">
               <label class="label" for="emergency_phone">Teléfono de emergencia</label>
-              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }" ref="emergencyPhoneRef">
                 <div class="custom-select" @click="toggleDropdown('emergency')" :aria-expanded="isOpen.emergency">
                   <div class="selected-option">
-                    <div class="flag-wrap"><FlagIcon :country="emergencyCountryCode" /></div>
+                    <div class="flag-wrap">
+                      <FlagIcon :country="emergencyCountryCode" />
+                    </div>
                     <span class="country-code">{{ getPhoneCode(emergencyCountryCode) }}</span>
                   </div>
                   <ul v-if="isOpen.emergency" class="options-list" role="listbox">
-                    <li v-for="country in countries" :key="country.code" @click.stop="selectCountry(country, 'emergency')">
-                      <div class="flag-wrap"><FlagIcon :country="country.code" /></div>
+                    <li v-for="country in countries" :key="country.code"
+                      @click.stop="selectCountry(country, 'emergency')">
+                      <div class="flag-wrap">
+                        <FlagIcon :country="country.code" />
+                      </div>
                       <span class="country-name">{{ country.name }}</span>
                       <span class="country-code">{{ country.phoneCode }}</span>
                     </li>
                   </ul>
                 </div>
-                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" class="input" placeholder="Teléfono de contacto (opcional)" />
+                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" maxlength="10" class="input"
+                  placeholder="Teléfono de contacto (opcional)" />
               </div>
             </div>
           </template>
@@ -182,33 +188,23 @@
               </select>
             </div>
 
-          <template v-if="form.type_user_id === 4">
-            <div class="stack">
-              <label class="label" for="secret_password">Contraseña Secreta</label>
-              <div class="input-wrap">
-                <input
-                  id="secret_password"
-                  v-model.trim="form.secret_password"
-                  :type="showSecretPass ? 'text' : 'password'"
-                  required
-                  class="input input--pass"
-                  placeholder="Ingresa la contraseña para continuar"
-                />
-                <button
-                  type="button"
-                  class="eye"
-                  :aria-pressed="showSecretPass ? 'true' : 'false'"
-                  :title="showSecretPass ? 'Ocultar' : 'Mostrar'"
-                  @click="showSecretPass = !showSecretPass"
-                >
-                  <SvgIcon v-if="showSecretPass" :path="mdiEyeOffOutline" type="mdi" />
-                  <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
-                </button>
+            <template v-if="form.type_user_id === 4">
+              <div class="stack">
+                <label class="label" for="secret_password">Contraseña Secreta</label>
+                <div class="input-wrap">
+                  <input id="secret_password" v-model.trim="form.secret_password"
+                    :type="showSecretPass ? 'text' : 'password'" required minlength="8" maxlength="30"
+                    class="input input--pass" placeholder="Ingresa la contraseña para continuar" />
+                  <button type="button" class="eye" :aria-pressed="showSecretPass ? 'true' : 'false'"
+                    :title="showSecretPass ? 'Ocultar' : 'Mostrar'" @click="showSecretPass = !showSecretPass">
+                    <SvgIcon v-if="showSecretPass" :path="mdiEyeOffOutline" type="mdi" />
+                    <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
+                  </button>
+                </div>
+                <small class="help">Esta contraseña es proporcionada por los organizadores del evento.</small>
               </div>
-              <small class="help">Esta contraseña es proporcionada por los organizadores del evento.</small>
-            </div>
-          </template>
-            
+            </template>
+
             <template v-if="[1, 2].includes(form.type_user_id as number)">
               <div class="stack">
                 <label class="label" for="provenance">Procedencia</label>
@@ -223,8 +219,8 @@
                 <div class="grid resp">
                   <div class="stack">
                     <label class="label" for="matricula">Matrícula</label>
-                    <input id="matricula" v-model.trim="form.matricula" type="text" required
-                           class="input" placeholder="Tu matrícula" />
+                    <input id="matricula" v-model.trim="form.matricula" type="text" required class="input"
+                      maxlength="20" placeholder="Tu matrícula" />
                   </div>
                   <div class="stack">
                     <label class="label" for="programa_educativo">Programa Educativo</label>
@@ -240,11 +236,13 @@
                 <div class="grid resp" v-if="form.type_user_id === 1">
                   <div class="stack">
                     <label class="label" for="grado">Grado</label>
-                    <input id="grado"  v-model.trim="form.grade"  type="text" required class="input" placeholder="Ej. 7" />
+                    <input id="grado" v-model.trim="form.grade" maxlength="5" type="text" required class="input"
+                      placeholder="Ej. 7" />
                   </div>
                   <div class="stack">
                     <label class="label" for="grupo">Grupo</label>
-                    <input id="grupo"  v-model.trim="form.group_user" type="text" required class="input" placeholder="Ej. C" />
+                    <input id="grupo" v-model.trim="form.group_user" maxlength="5" type="text" required class="input"
+                      placeholder="Ej. C" />
                   </div>
                 </div>
               </template>
@@ -252,8 +250,8 @@
               <template v-if="form.provenance === 'otra'">
                 <div class="stack">
                   <label class="label" for="universidad_procedencia">Universidad de procedencia</label>
-                  <input id="universidad_procedencia" v-model.trim="form.universidad_procedencia" type="text" required
-                         class="input" placeholder="Nombre de tu universidad" />
+                  <input id="universidad_procedencia" maxlength="100" v-model.trim="form.universidad_procedencia"
+                    type="text" required class="input" placeholder="Nombre de tu universidad" />
                 </div>
               </template>
             </template>
@@ -265,20 +263,20 @@
                 <div class="stack">
                   <label class="label" for="empresa_procedencia">Empresa/Institución de procedencia</label>
                   <input id="empresa_procedencia" v-model.trim="form.empresa_procedencia" type="text" required
-                         class="input" placeholder="Nombre de tu empresa u organización" />
+                    class="input" maxlength="100" placeholder="Nombre de tu empresa u organización" />
                 </div>
                 <div class="stack">
                   <label class="label" for="rol_dentro_empresa">Rol/Cargo</label>
-                  <input id="rol_dentro_empresa" v-model.trim="form.rol_dentro_empresa" type="text" required
-                         class="input" placeholder="Tu cargo o rol actual" />
+                  <input id="rol_dentro_empresa" maxlength="100" v-model.trim="form.rol_dentro_empresa" type="text"
+                    required class="input" placeholder="Tu cargo o rol actual" />
                 </div>
               </div>
 
               <div class="stack">
                 <label class="label" for="descripcion_biografia">Biografía profesional</label>
-                <textarea id="descripcion_biografia" v-model.trim="form.descripcion_biografia" rows="4"
-                          maxlength="180" required class="input"
-                          placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"></textarea>
+                <textarea id="descripcion_biografia" v-model.trim="form.descripcion_biografia" rows="4" maxlength="180"
+                  required class="input"
+                  placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"></textarea>
                 <small class="help">{{ form.descripcion_biografia.length }} / 180 caracteres</small>
               </div>
 
@@ -295,14 +293,14 @@
               <template v-if="form.tipo_presentacion === 'conferencia' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_conferencia">Título de la Conferencia</label>
-                  <input id="titulo_conferencia" v-model.trim="form.titulo_conferencia" type="text" required
-                         class="input" placeholder="Título de tu conferencia" />
+                  <input id="titulo_conferencia" maxlength="100" v-model.trim="form.titulo_conferencia" type="text"
+                    required class="input" placeholder="Título de tu conferencia" />
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_conferencia">Descripción de la Conferencia</label>
                   <textarea id="descripcion_conferencia" v-model.trim="form.descripcion_conferencia" rows="4"
-                            maxlength="180" required class="input"
-                            placeholder="Describe el contenido y objetivos de tu conferencia (máx. 180 caracteres)"></textarea>
+                    maxlength="180" required class="input"
+                    placeholder="Describe el contenido y objetivos de tu conferencia (máx. 180 caracteres)"></textarea>
                   <small class="help">{{ form.descripcion_conferencia.length }} / 180 caracteres</small>
                 </div>
               </template>
@@ -310,14 +308,19 @@
               <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_taller">Título del Taller</label>
+<<<<<<< HEAD:pages/register.vue
                   <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
                         class="input" placeholder="Título de tu taller" />
+=======
+                  <input id="titulo_taller" maxlength="50" v-model.trim="form.titulo_taller" type="text" required
+                    class="input" placeholder="Título de tu taller" />
+>>>>>>> asp:pages/auth/register.vue
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_taller">Descripción del Taller</label>
-                  <textarea id="descripcion_taller" v-model.trim="form.descripcion_taller" rows="4"
-                            maxlength="180" required class="input"
-                            placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"></textarea>
+                  <textarea id="descripcion_taller" v-model.trim="form.descripcion_taller" rows="4" maxlength="180"
+                    required class="input"
+                    placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"></textarea>
                   <small class="help">{{ form.descripcion_taller.length }} / 180 caracteres</small>
                 </div>
               </template>
@@ -337,7 +340,8 @@
 
               <div class="checkline">
                 <input id="terms" v-model="accepted" type="checkbox" required />
-                <label for="terms">Acepto los <a href="#" @click.prevent="showTermsModal = true">términos y aviso de privacidad</a></label>
+                <label for="terms">Acepto los <a href="#" @click.prevent="showTermsModal = true">términos y aviso de
+                    privacidad</a></label>
               </div>
             </template>
           </template>
@@ -346,29 +350,41 @@
             <div class="stack">
               <label class="label" for="facebook_link">Facebook</label>
               <div class="input-wrap">
-                <span class="input-icon"><SvgIcon :path="mdiFacebook" type="mdi" /></span>
-                <input id="facebook_link" v-model.trim="form.facebook_link" type="url" class="input" placeholder="Link a tu perfil de Facebook (opcional)" />
+                <span class="input-icon">
+                  <SvgIcon :path="mdiFacebook" type="mdi" />
+                </span>
+                <input id="facebook_link" maxlength="200" v-model.trim="form.facebook_link" type="url" class="input"
+                  placeholder="Link a tu perfil de Facebook (opcional)" />
               </div>
             </div>
             <div class="stack">
               <label class="label" for="instagram_link">Instagram</label>
               <div class="input-wrap">
-                <span class="input-icon"><SvgIcon :path="mdiInstagram" type="mdi" /></span>
-                <input id="instagram_link" v-model.trim="form.instagram_link" type="url" class="input" placeholder="Link a tu perfil de Instagram (opcional)" />
+                <span class="input-icon">
+                  <SvgIcon :path="mdiInstagram" type="mdi" />
+                </span>
+                <input id="instagram_link" maxlength="200" v-model.trim="form.instagram_link" type="url" class="input"
+                  placeholder="Link a tu perfil de Instagram (opcional)" />
               </div>
             </div>
             <div class="stack">
               <label class="label" for="x_link">X (Twitter)</label>
               <div class="input-wrap">
-                <span class="input-icon"><SvgIcon :path="mdiTwitter" type="mdi" /></span>
-                <input id="x_link" v-model.trim="form.x_link" type="url" class="input" placeholder="Link a tu perfil de X (opcional)" />
+                <span class="input-icon">
+                  <SvgIcon :path="mdiTwitter" type="mdi" />
+                </span>
+                <input id="x_link" maxlength="200" v-model.trim="form.x_link" type="url" class="input"
+                  placeholder="Link a tu perfil de X (opcional)" />
               </div>
             </div>
             <div class="stack">
               <label class="label" for="linkedin_link">LinkedIn</label>
               <div class="input-wrap">
-                <span class="input-icon"><SvgIcon :path="mdiLinkedin" type="mdi" /></span>
-                <input id="linkedin_link" v-model.trim="form.linkedin_link" type="url" class="input" placeholder="Link a tu perfil de LinkedIn (opcional)" />
+                <span class="input-icon">
+                  <SvgIcon :path="mdiLinkedin" type="mdi" />
+                </span>
+                <input id="linkedin_link" maxlength="200" v-model.trim="form.linkedin_link" type="url" class="input"
+                  placeholder="Link a tu perfil de LinkedIn (opcional)" />
               </div>
             </div>
           </template>
@@ -388,7 +404,8 @@
 
             <div class="checkline">
               <input id="terms" v-model="accepted" type="checkbox" required />
-              <label for="terms">Acepto los <a href="#" @click.prevent="showTermsModal = true">términos y aviso de privacidad</a></label>
+              <label for="terms">Acepto los <a href="#" @click.prevent="showTermsModal = true">términos y aviso de
+                  privacidad</a></label>
             </div>
           </template>
 
@@ -428,9 +445,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue"; 
+import { definePageMeta } from '#imports';
+
+definePageMeta({
+  name: 'register',
+  path: '/register',
+  guestOnly: true,
+})
+
+
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiAccountPlusOutline,
   mdiEmailOutline,
@@ -479,7 +505,7 @@ const speakerSecretOk = ref(false);
 /* ===================
  * Stepper
  * =================== */
-const steps = ref<{key:string;label:string}[]>([]);
+const steps = ref<{ key: string; label: string }[]>([]);
 const baseSteps = [
   { key: 'account', label: 'Cuenta' },
   { key: 'personal', label: 'Datos personales' },
@@ -505,9 +531,9 @@ const form = ref({
   paternal_surname: '',
   maternal_surname: '',
   phone: '',
-  phone_country: '+52',
+  phone_country: '',
   emergency_phone: '',
-  emergency_phone_country: '+52',
+  emergency_phone_country: '',
   type_user_id: null as number | null,
   provenance: '',
   matricula: '',
@@ -629,9 +655,9 @@ watch(isSpeaker, (now) => {
   speakerSecretOk.value = false;
   if (!now) {
     const fields = [
-      'secret_password','empresa_procedencia','rol_dentro_empresa','descripcion_biografia',
-      'tipo_presentacion','titulo_conferencia','descripcion_conferencia','titulo_taller',
-      'descripcion_taller','facebook_link','instagram_link','x_link','linkedin_link'
+      'secret_password', 'empresa_procedencia', 'rol_dentro_empresa', 'descripcion_biografia',
+      'tipo_presentacion', 'titulo_conferencia', 'descripcion_conferencia', 'titulo_taller',
+      'descripcion_taller', 'facebook_link', 'instagram_link', 'x_link', 'linkedin_link'
     ];
     fields.forEach(k => (form.value as any)[k] = '');
   }
@@ -647,17 +673,17 @@ const PERSIST_KEYS = [
   'email',
   'password_user', // 👈 AGREGAR
   'secret_password', // 👈 AGREGAR
-  'name_user','paternal_surname','maternal_surname',
+  'name_user', 'paternal_surname', 'maternal_surname',
   // ... (el resto de tus campos)
-  'phone_country','emergency_phone','emergency_phone_country',
-  'type_user_id','provenance','matricula','educational_program','grade','group_user',
+  'phone', 'phone_country', 'emergency_phone', 'emergency_phone_country',
+  'type_user_id', 'provenance', 'matricula', 'educational_program', 'grade', 'group_user',
   'universidad_procedencia',
-  'empresa_procedencia','rol_dentro_empresa','descripcion_biografia','tipo_presentacion',
-  'titulo_conferencia','descripcion_conferencia','titulo_taller','descripcion_taller',
-  'facebook_link','instagram_link','x_link','linkedin_link','size_user'
+  'empresa_procedencia', 'rol_dentro_empresa', 'descripcion_biografia', 'tipo_presentacion',
+  'titulo_conferencia', 'descripcion_conferencia', 'titulo_taller', 'descripcion_taller',
+  'facebook_link', 'instagram_link', 'x_link', 'linkedin_link', 'size_user'
 ];
 const persistable = computed(() => {
-  const out:any = {};
+  const out: any = {};
   for (const k of PERSIST_KEYS) out[k] = (form.value as any)[k] ?? '';
   return out;
 });
@@ -669,22 +695,22 @@ const isOpen = ref({ main: false, emergency: false });
 const selectedCountryCode = ref('mx');
 const emergencyCountryCode = ref('mx');
 const countries = ref([
-  { code: 'mx', name: 'México',         phoneCode: '+52' },
-  { code: 'us', name: 'Estados Unidos', phoneCode: '+1'  },
-  { code: 'ca', name: 'Canadá',         phoneCode: '+1'  },
-  { code: 'es', name: 'España',         phoneCode: '+34' },
-  { code: 'ar', name: 'Argentina',      phoneCode: '+54' },
-  { code: 'co', name: 'Colombia',       phoneCode: '+57' },
-  { code: 'cl', name: 'Chile',          phoneCode: '+56' },
+  { code: 'mx', name: 'México', phoneCode: '+52' },
+  { code: 'us', name: 'Estados Unidos', phoneCode: '+1' },
+  { code: 'ca', name: 'Canadá', phoneCode: '+1' },
+  { code: 'es', name: 'España', phoneCode: '+34' },
+  { code: 'ar', name: 'Argentina', phoneCode: '+54' },
+  { code: 'co', name: 'Colombia', phoneCode: '+57' },
+  { code: 'cl', name: 'Chile', phoneCode: '+56' },
 ]);
-const getPhoneCode = (code:string) => countries.value.find(c => c.code === code)?.phoneCode || '+52';
+const getPhoneCode = (code: string) => countries.value.find(c => c.code === code)?.phoneCode || '+52';
 
-const toggleDropdown = (type:'main'|'emergency') => {
+const toggleDropdown = (type: 'main' | 'emergency') => {
   const other = type === 'main' ? 'emergency' : 'main';
   if (isOpen.value[other]) isOpen.value[other] = false;
   isOpen.value[type] = !isOpen.value[type];
 };
-const selectCountry = (country:{code:string; phoneCode:string}, type:'main'|'emergency') => {
+const selectCountry = (country: { code: string; phoneCode: string }, type: 'main' | 'emergency') => {
   if (type === 'main') {
     selectedCountryCode.value = country.code;
     form.value.phone_country = country.phoneCode;
@@ -706,11 +732,11 @@ onMounted(() => {
       Object.assign(form.value, saved.form);
       step.value = saved.step ?? 0;
       accepted.value = !!saved.accepted;
-      
+
       // RESTAURAR PASSWORD DE CONFIRMACIÓN
       // Como password2 no está en el form, lo buscamos en localStorage
       password2.value = saved.form.password_user || '';
-      
+
       // Si la contraseña de ponente fue guardada, asumimos que fue validada
       if (form.value.secret_password && isSpeaker.value) {
         secretValidated.value = true;
@@ -722,8 +748,8 @@ onMounted(() => {
       const emerCountry = countries.value.find(c => c.phoneCode === saved.form?.emergency_phone_country);
       if (emerCountry) emergencyCountryCode.value = emerCountry.code;
     }
-  } catch {}
-  
+  } catch { }
+
   if (!form.value.phone_country) form.value.phone_country = getPhoneCode(selectedCountryCode.value);
   if (!form.value.emergency_phone_country) form.value.emergency_phone_country = getPhoneCode(emergencyCountryCode.value);
   steps.value = isSpeaker.value ? [...speakerSteps] : [...baseSteps];
@@ -737,15 +763,36 @@ watch([persistable, step, accepted], () => {
   }));
 }, { deep: true });
 
+function isValidEmail(email: string) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+function isValidPhone(phone: string) {
+  return /^\d{10}$/.test(phone);
+}
+
 /* ===================
  * Validación por paso (FE)
  * =================== */
 const canProceed = computed(() => {
   switch (step.value) {
     case 0:
-      return !!form.value.email && form.value.password_user.length >= 8 && strengthScore.value >= 3 && pwdMatch.value;
+      return (
+        !!form.value.email &&
+        isValidEmail(form.value.email) && // validar email
+        form.value.password_user.length >= 8 &&
+        strengthScore.value >= 3 &&
+        pwdMatch.value
+      );
     case 1:
-      return !!form.value.name_user && !!form.value.paternal_surname && !!form.value.maternal_surname && !!form.value.phone;
+      return (
+        !!form.value.name_user &&
+        !!form.value.paternal_surname &&
+        !!form.value.maternal_surname &&
+        !!form.value.phone &&
+        isValidPhone(form.value.phone)
+      );
     case 2: {
       if (!form.value.type_user_id) return false;
 
@@ -803,11 +850,11 @@ function prevStep() { if (step.value > 0) step.value--; }
 function focusField(field?: string) {
   if (!field) return;
   const fieldStepMap: Record<string, number> = {
-    email:0, password_user:0,
-    name_user:1, paternal_surname:1, maternal_surname:1, phone:1,
-    type_user_id:2, provenance:2, educational_program:2, matricula:2, grade:2, group_user:2, universidad_procedencia:2, secret_password:2,
-    empresa_procedencia:3, rol_dentro_empresa:3, descripcion_biografia:3, tipo_presentacion:3,
-    titulo_conferencia:3, descripcion_conferencia:3, titulo_taller:3, descripcion_taller:3,
+    email: 0, password_user: 0,
+    name_user: 1, paternal_surname: 1, maternal_surname: 1, phone: 1,
+    type_user_id: 2, provenance: 2, educational_program: 2, matricula: 2, grade: 2, group_user: 2, universidad_procedencia: 2, secret_password: 2,
+    empresa_procedencia: 3, rol_dentro_empresa: 3, descripcion_biografia: 3, tipo_presentacion: 3,
+    titulo_conferencia: 3, descripcion_conferencia: 3, titulo_taller: 3, descripcion_taller: 3,
     size_user: isSpeaker.value ? 5 : 3
   };
   const to = fieldStepMap[field];
@@ -908,62 +955,77 @@ async function nextOrSubmit() {
 /* ===================
  * Payload normalizado
  * =================== */
-function normalizePayload(payload:any) {
-  const finalPayload:any = {
-    email: payload.email,
+function normalizePayload(payload: any) {
+  const finalPayload: any = {
+    email: payload.email?.trim().toLowerCase(),
     password_user: payload.password_user,
-    name_user: payload.name_user,
-    paternal_surname: payload.paternal_surname,
-    maternal_surname: payload.maternal_surname,
+    name_user: payload.name_user?.trim(),
+    paternal_surname: payload.paternal_surname?.trim(),
+    maternal_surname: payload.maternal_surname?.trim(),
     type_user_id: Number(payload.type_user_id),
     size_user: payload.size_user
   };
 
-  const clean = (v:string) => v?.replace(/\D/g, '');
-
-  if (payload.phone) {
-    finalPayload.phone = `${payload.phone_country}${clean(payload.phone)}`;
-  }
-  // emergencia OPCIONAL: solo si trae algo
+  const clean = (v: string) => v?.replace(/\D/g, '') || '';
+  if (payload.phone) finalPayload.phone = `${payload.phone_country}${clean(payload.phone)}`;
   if (payload.emergency_phone?.trim()) {
     finalPayload.emergency_phone = `${payload.emergency_phone_country}${clean(payload.emergency_phone)}`;
   }
 
-  if ([1,2].includes(Number(payload.type_user_id))) {
-    finalPayload.provenance = (payload.provenance || '').toLowerCase();
-    if (finalPayload.provenance === 'uttecam') {
-      finalPayload.matricula = payload.matricula || '';
-      finalPayload.educational_program = payload.educational_program || '';
-      if (Number(payload.type_user_id) === 1) {
-        finalPayload.grade = payload.grade || '';
-        finalPayload.group_user = payload.group_user || '';
+  const userType = Number(payload.type_user_id);
+
+  // === Estudiante/Docente ===
+  if ([1, 2].includes(userType)) {
+    const provOpt = (payload.provenance || '').toLowerCase();
+
+    if (provOpt === 'uttecam') {
+      finalPayload.provenance = 'UTTECAM';
+      finalPayload.matricula = payload.matricula?.trim() || '';
+      finalPayload.educational_program = payload.educational_program?.trim() || '';
+      if (userType === 1) {
+        finalPayload.grade = payload.grade?.trim() || '';
+        finalPayload.group_user = payload.group_user?.trim() || '';
       }
-    } else if (finalPayload.provenance === 'otra') {
-      finalPayload.universidad_procedencia = payload.universidad_procedencia || '';
+    } else if (provOpt === 'otra') {
+      // 👉 manda el NOMBRE real en provenance
+      finalPayload.provenance = payload.universidad_procedencia?.trim() || 'Otra';
+      finalPayload.universidad_procedencia = payload.universidad_procedencia?.trim() || '';
+    } else {
+      // si escribiste un nombre directamente
+      finalPayload.provenance = (payload.provenance || '').trim();
     }
   }
 
-  if (Number(payload.type_user_id) === 4) {
-    finalPayload.secret_password = payload.secret_password || '';
-    finalPayload.empresa_procedencia = payload.empresa_procedencia || '';
-    finalPayload.rol_dentro_empresa = payload.rol_dentro_empresa || '';
-    finalPayload.descripcion_biografia = payload.descripcion_biografia || '';
+  // === Externo (3) ===
+  if (userType === 3) {
+    // procedencia libre, sin académicos
+    const provOpt = (payload.provenance || '').trim();
+    finalPayload.provenance = provOpt && provOpt.toLowerCase() !== 'otra'
+      ? provOpt
+      : (payload.universidad_procedencia?.trim() || 'Otra');
+  }
+
+  // === Ponente (4) ===
+  if (userType === 4) {
+    finalPayload.secret_password = payload.secret_password?.trim() || '';
+    finalPayload.empresa_procedencia = payload.empresa_procedencia?.trim() || '';
+    finalPayload.rol_dentro_empresa = payload.rol_dentro_empresa?.trim() || '';
+    finalPayload.descripcion_biografia = payload.descripcion_biografia?.trim() || '';
     finalPayload.tipo_presentacion = payload.tipo_presentacion || '';
 
-    if (['conferencia','ambas'].includes(payload.tipo_presentacion)) {
-      finalPayload.titulo_conferencia = payload.titulo_conferencia || '';
-      finalPayload.descripcion_conferencia = payload.descripcion_conferencia || '';
+    if (['conferencia', 'ambas'].includes(payload.tipo_presentacion)) {
+      finalPayload.titulo_conferencia = payload.titulo_conferencia?.trim() || '';
+      finalPayload.descripcion_conferencia = payload.descripcion_conferencia?.trim() || '';
     }
-    if (['taller','ambas'].includes(payload.tipo_presentacion)) {
-      finalPayload.titulo_taller = payload.titulo_taller || '';
-      finalPayload.descripcion_taller = payload.descripcion_taller || '';
+    if (['taller', 'ambas'].includes(payload.tipo_presentacion)) {
+      finalPayload.titulo_taller = payload.titulo_taller?.trim() || '';
+      finalPayload.descripcion_taller = payload.descripcion_taller?.trim() || '';
     }
 
-    // 👉 redes SOLO si traen contenido real
-    if (payload.facebook_link?.trim())   finalPayload.facebook_link   = payload.facebook_link.trim();
+    if (payload.facebook_link?.trim()) finalPayload.facebook_link = payload.facebook_link.trim();
     if (payload.instagram_link?.trim()) finalPayload.instagram_link = payload.instagram_link.trim();
-    if (payload.x_link?.trim())          finalPayload.x_link         = payload.x_link.trim();
-    if (payload.linkedin_link?.trim())   finalPayload.linkedin_link   = payload.linkedin_link.trim();
+    if (payload.x_link?.trim()) finalPayload.x_link = payload.x_link.trim();
+    if (payload.linkedin_link?.trim()) finalPayload.linkedin_link = payload.linkedin_link.trim();
   }
 
   return finalPayload;
@@ -984,42 +1046,91 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
-    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, { withCredentials: true });
+    {
+      email: payload.email;
+      type_user_id: payload.type_user_id;
+    }
 
-    // Caso: el back responde 200 con registro pendiente (correo inactivo)
-    if (data?.already_exists) {
-      localStorage.setItem('verify_email', payload.email);
-      loadingToast.resolve({ title: 'Registro pendiente', message: data.message || 'Te reenviamos el código de verificación.' });
-      router.push(R.to('verify'));
+    const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, {
+      withCredentials: true,
+      timeout: 30000 // 30 segundos timeout
+    });
+
+    // ✅ CASO 1: Registro exitoso completo
+    if (data?.email_sent && data?.user) {
+      sessionStorage.setItem('verify_email', payload.email)
+      localStorage.setItem('verify_email', payload.email)
+      localStorage.setItem('verification_purpose', 'email_verification')
+
+      localStorage.removeItem(STORAGE_KEY)
+
+      loadingToast.resolve({
+        title: '¡Registro exitoso!',
+        message: data.message || 'Cuenta creada correctamente. Revisa tu correo para el código de verificación.'
+      });
+
+      // Pequeño delay para que el usuario vea el mensaje
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 1500);
       return;
     }
 
-    if (data?.verification_token) {
-      // localStorage.setItem('verification_token', data.verification_token);
-    }
-    localStorage.setItem('verify_email', payload.email);
-    localStorage.removeItem(STORAGE_KEY);
+    // ✅ CASO 2: Usuario existente inactivo (reenvío de código)
+    if (data?.already_exists && data?.email_sent) {
+      sessionStorage.setItem('verify_email', payload.email);
 
-    loadingToast.resolve({ title: 'Éxito 🎉', message: 'Cuenta creada con éxito' });
-    router.push(R.to('verify'));
+      loadingToast.resolve({
+        title: 'Registro pendiente',
+        message: data.message || 'Este correo ya tenía un registro pendiente. Te reenviamos el código de verificación.'
+      });
+
+      setTimeout(() => {
+        router.push(R.to('verify'));
+      }, 1500);
+      return;
+    }
+
+    // ❌ CASO 3: Respuesta inesperada del servidor
+    throw new Error('El servidor respondió con un formato inesperado');
+
   } catch (err: any) {
     const status = err?.response?.status;
-    const server = err?.response?.data;
+    const serverData = err?.response?.data;
 
     if (status === 409) {
-      const msg = Array.isArray(server?.message) ? server.message.join('\n') : (server?.message || 'Conflicto');
-      loadingToast.reject({ title: 'Registro pendiente', message: msg });
-    } else {
-      const picked = guessFieldFromServerError(server?.errors || server?.message || server);
+      const message = Array.isArray(serverData?.message)
+        ? serverData.message.join('\n')
+        : (serverData?.message || 'El correo ya está registrado.');
+      loadingToast.reject({ title: 'Correo ya registrado', message });
+      focusField('email');
+      return;
+    }
+
+    if (status === 400) {
+      const picked = guessFieldFromServerError(serverData?.errors || serverData?.message || serverData);
       if (picked?.field) {
         focusField(picked.field);
-        notifyError('Corrige este campo', picked.message || 'Dato inválido');
-        loadingToast.reject({ title: 'Validación', message: picked.message || 'Corrige el campo indicado' });
+        notifyError('Campo inválido', picked.message || 'Por favor corrige este campo');
+        loadingToast.reject({ title: 'Datos incorrectos', message: picked.message || 'Revisa los datos del formulario' });
       } else {
-        const msg = parseAxiosError(err) || 'Ocurrió un error al registrar.';
-        loadingToast.reject({ title: 'Error en registro', message: msg });
+        const message = serverData?.message || 'Datos del formulario inválidos';
+        loadingToast.reject({ title: 'Datos incorrectos', message });
       }
+      return;
     }
+
+    if (status === 401) {
+      const message = serverData?.message || 'Credenciales inválidas';
+      loadingToast.reject({ title: 'Acceso denegado', message });
+      if (isSpeaker.value) focusField('secret_password');
+      return;
+    }
+
+    // Otros (timeout/red/5xx/unknown) -> mostrar error y QUEDARSE en la vista
+    const fallMsg = parseAxiosError(err) || 'No pudimos completar el registro. Intenta nuevamente.';
+    loadingToast.reject({ title: 'Error en registro', message: fallMsg });
+    // 👈 YA NO redirigimos a /verify en errores
   } finally {
     loading.value = false;
   }

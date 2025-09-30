@@ -19,6 +19,7 @@
       >
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
       </button>
+
       <!-- Columna izquierda / título -->
       <header class="login-hero" aria-label="Identidad del evento">
         <h1 class="hero-title">
@@ -30,7 +31,6 @@
 
       <!-- Columna derecha / Card -->
       <section class="cardLogin" aria-label="Formulario de inicio de sesión">
-        <!-- Título centrado -->
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
             <SvgIcon :path="mdiArrowRight" type="mdi" />
@@ -42,14 +42,15 @@
           <!-- Email -->
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
-            <span class="input-icon"
-              ><SvgIcon :path="mdiEmailOutline" type="mdi"
-            /></span>
+            <span class="input-icon">
+              <SvgIcon :path="mdiEmailOutline" type="mdi" />
+            </span>
             <input
               id="email"
               v-model.trim="email"
               type="email"
               required
+              maxlength="100"
               autocomplete="email"
               placeholder="tu@email.com"
               class="input"
@@ -65,15 +66,16 @@
           </div>
 
           <div class="input-wrap">
-            <span class="input-icon"
-              ><SvgIcon :path="mdiLockOutline" type="mdi"
-            /></span>
+            <span class="input-icon">
+              <SvgIcon :path="mdiLockOutline" type="mdi" />
+            </span>
             <input
               id="password"
               :type="show ? 'text' : 'password'"
               v-model.trim="password"
               required
-              minlength="6"
+              minlength="8"
+              maxlength="50"
               autocomplete="current-password"
               placeholder="••••••••"
               class="input input--pass"
@@ -90,9 +92,12 @@
             </button>
           </div>
 
+          <!-- Error -->
+          <p v-if="apiError" class="help error">{{ apiError }}</p>
+
           <!-- CTA -->
           <button class="btn" type="submit" :disabled="loading">
-            {{ loading ? "Ingresando…" : "Iniciar Sesión" }}
+            {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
           </button>
 
           <!-- Divider + Register -->
@@ -106,7 +111,6 @@
             Regístrate aquí
           </button>
 
-          <!-- Frase bajo el formulario -->
           <p class="card-note">
             Tecnologías de la Información · Innovación Digital
           </p>
@@ -117,72 +121,98 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import SvgIcon from "@jamescoyle/vue-icon";
+import { definePageMeta } from '#imports'
+import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
+import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiArrowRight,
   mdiEmailOutline,
   mdiLockOutline,
   mdiEyeOutline,
   mdiEyeOffOutline,
-  mdiArrowLeft,
-} from "@mdi/js";
+  mdiArrowLeft
+} from '@mdi/js'
 
-// Axios + rutas
-import api from "~/plugins/http/api";
-import { ROUTES } from "~/plugins/http/routes";
-import { parseAxiosError } from "~/plugins/http/error";
+import api from '~/plugins/http/api'
+import { ROUTES } from '~/plugins/http/routes'
+import { parseAxiosError } from '~/plugins/http/error'
+import { R } from '~/utils/app-routes'
+import '@/assets/css/styles/Login.css'
 
-import "@/assets/css/styles/Login.css";
+definePageMeta({
+  name: 'login',
+  path: '/login',
+  guestOnly: true, // si ya está logueado, middleware lo manda a '/'
+})
 
-const email = ref("");
-const password = ref("");
-const show = ref(false);
-const loading = ref(false);
-const apiError = ref(""); // mostrar mensaje si algo falla
+const router = useRouter()
+const route  = useRoute()
 
-function onForgot() {
-  // Aquí redirige a tu página de recuperación de contraseña
-  window.location.href = "/forgot-password";
-}
+const email = ref('')
+const password = ref('')
+const show = ref(false)
+const loading = ref(false)
+const apiError = ref('')
 
-async function onSubmit() {
-  if (!email.value || !password.value) {
-    apiError.value = "Por favor, llena todos los campos.";
-    return;
-  }
-  loading.value = true;
-  apiError.value = "";
-  try {
-    const payload = {
-      email: email.value,
-      password: password.value,
-    };
-
-    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload);
-
-    // Suponiendo que tu backend devuelve { access_token, user }
-    if (data?.access_token) {
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user || {}));
-    }
-
-    // Redirigir a la vista index
-    window.location.href = "/";
-  } catch (e) {
-    console.error(e);
-    apiError.value = parseAxiosError(e) || "Error al iniciar sesión.";
-  } finally {
-    loading.value = false;
-  }
+function goHome() {
+  router.push(R.to('home'))
 }
 
 function onRegister() {
-  // Redirigir al registro
-  window.location.href = "/register";
+  router.push(R.to('register'))
 }
 
-function goHome() {
-  window.location.href = "/"; // 👈 
+function onForgot() {
+  router.push(R.to('forgot'))
 }
+
+async function onSubmit() {
+  apiError.value = ''
+  if (!email.value || !password.value) {
+    notifyError('Campos incompletos', 'Por favor, llena todos los campos.')
+    return
+  }
+
+  loading.value = true
+  const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
+
+  try {
+    const payload = {
+      email: email.value.toLowerCase().trim(),
+      password: password.value,
+    }
+    // 👇 importante: enviar cookies
+    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
+
+    if (data?.require_verification) {
+      const pendingEmail = data?.user?.email || payload.email
+      sessionStorage.setItem('verify_email', pendingEmail)
+      localStorage.setItem('verification_purpose', 'email_verification')
+      toast.resolve({
+        title: 'Verificación requerida',
+        message: 'Tu cuenta aún no está activa. Revisa tu correo.',
+      })
+      return router.push(R.to('verify'))
+    }
+
+    // ✔️ ahora el backend siempre devuelve solo { message }
+    if (data?.message?.toLowerCase().includes('exitoso')) {
+      toast.resolve({ title: '¡Bienvenido!', message: data.message })
+
+      const redirect = route.query?.redirect || R.path('userHome')
+      return router.push(redirect)
+    }
+
+    notifyError('Error', data?.message || 'Respuesta inesperada del servidor.')
+    apiError.value = data?.message || 'Respuesta inesperada del servidor.'
+  } catch (e) {
+    const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
+    notifyError('No se pudo iniciar sesión', msg)
+    apiError.value = msg
+  } finally {
+    loading.value = false
+  }
+}
+
 </script>

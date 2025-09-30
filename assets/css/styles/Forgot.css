@@ -1,0 +1,29 @@
+/* Pantalla de recuperación */
+.forgot-screen {
+  composes: auth-screen;
+}
+
+.forgot-bg {
+  composes: auth-bg;
+}
+
+.forgot-container {
+  composes: auth-container;
+}
+
+.forgot-hero {
+  composes: auth-hero;
+}
+
+/* Card Forgot */
+.cardForgot {
+  composes: cardRegister;
+}
+
+.cardForgot .card-title {
+  composes: card-title;
+}
+
+.cardForgot .card-note {
+  composes: card-note;
+}
