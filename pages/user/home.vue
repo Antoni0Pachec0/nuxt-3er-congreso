@@ -11,6 +11,13 @@
 </template>
 
 <script setup>
+
+definePageMeta({
+  name: 'user-home',
+  path: '/user-home',
+  requiresAuth: true,
+})
+
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

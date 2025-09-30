@@ -1,4 +1,3 @@
-// utils/http/routes.js
 export const ROUTES = {
   AUTH: {
     REGISTER: '/auth/register',
@@ -7,8 +6,11 @@ export const ROUTES = {
     RESEND: '/auth/resend-code',
     LOGIN: '/auth/login',
     FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
     ME: '/auth/me',
     REFRESH: '/auth/refresh',
+    // 💡 Añadimos LOGOUT aquí aunque no sea usado en el middleware, es buena práctica
+    LOGOUT: '/auth/logout', 
   },
   USERS: {
     LIST: '/users',

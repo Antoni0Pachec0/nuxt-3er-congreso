@@ -36,6 +36,9 @@ export default defineNuxtConfig({
     '/auth/verify':  { redirect: '/verify' },
     '/auth/forgot':  { redirect: '/forgot' },
     '/auth/reset':  { redirect: '/reset' },
+
+    '/user/home':  { redirect: '/user-home' },
+
   },
 
   // ----------------
