@@ -1,0 +1,52 @@
+/* Pantalla de reset */
+.reset-screen {
+  composes: auth-screen;
+}
+
+.reset-bg {
+  composes: auth-bg;
+}
+
+.reset-container {
+  composes: auth-container;
+}
+
+.reset-hero {
+  composes: auth-hero;
+}
+
+/* Card Reset */
+.cardReset {
+  composes: cardRegister;
+}
+
+.cardReset .card-title {
+  composes: card-title;
+}
+
+.cardReset .card-note {
+  composes: card-note;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #333;
+  background: rgba(0,0,0,0.05);
+}

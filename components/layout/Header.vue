@@ -1,9 +1,9 @@
 <template>
-    <div>
-        <header :class="['app-header', { 'scrolled-header': isScrolled }]">
-            <div class="logo">
-                <img :src="logo" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
-            </div>
+  <div>
+    <header :class="['app-header', { 'scrolled-header': isScrolled }]">
+      <div class="logo">
+        <img :src="Logo" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
+      </div>
 
             <nav class="desktop-nav">
             <a href="#Inicio" @click="closeMenu">Inicio</a>
@@ -12,19 +12,22 @@
             <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
             <a href="#Mapa" @click="closeMenu">Mapa</a>
             <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-<!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
-            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
+            <button @click="goToRegister" class="sidebar_button">Registro</button>
+            <!-- <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button> -->
             </nav>
 
-            <div class="hamburger-menu" :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
-                @click="toggleMenu">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-        </header>
+      <div
+        class="hamburger-menu"
+        :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
+        @click="toggleMenu"
+      >
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </header>
 
-        <div class="overlay" :class="{ active: isMenuOpen }" @click="closeMenu"></div>
+    <div class="overlay" :class="{ active: isMenuOpen }" @click="closeMenu"></div>
 
         <nav class="sidebar" :class="{ active: isMenuOpen }">
             <button class="close-sidebar" @click="closeMenu" aria-label="Cerrar menú">
@@ -40,32 +43,42 @@
             <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
             <a href="#Mapa" @click="closeMenu">Mapa</a>
             <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-            <!-- <button @click="closeMenu" class="sidebar_button">Registro</button>
-            <button @click="closeMenu" class="sidebar_button">Inicio de Sesión</button> -->
+            <button @click="goToRegister" class="sidebar_button">Registro</button>
+            <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button>
         </nav>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import logo from '@/assets/images/Logo.png';
-import '@/assets/css/styles/Header.css';
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import logoUrl from '~/assets/images/Logo.png'
+import '~/assets/css/styles/Header.css'
+import { R } from '~/utils/app-routes'
+import { useRouter } from 'vue-router'
 
-const isMenuOpen = ref(false);
-const isScrolled = ref(false);
+const router = useRouter()
+const logo = logoUrl
+const isMenuOpen = ref(false)
+const isScrolled = ref(false)
 
-const closeMenu = () => { isMenuOpen.value = false; };
-const toggleMenu = () => { isMenuOpen.value = !isMenuOpen.value; };
+const closeMenu = () => { isMenuOpen.value = false }
+const toggleMenu = () => { isMenuOpen.value = !isMenuOpen.value }
+const goToRegister = () => { router.push(R.to('register')); closeMenu() }
+const goToLogin = () => { router.push(R.to('login')); closeMenu() }
 
 const handleScroll = () => {
-    isScrolled.value = window.scrollY > 50;
-};
+  if (typeof window === 'undefined') return
+  isScrolled.value = window.scrollY > 50
+}
 
 onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
-});
+  if (typeof window === 'undefined') return
+  handleScroll()
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
 
-onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
-});
+onBeforeUnmount(() => {
+  if (typeof window === 'undefined') return
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
