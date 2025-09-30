@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
-import "/assets/css/carousel.css";
+import "/assets/css/styles/carousel.css";
 
 type Slide = {
   image: string;

@@ -308,8 +308,13 @@
               <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_taller">Título del Taller</label>
+<<<<<<< HEAD:pages/register.vue
+                  <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
+                        class="input" placeholder="Título de tu taller" />
+=======
                   <input id="titulo_taller" maxlength="50" v-model.trim="form.titulo_taller" type="text" required
                     class="input" placeholder="Título de tu taller" />
+>>>>>>> asp:pages/auth/register.vue
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_taller">Descripción del Taller</label>

@@ -282,9 +282,8 @@ async function onVerify() {
 
   try {
     const payload = { 
-      email: email.value.toLowerCase().trim(), 
-      code: code.value,
-      token_type: verificationPurpose.value   // 👈 IMPORTANTE
+      email: String(email.value).toLowerCase().trim(), 
+      code: code.value 
     }
     await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
 

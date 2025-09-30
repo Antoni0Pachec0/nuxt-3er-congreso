@@ -2,7 +2,7 @@
   <div>
     <header :class="['app-header', { 'scrolled-header': isScrolled }]">
       <div class="logo">
-        <img :src="logo" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
+        <img :src="Logo" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
       </div>
 
             <nav class="desktop-nav">
