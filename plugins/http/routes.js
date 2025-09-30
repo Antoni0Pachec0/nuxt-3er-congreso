@@ -11,6 +11,7 @@ export const ROUTES = {
     REFRESH: '/auth/refresh',
     // 💡 Añadimos LOGOUT aquí aunque no sea usado en el middleware, es buena práctica
     LOGOUT: '/auth/logout', 
+    SCORE: '/auth/game',
   },
   USERS: {
     LIST: '/users',
