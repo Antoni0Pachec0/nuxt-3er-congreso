@@ -952,7 +952,6 @@ async function nextOrSubmit() {
  * Payload normalizado
  * =================== */
 function normalizePayload(payload: any) {
-  console.log('[Frontend] Normalizando payload...');
   const finalPayload: any = {
     email: payload.email?.trim().toLowerCase(),
     password_user: payload.password_user,
@@ -1025,7 +1024,6 @@ function normalizePayload(payload: any) {
     if (payload.linkedin_link?.trim()) finalPayload.linkedin_link = payload.linkedin_link.trim();
   }
 
-  console.log('[Frontend] Payload normalizado:', finalPayload);
   return finalPayload;
 }
 
@@ -1044,17 +1042,15 @@ async function submitRegister() {
 
   try {
     const payload = normalizePayload(form.value);
-    console.log('[Frontend] Enviando registro al servidor...', {
-      email: payload.email,
-      type_user_id: payload.type_user_id
-    });
+    {
+      email: payload.email;
+      type_user_id: payload.type_user_id;
+    }
 
     const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, {
       withCredentials: true,
       timeout: 30000 // 30 segundos timeout
     });
-
-    console.log('[Frontend] Respuesta recibida del servidor:', data);
 
     // ✅ CASO 1: Registro exitoso completo
     if (data?.email_sent && data?.user) {
@@ -1080,8 +1076,6 @@ async function submitRegister() {
     if (data?.already_exists && data?.email_sent) {
       sessionStorage.setItem('verify_email', payload.email);
 
-      console.log('[Frontend] Usuario inactivo existente, redirigiendo...');
-
       loadingToast.resolve({
         title: 'Registro pendiente',
         message: data.message || 'Este correo ya tenía un registro pendiente. Te reenviamos el código de verificación.'
@@ -1094,11 +1088,9 @@ async function submitRegister() {
     }
 
     // ❌ CASO 3: Respuesta inesperada del servidor
-    console.warn('[Frontend] Respuesta inesperada del servidor:', data);
     throw new Error('El servidor respondió con un formato inesperado');
 
   } catch (err: any) {
-    console.error('[Frontend] Error en registro:', err);
     const status = err?.response?.status;
     const serverData = err?.response?.data;
 
@@ -1137,7 +1129,6 @@ async function submitRegister() {
     // 👈 YA NO redirigimos a /verify en errores
   } finally {
     loading.value = false;
-    console.log('[Frontend] Finalizado proceso de registro');
   }
 }
 

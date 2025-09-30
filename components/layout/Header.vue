@@ -44,16 +44,14 @@
             <a href="#Mapa" @click="closeMenu">Mapa</a>
             <a href="#PregFrec" @click="closeMenu">Preguntas</a>
             <button @click="goToRegister" class="sidebar_button">Registro</button>
-            <!-- <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button> -->
+            <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button>
         </nav>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'   // 👈 importa ambos hooks
-// Usa la ruta de Nuxt para assets procesados por Vite
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import logoUrl from '~/assets/images/Logo.png'
-// Importa tu CSS (o muévelo a app.vue/global.css si prefieres)
 import '~/assets/css/styles/Header.css'
 import { R } from '~/utils/app-routes'
 import { useRouter } from 'vue-router'
@@ -75,7 +73,7 @@ const handleScroll = () => {
 
 onMounted(() => {
   if (typeof window === 'undefined') return
-  handleScroll() // set estado inicial
+  handleScroll()
   window.addEventListener('scroll', handleScroll, { passive: true })
 })
 

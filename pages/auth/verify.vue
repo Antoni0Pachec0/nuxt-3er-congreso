@@ -258,7 +258,6 @@ async function pasteFromClipboard() {
       distribute(text)
     }
   } catch (err) {
-    console.error('Error al pegar desde portapapeles:', err)
     notifyError('Error', 'No se pudo pegar desde el portapapeles')
   }
 }
