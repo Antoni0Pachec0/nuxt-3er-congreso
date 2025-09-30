@@ -30,12 +30,12 @@
           <span class="card-title__text">Crear cuenta</span>
         </h2>
 
-        <ol class="stepper stepper--timeline" :style="{ '--step-count': steps.length }"
+        <ol class="stepper stepper--timeline" :style="{ '--step-count': isSpeaker ? 6 : 4 }"
           aria-label="Registration progress">
-          <li v-for="(s, i) in steps" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
+          <li v-for="(s, i) in steps.slice(0, totalSteps)" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
+            <span class="step__label">{{ s.label }}</span>
             <span class="step__dot" aria-hidden="true"></span>
             <span class="step__index" aria-hidden="true">{{ i + 1 }}</span>
-            <span class="step__label">{{ s.label }}</span>
           </li>
         </ol>
 
@@ -124,10 +124,9 @@
               </div>
             </div>
 
-            <!-- Teléfono principal -->
             <div class="stack">
               <label class="label" for="phone">Teléfono</label>
-              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }" ref="mainPhoneRef">
                 <div class="custom-select" @click="toggleDropdown('main')" :aria-expanded="isOpen.main">
                   <div class="selected-option">
                     <div class="flag-wrap">
@@ -150,10 +149,9 @@
               </div>
             </div>
 
-            <!-- Teléfono de emergencia -->
             <div class="stack">
               <label class="label" for="emergency_phone">Teléfono de emergencia</label>
-              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }" ref="emergencyPhoneRef">
                 <div class="custom-select" @click="toggleDropdown('emergency')" :aria-expanded="isOpen.emergency">
                   <div class="selected-option">
                     <div class="flag-wrap">
@@ -222,7 +220,7 @@
                   <div class="stack">
                     <label class="label" for="matricula">Matrícula</label>
                     <input id="matricula" v-model.trim="form.matricula" type="text" required class="input"
-                      maxlength="10" placeholder="Tu matrícula" />
+                      maxlength="20" placeholder="Tu matrícula" />
                   </div>
                   <div class="stack">
                     <label class="label" for="programa_educativo">Programa Educativo</label>
@@ -449,6 +447,7 @@ definePageMeta({
   path: '/register',
   guestOnly: true,
 })
+
 
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";

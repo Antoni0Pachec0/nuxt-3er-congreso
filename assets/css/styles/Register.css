@@ -61,14 +61,14 @@
 
 .auth-screen {
   position: relative;
-  min-height: 100vh;
+  min-height: 100vh; 
   padding: clamp(var(--space-sm), 2vw, var(--space-xl));
   color: var(--ink);
   background: radial-gradient(1200px 600px at 70% 15%, var(--ring-in), transparent 60%),
     radial-gradient(900px 800px at -10% 90%, var(--ring-in2), transparent 60%),
     linear-gradient(135deg, var(--bg-800), var(--bg-900));
   display: flex;
-  align-items: center;
+  align-items: center; 
   justify-content: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -124,7 +124,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
-  align-items: center;
+  align-items: center; 
   z-index: 2;
   position: relative;
 }
@@ -253,8 +253,8 @@
 /* Punto */
 .stepper--timeline .step {
   position: relative;
+  padding-top: 28px;
   text-align: center;
-  padding-top: 28px; /* Espacio para el label activo */
 }
 .stepper--timeline .step .step__dot {
   position: absolute;
@@ -270,7 +270,7 @@
 
 /* Estilos de paso activo */
 .stepper--timeline .step.active .step__dot {
-  width: 22px; height: 22px; /* Ligeramente más grande */
+  width: 22px; height: 22px;
   background: var(--blue-accent);
   border-color: var(--blue-primary);
   box-shadow: 0 0 0 6px rgba(36, 161, 228, 0.18);
@@ -290,25 +290,21 @@
 }
 .stepper--timeline .step.active .step__index { color: #fff; }
 
-/* Label (solo visible en el paso activo como "pill") */
-.stepper--timeline .step .step__label { display: none; }
+/* Label por defecto (Versión Desktop) */
+.stepper--timeline .step .step__label {
+    display: block;
+    margin-top: 24px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--muted);
+    /* Truncamiento en Desktop */
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 0.25rem;
+}
 .stepper--timeline .step.active .step__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  position: absolute;
-  top: 2px;
-  left: calc(50% + 18px); /* A la derecha del punto */
-  transform: translateX(10px);
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(11, 21, 52, 0.85);
-  border: 1px solid var(--glass-br);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  z-index: 3;
+    color: #fff;
 }
 
 
@@ -505,9 +501,9 @@ input:-webkit-autofill:active {
   transition: z-index 0s;
 }
 
-/* **AJUSTE CLAVE:** Aumentar el Z-index del contenedor de la pill cuando está abierto. */
-.input-wrap--phone.open  {
-    z-index: 9999; /* Eleva el contexto de apilamiento sobre el input de texto */
+/* Elevar el Z-index del contenedor de la pill cuando está abierto. */
+.input-wrap--phone.open {
+    z-index: 9999;
 }
 
 /* Contenido seleccionado (bandera y código) */
@@ -527,8 +523,8 @@ input:-webkit-autofill:active {
   left: 8px;
   width: 320px;
   max-width: min(360px, calc(100vw - 56px));
-  max-height: 150px; /* ¡MODIFICADO! Altura máxima de 200px */
-  overflow: auto; /* Se mantiene el scroll */
+  max-height: 150px; /* ALTURA MÁXIMA CORREGIDA */
+  overflow: auto; 
   border-radius: 12px;
   border: 1px solid var(--glass-br);
   background: rgba(11, 21, 52, 0.98);
@@ -709,6 +705,70 @@ input:-webkit-autofill:active {
   .cardRegister {
     padding: var(--space-md);
   }
+  
+  /* --- Ajustes al Stepper para Móvil (Etiquetas Arriba) --- */
+  .stepper {
+      /* Añade espacio inferior extra al stepper en móvil */
+      margin-bottom: var(--space-lg); 
+  }
+
+  .stepper--timeline .step {
+      /* Aumentamos el padding-top para hacer espacio al texto envuelto (55px) */
+      padding-top: 55px; 
+      text-align: center;
+  }
+
+  .stepper--timeline .step .step__dot {
+      /* Reposicionamos el punto basado en el nuevo padding-top */
+      top: 35px; 
+  }
+  
+  .stepper--timeline::before {
+      /* La línea de progreso también se mueve */
+      top: 44px; 
+  }
+  
+  .stepper--timeline .step:not(:first-child)::before {
+      /* El conector de progreso también se mueve */
+      top: 44px; 
+  }
+
+  .stepper--timeline .step .step__index {
+      /* Reposicionamos el índice basado en el nuevo padding-top */
+      top: 62px; 
+  }
+
+  /* **MOSTRAR Y POSICIONAR LA ETIQUETA ARRIBA Y PERMITIR ENVOLTURA** */
+  .stepper--timeline .step .step__label {
+      display: block; 
+      position: absolute; 
+      top: 0; 
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem; 
+      font-weight: 700;
+      color: var(--muted);
+      width: 100%;
+      padding: 0 2px; /* Reducimos padding horizontal para maximizar espacio */
+      white-space: normal; /* Permite que el texto se envuelva */
+      overflow: visible; 
+      text-overflow: clip; 
+      margin-top: 0;
+      text-align: center;
+      line-height: 1.2; /* Líneas compactas */
+  }
+
+  /* Eliminamos el estilo de "pill" del paso activo en móvil */
+  .stepper--timeline .step.active .step__label {
+      color: #fff; 
+      transform: translateX(-50%); 
+      left: 50%;
+      padding: 0 2px;
+      background: transparent;
+      border: none;
+      font-size: 0.65rem;
+  }
+
 
   /* Ajuste de Input de Teléfono */
   .input-wrap--phone .custom-select {
@@ -719,10 +779,6 @@ input:-webkit-autofill:active {
   .input-wrap--phone .input { padding-left: 108px; }
 
   /* Ajuste de Stepper */
-  .stepper--timeline .step.active .step__label {
-    font-size: 0.72rem;
-    padding: 3px 8px;
-  }
   .pw-reqs {
       gap: 0.5rem 0.5rem; /* Compactar requerimientos de contraseña */
       font-size: 0.65rem;
@@ -739,4 +795,36 @@ input:-webkit-autofill:active {
   .cardRegister {
     --card-w: 720px;
   }
+}
+
+/* Ajuste específico para que las etiquetas vuelvan a su estado normal en pantallas más grandes */
+@media (min-width: 481px) {
+    .stepper--timeline .step {
+        padding-top: 28px;
+    }
+    .stepper--timeline .step .step__dot {
+        top: 7px;
+    }
+    .stepper--timeline::before {
+        top: 16px;
+    }
+    .stepper--timeline .step:not(:first-child)::before {
+        top: 16px;
+    }
+    .stepper--timeline .step .step__index {
+        top: 34px;
+    }
+    /* Restaurar el label para desktop (donde la truncación es deseada/aceptada) */
+    .stepper--timeline .step .step__label {
+        position: static;
+        transform: none;
+        margin-top: 24px;
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 0 0.25rem;
+        /* Restaurar truncamiento en Desktop */
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
