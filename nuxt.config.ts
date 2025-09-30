@@ -37,7 +37,7 @@ export default defineNuxtConfig({
     '/auth/forgot':  { redirect: '/forgot' },
     '/auth/reset':  { redirect: '/reset' }, */
 
-    '/user/home':  { redirect: '/user-home' },
+    '/user/home':  { redirect: '/user/home' },
 
   },
 

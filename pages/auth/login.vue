@@ -185,8 +185,6 @@ async function onSubmit() {
     // 👇 importante: enviar cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
-    console.log('[Login] Respuesta backend:', data)
-
     if (data?.require_verification) {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
@@ -209,7 +207,6 @@ async function onSubmit() {
     notifyError('Error', data?.message || 'Respuesta inesperada del servidor.')
     apiError.value = data?.message || 'Respuesta inesperada del servidor.'
   } catch (e) {
-    console.error('[Login] Error:', e)
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
     notifyError('No se pudo iniciar sesión', msg)
     apiError.value = msg
