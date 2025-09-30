@@ -170,11 +170,13 @@ function onForgot() {
 async function onSubmit() {
   apiError.value = ''
   if (!email.value || !password.value) {
+    // Es mejor usar una notificación visual más robusta que un simple 'return' silencioso
     notifyError('Campos incompletos', 'Por favor, llena todos los campos.')
     return
   }
 
   loading.value = true
+  // Suponiendo que `notifyLoading` devuelve un objeto con un método `resolve`
   const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
 
   try {
@@ -182,31 +184,47 @@ async function onSubmit() {
       email: email.value.toLowerCase().trim(),
       password: password.value,
     }
-    // 👇 importante: enviar cookies
+    
+    // 👇 Esencial: enviar cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
+    // 1. Manejo de Verificación Requerida
     if (data?.require_verification) {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
       localStorage.setItem('verification_purpose', 'email_verification')
+      
       toast.resolve({
         title: 'Verificación requerida',
         message: 'Tu cuenta aún no está activa. Revisa tu correo.',
       })
+      
       return router.push(R.to('verify'))
     }
 
-    // ✔️ ahora el backend siempre devuelve solo { message }
+    // 2. Manejo de Login Exitoso
+    // ✔️ Ahora el backend devuelve { message, user_id }
     if (data?.message?.toLowerCase().includes('exitoso')) {
+      // 💡 Capturamos el user_id de la respuesta del servidor
+      const userId = data.user_id 
+      
+      // TODO: Aquí debes llamar a tu store (Pinia/Vuex) para guardar el ID
+      // Por ejemplo: userStore.setUser({ id: userId, email: payload.email, ... })
+      console.log('Login exitoso. ID de usuario:', userId) 
+      
       toast.resolve({ title: '¡Bienvenido!', message: data.message })
 
+      // Redireccionar al usuario a su ruta por defecto o a la ruta previa
       const redirect = route.query?.redirect || R.path('userHome')
       return router.push(redirect)
     }
 
+    // 3. Respuesta inesperada (si el servidor no dio éxito ni verificación)
     notifyError('Error', data?.message || 'Respuesta inesperada del servidor.')
     apiError.value = data?.message || 'Respuesta inesperada del servidor.'
+
   } catch (e) {
+    // 4. Manejo de errores de Axios (401, 500, etc.)
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
     notifyError('No se pudo iniciar sesión', msg)
     apiError.value = msg
