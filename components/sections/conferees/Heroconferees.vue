@@ -24,22 +24,14 @@
           class="hero-img"
         />
       </div>
+      
     </div>
-
-    <!-- Ola decorativa -->
-    <svg
-      class="wave"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1440 180"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <path
-        fill="#ffffff"
-        d="M0,150 C220,55 500,100 740,150 C980,185 1220,175 1440,90 L1440,180 L0,180 Z"
-      />
+        <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 180" preserveAspectRatio="none"
+      aria-hidden="true">
+      <path fill="#ffffff" d="M0,150 C220,55 500,100 740,150 C980,185 1220,175 1440,90 L1440,180 L0,180 Z" />
     </svg>
   </section>
+  
 </template>
 <script setup lang="ts">
 import { ArrowDown } from "lucide-vue-next";
@@ -109,6 +101,18 @@ import { ArrowDown } from "lucide-vue-next";
   gap: 1rem; /* espacio entre icono y texto */
   transition: all 0.3s ease;
 }
+
+.wave{
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 100vw;           /* 👈 ancho del viewport, no del contenedor */
+  height: 170px;          /* ajusta a tu gusto (160–200px) */
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
 
 .hero-btn .icon {
   width: 24px;
