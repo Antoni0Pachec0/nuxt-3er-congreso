@@ -10,7 +10,7 @@ function getCookie(name) {
   return null;
 }
 
-const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'https://congreso-backedcongresodev-fsfi5q-801bf7-72-60-27-95.traefik.me';
+const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx/';
 
 const api = axios.create({
   baseURL,
