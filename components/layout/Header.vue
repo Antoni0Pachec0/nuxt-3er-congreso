@@ -13,8 +13,8 @@
         <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
         <a href="#Mapa" @click="closeMenu">Mapa</a>
         <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-        <button @click="goToRegister" class="sidebar_button">Registro</button>
-        <!-- <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button> -->
+        <button @click="goToRegister" class="desktop-nav-btn">Registro</button>
+        <button @click="goToLogin" class="desktop-nav-btn login-btn">Inicio de Sesión</button>
       </nav>
 
       <div class="hamburger-menu" :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
@@ -42,7 +42,7 @@
       <a href="#Mapa" @click="closeMenu">Mapa</a>
       <a href="#PregFrec" @click="closeMenu">Preguntas</a>
       <button @click="goToRegister" class="sidebar_button">Registro</button>
-      <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button>
+      <button @click="goToLogin" class="sidebar_button login-btn-sidebar">Inicio de Sesión</button>
     </nav>
   </div>
 </template>
