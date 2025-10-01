@@ -169,14 +169,13 @@ function onForgot() {
 
 async function onSubmit() {
   apiError.value = ''
+
   if (!email.value || !password.value) {
-    // Es mejor usar una notificación visual más robusta que un simple 'return' silencioso
     notifyError('Campos incompletos', 'Por favor, llena todos los campos.')
     return
   }
 
   loading.value = true
-  // Suponiendo que `notifyLoading` devuelve un objeto con un método `resolve`
   const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
 
   try {
@@ -184,46 +183,66 @@ async function onSubmit() {
       email: email.value.toLowerCase().trim(),
       password: password.value,
     }
-    
-    // 👇 Esencial: enviar cookies
+
+    // 👇 Importante: credenciales/cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
-    // 1. Manejo de Verificación Requerida
+    // 1) Verificación requerida
     if (data?.require_verification) {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
       localStorage.setItem('verification_purpose', 'email_verification')
-      
-      toast.resolve({
+
+      toast?.resolve?.({
         title: 'Verificación requerida',
         message: 'Tu cuenta aún no está activa. Revisa tu correo.',
       })
-      
-      return router.push(R.to('verify'))
+
+      return router.push(R.to('verify')) // { name: 'verify' }
     }
 
-    // 2. Manejo de Login Exitoso
-    // ✔️ Ahora el backend devuelve { message, user_id }
-    if (data?.message?.toLowerCase().includes('exitoso')) {
-      // 💡 Capturamos el user_id de la respuesta del servidor
-      const userId = data.user_id 
-      
-      toast.resolve({ title: '¡Bienvenido!', message: data.message })
+    // 2) Éxito de login (preferir flag/ID estable)
+    const isSuccess =
+      Boolean(data?.user_id) ||
+      (typeof data?.message === 'string' && data.message.toLowerCase().includes('exitos'))
 
-      // Redireccionar al usuario a su ruta por defecto o a la ruta previa
-      const redirect = route.query?.redirect || R.path('userHome')
-      return router.push(redirect)
+    if (isSuccess) {
+      const userId = data?.user_id
+
+      // (Opcional) si tu guard depende de un store, márcalo aquí para evitar rebotes:
+      // const auth = useAuthStore()
+      // auth.setUser({ id: userId, email: payload.email })
+      // auth.setAuthenticated(true)
+
+      toast?.resolve?.({
+        title: '¡Bienvenido!',
+        message: data?.message || 'Inicio de sesión exitoso.',
+      })
+
+      // 3) Redirección: respeta ?redirect=...; si no, ve al home del usuario por NOMBRE
+      const redirectParam = route.query?.redirect
+      const redirectLocation = redirectParam
+        ? decodeURIComponent(String(redirectParam))
+        : null
+
+      if (redirectLocation) {
+        return router.push(redirectLocation)
+      }
+      return router.push(R.to('userHome')) // { name: 'user-home' }
     }
 
-    // 3. Respuesta inesperada (si el servidor no dio éxito ni verificación)
-    notifyError('Error', data?.message || 'Respuesta inesperada del servidor.')
-    apiError.value = data?.message || 'Respuesta inesperada del servidor.'
-
+    // 4) Respuesta inesperada
+    const fallbackMsg = data?.message || 'Respuesta inesperada del servidor.'
+    notifyError('Error', fallbackMsg)
+    apiError.value = fallbackMsg
   } catch (e) {
-    // 4. Manejo de errores de Axios (401, 500, etc.)
+    // 5) Errores HTTP / red / CORS
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
     notifyError('No se pudo iniciar sesión', msg)
     apiError.value = msg
+
+    // Cierra el toast de carga con estado de error (si aplica)
+    toast?.resolve?.({ title: 'Error', message: msg })
   } finally {
     loading.value = false
   }
