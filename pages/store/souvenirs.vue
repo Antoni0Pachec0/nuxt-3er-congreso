@@ -1,6 +1,7 @@
   <script setup lang="ts">
 import HeroSouvenirs from '@/components/sections/store/HeroSouvenirs.vue'
 import ProductCard from '@/components/sections/store/ProductCard.vue'
+import SupportWhatsAppCard from '@/components/sections/store/SupportWhatsAppCard.vue'
 
 
 
@@ -17,6 +18,8 @@ import ProductCard from '@/components/sections/store/ProductCard.vue'
 
   <ProductCard/>
   
+    <SupportWhatsAppCard />
+
   
 
 </template>

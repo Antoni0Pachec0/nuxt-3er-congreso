@@ -10,9 +10,10 @@
           Playeras, termos y accesorios del Congreso de TI. Un detalle para
           recordar la experiencia más allá del evento.
         </p>
-        <button class="hero-btn" @click="goProducts">
-          <span class="icon">🛒</span> Ver productos
-        </button>
+        <v-btn class="hero-btn" variant="outlined" @click="goTo('productos')">
+          <ArrowDown class="icon" />
+          Ver productos
+        </v-btn>
       </div>
     </div>
 
@@ -43,5 +44,12 @@
 </template>
 
 <script setup lang="ts">
+import { ArrowDown } from "lucide-vue-next";
 import "/assets/css/styles/store/HeroSouvenirs.css";
+
+const goTo = (id: string) => {
+  if (typeof window === 'undefined') return
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>

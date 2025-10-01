@@ -1,12 +1,14 @@
 <template>
 
-  <section class="collection">
+  <section class="collection" id="productos">
     <v-container class="py-12">
       <!-- Encabezado -->
       <header class="text-center mb-8">
         <h2 class="font-orbitron text-h4 text-md-h3 font-weight-black mb-2">
           Colección Completa
         </h2>
+              <div class="faq__underline"></div>
+
         <div class="underline mx-auto mb-4"></div>
         <p class="text-medium-emphasis text-body-2 text-md-body-1">
           Explora productos oficiales del Congreso TI: calidad, estilo y
@@ -401,9 +403,7 @@ function handleAdd(p: Product) {
 }
 
 /* Encabezado */
-.font-orbitron {
-  font-family: "Orbitron", system-ui, sans-serif;
-}
+
 .underline {
   width: 120px;
   height: 4px;

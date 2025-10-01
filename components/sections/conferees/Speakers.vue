@@ -1,5 +1,5 @@
 <template>
-  <section class="speakers">
+  <section class="speakers" id="speakers">
     <div class="speakers-header">
       <h2 class="speakers-title">Conferencistas Destacados</h2>
       <div class="faq__underline"></div>

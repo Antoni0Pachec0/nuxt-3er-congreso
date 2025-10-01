@@ -10,7 +10,7 @@
           charla es una oportunidad para aprender de líderes que están cambiando
           la industria tecnológica.
         </p>
-        <v-btn class="hero-btn" variant="outlined">
+        <v-btn class="hero-btn" variant="outlined" @click="goTo('speakers')">
           <ArrowDown class="icon" />
           Ver ponentes
         </v-btn>
@@ -36,5 +36,10 @@
 <script setup lang="ts">
 import { ArrowDown } from "lucide-vue-next";
 import '~/assets/css/styles/conferees/Heroconferees.css'
-
+const goTo = (id: string) => {
+  
+  if (typeof window === 'undefined') return
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>

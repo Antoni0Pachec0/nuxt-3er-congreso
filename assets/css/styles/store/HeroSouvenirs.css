@@ -38,7 +38,6 @@
   letter-spacing: 0.08em;
   opacity: 0.9;
   margin-bottom: 0.75rem;
-  font-family: "Orbitron", sans-serif;
   font-weight: 800;
 }
 
@@ -63,19 +62,18 @@
 
 /* Botón */
 .hero-btn {
-  background-color: #fff;
-  color: #1e66ff;
-  border: 2px solid #fff;
-  padding: 0.85rem 1.75rem;
-  border-radius: 50px;
+  border-radius: 999px;
+  border: 2px solid #ffffff; /* borde blanco */
+  background: transparent;
+  color: #ffffff; /* texto blanco */
+  padding: 1.5rem 2.5rem;
   font-weight: 700;
-  font-size: clamp(0.9rem, 1.1vw, 1rem);
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  gap: 1rem; /* espacio entre icono y texto */
+  transition: all 0.3s ease;
 }
 
 .hero-btn:hover {
@@ -106,15 +104,14 @@
   z-index: 1;
 }
 
-/* Ola */
-.wave {
+.wave{
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 120px; /* Tamaño de la ola */
-  z-index: 5; /* Delante de la imagen */
-  display: block;
+  left: 50%;
+  bottom: -1px;
+  width: 100vw;           
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Responsive */
