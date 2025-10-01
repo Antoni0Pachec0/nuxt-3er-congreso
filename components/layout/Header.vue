@@ -2,7 +2,7 @@
   <div>
     <header :class="['app-header', { 'scrolled-header': isScrolled }]">
       <div class="logo">
-        <img :src="Logo" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
+        <img :src="logoUrl" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
       </div>
 
             <nav class="desktop-nav">
@@ -51,7 +51,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import logoUrl from '~/assets/images/Logo.png'
+import logoUrl from '@/assets/images/Logo.png'
 import '~/assets/css/styles/Header.css'
 import { R } from '~/utils/app-routes'
 import { useRouter } from 'vue-router'
