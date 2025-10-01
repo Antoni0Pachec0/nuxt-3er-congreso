@@ -1066,7 +1066,6 @@ const canProceed = computed(() => {
 
       // UTTECAM / Otra (alumno o docente)
       const t = Number(form.value.type_user_id);
-      const t = Number(form.value.type_user_id);
       if (t === 3) return true; // Externo no requiere procedencia/matrícula
       const prov = (form.value.provenance || '').toLowerCase();
       const isStudent = t === 1, isTeacher = t === 2;
