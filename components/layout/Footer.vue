@@ -157,4 +157,4 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped src="@/assets/css/styles/footer.css"></style>
+<style scoped src="@/assets/css/styles/Footer.css"></style>
