@@ -47,7 +47,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Usamos nodeProcess.env para asegurar la correcta resolución
-      apiBase: nodeProcess.env.NUXT_PUBLIC_API_BASE_URL || 'http://congreso-backedcongresodev-fsfi5q-801bf7-72-60-27-95.traefik.me/'
+      apiBase: nodeProcess.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
     }
   },
 
