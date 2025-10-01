@@ -158,50 +158,17 @@
   }
 }
 
-@media (max-width: 768px) {
-  .speakers-grid {
-    grid-template-columns: 1fr;
-  }
 
-  .speaker-card {
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-    padding-top: 6rem;
-    min-height: auto;
-  }
-
-  .speaker-img-wrapper {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    margin-bottom: 1rem;
-  }
-
+@media (min-width: 769px) and (max-width: 992px) {
   .speaker-img {
-    width: 200px;
-    height: auto;
-    transform: translateY(-20px);
-  }
-
-  .speaker-info {
-    margin-left: 0;
-    text-align: center;
-  }
-
-  .speaker-socials {
-    justify-content: center;
-  }
-
-  .social-icon {
-    width: 50px;   
-    height: 50px;
-  }
-
-  .social-icon .icon {
-    width: 22px;   
-    height: 22px;
+    width: clamp(220px, 26vw, 260px);
+    height: clamp(360px, 40vw, 420px);
   }
 }
 
-
+@media (min-width: 993px) and (max-width: 1120px) {
+  .speaker-img {
+    width: clamp(240px, 24vw, 270px);
+    height: clamp(380px, 38vw, 440px);
+  }
+}
