@@ -1268,11 +1268,8 @@ function normalizePayload(payload: any) {
 
   // === Externo (3) ===
   if (userType === 3) {
-    // procedencia libre, sin académicos
-    const provOpt = (payload.provenance || '').trim();
-    finalPayload.provenance = provOpt && provOpt.toLowerCase() !== 'otra'
-      ? provOpt
-      : (payload.universidad_procedencia?.trim() || 'Otra');
+    delete finalPayload.provenance;
+    delete finalPayload.universidad_procedencia;
   }
 
   // === Ponente (4) ===

@@ -208,10 +208,6 @@ async function onSubmit() {
       // 💡 Capturamos el user_id de la respuesta del servidor
       const userId = data.user_id 
       
-      // TODO: Aquí debes llamar a tu store (Pinia/Vuex) para guardar el ID
-      // Por ejemplo: userStore.setUser({ id: userId, email: payload.email, ... })
-      console.log('Login exitoso. ID de usuario:', userId) 
-      
       toast.resolve({ title: '¡Bienvenido!', message: data.message })
 
       // Redireccionar al usuario a su ruta por defecto o a la ruta previa
