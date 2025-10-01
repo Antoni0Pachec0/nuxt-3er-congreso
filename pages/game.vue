@@ -65,7 +65,7 @@ import Elit from '@/assets/images/images/logos/elit.webp';
 import LogoCongreso from '@/assets/images/images/logos/LogoCongreso.webp';
 import api from '@/plugins/http/api'; 
 import cancion1 from '@/assets/sounds_game/SabanasBlancas.mp3';
-import cancion2 from '@/assets/sounds_game/Serpiente.mp3';
+import cancion2 from '@/assets/sounds_game/SERPIENTE.mp3';
 import cancion3 from '@/assets/sounds_game/ENALTAVOZ.mp3';
 
 const entryPage = ref(null);
