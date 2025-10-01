@@ -1,6 +1,5 @@
 <template>
   <main id="login" class="login-screen auth" role="main">
-    <!-- Fondo decorativo -->
     <div class="login-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -20,7 +19,6 @@
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
       </button>
 
-      <!-- Columna izquierda / título -->
       <header class="login-hero" aria-label="Identidad del evento">
         <h1 class="hero-title">
           <span class="kicker">3er</span>
@@ -29,17 +27,15 @@
         </h1>
       </header>
 
-      <!-- Columna derecha / Card -->
       <section class="cardLogin" aria-label="Formulario de inicio de sesión">
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
-            <SvgIcon :path="mdiArrowRight" type="mdi" />
+            <SvgIcon :path="mdiAccountCircleOutline" type="mdi" />
           </span>
           <span class="card-title__text">Iniciar Sesión</span>
         </h2>
 
         <form class="form" @submit.prevent="onSubmit" novalidate>
-          <!-- Email -->
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
             <span class="input-icon">
@@ -57,7 +53,6 @@
             />
           </div>
 
-          <!-- Password -->
           <div class="row">
             <label class="label" for="password">Contraseña</label>
             <button class="link" type="button" @click="onForgot">
@@ -92,15 +87,12 @@
             </button>
           </div>
 
-          <!-- Error -->
           <p v-if="apiError" class="help error">{{ apiError }}</p>
 
-          <!-- CTA -->
           <button class="btn" type="submit" :disabled="loading">
             {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
           </button>
 
-          <!-- Divider + Register -->
           <div class="divider">
             <span class="line"></span>
             <span class="muted">¿No tienes cuenta?</span>
@@ -126,7 +118,8 @@ import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
-  mdiArrowRight,
+  // Se agregó mdiAccountCircleOutline y se quitó mdiArrowRight
+  mdiAccountCircleOutline,
   mdiEmailOutline,
   mdiLockOutline,
   mdiEyeOutline,

@@ -1,5 +1,9 @@
 <template>
   <main id="reset" class="auth-screen">
+
+    <button type="button" class="btn-back" @click="goLogin" aria-label="Regresar">
+      <SvgIcon :path="mdiArrowLeft" type="mdi" />
+    </button>
     <div class="auth-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -162,5 +166,9 @@ async function onSubmit() {
     toast.reject({ title: 'Error', message: errorMsg })
     loading.value = false
   }
+}
+
+function goLogin() {
+  router.push(R.to('login'));
 }
 </script>

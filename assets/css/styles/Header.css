@@ -28,6 +28,7 @@
 }
 
 .logo img.scrolled-logo {
+    /* Color invertido al hacer scroll (ej. de blanco a azul) */
     filter: invert(42%) sepia(99%) saturate(2000%) hue-rotate(185deg) brightness(1.1);
 }
 
@@ -66,19 +67,39 @@
     left: 0;
 }
 
-.desktop-nav_button {
-    padding: 8px 20px;
+/* --- ESTILOS DE BOTONES DE ESCRITORIO MODIFICADOS --- */
+.desktop-nav-btn {
+    /* Define dimensiones fijas para ambos botones */
+    width: 110px; 
+    height: 38px;
+    
+    /* Estilo común */
+    padding: 0; /* Asegura que el padding no interfiera con el alto/ancho fijo */
     border-radius: 50px;
     border: 1.5px solid #0c9eff;
     background-color: #0c9eff;
     color: #ffffff;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
+    /* Centra el texto dentro del botón */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem; /* Tamaño base para 'Registro' */
+    font-weight: 500;
 }
-.desktop-nav_button:hover {
+
+.desktop-nav-btn:hover {
     background-color: #0a7ac1;
     border-color: #0a7ac1;
 }
+
+/* Estilo específico para reducir el tamaño del texto del botón "Inicio de Sesión" */
+.desktop-nav-btn.login-btn {
+    font-size: 0.8rem; /* Texto más pequeño para que quepa "Inicio de Sesión" */
+}
+/* --- FIN ESTILOS DE BOTONES DE ESCRITORIO MODIFICADOS --- */
+
 
 /* Cambio de color de enlaces de escritorio al hacer scroll */
 .app-header.scrolled-header .desktop-nav a {
@@ -170,6 +191,11 @@
 }
 .sidebar_button:hover{
     background-color: #0a7ac1;
+}
+
+/* Estilo específico para reducir el tamaño del texto del botón "Inicio de Sesión" en el sidebar */
+.sidebar_button.login-btn-sidebar {
+    font-size: 0.9rem; /* Texto ligeramente más pequeño */
 }
 
 .close-sidebar {
