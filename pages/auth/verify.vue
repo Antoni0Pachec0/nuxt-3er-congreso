@@ -282,8 +282,11 @@ async function onVerify() {
 
   try {
     const payload = { 
-      email: String(email.value).toLowerCase().trim(), 
-      code: code.value 
+      email: String(email.value).toLowerCase().trim(),
+      code: code.value,
+      token_type: verificationPurpose.value === 'reset_password'
+        ? 'reset_password'
+        : 'email_verification'
     }
     await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
 
