@@ -1,5 +1,5 @@
 /* =========================================
-   TOKENS – mismos que Register.css
+  TOKENS – mismos que Register.css
 ========================================= */
 :root {
   /* Layout generales */
@@ -59,7 +59,8 @@
 }
 
 .auth-screen.auth {
-  min-height: 100svh;
+  height: 100vh;
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -77,7 +78,7 @@
 .auth-screen {
   position: relative;
   color: var(--ink);
-  min-height: calc(100svh - var(--header-h) - var(--footer-h));
+  height: 100vh;
   padding: clamp(16px, 3vw, 48px);
   /* ACTUALIZADO a la nueva paleta de gradientes */
   background:
@@ -86,10 +87,28 @@
     linear-gradient(135deg, var(--bg-800), var(--bg-900));
   overflow: hidden;
   display: flex;
-  align-items: center;
+  /* El default es 'center', lo modificaremos en la media query para móviles */
+  align-items: center; 
   justify-content: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
+
+/* --- MODIFICACIÓN: Mueve .auth-container más arriba en móvil --- */
+@media (max-width: 979px) {
+  .auth-screen {
+    /* Alinea el contenido hacia arriba */
+    align-items: flex-start; 
+    /* Agrega un poco de margen superior */
+    padding-top: clamp(48px, 8vh, 96px); 
+  }
+
+  /* También puedes añadir un margen superior al contenedor mismo si es necesario, pero
+     ajustar align-items en el padre suele ser más limpio para flexbox. */
+  /* .auth-container {
+      margin-top: 40px; 
+  } */
+}
+/* ----------------------------------------------------------------- */
 
 /* Fondo decorativo */
 .auth-bg {
@@ -265,7 +284,7 @@
 @media (min-width:980px) {
   .cardLogin {
     justify-self: end;
-    padding: 20px;
+      padding: 20px;
   }
 }
 
@@ -335,7 +354,7 @@
   border: 1px solid rgba(30, 90, 147, 0.5); /* ACTUALIZADO */
   background: rgba(11, 21, 52, 0.5); /* ACTUALIZADO */
   color: var(--ink);
-  padding: 0 12px 0 40px;
+  padding: 0 12px 0 40px; /* Ajuste para el ícono de la izquierda */
   outline: none;
   transition: border-color .2s, box-shadow .2s, background .2s;
   caret-color: var(--ink);
@@ -402,7 +421,7 @@ input:-moz-autofill {
   padding-right: 48px;
 }
 
-.password-toggle {
+.password-toggle { /* Se mantuvo para compatibilidad, aunque no se usa en la vista 'forgot' */
   position: absolute;
   right: 10px;
   top: 50%;
@@ -504,7 +523,6 @@ input:-moz-autofill {
   color: var(--muted);
   font-size: .95rem;
 }
-
 .btn-back {
   position: absolute;
   top: 1rem;
@@ -515,15 +533,16 @@ input:-moz-autofill {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--glass-1), var(--glass-2)); /* ACTUALIZADO */
-  border: 1px solid var(--glass-br); /* ACTUALIZADO */
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  border: 1px solid var(--glass-br);
   box-shadow: var(--shadow);
   backdrop-filter: blur(12px);
-  color: var(--blue-accent); /* ACTUALIZADO */
-  cursor: pointer;
+  color: var(--blue-accent);
+  cursor: pointer !important;
   transition: background 0.2s, transform 0.15s;
-  z-index: 10px;
+  z-index: 10; /* 👈 fuerza que quede encima */
 }
+
 
 .btn-back:hover {
   background: rgba(184, 216, 243, 0.12); /* ACTUALIZADO */
@@ -541,7 +560,7 @@ input:-moz-autofill {
 @media (max-width:768px) {
   .cardLogin {
     width: 100%;
-    padding: 20px;
+      padding: 20px;
   }
 }
 
@@ -559,7 +578,7 @@ input:-moz-autofill {
 
 @media (min-width:1200px) {
   .cardLogin {
+      padding: 20px;
     --card-w: 640px;
-    padding: 20px;
   }
 }
