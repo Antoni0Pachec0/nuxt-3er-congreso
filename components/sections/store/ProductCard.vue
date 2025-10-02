@@ -177,15 +177,13 @@
   <!-- Alerta -->
   <v-card class="product-card d-flex flex-column flex-grow-1">
     <!-- ALERTA -->
-    <v-alert
-      v-if="showAlert"
-      :type="alertType"
-      dismissible
-      @input="showAlert = false"
-      class="notification-alert"
-    >
-      {{ alertMessage }}
-    </v-alert>
+<CustomAlert
+  v-model:show="showAlert"
+  :title="alertTitle"
+  :message="alertMessage"
+  :alertType="alertType"
+/>
+
 
     <!-- Badge, Imagen, Contenido, Botones... (tu código existente) -->
   </v-card>
@@ -203,6 +201,9 @@ import tshirt_github from "~/assets/images/store/t-shirt/tshirt_github.webp";
 import tshirt_html from "~/assets/images/store/t-shirt/tshirt_html.webp";
 import tshirt_kali from "~/assets/images/store/t-shirt/tshirt_kali.webp";
 import tshirt_miku_coding from "~/assets/images/store/t-shirt/tshirt_miku_coding.webp";
+import CustomAlert from "@/components/sections/store/CustomAlert.vue";
+
+
 
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 

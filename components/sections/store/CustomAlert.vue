@@ -1,47 +1,107 @@
+<template>
+  <transition name="slide-left">
+    <div
+      v-show="show"
+      class="custom-alert"
+      :class="alertClass"
+      @mouseenter="pauseHide"
+      @mouseleave="resumeHide"
+    >
+      <!-- Botón cerrar -->
+      <button class="close-btn" @click="close">✖</button>
+
+      <!-- Contenido -->
+      <div class="alert-body">
+        <!-- Icono SVG -->
+        <div class="icon-container">
+          <!-- Success -->
+          <svg v-if="alertType === 'success'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" stroke-width="2" />
+            <path stroke-width="2" d="M9 12l2 2 4-4" />
+          </svg>
+          <!-- Error -->
+          <svg v-else-if="alertType === 'error'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" stroke-width="2" />
+            <path stroke-width="2" d="M15 9l-6 6M9 9l6 6" />
+          </svg>
+          <!-- Warning -->
+          <svg v-else-if="alertType === 'warning'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <!-- Info -->
+          <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" stroke-width="2" />
+            <path stroke-width="2" d="M12 16h.01M12 8v4" />
+          </svg>
+        </div>
+
+        <!-- Texto -->
+        <div class="text-container">
+          <h3 class="title">{{ title }}</h3>
+          <p class="message">{{ message }}</p>
+        </div>
+      </div>
+
+      <!-- Barra de tiempo -->
+      <div class="progress-bar">
+        <div class="progress-fill" 
+             :style="{ animationDuration: autoHide + 'ms' }">
+        </div>
+      </div>
+    </div>
+  </transition>
+</template>
+
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, onMounted, onBeforeUnmount } from "vue";
+import { computed, defineProps, defineEmits, onBeforeUnmount, watch } from "vue";
 
 const props = defineProps({
   show: { type: Boolean, default: false },
   title: { type: String, default: "¡Aviso!" },
   message: { type: String, required: true },
   alertType: { type: String, default: "info" }, // success, warning, error, info
-  autoHide: { type: Number, default: 2500 },
+  autoHide: { type: Number, default: 3000 }, // 3s
 });
 
 const emit = defineEmits(["update:show"]);
 
 let hideTimer: number | null = null;
+let remaining = props.autoHide;
+let startTime: number;
 
-// Cierra la alerta
 function close() {
   emit("update:show", false);
+  clearTimer();
+}
+
+function clearTimer() {
   if (hideTimer) {
     clearTimeout(hideTimer);
     hideTimer = null;
   }
 }
 
-// Muestra la alerta y configura auto-hide
-function showAlert() {
-  if (hideTimer) clearTimeout(hideTimer);
-  hideTimer = window.setTimeout(close, props.autoHide);
+function startTimer() {
+  clearTimer();
+  startTime = Date.now();
+  hideTimer = window.setTimeout(close, remaining);
 }
 
-// Pausar auto-hide al pasar el cursor
 function pauseHide() {
   if (hideTimer) {
     clearTimeout(hideTimer);
     hideTimer = null;
+    remaining -= Date.now() - startTime; // resta el tiempo transcurrido
   }
 }
 
-// Reanudar auto-hide
 function resumeHide() {
-  if (!hideTimer) hideTimer = window.setTimeout(close, props.autoHide);
+  if (!hideTimer && props.show) {
+    startTime = Date.now();
+    hideTimer = window.setTimeout(close, remaining);
+  }
 }
 
-// Computed para clase según tipo
 const alertClass = computed(() => {
   switch (props.alertType) {
     case "success": return "alert-success";
@@ -51,93 +111,133 @@ const alertClass = computed(() => {
   }
 });
 
-// Cuando la propiedad show cambia a true, iniciamos el timer
-onMounted(() => {
-  if (props.show) showAlert();
+watch(() => props.show, (val) => {
+  if (val) {
+    remaining = props.autoHide; // reinicia contador
+    startTimer();
+  } else {
+    clearTimer();
+  }
 });
 
-// Limpiar timer al desmontar
 onBeforeUnmount(() => {
-  if (hideTimer) clearTimeout(hideTimer);
+  clearTimer();
 });
 </script>
-
 
 <style scoped>
 .custom-alert {
   position: fixed;
-  top: 50%; /* centrado vertical */
-  transform: translateY(-50%);
-  left: 20px; /* lado izquierdo */
-  max-width: 360px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  color: #fff;
+  top: 90px;    /* un poco más abajo para no tapar el menú */
+  left: 20px;
+  background: #fff;
+
+  width: auto;
+  max-width: 280px;
+  min-width: 220px;
+  
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  padding: 10px 12px;
   z-index: 10000;
-  transition: all 0.3s ease;
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  overflow: hidden;
+  word-break: break-word;
 }
 
-/* Tipos de alerta */
-.alert-success { background-color: #28a745; }
-.alert-warning { background-color: #ffc107; color: #1a1a1a; }
-.alert-error { background-color: #dc3545; }
-.alert-info { background-color: #17a2b8; }
-
-/* Icono */
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 50%;
-  background-color: rgba(255,255,255,0.2);
+/* Animación entrada desde izquierda */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.35s ease;
 }
-.icon {
-  width: 20px;
-  height: 20px;
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(-120%);
 }
-
-/* Contenido */
-.content {
-  flex: 1;
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-120%);
 }
-.title { font-weight: 700; font-size: 0.95rem; margin: 0; }
-.message { font-size: 0.85rem; margin: 0; line-height: 1.2; }
 
 /* Botón cerrar */
 .close-btn {
+  position: absolute;
+  top: 6px;
+  right: 8px;
   background: transparent;
   border: none;
-  color: #fff;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  color: #999;
   cursor: pointer;
 }
+.close-btn:hover { color: #333; }
 
-/* Animación */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
+/* Contenido */
+.alert-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .custom-alert {
-    top: 55%;
-    left: 10px;
-    max-width: 90%;
-    gap: 8px;
-    padding: 10px 12px;
-  }
-  .title { font-size: 0.9rem; }
-  .message { font-size: 0.8rem; }
+.icon-container {
+  flex-shrink: 0;
+  color: currentColor;
+}
+.icon-container svg {
+  width: 28px;
+  height: 28px;
+}
+
+.text-container {
+  flex: 1;
+}
+.title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 0;
+  color: #222;
+}
+.message {
+  font-size: 0.8rem;
+  margin: 2px 0 0;
+  color: #555;
+}
+
+/* Barra de tiempo */
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.progress-fill {
+  height: 100%;
+  animation: progress linear forwards;
+}
+.alert-success .progress-fill { background: #28a745; }
+.alert-warning .progress-fill { background: #ff9800; }
+.alert-error .progress-fill { background: #dc3545; }
+.alert-info .progress-fill { background: #17a2b8; }
+
+@keyframes progress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* Colores dinámicos */
+.alert-success { color: #28a745; }
+.alert-warning { color: #ff9800; }
+.alert-error { color: #dc3545; }
+.alert-info { color: #17a2b8; }
+
+/* Pausa animación en hover */
+.custom-alert:hover .progress-fill {
+  animation-play-state: paused;
 }
 </style>
