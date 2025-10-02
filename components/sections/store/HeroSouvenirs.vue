@@ -1,5 +1,5 @@
 <template>
-  <div class="hero">
+  <div class="heroSouvenirs">
     <!-- Contenedor Principal -->
     <div class="hero-inner">
       <!-- Texto del Hero -->

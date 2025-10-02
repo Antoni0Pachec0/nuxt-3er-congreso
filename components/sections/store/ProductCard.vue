@@ -1,5 +1,4 @@
 <template>
-
   <section class="collection" id="productos">
     <v-container class="py-12">
       <!-- Encabezado -->
@@ -7,7 +6,7 @@
         <h2 class="font-orbitron text-h4 text-md-h3 font-weight-black mb-2">
           Colección Completa
         </h2>
-              <div class="faq__underline"></div>
+        <div class="faq__underline"></div>
 
         <div class="underline mx-auto mb-4"></div>
         <p class="text-medium-emphasis text-body-2 text-md-body-1">
@@ -84,7 +83,8 @@
 
             <v-card-text class="body">
               <!-- Colores -->
-              <div class="section-block">
+              <!-- Colores (oculto si solo hay un color) -->
+              <div v-if="(p.colors?.length || 0) > 1" class="section-block">
                 <div class="label">Colores</div>
                 <div class="d-flex align-center flex-wrap gap-4">
                   <button
@@ -174,28 +174,36 @@
   </v-btn>
 
   <CartDrawer v-model="showCart" v-model:items="cartItems" />
-    <!-- Alerta -->
-<v-card class="product-card d-flex flex-column flex-grow-1">
-  <!-- ALERTA -->
-  <v-alert
-    v-if="showAlert"
-    :type="alertType"
-    dismissible
-    @input="showAlert = false"
-    class="notification-alert"
-  >
-    {{ alertMessage }}
-  </v-alert>
+  <!-- Alerta -->
+  <v-card class="product-card d-flex flex-column flex-grow-1">
+    <!-- ALERTA -->
+    <v-alert
+      v-if="showAlert"
+      :type="alertType"
+      dismissible
+      @input="showAlert = false"
+      class="notification-alert"
+    >
+      {{ alertMessage }}
+    </v-alert>
 
-  <!-- Badge, Imagen, Contenido, Botones... (tu código existente) -->
-</v-card>
+    <!-- Badge, Imagen, Contenido, Botones... (tu código existente) -->
+  </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import ProductDetailsDialog from "@/components/sections/store/ProductDetailsDialog.vue";
 import CartDrawer from "@/components/sections/store/CartDrawer.vue";
-import tshirtBlack from "~/assets/images/store/t-shirt/t-shirtBlack.webp";
+import tshirt_app_dev from "~/assets/images/store/t-shirt/tshirt_app_dev.webp";
+import tshirt_chrome_dino from "~/assets/images/store/t-shirt/tshirt_chrome_dino.webp";
+import tshirt_cisco from "~/assets/images/store/t-shirt/tshirt_cisco.webp";
+import tshirt_coffee_code from "~/assets/images/store/t-shirt/tshirt_coffee_code.webp";
+import tshirt_github from "~/assets/images/store/t-shirt/tshirt_github.webp";
+import tshirt_html from "~/assets/images/store/t-shirt/tshirt_html.webp";
+import tshirt_kali from "~/assets/images/store/t-shirt/tshirt_kali.webp";
+import tshirt_miku_coding from "~/assets/images/store/t-shirt/tshirt_miku_coding.webp";
+
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 
 type Product = {
@@ -219,64 +227,107 @@ const showAlert = ref(false);
 const alertMessage = ref("");
 const alertType = ref<"success" | "error" | "info" | "warning">("info");
 
-// Productos de ejemplo
+// Productos (SOLO NEGRO)
 const products = ref<Product[]>([
   {
     id: 1,
-    title: "Playera Oficial TechCongress 2024",
-    description: "Algodón premium, corte unisex",
+    title: "Playera App Dev Studio (Negro)",
+    description:
+      "Algodón premium, corte unisex. Inspirada en desarrollo de apps.",
     category: "playera",
     price: 450,
     stock: 20,
-    colors: ["#000000", "#1d4ed8", "#ffffff"],
+    colors: ["#000000"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    imagesByColor: {
-      "#000000": tshirtBlack,
-      "#1d4ed8": "https://picsum.photos/seed/shirt-blue/800/600",
-      "#ffffff": "https://picsum.photos/seed/shirt-white/800/600",
-    },
+    imagesByColor: { "#000000": tshirt_app_dev },
   },
   {
     id: 2,
-    title: "Playera DevOps Excellence",
-    description: "Para amantes de pipelines y cloud",
+    title: "Playera Chrome Dino Offline (Negro)",
+    description: "El clásico dino runner para cuando no hay internet.",
     category: "playera",
-    price: 480,
-    stock: 12,
-    colors: ["#000000", "#1d4ed8", "#ffffff"],
-    sizes: ["S", "M", "L", "XL"],
-    imagesByColor: {
-      "#000000": "https://picsum.photos/seed/devops-black/800/600",
-      "#1d4ed8": "https://picsum.photos/seed/devops-blue/800/600",
-      "#ffffff": "https://picsum.photos/seed/devops-white/800/600",
-    },
+    price: 450,
+    stock: 18,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_chrome_dino },
   },
   {
     id: 3,
-    title: "Termo Acero 600ml",
-    description: "12h caliente / 24h frío",
-    category: "termo",
-    price: 380,
+    title: "Playera Cisco Networking (Negro)",
+    description: "Redes, routing y switching con estilo.",
+    category: "playera",
+    price: 450,
+    stock: 15,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_cisco },
+  },
+  {
+    id: 4,
+    title: "Playera Coffee • Code • Repeat (Negro)",
+    description: "Cafeína y código: la dupla perfecta.",
+    category: "playera",
+    price: 450,
+    stock: 22,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_coffee_code },
+  },
+  {
+    id: 5,
+    title: "Playera GitHub OctoDev (Negro)",
+    description: "Commits con flow para tu outfit.",
+    category: "playera",
+    price: 450,
+    stock: 17,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_github },
+  },
+  {
+    id: 6,
+    title: "Playera HTML Markup (Negro)",
+    description: "<header>Tu estilo</header> en todas partes.",
+    category: "playera",
+    price: 450,
     stock: 25,
-    colors: ["#111827", "#2563eb", "#0ea5e9"],
-    imagesByColor: {
-      "#111827": "https://picsum.photos/seed/bottle-black/800/600",
-      "#2563eb": "https://picsum.photos/seed/bottle-blue/800/600",
-      "#0ea5e9": "https://picsum.photos/seed/bottle-cyan/800/600",
-    },
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_html },
+  },
+  {
+    id: 7,
+    title: "Playera Kali Pentesting (Negro)",
+    description: "Para entornos de hacking ético y pentesting.",
+    category: "playera",
+    price: 450,
+    stock: 14,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_kali },
+  },
+  {
+    id: 8,
+    title: "Playera Miku Coding Session (Negro)",
+    description: "Vibes de código con estilo idol.",
+    category: "playera",
+    price: 450,
+    stock: 16,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_miku_coding },
   },
 ]);
 
-// Asignar primer color por defecto al montar
+// Asignar color negro por defecto al montar
 onMounted(() => {
   products.value.forEach((p) => {
-    if (p.colors?.length && !selectedColor.value[p.id]) {
-      selectedColor.value[p.id] = p.colors[0];
-    }
+    selectedColor.value[p.id] = p.colors?.[0] || "#000000";
   });
 });
 
-// Filtrar por categoría
+// Filtro categoría
 const activeCategory = ref<"all" | "playera" | "termo">("all");
 const filteredProducts = computed(() =>
   activeCategory.value === "all"
@@ -284,7 +335,7 @@ const filteredProducts = computed(() =>
     : products.value.filter((p) => p.category === activeCategory.value)
 );
 
-// Obtener imagen según color seleccionado
+// Imagen por color seleccionado
 function getImage(p: Product) {
   const color = selectedColor.value[p.id];
   return color ? p.imagesByColor[color] : Object.values(p.imagesByColor)[0];
@@ -326,27 +377,21 @@ function onAddToCart(payload: {
   showCart.value = true;
 }
 
-// --- Manejo de color y talla ---
-function selectColor(id: number, color: string) {
-  selectedColor.value[id] = color;
-}
-function selectSize(id: number, size: string) {
-  selectedSize.value[id] = size;
-}
-
 // --- Agregar al carrito con alertas ---
 function handleAdd(p: Product) {
-  const color = selectedColor.value[p.id] || null;
+  // Tomar siempre el único color disponible si no hay selección manual
+  const color = selectedColor.value[p.id] || p.colors?.[0] || null;
   const size = selectedSize.value[p.id] || null;
 
+  // Validaciones (solo si hay más de una opción)
   if (p.category === "playera") {
-    if (!color) {
+    if ((p.colors?.length || 0) > 1 && !color) {
       alertMessage.value = "⚠️ Selecciona un color antes de agregar.";
       alertType.value = "warning";
       showAlert.value = true;
       return;
     }
-    if (!size) {
+    if ((p.sizes?.length || 0) > 0 && !size) {
       alertMessage.value = "⚠️ Selecciona una talla antes de agregar.";
       alertType.value = "warning";
       showAlert.value = true;
@@ -354,11 +399,13 @@ function handleAdd(p: Product) {
     }
   }
 
-  if (p.category === "termo" && !color) {
-    alertMessage.value = "⚠️ Selecciona un color antes de agregar.";
-    alertType.value = "warning";
-    showAlert.value = true;
-    return;
+  if (p.category === "termo") {
+    if ((p.colors?.length || 0) > 1 && !color) {
+      alertMessage.value = "⚠️ Selecciona un color antes de agregar.";
+      alertType.value = "warning";
+      showAlert.value = true;
+      return;
+    }
   }
 
   // Agregar al carrito
@@ -375,7 +422,6 @@ function handleAdd(p: Product) {
   showAlert.value = true;
 }
 </script>
-
 
 <style scoped>
 /* swatches */
@@ -684,8 +730,6 @@ function handleAdd(p: Product) {
     font-size: 1.25rem;
   }
 }
-
-
 
 /* Badge con contador */
 .badge {
