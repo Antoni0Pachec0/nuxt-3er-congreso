@@ -11,6 +11,9 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import api from '~/plugins/http/api'
+import { ROUTES } from '~/plugins/http/routes'
 
 definePageMeta({
   name: 'user-home',
@@ -18,23 +21,24 @@ definePageMeta({
   requiresAuth: true,
 })
 
-import { useRouter } from 'vue-router';
+const router = useRouter()
 
-const router = useRouter();
-
-function goToGame() {
-    // Redirect to the game page
-    // You can change this route to the actual game route when it's created
-    alert('¡Redirigiendo al juego!');
+async function goToGame() {
+  // Redirige a la vista del juego del frontend (ajusta la ruta si tu página es distinta)
+  // Ejemplos: '/game' o { name: 'game' }
+  await router.push('/game')
 }
 
-function logout() {
-    // Clear authentication tokens
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    
-    // Redirect to login page
-    router.push('/login');
+async function logout() {
+  try {
+    // Cierra sesión en el backend y borra cookies httpOnly
+    await api.post(ROUTES.AUTH.LOGOUT, null, { withCredentials: true })
+  } catch (e) {
+    // opcional: mostrar notificación, pero continuamos con la salida
+  } finally {
+    // Redirige al login
+    router.push('/login')
+  }
 }
 </script>
 

@@ -1,22 +1,38 @@
+// middleware/auth.global.ts (o el archivo que ya tienes)
 import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+import api from '~/plugins/http/api'
+import { ROUTES } from '~/plugins/http/routes'
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
 
-  // 1) Token de sesión (localStorage)
-  const token = localStorage.getItem('accessToken')
-
-  // 2) Rutas protegidas (requieren login)
-  if (to.meta?.requiresAuth && !token) {
-    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+  // helper para saber si hay sesión usando cookies httpOnly
+  const isAuthenticated = async () => {
+    try {
+      await api.get(ROUTES.AUTH.ME, { withCredentials: true })
+      return true
+    } catch {
+      return false
+    }
   }
 
-  // 3) Rutas solo invitados (login, register, forgot, verify, reset)
-  if (to.meta?.guestOnly && token) {
-    return navigateTo('/user-home')
+  // 1) Rutas protegidas
+  if (to.meta?.requiresAuth) {
+    const ok = await isAuthenticated()
+    if (!ok) {
+      return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+    }
   }
 
-  // 4) Protección para /verify
+  // 2) Rutas solo invitados
+  if (to.meta?.guestOnly) {
+    const ok = await isAuthenticated()
+    if (ok) {
+      return navigateTo('/user-home')
+    }
+  }
+
+  // 3) Protección para /verify
   if (to.name === 'verify' || to.path === '/verify') {
     const emailToVerify =
       sessionStorage.getItem('verify_email') ||
@@ -30,7 +46,7 @@ export default defineNuxtRouteMiddleware((to) => {
     }
   }
 
-  // 5) Protección para /reset
+  // 4) Protección para /reset
   if (to.name === 'reset' || to.path === '/reset') {
     const resetToken = sessionStorage.getItem('reset_token')
     const resetEmail = sessionStorage.getItem('reset_email')
@@ -39,7 +55,6 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateTo('/forgot')
     }
 
-    // Verificar expiración
     const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
     if (tokenExpiry && Date.now() > parseInt(tokenExpiry)) {
       sessionStorage.removeItem('reset_token')

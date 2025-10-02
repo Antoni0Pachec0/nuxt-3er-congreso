@@ -1,13 +1,12 @@
 // utils/app-routes.js
 export const APP_ROUTES = {
-  home:     { name: 'index',    path: '/' },
-  login:    { name: 'login',    path: '/login' },
-  register: { name: 'register', path: '/register' },
-  verify:   { name: 'verify',   path: '/verify' },
-  forgot:   { name: 'forgot',   path: '/forgot' },
-  reset:    { name: 'reset',    path: '/reset' },
-  userHome: { name: 'user-home', path: '/user/home' },
-  // agrega más rutas aquí
+  home:     { name: 'index',     path: '/' },
+  login:    { name: 'login',     path: '/login' },
+  register: { name: 'register',  path: '/register' },
+  verify:   { name: 'verify',    path: '/verify' },
+  forgot:   { name: 'forgot',    path: '/forgot' },
+  reset:    { name: 'reset',     path: '/reset' },
+  userHome: { name: 'user-home', path: '/user-home' }, // 👈 alíñalo con tu page
 }
 
 export const R = {
