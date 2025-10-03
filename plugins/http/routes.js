@@ -1,3 +1,4 @@
+// utils/http/routes.js o donde tengas ROUTES
 export const ROUTES = {
   AUTH: {
     REGISTER: '/auth/register',
@@ -9,9 +10,11 @@ export const ROUTES = {
     RESET_PASSWORD: '/auth/reset-password',
     ME: '/auth/me',
     REFRESH: '/auth/refresh',
-    // 💡 Añadimos LOGOUT aquí aunque no sea usado en el middleware, es buena práctica
-    LOGOUT: '/auth/logout', 
-    SCORE: '/auth/game',
+    LOGOUT: '/auth/logout',
+  },
+  SCORES: {
+    CREATE: '/scores',
+    LEADERBOARD: '/scores/leaderboard',
   },
   USERS: {
     LIST: '/users',
@@ -21,5 +24,4 @@ export const ROUTES = {
     LIST: '/workshops',
     BY_ID: (id) => `/workshops/${id}`,
   },
-  // agrega aquí otros módulos según vayas necesitando
-};
+}

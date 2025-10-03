@@ -115,10 +115,9 @@
 <script setup>
 import { definePageMeta } from '#imports'
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
+import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
-  // Se agregó mdiAccountCircleOutline y se quitó mdiArrowRight
   mdiAccountCircleOutline,
   mdiEmailOutline,
   mdiLockOutline,
@@ -133,6 +132,25 @@ import { parseAxiosError } from '~/plugins/http/error'
 import { R } from '~/utils/app-routes'
 import '@/assets/css/styles/Login.css'
 
+// ⚠️ IMPORTAR EL STORE DE AUTENTICACIÓN (Asumo Pinia o similar)
+// Si la ruta no es correcta, ajústala:
+import { useAuthStore } from '~/stores/auth'
+
+// ⚠️ MOCK DE NOTIFICACIONES (Reemplazar con tu implementación real de Toast/Notify)
+// Estas funciones no estaban definidas en el script, se añaden como placeholders.
+function notifyError(title, message) {
+    console.error(`[Error ${title}]: ${message}`);
+}
+function notifyLoading(title, message) {
+    console.log(`[Loading ${title}]: ${message}`);
+    // Retorna un objeto con un método 'resolve' que simula cerrar el toast
+    return {
+        resolve: ({ title: t, message: m }) => console.log(`[Toast Closed]: ${t} - ${m}`)
+    };
+}
+// -------------------------------------------------------------------------
+
+
 definePageMeta({
   name: 'login',
   path: '/login',
@@ -140,7 +158,8 @@ definePageMeta({
 })
 
 const router = useRouter()
-const route  = useRoute()
+const route = useRoute()
+const authStore = useAuthStore() // Inicializar el store
 
 const email = ref('')
 const password = ref('')
@@ -169,6 +188,7 @@ async function onSubmit() {
   }
 
   loading.value = true
+  // Usa el nombre de tu toast loader real aquí
   const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
 
   try {
@@ -177,7 +197,7 @@ async function onSubmit() {
       password: password.value,
     }
 
-    // 👇 Importante: credenciales/cookies
+    // El backend debe setear las cookies 'access_token' y 'refresh_token'
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
     // 1) Verificación requerida
@@ -194,18 +214,16 @@ async function onSubmit() {
       return router.push(R.to('verify')) // { name: 'verify' }
     }
 
-    // 2) Éxito de login (preferir flag/ID estable)
-    const isSuccess =
-      Boolean(data?.user_id) ||
-      (typeof data?.message === 'string' && data.message.toLowerCase().includes('exitos'))
+    // 2) Éxito de login
+    const isSuccess = Number.isFinite(data?.user_id);
 
     if (isSuccess) {
       const userId = data?.user_id
 
-      // (Opcional) si tu guard depende de un store, márcalo aquí para evitar rebotes:
-      // const auth = useAuthStore()
-      // auth.setUser({ id: userId, email: payload.email })
-      // auth.setAuthenticated(true)
+      // ✅ CORRECCIÓN CLAVE: Actualizar el Store de Autenticación inmediatamente
+      // Esto evita que el middleware te redirija de vuelta a login
+      authStore.setUser({ id: userId, email: payload.email })
+      authStore.setAuthenticated(true)
 
       toast?.resolve?.({
         title: '¡Bienvenido!',
@@ -219,8 +237,10 @@ async function onSubmit() {
         : null
 
       if (redirectLocation) {
+        // Redirige a la ubicación solicitada
         return router.push(redirectLocation)
       }
+      // Redirige al home del usuario
       return router.push(R.to('userHome')) // { name: 'user-home' }
     }
 
