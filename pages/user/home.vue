@@ -14,6 +14,7 @@
 import { useRouter } from 'vue-router'
 import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'
+import { R } from '~/utils/app-routes'
 
 definePageMeta({
   name: 'user-home',
@@ -26,7 +27,7 @@ const router = useRouter()
 async function goToGame() {
   // Redirige a la vista del juego del frontend (ajusta la ruta si tu página es distinta)
   // Ejemplos: '/game' o { name: 'game' }
-  await router.push('/game')
+    return router.push(R.to('game'))
 }
 
 async function logout() {
@@ -37,7 +38,7 @@ async function logout() {
     // opcional: mostrar notificación, pero continuamos con la salida
   } finally {
     // Redirige al login
-    router.push('/login')
+    await router.push('/login')
   }
 }
 </script>

@@ -6,7 +6,8 @@ export const APP_ROUTES = {
   verify:   { name: 'verify',    path: '/verify' },
   forgot:   { name: 'forgot',    path: '/forgot' },
   reset:    { name: 'reset',     path: '/reset' },
-  userHome: { name: 'user-home', path: '/user-home' }, // 👈 alíñalo con tu page
+  userHome: { name: 'user-home', path: '/user-home' },
+  game: { name: 'game', path: '/game' },
 }
 
 export const R = {
