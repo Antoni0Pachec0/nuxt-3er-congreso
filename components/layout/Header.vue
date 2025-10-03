@@ -48,7 +48,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import logo from '/assets/images/logo.png';
+import logo from '~/assets/images/Logo.png';
 import '@/assets/css/styles/Header.css';
 
 const isMenuOpen = ref(false);
