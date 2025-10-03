@@ -11,7 +11,7 @@
 
 .speakers-title {
   font-size: clamp(2rem, 5vw, 2.6rem);
-  
+
   font-weight: 900;
 }
 
@@ -23,18 +23,17 @@
   margin-bottom: 6rem;
 }
 
-/* Grid */
 .speakers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
   gap: 5rem;
 }
 
-/* Card */
 .speaker-card {
   position: relative;
   display: flex;
-  background: linear-gradient(135deg, #bfdbfe, #ffffff);
+  background: linear-gradient(90deg, #bfdbfe, #ffffff);
+  /* 👈 de izquierda a derecha */
   border: 2px solid #60a5fa;
   border-radius: 16px;
   padding: 2rem;
@@ -45,7 +44,8 @@
 /* Imagen */
 .speaker-img-wrapper {
   position: absolute;
-  bottom: -7px; /* 👈 antes 0 */
+  bottom: -7px;
+  /* 👈 antes 0 */
   left: 1rem;
 }
 
@@ -77,6 +77,7 @@
   margin-bottom: 0.8rem;
   color: #666;
 }
+
 .faq__underline {
   width: 80px;
   height: 4px;
@@ -104,6 +105,7 @@
   line-height: 1.5;
   max-width: 90%;
 }
+
 /* Redes sociales estilo tarjeta */
 .speaker-socials {
   display: flex;
@@ -115,10 +117,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px; /* esquinas más redondeadas */
+  border-radius: 16px;
+  /* esquinas más redondeadas */
   width: 65px;
   height: 65px;
-  background: #f9fafb; /* gris claro por defecto */
+  background: #f9fafb;
+  /* gris claro por defecto */
   transition: all 0.3s ease;
 }
 
@@ -129,17 +133,21 @@
 
 /* Estilos específicos por red */
 .social-icon.facebook {
-  background: #eff6ff; /* azul muy suave */
+  background: #eff6ff;
+  /* azul muy suave */
   color: #1877f2;
 }
+
 .social-icon.linkedin {
   background: #eef2ff;
   color: #0a66c2;
 }
+
 .social-icon.x {
   background: #f9fafb;
   color: #000;
 }
+
 .social-icon.instagram {
   background: #fff0f5;
   color: #e1306c;
@@ -159,16 +167,112 @@
 }
 
 
-@media (min-width: 769px) and (max-width: 992px) {
-  .speaker-img {
-    width: clamp(220px, 26vw, 260px);
-    height: clamp(360px, 40vw, 420px);
-  }
+
+/* Imagen grande desktop */
+.speaker-img-wrapper {
+  position: absolute;
+  bottom: -7px;
+  left: 1rem;
 }
 
-@media (min-width: 993px) and (max-width: 1120px) {
+.speaker-img {
+  width: 300px;
+  height: 490px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.speaker-info {
+  flex: 1;
+  margin-left: 280px;
+}
+
+/* ====== Tablet & Mobile ====== */
+@media (max-width: 768px) {
+  .speakers-grid {
+    grid-template-columns: 1fr;
+    /* 👈 1 card por fila */
+    gap: 2rem;
+  }
+
+  .speaker-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.2rem;
+    width: 100%;
+    min-height: auto;
+    box-sizing: border-box;
+  }
+
+  .speaker-img-wrapper {
+    position: relative;
+    float: left;
+    /* 👈 Imagen a la izquierda */
+  }
+
   .speaker-img {
-    width: clamp(240px, 24vw, 270px);
-    height: clamp(380px, 38vw, 440px);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    /* 👈 Circular */
+    object-fit: cover;
+    object-position: top;
+    background-color: #89B4FF;
+  }
+
+  .speaker-info {
+    margin: 0;
+    width: 100%;
+  }
+
+  .social-icon {
+    width: 50px;
+    height: 50px;
+
+  }
+
+  .social-icon .icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  .speaker-name,
+  .speaker-role,
+  .speaker-company {
+    margin-left: 130px;
+    /* sigue a la derecha de la foto */
+    text-align: left;
+    display: block;
+    /* asegúrate que cada uno esté en línea propia */
+  }
+
+  .speaker-name {
+    margin-top: -80px;
+    /* 👈 sube solo el nombre */
+    margin-bottom: 4px;
+  }
+
+  .speaker-role {
+    margin: 0 0 4px 130px;
+  }
+
+  .speaker-company {
+    margin: 0 0 8px 130px;
+  }
+
+  .speaker-bio,
+  .speaker-socials {
+    margin-top: 0.01rem;
+    margin-left: 0;
+    text-align: left;
+    clear: both;
+    /* 👈 fuerza que bajen debajo de la imagen */
+    width: 100%;
+  }
+
+  .speaker-socials {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-start;
   }
 }
