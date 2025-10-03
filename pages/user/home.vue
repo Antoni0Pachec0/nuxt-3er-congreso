@@ -12,34 +12,31 @@
 
 <script setup>
 import { definePageMeta } from '#imports'
-import { useRouter } from 'vue-router'
-import api from '~/plugins/http/api'
-import { ROUTES } from '~/plugins/http/routes'
-import { R } from '~/utils/app-routes'
+import { useRouter } from '#app'
+import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
   name: 'user-home',
   path: '/user-home',
   requiresAuth: true,
+  middleware: 'auth'
 })
 
 const router = useRouter()
+const authStore = useAuthStore()
 
-async function goToGame() {
-  // Redirige a la vista del juego del frontend (ajusta la ruta si tu página es distinta)
-  // Ejemplos: '/game' o { name: 'game' }
-    return router.push(R.to('game'))
+function goToGame() {
+  return navigateTo('/game')
 }
 
 async function logout() {
   try {
-    // Cierra sesión en el backend y borra cookies httpOnly
-    await api.post(ROUTES.AUTH.LOGOUT, null, { withCredentials: true })
-  } catch (e) {
-    // opcional: mostrar notificación, pero continuamos con la salida
-  } finally {
-    // Redirige al login
-    await router.push('/login')
+    // Usar el store para logout que maneja todo
+    await authStore.logout()
+  } catch (error) {
+    console.error('Error durante logout:', error)
+    // Forzar redirección incluso si hay error
+    await navigateTo('/login')
   }
 }
 </script>
@@ -93,4 +90,3 @@ h1 {
     background-color: #d32f2f;
 }
 </style>
-

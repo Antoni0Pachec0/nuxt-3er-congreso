@@ -1,8 +1,4 @@
 import { defineNuxtConfig } from 'nuxt/config'
-// Importamos 'node:process' para asegurarnos de que el runtimeConfig
-// y el define de Vite reconozcan la variable 'process.env'.
-import * as nodeProcess from 'node:process'; 
-
 
 export default defineNuxtConfig({
   // Desactiva explícitamente el SSR para funcionar en modo SPA (Cliente)
@@ -11,15 +7,17 @@ export default defineNuxtConfig({
   // ----------------
   // MÓDULOS Y CARACTERÍSTICAS
   // ----------------
-  // Desactiva completamente la auto-importación de componentes (CRÍTICO para el error)
   components: true,
-  // Desactiva la auto-importación de composición
   imports: { autoImport: true },
 
   modules: [
     'notivue/nuxt',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt' // Módulo para persistir el estado de Pinia
   ],
+  
+  // Eliminamos el bloque 'pinia' para evitar el error de tipado,
+  // ya que los autoimports por defecto son suficientes.
   
   devtools: { enabled: false },
   
@@ -29,26 +27,11 @@ export default defineNuxtConfig({
   },
 
   // ----------------
-  // RUTAS Y REDIRECCIONAMIENTOS
-  // ----------------
-/*   routeRules: {
-    '/auth/login':   { redirect: '/login' },
-    '/auth/register':{ redirect: '/register' },
-    '/auth/verify':  { redirect: '/verify' },
-    '/auth/forgot':  { redirect: '/forgot' },
-    '/auth/reset':  { redirect: '/reset' },
-
-    '/user/home':  { redirect: '/user/home' },
-
-  }, */
-
-  // ----------------
   // CONFIGURACIÓN AMBIENTAL
   // ----------------
   runtimeConfig: {
     public: {
-      // Usamos nodeProcess.env para asegurar la correcta resolución
-      apiBase: nodeProcess.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
     }
   },
 
@@ -79,8 +62,7 @@ export default defineNuxtConfig({
   // ----------------
   nitro: { 
     serveStatic: true,
-    // Elimina la advertencia del log al usar la fecha recomendada
-    compatibilityDate: '2025-09-29' 
+    compatibilityDate: '2025-10-03' 
   },
 
   // ----------------
@@ -88,7 +70,6 @@ export default defineNuxtConfig({
   // ----------------
   vite: {
     optimizeDeps: {
-      // CRÍTICO 1: Excluye el helper de la pre-optimización
       exclude: [
         'plugin-vue:export-helper',
         'vite/modulepreload-polyfill'
@@ -100,7 +81,6 @@ export default defineNuxtConfig({
         polyfill: false
       },
       rollupOptions: {
-         // CRÍTICO 2: Excluye el helper de Rollup durante el build/transformación
         external: ['plugin-vue:export-helper'] 
       }
     },
@@ -111,9 +91,8 @@ export default defineNuxtConfig({
       }
     },
     
-    // CRÍTICO 3: Asegura que el pathing se resuelve correctamente
     define: {
-      'process.env.NODE_ENV': JSON.stringify(nodeProcess.env.NODE_ENV || 'development')
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     }
   },
 

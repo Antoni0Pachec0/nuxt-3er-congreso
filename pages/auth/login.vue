@@ -115,7 +115,7 @@
 <script setup>
 import { definePageMeta } from '#imports'
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute } from '#app' // Cambia esta importación
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiAccountCircleOutline,
@@ -132,10 +132,10 @@ import { parseAxiosError } from '~/plugins/http/error'
 import { R } from '~/utils/app-routes'
 import '@/assets/css/styles/Login.css'
 
-// ⚠️ Importar el store de autenticación (Pinia)
+// Importar el store de autenticación
 import { useAuthStore } from '~/stores/auth'
 
-// Mock de notificaciones (cámbialo por tu sistema de toasts)
+// Mock de notificaciones
 function notifyError(title, message) {
   console.error(`[Error ${title}]: ${message}`)
 }
@@ -151,7 +151,7 @@ function notifyLoading(title, message) {
 definePageMeta({
   name: 'login',
   path: '/login',
-  guestOnly: true, // si ya está logueado, middleware lo manda a user-home
+  guestOnly: true,
 })
 
 const router = useRouter()
@@ -165,13 +165,15 @@ const loading = ref(false)
 const apiError = ref('')
 
 function goHome() {
-  router.push(R.to('home'))
+  return navigateTo(R.to('home'))
 }
+
 function onRegister() {
-  router.push(R.to('register'))
+  return navigateTo(R.to('register'))
 }
+
 function onForgot() {
-  router.push(R.to('forgot'))
+  return navigateTo(R.to('forgot'))
 }
 
 async function onSubmit() {
@@ -204,7 +206,7 @@ async function onSubmit() {
         message: 'Tu cuenta aún no está activa. Revisa tu correo.',
       })
 
-      return router.push(R.to('verify'))
+      return navigateTo(R.to('verify'))
     }
 
     // 2) Login exitoso
@@ -223,10 +225,12 @@ async function onSubmit() {
       // Redirección: respeta ?redirect=... si existe
       const redirectParam = route.query?.redirect
       if (redirectParam) {
-        return router.push(decodeURIComponent(String(redirectParam)))
+        console.log('Redirecting to:', redirectParam)
+        return navigateTo(decodeURIComponent(String(redirectParam)))
       }
 
-      return router.push(R.to('userHome')) // user-home
+      console.log('Redirecting to user-home')
+      return navigateTo(R.to('userHome'))
     }
 
     // 3) Respuesta inesperada

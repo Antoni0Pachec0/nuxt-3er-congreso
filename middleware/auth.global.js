@@ -1,37 +1,46 @@
-import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
-import api from '~/plugins/http/api'
-import { ROUTES } from '~/plugins/http/routes'
-
-export default defineNuxtRouteMiddleware(async (to, from) => {
+// middleware/auth.global.js
+export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
-
-  const isAuthenticated = async () => {
+  
+  const authStore = useAuthStore()
+  
+  // Verificar autenticación
+  const checkAuth = async () => {
     try {
-      await api.get(ROUTES.AUTH.ME, { withCredentials: true })
-      return true
-    } catch {
-      return false
+      const response = await $fetch('/api/auth/me', {
+        credentials: 'include',
+        retry: 0,
+        timeout: 5000
+      })
+      
+      if (response?.user_id) {
+        authStore.setUser({ id: response.user_id, email: response.email })
+        authStore.setAuthenticated(true)
+        return true
+      }
+    } catch (error) {
+      console.log('Auth check failed:', error)
+      authStore.setAuthenticated(false)
+      authStore.setUser(null)
     }
+    return false
   }
 
-  // 1) Rutas protegidas
-  if (to.meta?.requiresAuth) {
-    const ok = await isAuthenticated()
-    if (!ok) {
-      return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
-    }
+  const isAuthenticated = await checkAuth()
+  console.log(`Auth middleware: ${to.path} - Authenticated: ${isAuthenticated}`)
+
+  // Rutas que requieren autenticación
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    console.log('Redirecting to login, requires auth')
+    return navigateTo({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
   }
 
-  // 2) Bloqueo en user-home → no puede salir salvo excepciones
-  if (from?.path === '/user-home' && !['/game', '/login', '/'].includes(to.path)) {
+  // Rutas solo para invitados (como login)
+  if (to.meta.guestOnly && isAuthenticated) {
+    console.log('Redirecting to user-home, already authenticated')
     return navigateTo('/user-home')
-  }
-
-  // 3) Solo invitados
-  if (to.meta?.guestOnly) {
-    const ok = await isAuthenticated()
-    if (ok) {
-      return navigateTo('/user-home')
-    }
   }
 })
