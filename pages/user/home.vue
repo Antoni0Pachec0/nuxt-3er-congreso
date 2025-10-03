@@ -11,6 +11,7 @@
 </template>
 
 <script setup>
+import { definePageMeta } from '#imports'
 import { useRouter } from 'vue-router'
 import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'

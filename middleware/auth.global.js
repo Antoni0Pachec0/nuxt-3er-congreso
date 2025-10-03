@@ -1,10 +1,8 @@
-// middleware/auth.global.ts (o el archivo que ya tienes)
 import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
 import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'
 
-// middleware/auth.global.ts
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
   if (process.server) return
 
   const isAuthenticated = async () => {
@@ -24,20 +22,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-  // 🚨 Nuevo: Si ya está en user-home, no puede irse a otras rutas arbitrarias
-  const lockedRoutes = ['/user-home']
-  const allowedExits = ['/game', '/auth/logout']
-
-  if (lockedRoutes.includes(to.path)) {
-    // ok, permanece en home
-  } else {
-    const from = useRoute()
-    if (from.path === '/user-home' && !allowedExits.includes(to.path)) {
-      return navigateTo('/user-home')
-    }
+  // 2) Bloqueo en user-home → no puede salir salvo excepciones
+  if (from?.path === '/user-home' && !['/game', '/login', '/'].includes(to.path)) {
+    return navigateTo('/user-home')
   }
 
-  // 2) Invitados
+  // 3) Solo invitados
   if (to.meta?.guestOnly) {
     const ok = await isAuthenticated()
     if (ok) {

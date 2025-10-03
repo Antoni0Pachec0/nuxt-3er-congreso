@@ -132,34 +132,31 @@ import { parseAxiosError } from '~/plugins/http/error'
 import { R } from '~/utils/app-routes'
 import '@/assets/css/styles/Login.css'
 
-// ⚠️ IMPORTAR EL STORE DE AUTENTICACIÓN (Asumo Pinia o similar)
-// Si la ruta no es correcta, ajústala:
+// ⚠️ Importar el store de autenticación (Pinia)
 import { useAuthStore } from '~/stores/auth'
 
-// ⚠️ MOCK DE NOTIFICACIONES (Reemplazar con tu implementación real de Toast/Notify)
-// Estas funciones no estaban definidas en el script, se añaden como placeholders.
+// Mock de notificaciones (cámbialo por tu sistema de toasts)
 function notifyError(title, message) {
-    console.error(`[Error ${title}]: ${message}`);
+  console.error(`[Error ${title}]: ${message}`)
 }
 function notifyLoading(title, message) {
-    console.log(`[Loading ${title}]: ${message}`);
-    // Retorna un objeto con un método 'resolve' que simula cerrar el toast
-    return {
-        resolve: ({ title: t, message: m }) => console.log(`[Toast Closed]: ${t} - ${m}`)
-    };
+  console.log(`[Loading ${title}]: ${message}`)
+  return {
+    resolve: ({ title: t, message: m }) => console.log(`[Toast Closed]: ${t} - ${m}`)
+  }
 }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
 
 definePageMeta({
   name: 'login',
   path: '/login',
-  guestOnly: true, // si ya está logueado, middleware lo manda a '/'
+  guestOnly: true, // si ya está logueado, middleware lo manda a user-home
 })
 
 const router = useRouter()
 const route = useRoute()
-const authStore = useAuthStore() // Inicializar el store
+const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
@@ -170,11 +167,9 @@ const apiError = ref('')
 function goHome() {
   router.push(R.to('home'))
 }
-
 function onRegister() {
   router.push(R.to('register'))
 }
-
 function onForgot() {
   router.push(R.to('forgot'))
 }
@@ -188,7 +183,6 @@ async function onSubmit() {
   }
 
   loading.value = true
-  // Usa el nombre de tu toast loader real aquí
   const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
 
   try {
@@ -197,10 +191,9 @@ async function onSubmit() {
       password: password.value,
     }
 
-    // El backend debe setear las cookies 'access_token' y 'refresh_token'
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
-    // 1) Verificación requerida
+    // 1) Verificación pendiente
     if (data?.require_verification) {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
@@ -211,17 +204,14 @@ async function onSubmit() {
         message: 'Tu cuenta aún no está activa. Revisa tu correo.',
       })
 
-      return router.push(R.to('verify')) // { name: 'verify' }
+      return router.push(R.to('verify'))
     }
 
-    // 2) Éxito de login
-    const isSuccess = Number.isFinite(data?.user_id);
+    // 2) Login exitoso
+    if (Number.isFinite(data?.user_id)) {
+      const userId = data.user_id
 
-    if (isSuccess) {
-      const userId = data?.user_id
-
-      // ✅ CORRECCIÓN CLAVE: Actualizar el Store de Autenticación inmediatamente
-      // Esto evita que el middleware te redirija de vuelta a login
+      // Actualizar el store de autenticación
       authStore.setUser({ id: userId, email: payload.email })
       authStore.setAuthenticated(true)
 
@@ -230,35 +220,26 @@ async function onSubmit() {
         message: data?.message || 'Inicio de sesión exitoso.',
       })
 
-      // 3) Redirección: respeta ?redirect=...; si no, ve al home del usuario por NOMBRE
+      // Redirección: respeta ?redirect=... si existe
       const redirectParam = route.query?.redirect
-      const redirectLocation = redirectParam
-        ? decodeURIComponent(String(redirectParam))
-        : null
-
-      if (redirectLocation) {
-        // Redirige a la ubicación solicitada
-        return router.push(redirectLocation)
+      if (redirectParam) {
+        return router.push(decodeURIComponent(String(redirectParam)))
       }
-      // Redirige al home del usuario
-      return router.push(R.to('userHome')) // { name: 'user-home' }
+
+      return router.push(R.to('userHome')) // user-home
     }
 
-    // 4) Respuesta inesperada
+    // 3) Respuesta inesperada
     const fallbackMsg = data?.message || 'Respuesta inesperada del servidor.'
     notifyError('Error', fallbackMsg)
     apiError.value = fallbackMsg
   } catch (e) {
-    // 5) Errores HTTP / red / CORS
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
     notifyError('No se pudo iniciar sesión', msg)
     apiError.value = msg
-
-    // Cierra el toast de carga con estado de error (si aplica)
     toast?.resolve?.({ title: 'Error', message: msg })
   } finally {
     loading.value = false
   }
 }
-
 </script>
