@@ -28,7 +28,7 @@
 
       <p class="countdown-label" v-if="!eventHasStarted">El evento comienza en</p>
       <p class="countdown-label" v-if="eventHasStarted">El evento ha comenzado!!!</p>
-      
+
       <div class="countdown" v-if="!eventHasStarted">
         <div class="cd-card">
           <div class="cd-number">{{ timeLeft.days }}</div>
@@ -89,9 +89,139 @@
 
 <script setup>
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
+// Asegúrate de que esta ruta de importación de CSS sea correcta en tu proyecto
 import '~/assets/css/styles/Hero.css'
 
-// Fecha del evento
+// ====================================================================
+// LÓGICA DE PARTICLES.JS
+// ====================================================================
+
+const loadParticles = () => {
+  // Verificamos que la función global de particlesJS esté disponible.
+  // Esto asume que has cargado la librería particles.js globalmente (ej. en index.html)
+  if (typeof window.particlesJS !== 'undefined') {
+    window.particlesJS('particles-js', {
+      // Configuración de las partículas
+      "particles": {
+        "number": {
+          "value": 160,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#b3d7ff"
+        },
+        "shape": {
+          "type": "edge",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+          "polygon": {
+            "nb_sides": 5
+          },
+          "image": {
+            "src": "img/github.svg",
+            "width": 100,
+            "height": 100
+          }
+        },
+        "opacity": {
+          "value": 1,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 1,
+            "opacity_min": 0,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 10,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 4,
+            "size_min": 0.3,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": false,
+          "distance": 150,
+          "color": "#ffffff",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 1,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+          "attract": {
+            "enable": false,
+            "rotateX": 600,
+            "rotateY": 600
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": false,
+            "mode": "bubble"
+          },
+          "onclick": {
+            "enable": false,
+            "mode": "repulse"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 400,
+            "line_linked": {
+              "opacity": 1
+            }
+          },
+          "bubble": {
+            "distance": 250,
+            "size": 0,
+            "duration": 2,
+            "opacity": 0,
+            "speed": 3
+          },
+          "repulse": {
+            "distance": 400,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 4
+          },
+          "remove": {
+            "particles_nb": 2
+          }
+        }
+      },
+      "retina_detect": true
+    });
+  } else {
+    // Esto te ayuda a saber si la librería no está cargada
+    console.error("particlesJS no está definido. Asegúrate de que el script de particles.js esté cargado en tu proyecto.");
+  }
+}
+
+// ====================================================================
+// LÓGICA DE CUENTA REGRESIVA
+// ====================================================================
+
+// Fecha del evento (¡Recuerda que estamos en 2025!)
 const target = new Date('2025-11-12T09:00:00')
 
 const timeLeft = reactive({ days: '00', hours: '00', minutes: '00', seconds: '00' })
@@ -107,6 +237,7 @@ const tick = () => {
 
   if (diff <= 0) {
     eventHasStarted.value = true
+    // Setea a cero
     timeLeft.days = '00'
     timeLeft.hours = '00'
     timeLeft.minutes = '00'
@@ -120,16 +251,35 @@ const tick = () => {
   const m = Math.floor((diff / (1000 * 60)) % 60)
   const s = Math.floor((diff / 1000) % 60)
 
+  // Actualiza el estado reactivo
   timeLeft.days = pad(d)
   timeLeft.hours = pad(h)
   timeLeft.minutes = pad(m)
   timeLeft.seconds = pad(s)
 }
 
+// ====================================================================
+// CICLO DE VIDA DE VUE
+// ====================================================================
+
 onMounted(() => {
+  // 1. Inicia el contador
   tick()
   timer = setInterval(tick, 1000)
+
+  // 2. Carga/Inicializa particles.js CADA VEZ que el componente se monta
+  loadParticles()
 })
 
-onUnmounted(() => clearInterval(timer))
+onUnmounted(() => {
+  // 1. Detiene el contador
+  clearInterval(timer)
+
+  // 2. Limpia la instancia de particles.js CADA VEZ que el componente se desmonta
+  if (typeof window.pJSDom !== 'undefined' && window.pJSDom.length > 0) {
+    // Destruye la instancia actual y limpia el array global
+    window.pJSDom[0].pJS.fn.vendors.destroypJS();
+    window.pJSDom = [];
+  }
+})
 </script>

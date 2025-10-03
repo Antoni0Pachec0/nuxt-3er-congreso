@@ -24,11 +24,15 @@
     background: #2563eb;
     border-radius: 999px;
     margin: 10px auto 0;
+    margin-bottom: 60px;
 }
 
 .faq__list {
-    display: grid;
-    gap: 12px;
+  display: grid;
+  gap: 12px;
+  max-width: 95%;   /* controla el ancho de las preguntas */
+  margin: 0 auto;
+  padding: 0 20px;    /* margen lateral interno */
 }
 
 .faq__item {
@@ -53,7 +57,7 @@
 }
 
 .faq__btn:hover {
-    background: #f8fafc;
+    background: #ffffff;
 }
 
 .faq__icon {
@@ -92,11 +96,13 @@
 }
 
 .faq__panel {
-    padding: 0 16px 14px 66px;
-    /* espacio alineado con ícono */
+  overflow: hidden; /* importante para animación */
+  will-change: height, opacity;
 }
 
-
+.faq__content {
+  padding: 0 16px 14px 66px; /* el padding que quitaste */
+}
 
 .faq__a {
     border-left: solid 4px #3b82f6;
@@ -150,5 +156,13 @@ background: linear-gradient(
 
     .faq__q {
         font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .faq__list {
+        max-width: 100%;   /* controla el ancho de las preguntas */
+        margin: 0 auto;
+        padding: 0 0;
     }
 }

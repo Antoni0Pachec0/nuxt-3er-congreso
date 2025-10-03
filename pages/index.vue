@@ -13,8 +13,10 @@
 <script setup lang="ts">
 import Hero from '@/components/sections/Hero.vue'
 import Description from '@/components/sections/Description.vue'
+import SectionsGalleryCarousel from '@/components/sections/GalleryCarousel.vue'
 import Maps from '@/components/sections/Mapa.vue'
 import Location_uni from '@/components/sections/Location_Uni.vue'
+import SectionsFaqAccordion from '@/components/sections/SectionsFaqAccordion.vue'
 import Logos from '@/components/sections/Logos-uni.vue'
 
 import evento2018 from '@/assets/img/gallery/evento2018.jpeg'
@@ -121,7 +123,7 @@ const faqItems = [
   },
   {
     q: '¿Qué incluye mi registro?',
-    a: 'Tu registro incluye: <strong>Conferencia, taller, souvenirs</strong> (playera oficial, cilindro y regalo sorpresa) y <strong>snacks</strong>.',
+    a: 'Tu registro incluye: <strong>Conferencia, taller, souvenirs</strong> (playera oficial y cilindro) y <strong>snacks</strong>.',
     icon: mdiGift
   }
 ]
