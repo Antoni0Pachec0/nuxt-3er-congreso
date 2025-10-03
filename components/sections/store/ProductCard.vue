@@ -174,19 +174,13 @@
   </v-btn>
 
   <CartDrawer v-model="showCart" v-model:items="cartItems" />
-  <!-- Alerta -->
-  <v-card class="product-card d-flex flex-column flex-grow-1">
-    <!-- ALERTA -->
-<CustomAlert
-  v-model:show="showAlert"
-  :title="alertTitle"
-  :message="alertMessage"
-  :alertType="alertType"
-/>
 
-
-    <!-- Badge, Imagen, Contenido, Botones... (tu código existente) -->
-  </v-card>
+  <CustomAlert
+    v-model:show="showAlert"
+    :title="alertTitle"
+    :message="alertMessage"
+    :alertType="alertType"
+  />
 </template>
 
 <script setup lang="ts">
@@ -202,8 +196,6 @@ import tshirt_html from "~/assets/images/store/t-shirt/tshirt_html.webp";
 import tshirt_kali from "~/assets/images/store/t-shirt/tshirt_kali.webp";
 import tshirt_miku_coding from "~/assets/images/store/t-shirt/tshirt_miku_coding.webp";
 import CustomAlert from "@/components/sections/store/CustomAlert.vue";
-
-
 
 import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
 

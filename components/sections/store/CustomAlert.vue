@@ -14,24 +14,20 @@
       <div class="alert-body">
         <!-- Icono SVG -->
         <div class="icon-container">
-          <!-- Success -->
           <svg v-if="alertType === 'success'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="10" stroke-width="2" />
-            <path stroke-width="2" d="M9 12l2 2 4-4" />
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+            <path stroke-width="2" d="M9 12l2 2 4-4"/>
           </svg>
-          <!-- Error -->
           <svg v-else-if="alertType === 'error'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="10" stroke-width="2" />
-            <path stroke-width="2" d="M15 9l-6 6M9 9l6 6" />
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+            <path stroke-width="2" d="M15 9l-6 6M9 9l6 6"/>
           </svg>
-          <!-- Warning -->
           <svg v-else-if="alertType === 'warning'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
           </svg>
-          <!-- Info -->
           <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="10" stroke-width="2" />
-            <path stroke-width="2" d="M12 16h.01M12 8v4" />
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+            <path stroke-width="2" d="M12 16h.01M12 8v4"/>
           </svg>
         </div>
 
@@ -44,13 +40,15 @@
 
       <!-- Barra de tiempo -->
       <div class="progress-bar">
-        <div class="progress-fill" 
-             :style="{ animationDuration: autoHide + 'ms' }">
-        </div>
+        <div
+          class="progress-fill"
+          :style="{ animationDuration: autoHide + 'ms' }"
+        ></div>
       </div>
     </div>
   </transition>
 </template>
+
 
 <script setup lang="ts">
 import { computed, defineProps, defineEmits, onBeforeUnmount, watch } from "vue";
@@ -128,36 +126,38 @@ onBeforeUnmount(() => {
 <style scoped>
 .custom-alert {
   position: fixed;
-  top: 90px;    /* un poco más abajo para no tapar el menú */
+  top: 100px;
   left: 20px;
-  background: #fff;
-
-  width: auto;
-  max-width: 280px;
-  min-width: 220px;
-  
-  border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px); /* efecto glass */
+  border-left: 5px solid;
+  max-width: 320px;
+  min-width: 240px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  padding: 14px 16px 10px;
   z-index: 10000;
 
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
-
+  gap: 6px;
   overflow: hidden;
   word-break: break-word;
+
+  animation: fade-in 0.3s ease;
 }
 
-/* Animación entrada desde izquierda */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Animación slide */
 .slide-left-enter-active,
 .slide-left-leave-active {
-  transition: all 0.35s ease;
+  transition: all 0.4s cubic-bezier(.4,.0,.2,1);
 }
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(-120%);
-}
+.slide-left-enter-from,
 .slide-left-leave-to {
   opacity: 0;
   transform: translateX(-120%);
@@ -166,27 +166,24 @@ onBeforeUnmount(() => {
 /* Botón cerrar */
 .close-btn {
   position: absolute;
-  top: 6px;
+  top: 20px;
   right: 8px;
   background: transparent;
   border: none;
   font-size: 1rem;
-  color: #999;
+  color: #666;
   cursor: pointer;
+  transition: color 0.2s;
 }
-.close-btn:hover { color: #333; }
+.close-btn:hover { color: #111; }
 
 /* Contenido */
 .alert-body {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
 
-.icon-container {
-  flex-shrink: 0;
-  color: currentColor;
-}
 .icon-container svg {
   width: 28px;
   height: 28px;
@@ -197,47 +194,47 @@ onBeforeUnmount(() => {
 }
 .title {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   margin: 0;
-  color: #222;
+  color: #111;
 }
 .message {
-  font-size: 0.8rem;
-  margin: 2px 0 0;
-  color: #555;
+  font-size: 0.82rem;
+  margin-top: 2px;
+  color: #444;
 }
 
 /* Barra de tiempo */
 .progress-bar {
   width: 100%;
-  height: 3px;
-  background: #eee;
+  height: 4px;
+  background: rgba(0,0,0,0.08);
   border-radius: 3px;
   overflow: hidden;
-  margin-top: 10px;
 }
 .progress-fill {
   height: 100%;
   animation: progress linear forwards;
 }
-.alert-success .progress-fill { background: #28a745; }
-.alert-warning .progress-fill { background: #ff9800; }
-.alert-error .progress-fill { background: #dc3545; }
-.alert-info .progress-fill { background: #17a2b8; }
+.alert-success .progress-fill { background: #4ade80; } /* verde */
+.alert-warning .progress-fill { background: #fbbf24; } /* amarillo */
+.alert-error .progress-fill   { background: #f87171; } /* rojo */
+.alert-info .progress-fill    { background: #60a5fa; } /* azul */
 
 @keyframes progress {
   from { width: 100%; }
-  to { width: 0%; }
+  to   { width: 0%; }
 }
 
-/* Colores dinámicos */
-.alert-success { color: #28a745; }
-.alert-warning { color: #ff9800; }
-.alert-error { color: #dc3545; }
-.alert-info { color: #17a2b8; }
+/* Colores dinámicos (border-left) */
+.alert-success { border-color: #22c55e; }
+.alert-warning { border-color: #f59e0b; }
+.alert-error   { border-color: #ef4444; }
+.alert-info    { border-color: #3b82f6; }
 
 /* Pausa animación en hover */
 .custom-alert:hover .progress-fill {
   animation-play-state: paused;
 }
+
 </style>
