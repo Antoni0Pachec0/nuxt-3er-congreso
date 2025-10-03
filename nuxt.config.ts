@@ -17,7 +17,8 @@ export default defineNuxtConfig({
   imports: { autoImport: true },
 
   modules: [
-    'notivue/nuxt'
+    'notivue/nuxt',
+    '@pinia/nuxt',
   ],
   
   devtools: { enabled: false },
