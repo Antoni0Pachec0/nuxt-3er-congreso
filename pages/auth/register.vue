@@ -1,5 +1,24 @@
 <template>
   <main id="register" class="auth-screen" role="main">
+    <Transition name="fade">
+      <div
+        v-if="notification.visible"
+        :class="['app-alert', `app-alert--${notification.type}`]"
+        role="alert"
+      >
+        <div class="alert-icon" aria-hidden="true">
+          <SvgIcon :path="notification.icon" type="mdi" />
+        </div>
+        <div class="alert-content">
+          <p class="alert-title">{{ notification.title }}</p>
+          <p class="alert-message">{{ notification.message }}</p>
+        </div>
+        <button v-if="notification.type !== 'loading'" @click="notification.visible = false" class="alert-close" aria-label="Cerrar notificación">
+          <SvgIcon :path="mdiClose" type="mdi" />
+        </button>
+      </div>
+    </Transition>
+
     <div class="auth-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -31,8 +50,7 @@
         </h2>
 
         <ol class="stepper stepper--timeline" :style="{ '--step-count': isSpeaker ? 6 : 4 }"
-          aria-label="Registration progress">
-          <li v-for="(s, i) in steps.slice(0, totalSteps)" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
+          aria-label="Registration progress" ref="stepperRef"> <li v-for="(s, i) in steps.slice(0, totalSteps)" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
             <span class="step__label">{{ s.label }}</span>
             <span class="step__dot" aria-hidden="true"></span>
             <span class="step__index" aria-hidden="true">{{ i + 1 }}</span>
@@ -68,7 +86,7 @@
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
                 </div>
-                <div class="pw-meter" aria-live="polite">
+                <div class="pw-meter" aria-live="polite" v-if="passwordTouched">
                   <div class="pw-meter__bar">
                     <span class="pw-meter__fill" :style="{ width: strengthPercent }"></span>
                   </div>
@@ -308,13 +326,8 @@
               <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_taller">Título del Taller</label>
-<<<<<<< HEAD:pages/register.vue
-                  <input id="titulo_taller" v-model.trim="form.titulo_taller" type="text" required
-                        class="input" placeholder="Título de tu taller" />
-=======
                   <input id="titulo_taller" maxlength="50" v-model.trim="form.titulo_taller" type="text" required
                     class="input" placeholder="Título de tu taller" />
->>>>>>> asp:pages/auth/register.vue
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_taller">Descripción del Taller</label>
@@ -416,8 +429,8 @@
             <button v-if="isLastStep" type="submit" class="btn" :disabled="loading || !canSubmit">
               {{ loading ? "Creando cuenta…" : "Crear cuenta" }}
             </button>
-            <button v-else type="submit" class="btn" :disabled="!canProceed">
-              Continuar
+            <button v-else type="submit" class="btn" :disabled="!canProceed || secretValidating">
+              {{ secretValidating ? 'Validando…' : 'Continuar' }}
             </button>
           </div>
         </form>
@@ -469,19 +482,90 @@ import {
   mdiFacebook,
   mdiInstagram,
   mdiTwitter,
-  mdiLinkedin
+  mdiLinkedin,
+  mdiAlertCircleOutline, // Icono para Error
+  mdiCheckCircleOutline, // Icono para Éxito
+  mdiClockOutline,       // Icono para Carga
+  mdiAlertDecagramOutline // Icono para Warning
 } from '@mdi/js';
 import FlagIcon from "@/components/atoms/FlagIcon.vue";
 import api from '~/plugins/http/api';
 import { ROUTES } from '~/plugins/http/routes';
 import { parseAxiosError } from '~/plugins/http/error';
-import { notifyError, notifyWarning, notifyLoading } from '~/utils/notifications';
+// Removidas las importaciones de notifyError, notifyWarning, notifyLoading
 import '@/assets/css/styles/Register.css';
 // Importa las rutas desde tu archivo app-routes.js
 import { APP_ROUTES, R } from '~/utils/app-routes';
 
 const router = useRouter();
 const STORAGE_KEY = "register_form_v7";
+
+/* ===================
+ * Alerta Integrada
+ * =================== */
+interface NotificationState {
+  visible: boolean;
+  title: string;
+  message: string;
+  type: 'error' | 'success' | 'loading' | 'warning';
+  icon: string;
+}
+
+const notification = ref<NotificationState>({
+  visible: false,
+  title: '',
+  message: '',
+  type: 'error',
+  icon: mdiAlertCircleOutline,
+});
+
+// Implementación de notificaciones internas
+function showNotification(title: string, message: string, type: NotificationState['type'] = 'error', autoHide = true): { resolve: (data: { title: string, message: string }) => void, reject: (data: { title: string, message: string }) => void } {
+  const iconMap: Record<NotificationState['type'], string> = {
+    'success': mdiCheckCircleOutline,
+    'loading': mdiClockOutline,
+    'warning': mdiAlertDecagramOutline,
+    'error': mdiAlertCircleOutline,
+  };
+  
+  notification.value = {
+    visible: true,
+    title,
+    message,
+    type,
+    icon: iconMap[type],
+  };
+
+  if (autoHide && type !== 'loading') {
+    setTimeout(() => {
+      notification.value.visible = false;
+    }, 5000);
+  }
+  
+  // Devuelve un objeto con métodos que simulan la API de 'notifyLoading'
+  return {
+    resolve: (data: { title: string, message: string }) => {
+      notification.value.title = data.title;
+      notification.value.message = data.message;
+      notification.value.type = 'success';
+      notification.value.icon = iconMap['success'];
+      setTimeout(() => notification.value.visible = false, 5000);
+    },
+    reject: (data: { title: string, message: string }) => {
+      notification.value.title = data.title;
+      notification.value.message = data.message;
+      notification.value.type = 'error';
+      notification.value.icon = iconMap['error'];
+      setTimeout(() => notification.value.visible = false, 5000);
+    }
+  };
+}
+
+function notifyError(title: string, message: string) { showNotification(title, message, 'error'); }
+function notifyWarning(title: string, message: string) { showNotification(title, message, 'warning'); }
+function notifyLoading(title: string, message: string) { 
+  return showNotification(title, message, 'loading', false); 
+}
 
 /* ===================
  * Estados
@@ -520,6 +604,7 @@ const speakerSteps = [
   { key: 'social_media', label: 'Redes Sociales' },
   { key: 'final', label: 'Finalizar' }
 ];
+const totalSteps = computed(() => steps.value.length); // Añadido para el slice
 
 /* ===================
  * Form
@@ -617,7 +702,8 @@ async function validateSpeakerSecret() {
   if (!isSpeaker.value) return true;
   const secret = (form.value.secret_password || '').trim();
   if (!secret) {
-    notifyWarning('Contraseña requerida', 'Ingresa la contraseña de ponente.');
+    // REEMPLAZO: notifyWarning
+    showNotification('Contraseña requerida', 'Ingresa la contraseña de ponente.', 'warning');
     return false;
   }
 
@@ -629,6 +715,7 @@ async function validateSpeakerSecret() {
   } catch (err: any) {
     secretValidated.value = false;
     const msg = err?.response?.data?.message || 'Contraseña de ponente inválida';
+    // REEMPLAZO: notifyError
     notifyError('Contraseña inválida', msg);
     return false;
   } finally {
@@ -674,7 +761,6 @@ const PERSIST_KEYS = [
   'password_user', // 👈 AGREGAR
   'secret_password', // 👈 AGREGAR
   'name_user', 'paternal_surname', 'maternal_surname',
-  // ... (el resto de tus campos)
   'phone', 'phone_country', 'emergency_phone', 'emergency_phone_country',
   'type_user_id', 'provenance', 'matricula', 'educational_program', 'grade', 'group_user',
   'universidad_procedencia',
@@ -935,6 +1021,7 @@ function guessFieldFromMessage(msg: string) {
  * =================== */
 async function nextOrSubmit() {
   if (!canProceed.value) {
+    // REEMPLAZO: notifyWarning
     notifyWarning('Campos incompletos', 'Revisa los campos requeridos antes de continuar.');
     return;
   }
@@ -1037,19 +1124,18 @@ function normalizePayload(payload: any) {
 async function submitRegister() {
   if (loading.value) return;
   if (!canSubmit.value) {
+    // REEMPLAZO: notifyWarning
     notifyWarning('Formulario incompleto', 'Debes aceptar los términos y elegir tu talla.');
     return;
   }
 
   loading.value = true;
+  // REEMPLAZO: notifyLoading
   const loadingToast = notifyLoading('Procesando', 'Creando tu cuenta...');
 
   try {
     const payload = normalizePayload(form.value);
-    {
-      email: payload.email;
-      type_user_id: payload.type_user_id;
-    }
+    // Se elimina el bloque de destructuración de ejemplo
 
     const { data } = await api.post(ROUTES.AUTH.REGISTER, payload, {
       withCredentials: true,
@@ -1064,6 +1150,7 @@ async function submitRegister() {
 
       localStorage.removeItem(STORAGE_KEY)
 
+      // Reemplazo: loadingToast.resolve
       loadingToast.resolve({
         title: '¡Registro exitoso!',
         message: data.message || 'Cuenta creada correctamente. Revisa tu correo para el código de verificación.'
@@ -1080,6 +1167,7 @@ async function submitRegister() {
     if (data?.already_exists && data?.email_sent) {
       sessionStorage.setItem('verify_email', payload.email);
 
+      // Reemplazo: loadingToast.resolve
       loadingToast.resolve({
         title: 'Registro pendiente',
         message: data.message || 'Este correo ya tenía un registro pendiente. Te reenviamos el código de verificación.'
@@ -1102,6 +1190,7 @@ async function submitRegister() {
       const message = Array.isArray(serverData?.message)
         ? serverData.message.join('\n')
         : (serverData?.message || 'El correo ya está registrado.');
+      // Reemplazo: loadingToast.reject
       loadingToast.reject({ title: 'Correo ya registrado', message });
       focusField('email');
       return;
@@ -1111,10 +1200,13 @@ async function submitRegister() {
       const picked = guessFieldFromServerError(serverData?.errors || serverData?.message || serverData);
       if (picked?.field) {
         focusField(picked.field);
+        // Reemplazo: notifyError
         notifyError('Campo inválido', picked.message || 'Por favor corrige este campo');
+        // Reemplazo: loadingToast.reject
         loadingToast.reject({ title: 'Datos incorrectos', message: picked.message || 'Revisa los datos del formulario' });
       } else {
         const message = serverData?.message || 'Datos del formulario inválidos';
+        // Reemplazo: loadingToast.reject
         loadingToast.reject({ title: 'Datos incorrectos', message });
       }
       return;
@@ -1122,6 +1214,7 @@ async function submitRegister() {
 
     if (status === 401) {
       const message = serverData?.message || 'Credenciales inválidas';
+      // Reemplazo: loadingToast.reject
       loadingToast.reject({ title: 'Acceso denegado', message });
       if (isSpeaker.value) focusField('secret_password');
       return;
@@ -1129,8 +1222,8 @@ async function submitRegister() {
 
     // Otros (timeout/red/5xx/unknown) -> mostrar error y QUEDARSE en la vista
     const fallMsg = parseAxiosError(err) || 'No pudimos completar el registro. Intenta nuevamente.';
+    // Reemplazo: loadingToast.reject
     loadingToast.reject({ title: 'Error en registro', message: fallMsg });
-    // 👈 YA NO redirigimos a /verify en errores
   } finally {
     loading.value = false;
   }
@@ -1140,3 +1233,108 @@ function goLogin() {
   router.push(R.to('login'));
 }
 </script>
+<style>
+/* ========================= */
+/* ESTILOS PARA LA NUEVA ALERTA FLOTANTE */
+/* ========================= */
+
+.app-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 350px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: flex-start;
+  z-index: 1000; /* Asegura que esté por encima de todo */
+}
+
+/* Estilo para Errores */
+.app-alert--error {
+  background-color: #fef2f2; /* Rojo muy claro */
+  border: 1px solid #fecaca; 
+  color: #b91c1c; /* Texto rojo oscuro */
+}
+
+.app-alert--error .alert-icon svg {
+  fill: #ef4444; /* Icono rojo */
+}
+
+/* Estilo para Éxito */
+.app-alert--success {
+  background-color: #f0fdf4; /* Verde muy claro */
+  border: 1px solid #dcfce7;
+  color: #15803d; /* Texto verde oscuro */
+}
+
+.app-alert--success .alert-icon svg {
+  fill: #22c55e; /* Icono verde */
+}
+
+/* Estilo para Carga/Proceso */
+.app-alert--loading {
+  background-color: #eff6ff; /* Azul muy claro */
+  border: 1px solid #dbeafe;
+  color: #1e40af; /* Texto azul oscuro */
+}
+
+.app-alert--loading .alert-icon svg {
+  fill: #3b82f6; /* Icono azul */
+}
+
+.alert-icon {
+  margin-right: 10px;
+  line-height: 0;
+}
+
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-title {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.alert-message {
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 15px;
+  cursor: pointer;
+  color: inherit; 
+  line-height: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+
+.alert-close svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Transición de entrada/salida (Vue Transition) */
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateX(100%); /* Desliza desde la derecha */
+}
+</style>

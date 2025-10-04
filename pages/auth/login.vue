@@ -1,6 +1,24 @@
 <template>
   <main id="login" class="login-screen auth" role="main">
-    <!-- Fondo decorativo -->
+    <Transition name="fade">
+      <div
+        v-if="notification.visible"
+        :class="['app-alert', `app-alert--${notification.type}`]"
+        role="alert"
+      >
+        <div class="alert-icon" aria-hidden="true">
+          <SvgIcon :path="notification.icon" type="mdi" />
+        </div>
+        <div class="alert-content">
+          <p class="alert-title">{{ notification.title }}</p>
+          <p class="alert-message">{{ notification.message }}</p>
+        </div>
+        <button v-if="notification.type !== 'loading'" @click="notification.visible = false" class="alert-close" aria-label="Cerrar notificación">
+          <SvgIcon :path="mdiClose" type="mdi" />
+        </button>
+      </div>
+    </Transition>
+
     <div class="login-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -20,7 +38,6 @@
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
       </button>
 
-      <!-- Columna izquierda / título -->
       <header class="login-hero" aria-label="Identidad del evento">
         <h1 class="hero-title">
           <span class="kicker">3er</span>
@@ -29,7 +46,6 @@
         </h1>
       </header>
 
-      <!-- Columna derecha / Card -->
       <section class="cardLogin" aria-label="Formulario de inicio de sesión">
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
@@ -39,7 +55,6 @@
         </h2>
 
         <form class="form" @submit.prevent="onSubmit" novalidate>
-          <!-- Email -->
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
             <span class="input-icon">
@@ -57,7 +72,6 @@
             />
           </div>
 
-          <!-- Password -->
           <div class="row">
             <label class="label" for="password">Contraseña</label>
             <button class="link" type="button" @click="onForgot">
@@ -92,15 +106,12 @@
             </button>
           </div>
 
-          <!-- Error -->
           <p v-if="apiError" class="help error">{{ apiError }}</p>
 
-          <!-- CTA -->
           <button class="btn" type="submit" :disabled="loading">
             {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
           </button>
 
-          <!-- Divider + Register -->
           <div class="divider">
             <span class="line"></span>
             <span class="muted">¿No tienes cuenta?</span>
@@ -123,7 +134,7 @@
 <script setup>
 import { definePageMeta } from '#imports'
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
+import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiArrowRight,
@@ -131,14 +142,19 @@ import {
   mdiLockOutline,
   mdiEyeOutline,
   mdiEyeOffOutline,
-  mdiArrowLeft
+  mdiArrowLeft,
+  mdiAlertCircleOutline, // Icono para Error
+  mdiCheckCircleOutline, // Icono para Éxito
+  mdiClockOutline,       // Icono para Carga
+  mdiClose               // Icono para cerrar
 } from '@mdi/js'
 
 import api from '~/plugins/http/api'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
 import { R } from '~/utils/app-routes'
-import '@/assets/css/styles/Login.css'
+// Nota: Deberás actualizar este archivo de CSS con los nuevos estilos para la alerta.
+import '@/assets/css/styles/Login.css' 
 
 definePageMeta({
   name: 'login',
@@ -147,13 +163,52 @@ definePageMeta({
 })
 
 const router = useRouter()
-const route  = useRoute()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
 const show = ref(false)
 const loading = ref(false)
 const apiError = ref('')
+
+// NUEVO ESTADO PARA LA ALERTA INTEGRADA
+const notification = ref({
+  visible: false,
+  title: '',
+  message: '',
+  type: 'error', // 'error', 'success', 'loading'
+  icon: mdiAlertCircleOutline,
+})
+
+// Función para mostrar la alerta
+function showNotification(title, message, type = 'error', autoHide = true) {
+  notification.value = {
+    visible: true,
+    title,
+    message,
+    type,
+    icon:
+      type === 'success'
+        ? mdiCheckCircleOutline
+        : type === 'loading'
+        ? mdiClockOutline
+        : mdiAlertCircleOutline,
+  }
+  
+  // Oculta automáticamente después de 5 segundos, a menos que sea tipo 'loading'
+  if (autoHide && type !== 'loading') {
+    setTimeout(() => {
+      notification.value.visible = false
+    }, 5000) 
+  }
+}
+
+// Función para ocultar el estado de carga
+function hideLoading() {
+    if (notification.value.type === 'loading') {
+        notification.value.visible = false
+    }
+}
 
 function goHome() {
   router.push(R.to('home'))
@@ -169,22 +224,30 @@ function onForgot() {
 
 async function onSubmit() {
   apiError.value = ''
+  
+  // Limpiar cualquier notificación previa
+  notification.value.visible = false
+
   if (!email.value || !password.value) {
-    // Es mejor usar una notificación visual más robusta que un simple 'return' silencioso
-    notifyError('Campos incompletos', 'Por favor, llena todos los campos.')
+    // Reemplazo de notifyError
+    showNotification(
+      'Campos incompletos',
+      'Por favor, llena todos los campos.',
+      'error'
+    )
     return
   }
 
   loading.value = true
-  // Suponiendo que `notifyLoading` devuelve un objeto con un método `resolve`
-  const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
+  // Reemplazo de notifyLoading
+  showNotification('Ingresando…', 'Estamos validando tus credenciales.', 'loading', false)
 
   try {
     const payload = {
       email: email.value.toLowerCase().trim(),
       password: password.value,
     }
-    
+
     // 👇 Esencial: enviar cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
@@ -193,44 +256,154 @@ async function onSubmit() {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
       localStorage.setItem('verification_purpose', 'email_verification')
-      
-      toast.resolve({
-        title: 'Verificación requerida',
-        message: 'Tu cuenta aún no está activa. Revisa tu correo.',
-      })
+
+      // Reemplazo de toast.resolve (Verificación)
+      showNotification(
+        'Verificación requerida',
+        'Tu cuenta aún no está activa. Revisa tu correo.',
+        'error' // Se usa error para que el usuario tome acción inmediata
+      )
       
       return router.push(R.to('verify'))
     }
 
     // 2. Manejo de Login Exitoso
-    // ✔️ Ahora el backend devuelve { message, user_id }
     if (data?.message?.toLowerCase().includes('exitoso')) {
-      // 💡 Capturamos el user_id de la respuesta del servidor
       const userId = data.user_id 
       
-      // TODO: Aquí debes llamar a tu store (Pinia/Vuex) para guardar el ID
-      // Por ejemplo: userStore.setUser({ id: userId, email: payload.email, ... })
       console.log('Login exitoso. ID de usuario:', userId) 
       
-      toast.resolve({ title: '¡Bienvenido!', message: data.message })
+      // Reemplazo de toast.resolve (Éxito)
+      showNotification('¡Bienvenido!', data.message, 'success')
 
-      // Redireccionar al usuario a su ruta por defecto o a la ruta previa
+      // Redireccionar con un pequeño retraso para que se vea el mensaje
       const redirect = route.query?.redirect || R.path('userHome')
-      return router.push(redirect)
+      setTimeout(() => {
+        router.push(redirect)
+      }, 1000)
+      return
     }
 
     // 3. Respuesta inesperada (si el servidor no dio éxito ni verificación)
-    notifyError('Error', data?.message || 'Respuesta inesperada del servidor.')
-    apiError.value = data?.message || 'Respuesta inesperada del servidor.'
+    const msg = data?.message || 'Respuesta inesperada del servidor.'
+    showNotification('Error', msg, 'error')
+    apiError.value = msg
 
   } catch (e) {
     // 4. Manejo de errores de Axios (401, 500, etc.)
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
-    notifyError('No se pudo iniciar sesión', msg)
+    // Reemplazo de notifyError (Catch)
+    showNotification('No se pudo iniciar sesión', msg, 'error')
     apiError.value = msg
   } finally {
     loading.value = false
+    hideLoading() // Ocultar el estado de carga
   }
 }
 
 </script>
+<style>
+/* ========================= */
+/* ESTILOS PARA LA NUEVA ALERTA FLOTANTE */
+/* ========================= */
+
+.app-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 350px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: flex-start;
+  z-index: 1000; /* Asegura que esté por encima de todo */
+}
+
+/* Estilo para Errores */
+.app-alert--error {
+  background-color: #fef2f2; /* Rojo muy claro */
+  border: 1px solid #fecaca; 
+  color: #b91c1c; /* Texto rojo oscuro */
+}
+
+.app-alert--error .alert-icon svg {
+  fill: #ef4444; /* Icono rojo */
+}
+
+/* Estilo para Éxito */
+.app-alert--success {
+  background-color: #f0fdf4; /* Verde muy claro */
+  border: 1px solid #dcfce7;
+  color: #15803d; /* Texto verde oscuro */
+}
+
+.app-alert--success .alert-icon svg {
+  fill: #22c55e; /* Icono verde */
+}
+
+/* Estilo para Carga/Proceso */
+.app-alert--loading {
+  background-color: #eff6ff; /* Azul muy claro */
+  border: 1px solid #dbeafe;
+  color: #1e40af; /* Texto azul oscuro */
+}
+
+.app-alert--loading .alert-icon svg {
+  fill: #3b82f6; /* Icono azul */
+}
+
+.alert-icon {
+  margin-right: 10px;
+  line-height: 0;
+}
+
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-title {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.alert-message {
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 15px;
+  cursor: pointer;
+  color: inherit; 
+  line-height: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+
+.alert-close svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Transición de entrada/salida (Vue Transition) */
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateX(100%); /* Desliza desde la derecha */
+}
+</style>
