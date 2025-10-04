@@ -5,12 +5,15 @@
       $route.path !== '/login' &&
       $route.path !== '/register' &&
       $route.path !== '/verify' &&
+      $route.path !== '/reset' &&
+      $route.path !== '/forgot' &&
+      $route.path !== '/home' &&
       $route.path !== '/game'
+
     " />
 
     <NuxtPage />
 
-    
     <!-- Contenedor global de notificaciones -->
     <Notivue v-slot="item">
       <Notification :item="item" class="rounded-xl shadow-lg p-4 flex flex-col gap-1" :class="{
@@ -28,6 +31,9 @@
       $route.path !== '/login' &&
       $route.path !== '/register' &&
       $route.path !== '/verify' &&
+      $route.path !== '/reset' &&
+      $route.path !== '/forgot' &&
+      $route.path !== '/home' &&
       $route.path !== '/game'
 
     " />
@@ -46,7 +52,7 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 
 const route = useRoute()
-const hideOn = new Set(['/login', '/register', '/verify'])
+const hideOn = new Set(['/login', '/register', '/verify', '/forgot', '/reset'])
 const shouldShowHeader = computed(() => !hideOn.has(route.path))
 const shouldShowFooter = computed(() => !hideOn.has(route.path))
 

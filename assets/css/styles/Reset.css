@@ -1,5 +1,5 @@
 /* =========================================
-   TOKENS – mismos que Register.css
+  TOKENS – mismos que Register.css
 ========================================= */
 :root {
   /* Layout generales */
@@ -11,7 +11,7 @@
   --bg-800: #132953; /* Tono intermedio para el hero */
   --ink: #F7F8F9; /* Texto principal */
   --muted: #929CAC; /* Texto secundario */
-  
+
   /* Colores de acento */
   --blue-primary: #1E5A93; /* Azul para botones y elementos clave */
   --blue-accent: #24A1E4; /* Azul vibrante para acentos */
@@ -52,14 +52,15 @@
 /* =========================================
     BASE / PREFERENCIAS
 ========================================= */
-.login-screen * {
+.auth-screen * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-.login-screen.auth {
-  min-height: 100svh;
+.auth-screen.auth {
+  height: 100vh;
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -74,10 +75,10 @@
 /* =========================================
     LAYOUT PRINCIPAL
 ========================================= */
-.login-screen {
+.auth-screen {
   position: relative;
   color: var(--ink);
-  min-height: calc(100svh - var(--header-h) - var(--footer-h));
+  height: 100vh;
   padding: clamp(16px, 3vw, 48px);
   /* ACTUALIZADO a la nueva paleta de gradientes */
   background:
@@ -86,19 +87,37 @@
     linear-gradient(135deg, var(--bg-800), var(--bg-900));
   overflow: hidden;
   display: flex;
-  align-items: center;
+  /* El default es 'center', lo modificaremos en la media query para móviles */
+  align-items: center; 
   justify-content: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* --- MODIFICACIÓN: Mueve .auth-container más arriba en móvil --- */
+@media (max-width: 979px) {
+  .auth-screen {
+    /* Alinea el contenido hacia arriba */
+    align-items: flex-start; 
+    /* Agrega un poco de margen superior */
+    padding-top: clamp(48px, 8vh, 96px); 
+  }
+
+  /* También puedes añadir un margen superior al contenedor mismo si es necesario, pero
+     ajustar align-items en el padre suele ser más limpio para flexbox. */
+  /* .auth-container {
+      margin-top: 40px; 
+  } */
+}
+/* ----------------------------------------------------------------- */
+
 /* Fondo decorativo */
-.login-bg {
+.auth-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
 
-.login-bg .blob {
+.auth-bg .blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(40px);
@@ -181,7 +200,7 @@
 /* =========================================
    GRID / HERO / CARD
 ========================================= */
-.login-container {
+.auth-container {
   width: min(1180px, 100%);
   margin-inline: auto;
   display: grid;
@@ -193,13 +212,13 @@
 }
 
 @media (min-width:980px) {
-  .login-container {
+  .auth-container {
     grid-template-columns: 1.05fr .95fr;
     column-gap: 40px;
   }
 }
 
-.login-hero {
+.auth-hero {
   padding: clamp(8px, 1.2vw, 10px);
 }
 
@@ -259,11 +278,13 @@
   padding: clamp(18px, 3vw, 28px);
   backdrop-filter: blur(12px);
   color-scheme: dark;
+  padding: 20px;
 }
 
 @media (min-width:980px) {
-  .card {
+  .cardLogin {
     justify-self: end;
+      padding: 20px;
   }
 }
 
@@ -333,7 +354,7 @@
   border: 1px solid rgba(30, 90, 147, 0.5); /* ACTUALIZADO */
   background: rgba(11, 21, 52, 0.5); /* ACTUALIZADO */
   color: var(--ink);
-  padding: 0 12px 0 40px;
+  padding: 0 12px 0 40px; /* Ajuste para el ícono de la izquierda */
   outline: none;
   transition: border-color .2s, box-shadow .2s, background .2s;
   caret-color: var(--ink);
@@ -400,7 +421,7 @@ input:-moz-autofill {
   padding-right: 48px;
 }
 
-.eye {
+.password-toggle { /* Se mantuvo para compatibilidad, aunque no se usa en la vista 'forgot' */
   position: absolute;
   right: 10px;
   top: 50%;
@@ -417,12 +438,12 @@ input:-moz-autofill {
   z-index: 2;
 }
 
-.eye svg {
+.password-toggle svg {
   width: 20px;
   height: 20px;
 }
 
-.eye:focus-visible {
+.password-toggle:focus-visible {
   outline: 2px solid var(--blue-accent); /* ACTUALIZADO */
   border-radius: 8px;
 }
@@ -436,6 +457,10 @@ input:-moz-autofill {
   color: var(--muted);
   font-size: .8rem;
   margin-top: .25rem;
+}
+
+.help.error {
+    color: var(--error); /* Asegura que el mensaje de error sea rojo */
 }
 
 /* =========================================
@@ -498,7 +523,6 @@ input:-moz-autofill {
   color: var(--muted);
   font-size: .95rem;
 }
-
 .btn-back {
   position: absolute;
   top: 1rem;
@@ -509,14 +533,16 @@ input:-moz-autofill {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--glass-1), var(--glass-2)); /* ACTUALIZADO */
-  border: 1px solid var(--glass-br); /* ACTUALIZADO */
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  border: 1px solid var(--glass-br);
   box-shadow: var(--shadow);
   backdrop-filter: blur(12px);
-  color: var(--blue-accent); /* ACTUALIZADO */
-  cursor: pointer;
+  color: var(--blue-accent);
+  cursor: pointer !important;
   transition: background 0.2s, transform 0.15s;
+  z-index: 10; /* 👈 fuerza que quede encima */
 }
+
 
 .btn-back:hover {
   background: rgba(184, 216, 243, 0.12); /* ACTUALIZADO */
@@ -532,13 +558,14 @@ input:-moz-autofill {
    RESPONSIVE FINO
 ========================= */
 @media (max-width:768px) {
-  .card {
+  .cardLogin {
     width: 100%;
+      padding: 20px;
   }
 }
 
 @media (max-width:360px) {
-  .login-screen {
+  .auth-screen {
     padding-inline: 24px;
   }
 
@@ -550,7 +577,8 @@ input:-moz-autofill {
 }
 
 @media (min-width:1200px) {
-  .card {
+  .cardLogin {
+      padding: 20px;
     --card-w: 640px;
   }
 }

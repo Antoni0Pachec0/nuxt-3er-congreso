@@ -50,7 +50,12 @@
           </span>
         </button>
 
-        <transition name="faq-collapse">
+        <!-- Transición fluida -->
+        <transition
+          @enter="onEnter"
+          @after-enter="onAfterEnter"
+          @leave="onLeave"
+        >
           <div
             v-show="isOpen(i)"
             :id="`faq-panel-${i}`"
@@ -58,7 +63,9 @@
             role="region"
             :aria-labelledby="`faq-btn-${i}`"
           >
-            <p class="faq__a" v-html="item.a"></p>
+            <div class="faq__content">
+              <p class="faq__a" v-html="item.a"></p>
+            </div>
           </div>
         </transition>
       </article>
@@ -68,7 +75,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import "/assets/css/FAQuestions.css";
+import "/assets/css/styles/FAQuestions.css";
 import SvgIcon from "@jamescoyle/vue-icon";
 
 type FaqItem = {
@@ -87,11 +94,12 @@ const props = withDefaults(
   }
 );
 
-const openSet = ref<Set<number>>(new Set([0])); // abre el primero por defecto (ajusta si no quieres)
+const openSet = ref<Set<number>>(new Set([0])); // abre el primero por defecto
 
 function isOpen(i: number) {
   return openSet.value.has(i);
 }
+
 function toggle(i: number) {
   if (props.singleOpen) {
     openSet.value = isOpen(i) ? new Set() : new Set([i]);
@@ -100,6 +108,41 @@ function toggle(i: number) {
     isOpen(i) ? s.delete(i) : s.add(i);
     openSet.value = s;
   }
+}
+
+/* ========================
+   Animaciones personalizadas
+   ======================== */
+function onEnter(el: Element, done: () => void) {
+  const target = el as HTMLElement;
+  target.style.height = "0";
+  target.style.opacity = "0";
+  target.style.overflow = "hidden";
+  target.offsetHeight; // reflow
+  target.style.transition = "height 0.3s ease, opacity 0.3s ease";
+  target.style.height = target.scrollHeight + "px";
+  target.style.opacity = "1";
+
+  target.addEventListener("transitionend", done, { once: true });
+}
+
+function onAfterEnter(el: Element) {
+  const target = el as HTMLElement;
+  target.style.height = "auto";
+  target.style.overflow = "visible";
+}
+
+function onLeave(el: Element, done: () => void) {
+  const target = el as HTMLElement;
+  target.style.height = target.scrollHeight + "px";
+  target.style.opacity = "1";
+  target.offsetHeight;
+  target.style.transition = "height 0.3s ease, opacity 0.3s ease";
+  target.style.height = "0";
+  target.style.opacity = "0";
+  target.style.overflow = "hidden";
+
+  target.addEventListener("transitionend", done, { once: true });
 }
 
 // Icono por defecto (SVG)

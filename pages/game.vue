@@ -64,9 +64,9 @@ import Victor from '@/assets/images/images/professors/Victor.webp';
 import Elit from '@/assets/images/images/logos/elit.webp';
 import LogoCongreso from '@/assets/images/images/logos/LogoCongreso.webp';
 import api from '@/plugins/http/api'; 
-import cancion1 from '@/assets/sounds_game/SabanasBlancas.mp3';
-import cancion2 from '@/assets/sounds_game/Serpiente.mp3';
-import cancion3 from '@/assets/sounds_game/ENALTAVOZ.mp3';
+
+
+//importar las canciones despues 
 
 const entryPage = ref(null);
 const gameContainer = ref(null);
@@ -138,13 +138,7 @@ class CarRacing {
     this.canvas.addEventListener("touchmove", (e) => this.handleTouchMove(e));
     this.canvas.addEventListener("touchend", (e) => this.handleTouchEnd(e));
     window.addEventListener("resize", () => this.resizeCanvas());
-    this.songs = [cancion1, cancion2, cancion3];
-    this.songPool = Array.from({ length: this.songs.length }, (_, i) => i);
-    this.shuffleSongs();
-    this.currentSongIndex = 0;
-    this.backgroundMusic = new Audio(this.songs[this.songPool[this.currentSongIndex]]);
-    this.backgroundMusic.loop = true;
-    this.backgroundMusic.volume = 0.5;
+  
   }
 
   loadUserIdFromLogin() {

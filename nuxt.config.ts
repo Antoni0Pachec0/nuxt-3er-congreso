@@ -1,19 +1,45 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-  components: false,
-  imports: { autoImport: false },
-
-  devtools: { enabled: false },
+  // Desactiva explícitamente el SSR para funcionar en modo SPA (Cliente)
   ssr: false,
 
-  typescript: {
-    shim: false,
-    typeCheck: false
+  // ----------------
+  // MÓDULOS Y CARACTERÍSTICAS
+  // ----------------
+  components: true,
+  imports: { autoImport: true },
+
+  modules: [
+    'notivue/nuxt',
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt' // Módulo para persistir el estado de Pinia
+  ],
+  
+  // Eliminamos el bloque 'pinia' para evitar el error de tipado,
+  // ya que los autoimports por defecto son suficientes.
+  
+  devtools: { enabled: false },
+  
+  experimental: {
+    asyncEntry: false,
+    componentIslands: false
   },
 
+  // ----------------
+  // CONFIGURACIÓN AMBIENTAL
+  // ----------------
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
+    }
+  },
+
+  // ----------------
+  // ESTILOS Y HEAD
+  // ----------------
   css: [
-    '@/assets/css/main.css', // Tu archivo principal de estilos
+    '@/assets/css/main.css',
   ],
 
   app: {
@@ -31,43 +57,50 @@ export default defineNuxtConfig({
     }
   },
 
+  // ----------------
+  // CONFIGURACIÓN DEL SERVIDOR (NITRO)
+  // ----------------
   nitro: { 
-    preset: 'node-server',
     serveStatic: true,
-    compatibilityDate: '2025-09-23' // 🔹 Aquí es donde debe ir
+    compatibilityDate: '2025-10-03' 
   },
 
-  runtimeConfig: {
-    public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'
-    }
-  },
-
-  experimental: {
-    asyncEntry: false,
-    componentIslands: false
-  },
-
-   modules: [
-    'notivue/nuxt'
-  ],
-
+  // ----------------
+  // CONFIGURACIÓN DE VITE (CRÍTICA - SOLUCIONES DE PATHING)
+  // ----------------
   vite: {
     optimizeDeps: {
       exclude: [
         'plugin-vue:export-helper',
-        'vite/modulepreload-polyfill.js'
+        'vite/modulepreload-polyfill'
       ]
     },
+    
     build: {
       modulePreload: {
-        polyfill: false // 🔹 corregido: evita el warning deprecated
+        polyfill: false
+      },
+      rollupOptions: {
+        external: ['plugin-vue:export-helper'] 
       }
     },
+    
     server: {
       fs: {
         strict: false
       }
+    },
+    
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     }
+  },
+
+  // ----------------
+  // CONFIGURACIÓN DE TYPESCRIPT
+  // ----------------
+  typescript: {
+    shim: false,
+    typeCheck: false
   }
 })
