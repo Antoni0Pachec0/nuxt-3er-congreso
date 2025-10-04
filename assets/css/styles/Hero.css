@@ -474,7 +474,6 @@
 /* --- Centrado extra solo en desktop --- */
 @media (min-width: 961px) {
   .col-left { align-items: center; }
-  .heading { text-align: center; }
   .banded-title { text-align: center; }
   .banded-title::before,
   .banded-title::after {

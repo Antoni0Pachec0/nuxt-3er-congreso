@@ -50,7 +50,7 @@
 }
 
 /* =========================================
-   BASE / PREFERENCIAS
+    BASE / PREFERENCIAS
 ========================================= */
 .login-screen * {
   box-sizing: border-box;
@@ -72,7 +72,7 @@
 }
 
 /* =========================================
-   LAYOUT PRINCIPAL
+    LAYOUT PRINCIPAL
 ========================================= */
 .login-screen {
   position: relative;

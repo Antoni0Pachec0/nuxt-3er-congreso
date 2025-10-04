@@ -83,7 +83,7 @@
       <div class="footer-right">
         <h4>Síguenos en:</h4>
         <div class="social-icons">
-          <a href="https://www.facebook.com" aria-label="Facebook" class="facebook"><i class="mdi mdi-facebook"></i></a>
+          <a href="https://www.facebook.com/profile.php?id=61581205033138" aria-label="Facebook" class="facebook"><i class="mdi mdi-facebook"></i></a>
           <a href="https://twitter.com" aria-label="X" class="x"><i class="mdi mdi-twitter"></i></a>
           <a href="https://www.instagram.com" aria-label="Instagram" class="instagram"><i class="mdi mdi-instagram"></i></a>
           <a href="https://www.youtube.com" aria-label="YouTube" class="youtube"><i class="mdi mdi-youtube"></i></a>

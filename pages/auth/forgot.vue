@@ -1,5 +1,9 @@
 <template>
   <main id="forgot" class="auth-screen">
+
+    <button type="button" class="btn-back" @click="goLogin" aria-label="Regresar">
+      <SvgIcon :path="mdiArrowLeft" type="mdi" />
+    </button>
     <div class="auth-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -20,8 +24,11 @@
         <form class="form" @submit.prevent="onSubmit">
           <label class="label" for="email">Email</label>
           <div class="input-wrap">
-            <span class="input-icon"><SvgIcon :path="mdiEmailOutline" type="mdi" /></span>
-            <input id="email" v-model.trim="email" type="email" required maxlength="100" placeholder="tu@email.com" class="input" />
+            <span class="input-icon">
+              <SvgIcon :path="mdiEmailOutline" type="mdi" />
+            </span>
+            <input id="email" v-model.trim="email" type="email" required maxlength="100" placeholder="tu@email.com"
+              class="input" />
           </div>
 
           <button class="btn" type="submit" :disabled="loading">
@@ -48,6 +55,8 @@ import { parseAxiosError } from '~/plugins/http/error'
 import { notifyLoading, notifyError } from '~/utils/notifications'
 import { R } from '~/utils/app-routes'
 import '@/assets/css/styles/Forgot.css'
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiArrowLeft, mdiEmailOutline } from '@mdi/js';
 
 const router = useRouter()
 const email = ref("")
@@ -81,5 +90,10 @@ async function onSubmit() {
     toast.reject({ title: 'Error', message: errorMsg })
     loading.value = false
   }
+}
+
+
+function goLogin() {
+  router.push(R.to('login'));
 }
 </script>

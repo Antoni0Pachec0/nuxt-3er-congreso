@@ -11,30 +11,33 @@
 </template>
 
 <script setup>
+import { definePageMeta } from '#imports'
+import { useRouter } from '#app'
+import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
   name: 'user-home',
   path: '/user-home',
   requiresAuth: true,
+  middleware: 'auth'
 })
 
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
+const router = useRouter()
+const authStore = useAuthStore()
 
 function goToGame() {
-    // Redirect to the game page
-    // You can change this route to the actual game route when it's created
-    alert('¡Redirigiendo al juego!');
+  return navigateTo('/game')
 }
 
-function logout() {
-    // Clear authentication tokens
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    
-    // Redirect to login page
-    router.push('/login');
+async function logout() {
+  try {
+    // Usar el store para logout que maneja todo
+    await authStore.logout()
+  } catch (error) {
+    console.error('Error durante logout:', error)
+    // Forzar redirección incluso si hay error
+    await navigateTo('/login')
+  }
 }
 </script>
 
@@ -87,4 +90,3 @@ h1 {
     background-color: #d32f2f;
 }
 </style>
-

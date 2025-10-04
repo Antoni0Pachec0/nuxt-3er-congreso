@@ -2,19 +2,28 @@
   <div>
     <header :class="['app-header', { 'scrolled-header': isScrolled }]">
       <div class="logo">
+        <!-- Mantener el enlace de ancla para la home/sección de inicio -->
         <a href="#Inicio">
           <img :src="logoUrl" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
         </a>
       </div>
       <nav class="desktop-nav">
+        <!-- Navegación a secciones internas -->
         <a href="#Inicio" @click="closeMenu">Inicio</a>
         <a href="#Enfoque" @click="closeMenu">Enfoque</a>
         <a href="#Galeria" @click="closeMenu">Galeria</a>
         <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
         <a href="#Mapa" @click="closeMenu">Mapa</a>
         <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-        <button @click="goToRegister" class="sidebar_button">Registro</button>
-        <!-- <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button> -->
+        
+        <!-- ✅ CORRECCIÓN: Usar NuxtLink para navegación externa para precarga instantánea -->
+        <!-- Uso de R.path('register') para obtener el string del path '/register' -->
+        <NuxtLink :to="R.path('register')" class="desktop-nav-btn">
+          Registro
+        </NuxtLink>
+        <NuxtLink :to="R.path('login')" class="desktop-nav-btn login-btn">
+          Inicio de Sesión
+        </NuxtLink>
       </nav>
 
       <div class="hamburger-menu" :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
@@ -35,34 +44,45 @@
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
+      <!-- Navegación interna en Sidebar -->
       <a href="#Inicio" @click="closeMenu">Inicio</a>
       <a href="#Enfoque" @click="closeMenu">Enfoque</a>
       <a href="#Galeria" @click="closeMenu">Galeria</a>
       <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
       <a href="#Mapa" @click="closeMenu">Mapa</a>
       <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-      <button @click="goToRegister" class="sidebar_button">Registro</button>
-      <button @click="goToLogin" class="sidebar_button">Inicio de Sesión</button>
+      
+      <!-- ✅ CORRECCIÓN: Usar NuxtLink en Sidebar -->
+      <NuxtLink :to="R.path('register')" class="sidebar_button" @click="closeMenu">
+        Registro
+      </NuxtLink>
+      <NuxtLink :to="R.path('login')" class="sidebar_button login-btn-sidebar" @click="closeMenu">
+        Inicio de Sesión
+      </NuxtLink>
     </nav>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import logoUrl from '@/assets/images/Logo.png'
+// Asegúrate de que logoUrl esté correctamente importado o definido
+import logoUrl from '@/assets/images/Logo.png' 
 import '~/assets/css/styles/Header.css'
 import { R } from '~/utils/app-routes'
-import { useRouter } from 'vue-router'
+// Ya no necesitamos useRouter/router.push para los enlaces de login/registro
+// import { useRouter } from 'vue-router'
 
-const router = useRouter()
+// const router = useRouter() // Ya no es necesario
 const logo = logoUrl
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 
 const closeMenu = () => { isMenuOpen.value = false }
 const toggleMenu = () => { isMenuOpen.value = !isMenuOpen.value }
-const goToRegister = () => { router.push(R.to('register')); closeMenu() }
-const goToLogin = () => { router.push(R.to('login')); closeMenu() }
+
+// ✅ Eliminamos las funciones goToRegister y goToLogin ya que usamos NuxtLink.
+// const goToRegister = () => { router.push(R.to('register')); closeMenu() }
+// const goToLogin = () => { router.push(R.to('login')); closeMenu() }
 
 const handleScroll = () => {
   if (typeof window === 'undefined') return

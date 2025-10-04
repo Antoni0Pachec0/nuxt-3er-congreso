@@ -49,7 +49,7 @@
       <section class="cardLogin" aria-label="Formulario de inicio de sesión">
         <h2 class="card-title card-title--center">
           <span class="arrow" aria-hidden="true">
-            <SvgIcon :path="mdiArrowRight" type="mdi" />
+            <SvgIcon :path="mdiAccountCircleOutline" type="mdi" />
           </span>
           <span class="card-title__text">Iniciar Sesión</span>
         </h2>
@@ -137,7 +137,7 @@ import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
-  mdiArrowRight,
+  mdiAccountCircleOutline,
   mdiEmailOutline,
   mdiLockOutline,
   mdiEyeOutline,
@@ -156,10 +156,26 @@ import { R } from '~/utils/app-routes'
 // Nota: Deberás actualizar este archivo de CSS con los nuevos estilos para la alerta.
 import '@/assets/css/styles/Login.css' 
 
+// Importar el store de autenticación
+import { useAuthStore } from '~/stores/auth'
+
+// Mock de notificaciones
+function notifyError(title, message) {
+  console.error(`[Error ${title}]: ${message}`)
+}
+function notifyLoading(title, message) {
+  console.log(`[Loading ${title}]: ${message}`)
+  return {
+    resolve: ({ title: t, message: m }) => console.log(`[Toast Closed]: ${t} - ${m}`)
+  }
+}
+
+// -------------------------------------------------------------------------
+
 definePageMeta({
   name: 'login',
   path: '/login',
-  guestOnly: true, // si ya está logueado, middleware lo manda a '/'
+  guestOnly: true,
 })
 
 const router = useRouter()
@@ -211,15 +227,15 @@ function hideLoading() {
 }
 
 function goHome() {
-  router.push(R.to('home'))
+  return navigateTo(R.to('home'))
 }
 
 function onRegister() {
-  router.push(R.to('register'))
+  return navigateTo(R.to('register'))
 }
 
 function onForgot() {
-  router.push(R.to('forgot'))
+  return navigateTo(R.to('forgot'))
 }
 
 async function onSubmit() {
@@ -251,7 +267,7 @@ async function onSubmit() {
     // 👇 Esencial: enviar cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
 
-    // 1. Manejo de Verificación Requerida
+    // 1) Verificación pendiente
     if (data?.require_verification) {
       const pendingEmail = data?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
@@ -290,11 +306,11 @@ async function onSubmit() {
     apiError.value = msg
 
   } catch (e) {
-    // 4. Manejo de errores de Axios (401, 500, etc.)
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
     // Reemplazo de notifyError (Catch)
     showNotification('No se pudo iniciar sesión', msg, 'error')
     apiError.value = msg
+    toast?.resolve?.({ title: 'Error', message: msg })
   } finally {
     loading.value = false
     hideLoading() // Ocultar el estado de carga
