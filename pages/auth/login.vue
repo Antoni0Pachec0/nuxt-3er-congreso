@@ -113,9 +113,9 @@
 </template>
 
 <script setup>
-import { definePageMeta } from '#imports'
+import { definePageMeta, useRuntimeConfig } from '#imports'
 import { ref } from 'vue'
-import { useRouter, useRoute } from '#app' // Cambia esta importación
+import { useRoute } from '#app'
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiAccountCircleOutline,
@@ -126,16 +126,13 @@ import {
   mdiArrowLeft
 } from '@mdi/js'
 
-import api from '~/plugins/http/api'
+import { R } from '~/utils/app-routes'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
-import { R } from '~/utils/app-routes'
+import { useAuthStore } from '~/stores/auth'
 import '@/assets/css/styles/Login.css'
 
-// Importar el store de autenticación
-import { useAuthStore } from '~/stores/auth'
-
-// Mock de notificaciones
+// Notificaciones básicas (puedes reemplazar con tu sistema de toasts)
 function notifyError(title, message) {
   console.error(`[Error ${title}]: ${message}`)
 }
@@ -154,9 +151,9 @@ definePageMeta({
   guestOnly: true,
 })
 
-const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const config = useRuntimeConfig()
 
 const email = ref('')
 const password = ref('')
@@ -164,6 +161,9 @@ const show = ref(false)
 const loading = ref(false)
 const apiError = ref('')
 
+// -------------------------------
+// 🔹 Funciones de navegación
+// -------------------------------
 function goHome() {
   return navigateTo(R.to('home'))
 }
@@ -176,6 +176,9 @@ function onForgot() {
   return navigateTo(R.to('forgot'))
 }
 
+// -------------------------------
+// 🔹 Envío de formulario (login)
+// -------------------------------
 async function onSubmit() {
   apiError.value = ''
 
@@ -193,11 +196,16 @@ async function onSubmit() {
       password: password.value,
     }
 
-    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
+    // Petición al backend
+    const response = await $fetch(`${config.public.apiBase}/auth/login`, {
+      method: 'POST',
+      body: payload,
+      credentials: 'include', // 🔥 necesario para cookies JWT
+    })
 
-    // 1) Verificación pendiente
-    if (data?.require_verification) {
-      const pendingEmail = data?.user?.email || payload.email
+    // 🔹 Caso 1: verificación pendiente
+    if (response?.require_verification) {
+      const pendingEmail = response?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
       localStorage.setItem('verification_purpose', 'email_verification')
 
@@ -209,34 +217,33 @@ async function onSubmit() {
       return navigateTo(R.to('verify'))
     }
 
-    // 2) Login exitoso
-    if (Number.isFinite(data?.user_id)) {
-      const userId = data.user_id
-
-      // Actualizar el store de autenticación
+    // 🔹 Caso 2: login exitoso
+    if (Number.isFinite(response?.user_id)) {
+      const userId = response.user_id
       authStore.setUser({ id: userId, email: payload.email })
       authStore.setAuthenticated(true)
 
       toast?.resolve?.({
         title: '¡Bienvenido!',
-        message: data?.message || 'Inicio de sesión exitoso.',
+        message: response?.message || 'Inicio de sesión exitoso.',
       })
 
-      // Redirección: respeta ?redirect=... si existe
+      // Redirección
       const redirectParam = route.query?.redirect
       if (redirectParam) {
         console.log('Redirecting to:', redirectParam)
         return navigateTo(decodeURIComponent(String(redirectParam)))
       }
 
-      console.log('Redirecting to user-home')
-      return navigateTo(R.to('userHome'))
+      console.log('Redirecting to /user-home')
+      return navigateTo('/user-home')
     }
 
-    // 3) Respuesta inesperada
-    const fallbackMsg = data?.message || 'Respuesta inesperada del servidor.'
+    // 🔹 Caso 3: respuesta inesperada
+    const fallbackMsg = response?.message || 'Respuesta inesperada del servidor.'
     notifyError('Error', fallbackMsg)
     apiError.value = fallbackMsg
+
   } catch (e) {
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
     notifyError('No se pudo iniciar sesión', msg)

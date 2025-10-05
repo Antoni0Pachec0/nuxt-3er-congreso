@@ -14,7 +14,6 @@
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/font": "7.4.47",
     "@mdi/js": "7.4.47",
-    "pinia-plugin-persistedstate": "^4.5.0", 
     "@pinia/nuxt": "^0.11.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "axios": "1.12.2",

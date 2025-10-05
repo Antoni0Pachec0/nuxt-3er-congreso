@@ -1,46 +1,39 @@
 // middleware/auth.global.js
 export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
-  
+
+  const config = useRuntimeConfig()
   const authStore = useAuthStore()
-  
-  // Verificar autenticación
-  const checkAuth = async () => {
+  if (!authStore.isAuthenticated) authStore.loadFromStorage()
+
+  // rutas públicas (sin sesión)
+  const PUBLIC_PATHS = new Set([
+    '/', '/login', '/register', '/verify', '/forgot', '/reset'
+  ])
+  const isPublic = PUBLIC_PATHS.has(to.path) || to.meta?.guestOnly === true
+
+  // si ya está autenticado, permite; si no, intenta verificar con /auth/me
+  let isAuth = authStore.isAuthenticated
+  if (!isAuth && !isPublic) {
     try {
-      const response = await $fetch('/api/auth/me', {
-        credentials: 'include',
-        retry: 0,
-        timeout: 5000
-      })
-      
-      if (response?.user_id) {
-        authStore.setUser({ id: response.user_id, email: response.email })
+      const me = await $fetch(`${config.public.apiBase}/auth/me`, { credentials: 'include' })
+      if (me?.user_id) {
+        authStore.setUser({ id: me.user_id, email: me.email })
         authStore.setAuthenticated(true)
-        return true
+        isAuth = true
       }
-    } catch (error) {
-      console.log('Auth check failed:', error)
+    } catch {
       authStore.setAuthenticated(false)
       authStore.setUser(null)
     }
-    return false
   }
 
-  const isAuthenticated = await checkAuth()
-  console.log(`Auth middleware: ${to.path} - Authenticated: ${isAuthenticated}`)
-
-  // Rutas que requieren autenticación
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    console.log('Redirecting to login, requires auth')
-    return navigateTo({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    })
+  if (!isPublic && !isAuth) {
+    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 
-  // Rutas solo para invitados (como login)
-  if (to.meta.guestOnly && isAuthenticated) {
-    console.log('Redirecting to user-home, already authenticated')
+  // si intenta ir a login y ya está logueado, mándalo al home privado
+  if ((to.path === '/login' || to.meta?.guestOnly === true) && authStore.isAuthenticated) {
     return navigateTo('/user-home')
   }
 })

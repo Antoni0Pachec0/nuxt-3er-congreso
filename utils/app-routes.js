@@ -7,7 +7,7 @@ export const APP_ROUTES = {
   forgot:   { name: 'forgot',    path: '/forgot' },
   reset:    { name: 'reset',     path: '/reset' },
   userHome: { name: 'user-home', path: '/user-home' }, // Mantén este nombre
-  game:     { name: 'game',      path: '/game' },
+  game:     { name: 'game',      path: '/game/game' },
 }
 
 export const R = {
