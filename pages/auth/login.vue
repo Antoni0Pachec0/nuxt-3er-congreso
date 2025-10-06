@@ -137,7 +137,6 @@ function notifyError(title, message) {
   console.error(`[Error ${title}]: ${message}`)
 }
 function notifyLoading(title, message) {
-  console.log(`[Loading ${title}]: ${message}`)
   return {
     resolve: ({ title: t, message: m }) => console.log(`[Toast Closed]: ${t} - ${m}`)
   }
@@ -231,11 +230,9 @@ async function onSubmit() {
       // Redirección
       const redirectParam = route.query?.redirect
       if (redirectParam) {
-        console.log('Redirecting to:', redirectParam)
         return navigateTo(decodeURIComponent(String(redirectParam)))
       }
 
-      console.log('Redirecting to /user-home')
       return navigateTo('/user-home')
     }
 

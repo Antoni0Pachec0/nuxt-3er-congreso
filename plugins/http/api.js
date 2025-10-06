@@ -10,7 +10,7 @@ function getCookie(name) {
   return null;
 }
 
-const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx';
 
 const api = axios.create({
   baseURL,
