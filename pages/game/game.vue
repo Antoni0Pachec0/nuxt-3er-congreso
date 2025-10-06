@@ -65,7 +65,6 @@ import Elit from '@/assets/images/images/logos/elit.webp';
 import LogoCongreso from '@/assets/images/images/logos/LogoCongreso.webp';
 import api from '@/plugins/http/api'; 
 import '@/assets/css/styles/Game.css';
-import { R } from '~/utils/app-routes'
 import { ROUTES } from '~/plugins/http/routes'
 
 const entryPage = ref(null);
@@ -93,30 +92,11 @@ function getCookie(name) {
 
 // 🔥 Verificar autenticación
 const checkAuthentication = async () => {
-  // 1. Verificar si ya tenemos userId en localStorage
-  const storedUserId = localStorage.getItem('userId');
-  if (storedUserId) {
-    return true;
-  }
-
-  // 2. Verificar si hay usuario en localStorage
-  const userData = localStorage.getItem('user');
-  if (userData) {
-    try {
-      const user = JSON.parse(userData);
-      if (user && user.id) {
-        localStorage.setItem('userId', user.id.toString());
-        return true;
-      }
-    } catch (error) {
-      console.error('Error parseando userData:', error);
-    }
-  }
-
-  // 3. Verificar si hay token en cookies y extraer userId
+  // 1. Verificar token de acceso en cookies
   const accessToken = getCookie('access_token');
   if (accessToken) {
     try {
+      // Decodificar el token para verificar que es válido
       const base64Url = accessToken.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
@@ -131,6 +111,32 @@ const checkAuthentication = async () => {
     } catch (error) {
       console.error('Error decodificando token:', error);
     }
+  }
+
+  // 2. Verificar refresh token
+  const refreshToken = getCookie('refresh_token');
+  if (refreshToken) {
+    try {
+      const base64Url = refreshToken.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const decoded = JSON.parse(jsonPayload);
+      
+      if (decoded && decoded.userId) {
+        localStorage.setItem('userId', decoded.userId.toString());
+        return true;
+      }
+    } catch (error) {
+      console.error('Error decodificando refresh token:', error);
+    }
+  }
+
+  // 3. Verificar si ya tenemos userId en localStorage
+  const storedUserId = localStorage.getItem('userId');
+  if (storedUserId) {
+    return true;
   }
 
   return false;
@@ -155,7 +161,7 @@ class CarRacing {
     this.paused = false;
     this.gameLoopId = null;
     this.userId = null;
-    this.scoreSent = false; // 🔥 NUEVO: Controlar si ya se envió el score
+    this.scoreSent = false;
     this.backgrounds = [fondo1, fondo2, fondo3];
     this.currentBackgroundIndex = 0;
     this.backgroundImages = this.backgrounds.map(src => {
@@ -208,6 +214,7 @@ class CarRacing {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       this.userId = parseInt(storedUserId, 10);
+      console.log('✅ UserId cargado desde localStorage:', this.userId);
       return;
     }
 
@@ -215,6 +222,12 @@ class CarRacing {
     const cookieToken = getCookie('access_token');
     if (cookieToken) {
       this.extractUserIdFromToken(cookieToken);
+    } else {
+      // Intentar con refresh token
+      const refreshToken = getCookie('refresh_token');
+      if (refreshToken) {
+        this.extractUserIdFromToken(refreshToken);
+      }
     }
   }
 
@@ -234,6 +247,7 @@ class CarRacing {
         if (this.userId) {
           this.userId = parseInt(this.userId, 10);
           localStorage.setItem('userId', this.userId.toString());
+          console.log('✅ UserId extraído del token:', this.userId);
         }
       }
     } catch (error) {
@@ -241,72 +255,70 @@ class CarRacing {
     }
   }
 
-  // Enviar puntaje al backend - CORREGIDO
-  // Enviar puntaje al backend - CORREGIDO DEFINITIVAMENTE
-async sendScoreToBackend() {
-  // 🔥 PREVENIR MÚLTIPLES ENVÍOS - VERIFICACIÓN MÁS ROBUSTA
-  if (this.scoreSent) {
-    console.log('⏩ Score ya enviado, omitiendo...');
-    return;
-  }
+  // 🔥 CORREGIDO: Enviar puntaje al backend
+  async sendScoreToBackend() {
+    // Prevenir múltiples envíos
+    if (this.scoreSent) {
+      console.log('⏩ Score ya enviado, omitiendo...');
+      return;
+    }
 
-  // Marcar como enviado inmediatamente para prevenir múltiples llamadas
-  this.scoreSent = true;
+    // Marcar como enviado inmediatamente
+    this.scoreSent = true;
 
-  if (this.userId === null) {
-    this.loadUserId();
-    await new Promise(resolve => setTimeout(resolve, 50));
-  }
+    // Verificar que tenemos un userId válido
+    if (!this.userId) {
+      this.loadUserId();
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
 
-  if (this.userId === null) {
-    console.log('❌ No se puede enviar: userId no disponible');
-    this.displayAuthMessage();
-    // Resetear el flag si falla por userId
-    this.scoreSent = false;
-    return;
-  }
+    if (!this.userId) {
+      console.log('❌ No se puede enviar: userId no disponible');
+      this.displayAuthMessage();
+      this.scoreSent = false; // Permitir reintento
+      return;
+    }
 
-  if (this.score <= 0) {
-    console.log('📊 Puntaje 0, no se envía');
-    // Resetear el flag para puntaje 0
-    this.scoreSent = false;
-    return;
-  }
+    if (this.score <= 0) {
+      console.log('📊 Puntaje 0, no se envía');
+      this.scoreSent = false; // Permitir reintento para puntajes > 0
+      return;
+    }
 
-  console.log('🚀 Enviando puntaje al backend (solo una vez):', {
-    userId: this.userId,
-    score: this.score
-  });
-
-  try {
-    // 🔥 TIMEOUT REDUCIDO para evitar esperas largas
-    const response = await api.post(ROUTES.SCORES.CREATE, {
-      value: this.score
-    }, {
-      timeout: 5000 // 5 segundos en lugar de 15
+    console.log('🚀 Enviando puntaje al backend:', {
+      userId: this.userId,
+      score: this.score
     });
 
-    console.log('✅ Puntaje guardado con éxito:', response.data);
-    this.displaySuccessMessage();
-    // 🔥 NO resetear scoreSent aquí - debe mantenerse como true
-    
-  } catch (error) {
-    console.error('❌ Error al enviar puntaje:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data
-    });
-    
-    // 🔥 RESETEAR SOLO EN CASO DE ERROR PARA PERMITIR REINTENTO
-    this.scoreSent = false;
-    
-    if (error.response?.status === 401) {
-      localStorage.removeItem('userId');
-      this.userId = null;
-      this.displayAuthErrorMessage();
+    try {
+      const response = await api.post(ROUTES.SCORES.CREATE, {
+        value: this.score
+      }, {
+        timeout: 8000
+      });
+
+      console.log('✅ Puntaje guardado con éxito:', response.data);
+      this.displaySuccessMessage();
+      
+    } catch (error) {
+      console.error('❌ Error al enviar puntaje:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // Resetear para permitir reintento en caso de error
+      this.scoreSent = false;
+      
+      if (error.response?.status === 401) {
+        localStorage.removeItem('userId');
+        this.userId = null;
+        this.displayAuthErrorMessage();
+      } else {
+        this.displayErrorMessage();
+      }
     }
   }
-}
 
   // Mostrar mensaje de autenticación requerida
   displayAuthMessage() {
@@ -346,6 +358,19 @@ async sendScoreToBackend() {
     this.ctx.fillText("🔐 Sesión expirada. Vuelve a iniciar sesión", this.base_width / 2, this.base_height / 2 + 250);
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
+
+  // Mostrar mensaje de error genérico
+  displayErrorMessage() {
+    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
+    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
+    
+    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
+    this.ctx.font = `bold 24px Comic Sans MS`;
+    this.ctx.fillStyle = "#FFA500";
+    this.ctx.textAlign = "center";
+    this.ctx.fillText("⚠️ Error al guardar puntaje. Intenta de nuevo", this.base_width / 2, this.base_height / 2 + 250);
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
   
   shuffleEnemies() {
     for (let i = this.enemyPool.length - 1; i > 0; i--) {
@@ -374,7 +399,7 @@ async sendScoreToBackend() {
     this.bg_speed = this.enemy_speed;
     this.score = 0;
     this.game_over = false;
-    this.scoreSent = false; // 🔥 RESETEAR AL INICIALIZAR
+    this.scoreSent = false;
     this.road_width = this.base_width / 2;
     this.road_x = this.base_width / 4;
     this.currentBackgroundIndex = 0;
@@ -504,55 +529,52 @@ async sendScoreToBackend() {
   }
   
   display_message(msg) {
-  // 🔥 PREVENIR MÚLTIPLES LLAMADAS MÁS ESTRICTO
-  if (this.game_over && this.scoreSent) {
-    // Solo dibujar el mensaje sin enviar score nuevamente
+    if (this.game_over && this.scoreSent) {
+      this.drawGameOverScreen(msg);
+      return;
+    }
+
+    this.game_over = true;
     this.drawGameOverScreen(msg);
-    return;
-  }
-
-  this.game_over = true;
-  this.drawGameOverScreen(msg);
-  
-  // 🔥 ENVIAR PUNTAJE AL BACKEND (SOLO UNA VEZ)
-  if (!this.scoreSent) {
-    this.sendScoreToBackend();
-  }
-}
-
-// 🔥 NUEVO MÉTODO PARA DIBUJAR PANTALLA DE GAME OVER
-drawGameOverScreen(msg) {
-  this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-  this.ctx.fillStyle = this.black;
-  this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
-  const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
-  this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
-  const baseY = this.base_height / 2 - 400;
-  this.ctx.font = `bold 72px Comic Sans MS`;
-  this.ctx.fillStyle = this.white;
-  this.ctx.textAlign = "center";
-  this.ctx.fillText(msg, this.base_width / 2, baseY);
-  this.ctx.font = `40px Comic Sans MS`;
-  this.ctx.fillText(`Puntaje final: ${this.score}`, this.base_width / 2, baseY + 70);
-  this.ctx.font = `30px Comic Sans MS`;
-  this.ctx.fillText("Toca la pantalla o F para reiniciar", this.base_width / 2, baseY + 130);
-  if (this.crashEnemy !== undefined) {
-    const crashImg = this.crashImages[this.crashEnemy];
-    if (crashImg && crashImg.complete) {
-      this.ctx.drawImage(crashImg, this.base_width / 2 - 200, baseY + 180, 400, 500);
+    
+    // Enviar puntaje al backend (solo una vez)
+    if (!this.scoreSent) {
+      this.sendScoreToBackend();
     }
   }
-  if (this.elitLogo && this.elitLogo.complete) {
-    const logoSize = 100;
-    this.ctx.drawImage(this.elitLogo, this.base_width - logoSize - 10, this.base_height - logoSize - 10, logoSize, logoSize);
+
+  drawGameOverScreen(msg) {
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.fillStyle = this.black;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
+    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
+    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
+    const baseY = this.base_height / 2 - 400;
+    this.ctx.font = `bold 72px Comic Sans MS`;
+    this.ctx.fillStyle = this.white;
+    this.ctx.textAlign = "center";
+    this.ctx.fillText(msg, this.base_width / 2, baseY);
+    this.ctx.font = `40px Comic Sans MS`;
+    this.ctx.fillText(`Puntaje final: ${this.score}`, this.base_width / 2, baseY + 70);
+    this.ctx.font = `30px Comic Sans MS`;
+    this.ctx.fillText("Toca la pantalla o F para reiniciar", this.base_width / 2, baseY + 130);
+    if (this.crashEnemy !== undefined) {
+      const crashImg = this.crashImages[this.crashEnemy];
+      if (crashImg && crashImg.complete) {
+        this.ctx.drawImage(crashImg, this.base_width / 2 - 200, baseY + 180, 400, 500);
+      }
+    }
+    if (this.elitLogo && this.elitLogo.complete) {
+      const logoSize = 100;
+      this.ctx.drawImage(this.elitLogo, this.base_width - logoSize - 10, this.base_height - logoSize - 10, logoSize, logoSize);
+    }
+    if (this.congresoLogo && this.congresoLogo.complete) {
+      const logoSize = 120;
+      this.ctx.drawImage(this.congresoLogo, 10, this.base_height - logoSize - 10, logoSize, logoSize);
+    }
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
-  if (this.congresoLogo && this.congresoLogo.complete) {
-    const logoSize = 120;
-    this.ctx.drawImage(this.congresoLogo, 10, this.base_height - logoSize - 10, logoSize, logoSize);
-  }
-  this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-}
 
   check_collision() {
     const hitboxScale = 0.5;
@@ -581,25 +603,46 @@ drawGameOverScreen(msg) {
   }
   
   update() {
-  if (!this.game_over) {
-    // ... código del juego activo ...
-    if (this.check_collision()) {
-      this.display_message("¡Choque! Fin del juego");
-      return;
-    }
-    this.draw_objects();
-  } else {
-    // Solo dibujar pantalla de game over sin lógica adicional
-    if (!this.scoreSent) {
+    if (!this.game_over) {
+      this.bg_y += this.bg_speed;
+      if (this.bg_y >= this.base_height) {
+        this.bg_y = 0;
+      }
+      if (this.keys["ArrowLeft"] || this.keys["a"] || this.keys["A"]) {
+        this.car_x -= this.car_speed;
+      }
+      if (this.keys["ArrowRight"] || this.keys["d"] || this.keys["D"]) {
+        this.car_x += this.car_speed;
+      }
+      if (this.keys["ArrowUp"] || this.keys["w"] || this.keys["W"]) {
+        this.car_y -= this.car_speed;
+      }
+      if (this.keys["ArrowDown"] || this.keys["s"] || this.keys["S"]) {
+        this.car_y += this.car_speed;
+      }
+      this.car_x = Math.max(this.road_x, Math.min(this.car_x, this.road_x + this.road_width - this.car_width));
+      this.car_y = Math.max(0, Math.min(this.car_y, this.base_height - this.car_height));
+      for (let enemy of this.enemies) {
+        enemy.y += this.enemy_speed;
+      }
+      const currentTime = Date.now();
+      if (currentTime - this.lastSpawnTime > this.minSpawnInterval) {
+        this.spawnEnemy();
+      }
+      if (this.check_collision()) {
+        this.display_message("¡Choque! Fin del juego");
+        return;
+      }
+      this.draw_objects();
+    } else {
       this.drawGameOverScreen("¡Choque! Fin del juego");
     }
+    
+    if (this.game_over && (this.keys["f"] || this.keys["F"])) {
+      this.initialize();
+      this.game_over = false;
+    }
   }
-  
-  if (this.game_over && (this.keys["f"] || this.keys["F"])) {
-    this.initialize();
-    this.game_over = false;
-  }
-}
   
   run() {
     const gameLoop = () => {
@@ -662,8 +705,6 @@ const navigateToLeaderboard = () => {
 };
 
 onMounted(() => {
-  // 🔥 ELIMINADO: Código de particles.js
-  
   if (gameCanvas.value) {
     const resizeHandler = () => {
       if (gameInstance) {
