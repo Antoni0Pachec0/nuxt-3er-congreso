@@ -7,7 +7,9 @@ import * as nodeProcess from 'node:process';
 export default defineNuxtConfig({
   // Desactiva explícitamente el SSR para funcionar en modo SPA (Cliente)
   ssr: false,
+  
 
+  
   // ----------------
   // MÓDULOS Y CARACTERÍSTICAS
   // ----------------
@@ -47,7 +49,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Usamos nodeProcess.env para asegurar la correcta resolución
-      apiBase: nodeProcess.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
+      apiBase: nodeProcess.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001',
+      // 2. AÑADE ESTA LÍNEA - ¡Esta es la corrección principal!
+      stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+
+      returnUrl: nodeProcess.env.NUXT_PUBLIC_RETURN_URL || 'http://localhost:3000/payment/return'
     }
   },
 

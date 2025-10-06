@@ -1,17 +1,18 @@
-// composables/useStripeEmbedded.ts
 import { useRuntimeConfig } from '#app'
 
 type LineItem = { price: string; quantity: number }
 
 export function useStripeEmbedded() {
     const config = useRuntimeConfig()
-    const apiBase = config.public.API_BASE as string
-    const returnUrl = config.public.RETURN_URL as string
+
+    // ✔️ CORRECCIÓN: Accede a las variables en camelCase
+    const apiBase = config.public.apiBase as string
+    const returnUrl = config.public.returnUrl as string
 
     const createSession = async (items: LineItem[]) => {
-        // Puedes añadir un Idempotency-Key único si quieres más seguridad
         const headers: Record<string, string> = { 'Content-Type': 'application/json' }
 
+        // Ahora la URL se construirá correctamente
         const res = await $fetch<{ sessionId: string; clientSecret: string }>(
             `${apiBase}/payment-stripe/create-checkout-session`,
             {
@@ -19,7 +20,8 @@ export function useStripeEmbedded() {
                 headers,
                 body: {
                     items,
-                    returnUrl
+                    // Asegúrate que tu DTO en el backend espera 'returnUrl'
+                    returnUrl: returnUrl 
                 }
             }
         )
@@ -28,6 +30,7 @@ export function useStripeEmbedded() {
     }
 
     const verifySession = async (sessionId: string) => {
+        // CORRECCIÓN aplicada aquí también
         const res = await $fetch<{
             isComplete: boolean
             paymentStatus: string

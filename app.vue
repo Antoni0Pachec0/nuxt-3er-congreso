@@ -8,7 +8,10 @@
       $route.path !== '/reset' &&
       $route.path !== '/forgot' &&
       $route.path !== '/home' &&
-      $route.path !== '/game'
+      $route.path !== '/game' &&
+      $route.path !== '/checkout' 
+
+      
 
     " />
 
@@ -34,7 +37,8 @@
       $route.path !== '/reset' &&
       $route.path !== '/forgot' &&
       $route.path !== '/home' &&
-      $route.path !== '/game'
+      $route.path !== '/game'&&
+      $route.path !== '/checkout' 
 
     " />
   </div>

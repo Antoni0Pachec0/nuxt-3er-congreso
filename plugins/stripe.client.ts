@@ -7,7 +7,7 @@ let stripePromise: Promise<Stripe | null> | null = null
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
     if (!stripePromise) {
-        stripePromise = loadStripe(config.public.STRIPE_PUBLISHABLE_KEY as string)
+        stripePromise = loadStripe(config.public.stripePublishableKey as string)
     }
 
     return {

@@ -40,7 +40,6 @@ onMounted(async () => {
 
 <template>
   <main class="container mx-auto py-10">
-    <h1 class="text-2xl font-bold mb-4">Pago con Stripe (Embedded)</h1>
 
     <div v-if="isLoading" class="p-4 border rounded">Cargando checkout…</div>
     <div v-if="errorMsg" class="p-4 border border-red-500 text-red-600 rounded">
