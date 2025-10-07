@@ -1,6 +1,21 @@
 <template>
   <section class="workshops-section">
-    <!-- Encabezado general -->
+    <!-- ✅ TOAST -->
+    <transition name="toast">
+      <div
+        v-if="toast.show"
+        class="toast"
+        :class="`toast--${toast.type}`"
+        role="status"
+        aria-live="polite"
+      >
+        <strong class="toast-title">{{ toast.type === 'success' ? '¡Listo!' : 'Aviso' }}</strong>
+        <p class="toast-msg">{{ toast.message }}</p>
+        <button class="toast-close" @click="toast.show = false" aria-label="Cerrar">×</button>
+      </div>
+    </transition>
+
+    <!-- Encabezado -->
     <header class="ws-header">
       <h2 class="ws-title">Talleres Prácticos</h2>
       <div class="ws-underline"></div>
@@ -11,14 +26,21 @@
       </p>
     </header>
 
-    <!-- Lista de talleres -->
+    <!-- Lista -->
     <div class="ws-grid">
-      <article v-for="(w, i) in workshops" :key="i" class="ws-card">
+      <article
+        v-for="(w, i) in workshops"
+        :key="i"
+        class="ws-card"
+        :class="levelClass(w)"
+      >
         <!-- Header -->
         <div class="ws-card-header" :style="{ background: w.gradient }">
           <div class="ws-header-top">
-            <component :is="w.icon" class="ws-header-icon" />
-            <span class="ws-badge">{{ w.level }}</span>
+            <div class="ws-header-icon-wrap" :class="levelClass(w)">
+              <component :is="w.icon" class="ws-header-icon" />
+            </div>
+            <span class="ws-badge" :class="levelClass(w)">{{ w.level }}</span>
           </div>
           <div class="ws-header-info">
             <h3 class="ws-name">{{ w.name }}</h3>
@@ -26,7 +48,7 @@
           </div>
         </div>
 
-        <!-- Contenido -->
+        <!-- Cuerpo -->
         <div class="ws-card-body">
           <p class="ws-desc">{{ w.description }}</p>
 
@@ -37,19 +59,14 @@
             <li><MapPin class="info-icon" /> {{ w.location }}</li>
           </ul>
 
-          <!-- 🔹 Barra de disponibilidad dinámica e invertida -->
+          <!-- Disponibilidad -->
           <div class="ws-availability">
             <p>
               Cupo disponible:
               <span :class="availabilityClass(w)">
-                {{
-                  remainingSlots(w) > 0
-                    ? `${remainingSlots(w)} lugares disponibles`
-                    : "Agotado"
-                }}
+                {{ remainingSlots(w) > 0 ? `${remainingSlots(w)} lugares disponibles` : "Agotado" }}
               </span>
             </p>
-
             <div class="bar">
               <div
                 class="fill"
@@ -63,48 +80,141 @@
             <span v-for="(t, j) in w.tools" :key="j" class="tool">{{ t }}</span>
           </div>
 
+          <!-- Botón (con confirmación) -->
           <button
             class="ws-btn"
-            :disabled="remainingSlots(w) === 0"
-            @click="openDetails(w)"
+            :class="[ levelClass(w), { 'is-full': remainingSlots(w) === 0 } ]"
+            :disabled="isButtonDisabled(w)"
+            :aria-disabled="isButtonDisabled(w)"
+            @click="requestEnroll(w)"
           >
             <User class="btn-icon" />
-            {{
-              remainingSlots(w) === 0 ? "Cupo Lleno" : "Inscribirse al Taller"
-            }}
+            <template v-if="remainingSlots(w) === 0">Cupo Lleno</template>
+            <template v-else-if="enrolledWorkshopId && enrolledWorkshopId !== w.id">No disponible</template>
+            <template v-else-if="enrolledWorkshopId === w.id">Ya inscrito</template>
+            <template v-else>Inscribirse al Taller</template>
           </button>
         </div>
       </article>
     </div>
   </section>
 
-  <WorkshopDetails
-    :show="selectedWorkshop !== null"
-    :workshop="selectedWorkshop"
-    @close="closeDetails"
-  />
+  <!-- Modal de confirmación -->
+  <transition name="fade">
+    <div
+      v-if="confirm.show"
+      class="confirm-backdrop"
+      @click.self="closeConfirm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirmTitle"
+    >
+      <div class="confirm-card">
+        <h3 id="confirmTitle" class="confirm-title">Confirmar registro</h3>
+        <p class="confirm-text">
+          ¿Seguro que quieres registrarte al taller
+          <strong v-if="confirm.workshop">"{{ confirm.workshop.name }}"</strong>?
+        </p>
+        <p class="confirm-note">
+          <strong>Después de registrarte ya no podrás inscribirte a otro taller.</strong>
+        </p>
+        <div class="confirm-actions">
+          <button class="btn-cancel" @click="closeConfirm">Cancelar</button>
+          <button class="btn-confirm" @click="confirmEnroll">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script setup>
-import {
-  User,
-  Clock,
-  Calendar,
-  MapPin,
-  Code2,
-  Cpu,
-  PenTool,
-} from "lucide-vue-next";
-import WorkshopDetails from "@/components/sections/workshops/WorkshopDetails.vue"; // ✅ correcto
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { User, Clock, Calendar, MapPin, Code2, Cpu, PenTool } from "lucide-vue-next";
+import "~/assets/css/styles/workshops/WorkshopsList.css";
+
 
 const MAX_PLACES = 20;
 
-const remainingSlots = (workshop) =>
-  Math.max(0, MAX_PLACES - workshop.occupied);
-const getFillWidth = (workshop) => {
-  const filled = (workshop.occupied / MAX_PLACES) * 100;
-  return Math.min(100, filled);
-};
+/* ===== Estado: 1 sola inscripción ===== */
+const enrolledWorkshopId = ref(null);
+
+/* ===== Toast ===== */
+const toast = ref({ show: false, type: "success", message: "" });
+function showToast(type, message, ms = 3500) {
+  toast.value = { show: true, type, message };
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => (toast.value.show = false), ms);
+}
+
+/* ===== Confirmación ===== */
+const confirm = ref({ show: false, workshop: null });
+function requestEnroll(workshop) {
+  if (remainingSlots(workshop) === 0) return;
+
+  // Ya inscrito en otro -> aviso
+  if (enrolledWorkshopId.value && enrolledWorkshopId.value !== workshop.id) {
+    showToast("warning", "Solo puedes inscribirte a un taller.");
+    return;
+  }
+
+  // Ya inscrito en el mismo
+  if (enrolledWorkshopId.value === workshop.id) {
+    showToast("warning", "Ya estás inscrito en este taller.");
+    return;
+  }
+
+  confirm.value = { show: true, workshop };
+}
+function closeConfirm() {
+  confirm.value = { show: false, workshop: null };
+}
+function onEsc(e) {
+  if (e.key === "Escape" && confirm.value.show) closeConfirm();
+}
+onMounted(() => window.addEventListener("keydown", onEsc));
+onBeforeUnmount(() => window.removeEventListener("keydown", onEsc));
+
+/* ✅ Sumar un lugar ocupado (sin pasar de 20) */
+function incrementOccupied(id) {
+  const idx = workshops.value.findIndex(w => w.id === id);
+  if (idx === -1) return;
+  const w = workshops.value[idx];
+  if (w.occupied >= MAX_PLACES) return; // ya lleno
+  w.occupied += 1;
+}
+
+/* ✅ Confirmar inscripción: marca inscrito y aumenta ocupados */
+function confirmEnroll() {
+  const w = confirm.value.workshop;
+  if (!w) return;
+
+  // Re-checar cupo por si cambió
+  if (remainingSlots(w) === 0) {
+    closeConfirm();
+    showToast("warning", "Este taller se llenó mientras confirmabas.");
+    return;
+  }
+
+  // Respetar la regla de 1 taller
+  if (enrolledWorkshopId.value && enrolledWorkshopId.value !== w.id) {
+    closeConfirm();
+    showToast("warning", "Solo puedes inscribirte a un taller.");
+    return;
+  }
+
+  // Asignar inscripción y aumentar ocupación
+  enrolledWorkshopId.value = w.id;
+  incrementOccupied(w.id);
+
+  closeConfirm();
+  showToast("success", `Inscrito en "${w.name}". Ya no podrás inscribirte en otro taller.`);
+  // Opcional: abrir detalles
+  // selectedWorkshop.value = w;
+}
+
+/* ===== Helpers ===== */
+const remainingSlots = (workshop) => Math.max(0, MAX_PLACES - workshop.occupied);
+const getFillWidth = (workshop) => Math.min(100, (workshop.occupied / MAX_PLACES) * 100);
 const availabilityClass = (workshop) => {
   const remaining = remainingSlots(workshop);
   if (remaining === 0) return "full";
@@ -112,15 +222,22 @@ const availabilityClass = (workshop) => {
   if (remaining <= 10) return "medium";
   return "high";
 };
+const levelClass = (w) => {
+  const lvl = (w.level || "").toLowerCase();
+  if (lvl.includes("avanz")) return "level-advanced";
+  if (lvl.includes("inter")) return "level-intermediate";
+  return "level-beginner";
+};
+const isButtonDisabled = (w) =>
+  remainingSlots(w) === 0 || (enrolledWorkshopId.value && enrolledWorkshopId.value !== w.id);
 
-// Talleres de ejemplo
-const workshops = [
+/* ===== 🔁 Workshops REACTIVOS (para que el UI se actualice) ===== */
+const workshops = ref([
   {
     id: 1,
     name: "React Avanzado con TypeScript",
     category: "Interfaz",
-    description:
-      "Domina conceptos avanzados de React incluyendo hooks personalizados, API de contexto y optimización de rendimiento.",
+    description: "Domina conceptos avanzados de React incluyendo hooks personalizados, API de contexto y optimización de rendimiento.",
     instructor: "Ana Martínez",
     duration: "4 horas",
     date: "15 de marzo de 2025 · 14:00 - 18:00",
@@ -135,15 +252,14 @@ const workshops = [
     id: 2,
     name: "Aprendizaje Automático con Python",
     category: "IA y ML",
-    description:
-      "Aprende los fundamentos del aprendizaje automático y crea tu primer modelo predictivo usando scikit-learn y pandas.",
+    description: "Aprende los fundamentos del aprendizaje automático y crea tu primer modelo predictivo usando scikit-learn y pandas.",
     instructor: "Dr. Carlos Rodríguez",
     duration: "6 horas",
     date: "16 de marzo de 2025 · 09:00 - 15:00",
     location: "Laboratorio B",
     level: "Intermedio",
     gradient: "linear-gradient(135deg, #fde047, #2563eb)",
-    occupied: 12,
+    occupied: 1,
     tools: ["Python", "Scikit-learn", "Pandas", "+3"],
     icon: Cpu,
   },
@@ -151,8 +267,7 @@ const workshops = [
     id: 3,
     name: "Diseño UX/UI Moderno",
     category: "Diseño",
-    description:
-      "Descubre los principios del diseño de experiencia de usuario y crea interfaces atractivas y funcionales desde cero.",
+    description: "Descubre los principios del diseño de experiencia de usuario y crea interfaces atractivas y funcionales desde cero.",
     instructor: "Sofía López",
     duration: "5 horas",
     date: "17 de marzo de 2025 · 10:00 - 15:00",
@@ -163,242 +278,27 @@ const workshops = [
     tools: ["Figma", "Adobe XD", "Bosquejo", "+2"],
     icon: PenTool,
   },
-];
+  {
+    id: 4,
+    name: "Diseño UX/UI Moderno",
+    category: "Diseño",
+    description: "Descubre los principios del diseño de experiencia de usuario y crea interfaces atractivas y funcionales desde cero.",
+    instructor: "Sofía López",
+    duration: "5 horas",
+    date: "17 de marzo de 2025 · 10:00 - 15:00",
+    location: "Estudio de Diseño",
+    level: "Principiante",
+    gradient: "linear-gradient(135deg, #10b981, #1d4ed8)",
+    occupied: 2,
+    tools: ["Figma", "Adobe XD", "Bosquejo", "+2"],
+    icon: PenTool,
+  },
+]);
 
-// ✅ Estado reactivo del modal
 const selectedWorkshop = ref(null);
-
-// ✅ Funciones
-function openDetails(workshop) {
-  selectedWorkshop.value = workshop;
-}
-function closeDetails() {
-  selectedWorkshop.value = null;
-}
+function closeDetails() { selectedWorkshop.value = null; }
 </script>
 
-<style scoped>
-.workshops-section {
-  background: #ffffff;
-  padding: 5rem 1rem;
-  font-family: "Inter", sans-serif;
-  color: #111827;
-}
 
-/* Header general */
-.ws-header {
-  text-align: center;
-  margin-bottom: 3.5rem;
-}
-.ws-title {
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  font-weight: 800;
-}
-.ws-underline {
-  width: 100px;
-  height: 4px;
-  background: #2563eb;
-  border-radius: 999px;
-  margin: 0.75rem auto;
-}
-.ws-subtitle {
-  color: #475569;
-  max-width: 700px;
-  margin: 0 auto;
-  font-size: 1rem;
-}
 
-/* Grid */
-.ws-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 2.5rem;
-}
 
-/* Card base */
-.ws-card {
-  background: #fff;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.ws-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
-}
-
-/* Header del card */
-.ws-card-header {
-  padding: 1.4rem 1.6rem;
-  color: #fff;
-}
-.ws-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.2rem;
-}
-.ws-header-icon {
-  width: 34px;
-  height: 34px;
-  color: #fff;
-}
-.ws-badge {
-  font-size: 0.85rem;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.25);
-  color: #fff;
-}
-.ws-header-info h3 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-bottom: 0.25rem;
-}
-.ws-header-info p {
-  font-size: 0.95rem;
-  opacity: 0.9;
-}
-
-/* Cuerpo */
-.ws-card-body {
-  padding: 1.6rem;
-}
-.ws-desc {
-  font-size: 0.95rem;
-  color: #334155;
-  margin-bottom: 1.1rem;
-}
-
-/* Info */
-.ws-info {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1.2rem;
-  font-size: 0.9rem;
-  color: #475569;
-}
-.ws-info li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.4rem;
-}
-.info-icon {
-  width: 18px;
-  height: 18px;
-  color: #2563eb;
-}
-
-/* 🔹 Barra de disponibilidad invertida */
-.ws-availability {
-  margin-bottom: 1.2rem;
-}
-.ws-availability p {
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
-}
-.ws-availability span {
-  font-weight: 600;
-}
-.ws-availability .high {
-  color: #16a34a;
-}
-.ws-availability .medium {
-  color: #facc15;
-}
-.ws-availability .low {
-  color: #ef4444;
-}
-.ws-availability .full {
-  color: #b91c1c;
-}
-.bar {
-  height: 14px;
-  width: 100%;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-  position: relative;
-}
-.fill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.8s ease, background 0.4s ease;
-  animation: growWidth 1.5s ease forwards;
-}
-
-/* Colores dinámicos (inversos) */
-.fill.high {
-  background: linear-gradient(90deg, #16a34a, #22c55e);
-}
-.fill.medium {
-  background: linear-gradient(90deg, #facc15, #fbbf24);
-}
-.fill.low,
-.fill.full {
-  background: linear-gradient(90deg, #ef4444, #b91c1c);
-}
-
-/* Animación */
-@keyframes growWidth {
-  from {
-    width: 0;
-  }
-}
-
-/* Herramientas */
-.ws-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-.tool {
-  background: #e0e7ff;
-  color: #1e3a8a;
-  font-size: 0.8rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-/* Botón */
-.ws-btn {
-  width: 100%;
-  border-radius: 999px;
-  font-weight: 700;
-  color: #fff;
-  padding: 1rem;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  border: none;
-  cursor: pointer;
-  background: linear-gradient(90deg, #1e3a8a, #2563eb);
-  transition: all 0.3s ease;
-}
-.ws-btn:hover {
-  filter: brightness(1.15);
-}
-.btn-icon {
-  width: 20px;
-  height: 20px;
-}
-.disabled-btn {
-  background: #9ca3af;
-  cursor: not-allowed;
-  filter: grayscale(0.6);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .workshops-section {
-    padding: 3rem 1rem;
-  }
-}
-</style>
