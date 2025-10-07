@@ -43,7 +43,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
         isAuth = true
       }
     } catch (error) {
-      console.log('Auth check failed, redirecting to login')
       authStore.setAuthenticated(false)
       authStore.setUser(null)
     }

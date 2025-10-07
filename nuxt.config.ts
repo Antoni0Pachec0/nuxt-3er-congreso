@@ -30,7 +30,8 @@ export default defineNuxtConfig({
   // ----------------
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx',
+      // apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
     }
   },
 

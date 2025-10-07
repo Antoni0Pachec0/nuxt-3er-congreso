@@ -7,8 +7,6 @@ const baseURL = isDevelopment
   ? 'http://localhost:3001' 
   : 'https://api.congresoti.com.mx';
 
-console.log('🔧 Configurando API base:', baseURL);
-
 const api = axios.create({
   baseURL,
   timeout: 15000,
@@ -20,7 +18,6 @@ const api = axios.create({
 
 // Interceptor de request SIMPLIFICADO
 api.interceptors.request.use((config) => {
-  console.log('🚀 Request a:', config.url);
   
   // 🔥 SOLO HEADERS ESENCIALES - eliminar headers problemáticos
   config.headers['X-Requested-With'] = 'XMLHttpRequest';
@@ -34,7 +31,6 @@ api.interceptors.request.use((config) => {
 // Interceptor de response
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ Response de:', response.config.url, response.status);
     return response;
   },
   (error) => {

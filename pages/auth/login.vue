@@ -205,7 +205,6 @@ async function onSubmit() {
     // 🔥 NUEVO: GUARDAR TOKENS EN LOCALSTORAGE SI VIENEN EN LA RESPUESTA
     if (response?.access_token) {
       localStorage.setItem('access_token', response.access_token);
-      console.log('✅ Token guardado en localStorage');
     }
     if (response?.refresh_token) {
       localStorage.setItem('refresh_token', response.refresh_token);
