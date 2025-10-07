@@ -8,13 +8,27 @@
       </p>
 
       <div class="button-group">
-        <button class="btn primary" @click="goToGame" aria-label="Ir al juego">
-          Game
+        <button 
+          class="btn primary" 
+          @click="goToGame" 
+          aria-label="Ir al juego"
+          :disabled="loading"
+        >
+          <span v-if="loading">Cargando...</span>
+          <span v-else>Game</span>
         </button>
-        <button class="btn danger" @click="logout" aria-label="Cerrar sesión">
-          Cerrar Sesión
+        <button 
+          class="btn danger" 
+          @click="handleLogout" 
+          aria-label="Cerrar sesión"
+          :disabled="loading"
+        >
+          <span v-if="loading">Cerrando...</span>
+          <span v-else>Cerrar Sesión</span>
         </button>
       </div>
+
+      <p v-if="error" class="error-message">{{ error }}</p>
     </div>
   </main>
 </template>
@@ -31,19 +45,42 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
+const loading = ref(false)
+const error = ref('')
 
 function goToGame() {
-  return navigateTo(R.path('game')) // 👈 usa tu tabla de rutas
+  return navigateTo(R.path('game'))
 }
 
-async function logout() {
+async function handleLogout() {
+  if (loading.value) return
+  
+  loading.value = true
+  error.value = ''
+
   try {
+    // Usar window.location para forzar la navegación y evitar middlewares
     await authStore.logout()
-  } catch (error) {
-    console.error('Error durante logout:', error)
-    await navigateTo('/login')
+    
+    // Forzar recarga completa para evitar problemas con middlewares
+    window.location.href = '/login'
+    
+  } catch (err) {
+    console.error('Error durante logout:', err)
+    error.value = 'Error al cerrar sesión. Redirigiendo...'
+    
+    // Forzar redirección incluso con error
+    setTimeout(() => {
+      window.location.href = '/login'
+    }, 1000)
+  } finally {
+    loading.value = false
   }
 }
+
+onMounted(() => {
+  authStore.loadFromStorage()
+})
 </script>
 
 <style scoped>
@@ -103,10 +140,17 @@ async function logout() {
   font-weight: 800;
   letter-spacing: .3px;
   transition: transform .12s ease, box-shadow .2s ease, background-color .2s ease;
+  font-family: inherit;
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
   transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn.primary {
@@ -114,12 +158,26 @@ async function logout() {
   color: #fff;
   box-shadow: 0 6px 14px rgba(0, 179, 148, .35);
 }
-.btn.primary:hover { background-color: #00a086; }
+.btn.primary:hover:not(:disabled) { 
+  background-color: #00a086; 
+}
 
 .btn.danger {
   background-color: #f57000;
   color: #fff;
   box-shadow: 0 6px 14px rgba(245, 112, 0, .35);
 }
-.btn.danger:hover { background-color: #d55f00; }
+.btn.danger:hover:not(:disabled) { 
+  background-color: #d55f00; 
+}
+
+.error-message {
+  color: #ff6b6b;
+  margin-top: 1rem;
+  font-size: 14px;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
 </style>

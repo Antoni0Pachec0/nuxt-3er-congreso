@@ -199,8 +199,17 @@ async function onSubmit() {
     const response = await $fetch(`${config.public.apiBase}/auth/login`, {
       method: 'POST',
       body: payload,
-      credentials: 'include', // 🔥 necesario para cookies JWT
+      credentials: 'include',
     })
+
+    // 🔥 NUEVO: GUARDAR TOKENS EN LOCALSTORAGE SI VIENEN EN LA RESPUESTA
+    if (response?.access_token) {
+      localStorage.setItem('access_token', response.access_token);
+      console.log('✅ Token guardado en localStorage');
+    }
+    if (response?.refresh_token) {
+      localStorage.setItem('refresh_token', response.refresh_token);
+    }
 
     // 🔹 Caso 1: verificación pendiente
     if (response?.require_verification) {
@@ -221,6 +230,9 @@ async function onSubmit() {
       const userId = response.user_id
       authStore.setUser({ id: userId, email: payload.email })
       authStore.setAuthenticated(true)
+
+      // 🔥 GUARDAR USER ID
+      localStorage.setItem('userId', userId.toString());
 
       toast?.resolve?.({
         title: '¡Bienvenido!',

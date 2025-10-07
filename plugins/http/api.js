@@ -1,43 +1,54 @@
 // utils/http/api.js
 import axios from 'axios';
 
-// Función para obtener el valor de una cookie por su nombre
-function getCookie(name) {
-  if (typeof document === 'undefined') return null; // Previene errores en el servidor (Nuxt)
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return null;
-}
+// Configuración base
+const isDevelopment = process.env.NODE_ENV === 'development';
+const baseURL = isDevelopment 
+  ? 'http://localhost:3001' 
+  : 'https://api.congresoti.com.mx';
 
-const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx';
+console.log('🔧 Configurando API base:', baseURL);
 
 const api = axios.create({
   baseURL,
   timeout: 15000,
-  headers: { 'Content-Type': 'application/json' },
-  withCredentials: true, // Esto es vital para enviar y recibir cookies
+  headers: { 
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // IMPORTANTE para cookies
 });
 
-// Agrega Authorization leyendo el token de la cookie
+// Interceptor de request SIMPLIFICADO
 api.interceptors.request.use((config) => {
-  // 💡 Nombre de la cookie donde tu backend guarda el token de acceso
-  const token = getCookie('access_token'); 
+  console.log('🚀 Request a:', config.url);
   
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  // 🔥 SOLO HEADERS ESENCIALES - eliminar headers problemáticos
+  config.headers['X-Requested-With'] = 'XMLHttpRequest';
   
   return config;
+}, (error) => {
+  console.error('❌ Error en request:', error);
+  return Promise.reject(error);
 });
 
-// Mensaje legible para problemas de red
+// Interceptor de response
 api.interceptors.response.use(
-  (res) => res,
+  (response) => {
+    console.log('✅ Response de:', response.config.url, response.status);
+    return response;
+  },
   (error) => {
+    console.error('❌ Error en response:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.message,
+      code: error.code
+    });
+    
     if (error.code === 'ERR_NETWORK') {
-      error.message = `No se pudo conectar al servidor (${baseURL}). Verifica que esté arriba.`;
+      error.message = `No se pudo conectar al servidor (${baseURL}). Verifica la conexión.`;
     }
+    
     return Promise.reject(error);
   }
 );

@@ -72,7 +72,7 @@ const gameContainer = ref(null);
 const gameCanvas = ref(null);
 const router = useRouter();
 
-// 🔥 Función para obtener cookies
+// Función para obtener cookies
 function getCookie(name) {
   if (typeof document === 'undefined') return null;
   
@@ -90,13 +90,35 @@ function getCookie(name) {
   }
 }
 
-// 🔥 Verificar autenticación
+// Función para obtener token de acceso
+function getAccessToken() {
+  // 1. Intentar desde cookies
+  const cookieToken = getCookie('access_token');
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  // 2. Intentar desde localStorage
+  const localStorageToken = localStorage.getItem('access_token');
+  if (localStorageToken) {
+    return localStorageToken;
+  }
+
+  // 3. Intentar desde sessionStorage
+  const sessionStorageToken = sessionStorage.getItem('access_token');
+  if (sessionStorageToken) {
+    return sessionStorageToken;
+  }
+
+  return null;
+}
+
+// Verificar autenticación
 const checkAuthentication = async () => {
-  // 1. Verificar token de acceso en cookies
-  const accessToken = getCookie('access_token');
-  if (accessToken) {
+  // 1. Verificar token de acceso
+  const accessToken = getAccessToken();
+  if (accessToken && accessToken !== 'COOKIE_TOKEN_AVAILABLE') {
     try {
-      // Decodificar el token para verificar que es válido
       const base64Url = accessToken.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
@@ -109,40 +131,24 @@ const checkAuthentication = async () => {
         return true;
       }
     } catch (error) {
-      console.error('Error decodificando token:', error);
+      // Token inválido, continuar con otros métodos
     }
   }
 
-  // 2. Verificar refresh token
-  const refreshToken = getCookie('refresh_token');
-  if (refreshToken) {
-    try {
-      const base64Url = refreshToken.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      const decoded = JSON.parse(jsonPayload);
-      
-      if (decoded && decoded.userId) {
-        localStorage.setItem('userId', decoded.userId.toString());
-        return true;
-      }
-    } catch (error) {
-      console.error('Error decodificando refresh token:', error);
-    }
-  }
-
-  // 3. Verificar si ya tenemos userId en localStorage
+  // 2. Verificar si ya tenemos userId en localStorage
   const storedUserId = localStorage.getItem('userId');
   if (storedUserId) {
-    return true;
+    const tokenResult = await getTokenForExistingUser();
+    if (tokenResult) {
+      return true;
+    }
+    return true; // Permitir jugar pero no guardar score
   }
 
   return false;
 };
 
-// --- Lógica del juego ---
+// Lógica del juego
 class CarRacing {
   constructor(canvas, router) {
     this.canvas = canvas;
@@ -162,6 +168,11 @@ class CarRacing {
     this.gameLoopId = null;
     this.userId = null;
     this.scoreSent = false;
+    
+    // Sistema de carriles
+    this.lanes = [];
+    this.initializeLanes();
+    
     this.backgrounds = [fondo1, fondo2, fondo3];
     this.currentBackgroundIndex = 0;
     this.backgroundImages = this.backgrounds.map(src => {
@@ -169,35 +180,45 @@ class CarRacing {
       img.src = src;
       return img;
     });
+    
     this.playerCarImage = new Image();
     this.playerCarImage.src = carMotocle;
+    
     this.enemyCarImages = [new Image(), new Image(), new Image(), new Image(), new Image()];
     this.enemyCarImages[0].src = combi;
     this.enemyCarImages[1].src = carro;
     this.enemyCarImages[2].src = hinfinitum;
     this.enemyCarImages[3].src = moto;
     this.enemyCarImages[4].src = bici;
+    
     this.crashImages = [new Image(), new Image(), new Image(), new Image(), new Image()];
     this.crashImages[0].src = Pedraza;
     this.crashImages[1].src = Elvis;
     this.crashImages[2].src = Julio;
     this.crashImages[3].src = Victor;
     this.crashImages[4].src = bici;
+    
     this.elitLogo = new Image();
     this.elitLogo.src = Elit;
     this.congresoLogo = new Image();
     this.congresoLogo.src = LogoCongreso;
+    
     this.enemyPool = [0, 1, 2, 3, 4];
     this.shuffleEnemies();
+    
+    // Sistema de dificultad progresiva
     this.lastSpawnTime = 0;
+    this.baseSpawnInterval = 2000;
     this.minSpawnInterval = 500;
+    this.difficultyLevel = 1;
+    this.maxDifficulty = 10;
+    
     this.initialize();
     this.loadUserId();
     this.keys = {};
     
     window.addEventListener("keydown", (e) => {
       this.keys[e.key] = true;
-      if (this.backgroundMusic && this.backgroundMusic.paused) this.backgroundMusic.play();
     });
     window.addEventListener("keyup", (e) => this.keys[e.key] = false);
     
@@ -209,29 +230,48 @@ class CarRacing {
     window.addEventListener("resize", () => this.resizeCanvas());
   }
 
+  initializeLanes() {
+    const roadWidth = this.base_width / 2;
+    const roadX = this.base_width / 4;
+    const laneWidth = roadWidth / 3;
+    
+    this.lanes = [
+      roadX + laneWidth * 0.5 - this.enemy_width * 0.5,
+      roadX + laneWidth * 1.5 - this.enemy_width * 0.5,
+      roadX + laneWidth * 2.5 - this.enemy_width * 0.5
+    ];
+  }
+
+  updateDifficulty() {
+    const previousLevel = this.difficultyLevel;
+    
+    this.difficultyLevel = Math.min(this.maxDifficulty, Math.floor(this.score / 10) + 1);
+    
+    this.enemy_speed = 4 + (this.difficultyLevel * 0.5);
+    this.bg_speed = this.enemy_speed;
+    
+    const spawnReduction = (this.difficultyLevel - 1) * 0.15;
+    this.currentSpawnInterval = Math.max(
+      this.minSpawnInterval, 
+      this.baseSpawnInterval * (1 - spawnReduction)
+    );
+    
+    this.maxEnemiesOnScreen = Math.min(6, 2 + Math.floor(this.difficultyLevel / 2));
+  }
+
   loadUserId() {
-    // Intentar obtener de localStorage
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       this.userId = parseInt(storedUserId, 10);
-      console.log('✅ UserId cargado desde localStorage:', this.userId);
       return;
     }
 
-    // Intentar extraer del token JWT en cookies
-    const cookieToken = getCookie('access_token');
-    if (cookieToken) {
-      this.extractUserIdFromToken(cookieToken);
-    } else {
-      // Intentar con refresh token
-      const refreshToken = getCookie('refresh_token');
-      if (refreshToken) {
-        this.extractUserIdFromToken(refreshToken);
-      }
+    const token = getAccessToken();
+    if (token) {
+      this.extractUserIdFromToken(token);
     }
   }
 
-  // Extraer userId del token JWT
   extractUserIdFromToken(token) {
     try {
       const base64Url = token.split('.')[1];
@@ -247,128 +287,118 @@ class CarRacing {
         if (this.userId) {
           this.userId = parseInt(this.userId, 10);
           localStorage.setItem('userId', this.userId.toString());
-          console.log('✅ UserId extraído del token:', this.userId);
         }
       }
     } catch (error) {
-      console.error('Error extrayendo userId del token:', error);
+      // Error silencioso al extraer userId del token
     }
   }
 
-  // 🔥 CORREGIDO: Enviar puntaje al backend
+  // Enviar puntaje al backend
   async sendScoreToBackend() {
-    // Prevenir múltiples envíos
     if (this.scoreSent) {
-      console.log('⏩ Score ya enviado, omitiendo...');
       return;
     }
 
-    // Marcar como enviado inmediatamente
     this.scoreSent = true;
 
-    // Verificar que tenemos un userId válido
     if (!this.userId) {
       this.loadUserId();
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     if (!this.userId) {
-      console.log('❌ No se puede enviar: userId no disponible');
       this.displayAuthMessage();
-      this.scoreSent = false; // Permitir reintento
+      this.scoreSent = false;
       return;
     }
 
     if (this.score <= 0) {
-      console.log('📊 Puntaje 0, no se envía');
-      this.scoreSent = false; // Permitir reintento para puntajes > 0
+      this.scoreSent = false;
       return;
     }
 
-    console.log('🚀 Enviando puntaje al backend:', {
-      userId: this.userId,
-      score: this.score
-    });
-
     try {
-      const response = await api.post(ROUTES.SCORES.CREATE, {
+      const accessToken = getAccessToken();
+      
+      if (!accessToken || accessToken === 'COOKIE_TOKEN_AVAILABLE') {
+        const response = await api.post(ROUTES.SCORES.CREATE, {
+          value: this.score
+        }, {
+          timeout: 10000,
+          withCredentials: true
+        });
+
+        this.displaySuccessMessage();
+        return;
+      }
+
+      const payload = {
         value: this.score
-      }, {
-        timeout: 8000
+      };
+
+      const response = await api.post(ROUTES.SCORES.CREATE, payload, {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        withCredentials: true
       });
 
-      console.log('✅ Puntaje guardado con éxito:', response.data);
       this.displaySuccessMessage();
       
     } catch (error) {
-      console.error('❌ Error al enviar puntaje:', {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-      
-      // Resetear para permitir reintento en caso de error
       this.scoreSent = false;
       
       if (error.response?.status === 401) {
-        localStorage.removeItem('userId');
-        this.userId = null;
-        this.displayAuthErrorMessage();
+        this.handleTokenExpired();
+      } else if (error.response?.status === 400) {
+        this.displayErrorMessage('Error en los datos enviados');
+      } else if (error.code === 'ECONNABORTED') {
+        this.displayErrorMessage('Tiempo de espera agotado');
       } else {
-        this.displayErrorMessage();
+        this.displayErrorMessage('Error de conexión');
       }
     }
   }
 
-  // Mostrar mensaje de autenticación requerida
+  // Manejar token expirado
+  async handleTokenExpired() {
+    localStorage.removeItem('userId');
+    this.userId = null;
+    
+    localStorage.removeItem('access_token');
+    sessionStorage.removeItem('access_token');
+    
+    this.displayAuthErrorMessage();
+  }
+
   displayAuthMessage() {
-    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
-    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
-    
-    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
-    this.ctx.font = `bold 28px Comic Sans MS`;
-    this.ctx.fillStyle = "#FF6B6B";
-    this.ctx.textAlign = "center";
-    this.ctx.fillText("⚠️ Inicia sesión para guardar tu puntaje", this.base_width / 2, this.base_height / 2 + 250);
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.drawMessage("⚠️ Inicia sesión para guardar tu puntaje", "#FF6B6B");
   }
 
-  // Mostrar mensaje de éxito
   displaySuccessMessage() {
-    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
-    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
-    
-    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
-    this.ctx.font = `bold 28px Comic Sans MS`;
-    this.ctx.fillStyle = "#4ECDC4";
-    this.ctx.textAlign = "center";
-    this.ctx.fillText("✅ Puntaje guardado exitosamente", this.base_width / 2, this.base_height / 2 + 250);
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.drawMessage("✅ Puntaje guardado exitosamente", "#4ECDC4");
   }
 
-  // Mostrar mensaje de error de autenticación
   displayAuthErrorMessage() {
-    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
-    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
-    
-    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
-    this.ctx.font = `bold 24px Comic Sans MS`;
-    this.ctx.fillStyle = "#FF6B6B";
-    this.ctx.textAlign = "center";
-    this.ctx.fillText("🔐 Sesión expirada. Vuelve a iniciar sesión", this.base_width / 2, this.base_height / 2 + 250);
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.drawMessage("🔐 Sesión expirada. Vuelve a iniciar sesión", "#FF6B6B");
   }
 
-  // Mostrar mensaje de error genérico
-  displayErrorMessage() {
+  displayErrorMessage(customMessage = "⚠️ Error al guardar puntaje") {
+    this.drawMessage(customMessage, "#FFA500");
+  }
+
+  drawMessage(message, color) {
     const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
     const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
     
     this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
     this.ctx.font = `bold 24px Comic Sans MS`;
-    this.ctx.fillStyle = "#FFA500";
+    this.ctx.fillStyle = color;
     this.ctx.textAlign = "center";
-    this.ctx.fillText("⚠️ Error al guardar puntaje. Intenta de nuevo", this.base_width / 2, this.base_height / 2 + 250);
+    this.ctx.fillText(message, this.base_width / 2, this.base_height / 2 + 250);
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
   
@@ -383,6 +413,7 @@ class CarRacing {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     this.scale = Math.min(window.innerWidth / this.base_width, window.innerHeight / this.base_height);
+    this.initializeLanes();
   }
   
   initialize() {
@@ -404,52 +435,60 @@ class CarRacing {
     this.road_x = this.base_width / 4;
     this.currentBackgroundIndex = 0;
     this.lastSpawnTime = 0;
-    this.spawnEnemy();
+    this.difficultyLevel = 1;
+    this.maxEnemiesOnScreen = 2;
+    this.currentSpawnInterval = this.baseSpawnInterval;
+    
+    this.initializeLanes();
+    this.updateDifficulty();
   }
   
   spawnEnemy() {
+    if (this.enemies.length >= this.maxEnemiesOnScreen) {
+      return;
+    }
+
     if (this.enemyPool.length === 0) {
       this.enemyPool = [0, 1, 2, 3, 4];
       this.shuffleEnemies();
     }
+    
     const designIndex = this.enemyPool.pop();
-    const hitboxScale = 0.5;
-    const maxAttempts = 10;
-    const verticalBuffer = this.enemy_height * 2;
-    let attempts = 0;
-    let enemy_x, validPosition;
-    do {
-      validPosition = true;
-      enemy_x = Math.floor(Math.random() * (this.road_width - this.enemy_width)) + this.road_x;
-      const newEnemyRect = {
-        x: enemy_x + this.enemy_width * (1 - hitboxScale) / 2,
-        y: -this.enemy_height + this.enemy_height * (1 - hitboxScale) / 2,
-        width: this.enemy_width * hitboxScale,
-        height: this.enemy_height * hitboxScale + verticalBuffer
-      };
-      for (let existingEnemy of this.enemies) {
-        const existingRect = {
-          x: existingEnemy.x + this.enemy_width * (1 - hitboxScale) / 2,
-          y: existingEnemy.y + this.enemy_height * (1 - hitboxScale) / 2,
-          width: this.enemy_width * hitboxScale,
-          height: this.enemy_height * hitboxScale + verticalBuffer
-        };
-        if (newEnemyRect.x < existingRect.x + existingRect.width &&
-          newEnemyRect.x + newEnemyRect.width > existingRect.x &&
-          newEnemyRect.y < existingRect.y + existingRect.height &&
-          newEnemyRect.y + newEnemyRect.height > existingRect.y) {
-          validPosition = false;
+    const availableLanes = this.getAvailableLanes();
+    if (availableLanes.length === 0) {
+      this.enemyPool.push(designIndex);
+      return;
+    }
+    
+    const randomLaneIndex = Math.floor(Math.random() * availableLanes.length);
+    const enemy_x = availableLanes[randomLaneIndex];
+    
+    this.enemies.push({ 
+      x: enemy_x, 
+      y: -this.enemy_height, 
+      designIndex,
+      lane: availableLanes.indexOf(enemy_x)
+    });
+    
+    this.lastSpawnTime = Date.now();
+  }
+  
+  getAvailableLanes() {
+    const availableLanes = [...this.lanes];
+    const safeDistance = this.enemy_height * 1.5;
+    
+    for (let i = availableLanes.length - 1; i >= 0; i--) {
+      const laneX = availableLanes[i];
+      
+      for (const enemy of this.enemies) {
+        if (Math.abs(enemy.x - laneX) < 10 && enemy.y > -safeDistance) {
+          availableLanes.splice(i, 1);
           break;
         }
       }
-      attempts++;
-    } while (!validPosition && attempts < maxAttempts);
-    if (validPosition) {
-      this.enemies.push({ x: enemy_x, y: -this.enemy_height, designIndex });
-      this.lastSpawnTime = Date.now();
-    } else {
-      this.enemyPool.push(designIndex);
     }
+    
+    return availableLanes;
   }
   
   handleTouchStart(e) {
@@ -487,6 +526,7 @@ class CarRacing {
     const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
     const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
     this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
+    
     const bgImage = this.backgroundImages[this.currentBackgroundIndex];
     if (bgImage.complete && bgImage.naturalWidth !== 0) {
       this.ctx.drawImage(bgImage, 0, this.bg_y, this.base_width, this.base_height);
@@ -495,12 +535,14 @@ class CarRacing {
       this.ctx.fillStyle = this.green;
       this.ctx.fillRect(0, 0, this.base_width, this.base_height);
     }
+    
     if (this.playerCarImage.complete && this.playerCarImage.naturalWidth !== 0) {
       this.ctx.drawImage(this.playerCarImage, this.car_x, this.car_y, this.car_width, this.car_height);
     } else {
       this.ctx.fillStyle = this.red;
       this.ctx.fillRect(this.car_x, this.car_y, this.car_width, this.car_height);
     }
+    
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
       const img = this.enemyCarImages[enemy.designIndex];
@@ -510,14 +552,18 @@ class CarRacing {
         this.ctx.fillStyle = this.white;
         this.ctx.fillRect(enemy.x, enemy.y, this.enemy_width, this.enemy_height);
       }
+      
       if (enemy.y > this.base_height + this.enemy_height) {
         this.enemies.splice(i, 1);
         this.score++;
+        this.updateDifficulty();
+        
         if (this.score % 15 === 0) {
           this.currentBackgroundIndex = (this.currentBackgroundIndex + 1) % this.backgroundImages.length;
         }
       }
     }
+    
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     const hudX = Math.round(offsetX + 10 * this.scale);
     const hudY = Math.round(offsetY + 40 * this.scale);
@@ -526,6 +572,10 @@ class CarRacing {
     this.ctx.fillStyle = this.white;
     this.ctx.textAlign = "left";
     this.ctx.fillText(`Puntaje: ${this.score}`, hudX, hudY);
+    
+    const levelX = Math.round(offsetX + 10 * this.scale);
+    const levelY = Math.round(offsetY + 80 * this.scale);
+    this.ctx.fillText(`Nivel: ${this.difficultyLevel}`, levelX, levelY);
   }
   
   display_message(msg) {
@@ -537,7 +587,6 @@ class CarRacing {
     this.game_over = true;
     this.drawGameOverScreen(msg);
     
-    // Enviar puntaje al backend (solo una vez)
     if (!this.scoreSent) {
       this.sendScoreToBackend();
     }
@@ -559,10 +608,12 @@ class CarRacing {
     this.ctx.fillText(`Puntaje final: ${this.score}`, this.base_width / 2, baseY + 70);
     this.ctx.font = `30px Comic Sans MS`;
     this.ctx.fillText("Toca la pantalla o F para reiniciar", this.base_width / 2, baseY + 130);
+    this.ctx.fillText(`Nivel alcanzado: ${this.difficultyLevel}`, this.base_width / 2, baseY + 180);
+    
     if (this.crashEnemy !== undefined) {
       const crashImg = this.crashImages[this.crashEnemy];
       if (crashImg && crashImg.complete) {
-        this.ctx.drawImage(crashImg, this.base_width / 2 - 200, baseY + 180, 400, 500);
+        this.ctx.drawImage(crashImg, this.base_width / 2 - 200, baseY + 220, 400, 500);
       }
     }
     if (this.elitLogo && this.elitLogo.complete) {
@@ -608,6 +659,7 @@ class CarRacing {
       if (this.bg_y >= this.base_height) {
         this.bg_y = 0;
       }
+      
       if (this.keys["ArrowLeft"] || this.keys["a"] || this.keys["A"]) {
         this.car_x -= this.car_speed;
       }
@@ -620,19 +672,24 @@ class CarRacing {
       if (this.keys["ArrowDown"] || this.keys["s"] || this.keys["S"]) {
         this.car_y += this.car_speed;
       }
+      
       this.car_x = Math.max(this.road_x, Math.min(this.car_x, this.road_x + this.road_width - this.car_width));
       this.car_y = Math.max(0, Math.min(this.car_y, this.base_height - this.car_height));
+      
       for (let enemy of this.enemies) {
         enemy.y += this.enemy_speed;
       }
+      
       const currentTime = Date.now();
-      if (currentTime - this.lastSpawnTime > this.minSpawnInterval) {
+      if (currentTime - this.lastSpawnTime > this.currentSpawnInterval) {
         this.spawnEnemy();
       }
+      
       if (this.check_collision()) {
         this.display_message("¡Choque! Fin del juego");
         return;
       }
+      
       this.draw_objects();
     } else {
       this.drawGameOverScreen("¡Choque! Fin del juego");
@@ -652,6 +709,34 @@ class CarRacing {
     requestAnimationFrame(gameLoop);
   }
 }
+
+// Obtener token para usuarios existentes
+const getTokenForExistingUser = async () => {
+  const userId = localStorage.getItem('userId');
+  
+  if (!userId) {
+    return null;
+  }
+
+  const existingToken = localStorage.getItem('access_token');
+  if (existingToken) {
+    return existingToken;
+  }
+
+  try {
+    const response = await api.get(ROUTES.AUTH.ME, {
+      withCredentials: true
+    });
+    
+    if (response.data) {
+      return 'COOKIE_TOKEN_AVAILABLE';
+    }
+  } catch (error) {
+    // Error silencioso
+  }
+
+  return null;
+};
 
 let gameInstance = null;
 
@@ -679,11 +764,6 @@ const startGame = async () => {
 const togglePause = () => {
   if (gameInstance) {
     gameInstance.paused = !gameInstance.paused;
-    if (gameInstance.paused) {
-      if (gameInstance.backgroundMusic) gameInstance.backgroundMusic.pause();
-    } else {
-      if (gameInstance.backgroundMusic) gameInstance.backgroundMusic.play();
-    }
   }
 };
 
@@ -700,8 +780,9 @@ const nextSong = () => {
   }
 };
 
+// 🔥 CORREGIDO: Navegación al leaderboard
 const navigateToLeaderboard = () => {
-  router.push('/leaderboard');
+  router.push('/game/leaderboard');
 };
 
 onMounted(() => {

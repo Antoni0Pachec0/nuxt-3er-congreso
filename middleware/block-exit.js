@@ -4,32 +4,42 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   const authStore = useAuthStore()
 
-  // Si estamos en pleno logout, permitir cualquier navegación (para ir a /login)
-  if (authStore.isLoggingOut) return
-
-  // Si no está autenticado, no bloqueamos (el otro middleware de auth se encarga de redirigir al login)
-  if (!authStore.isAuthenticated) return
-
-  // --- 1) Bloquear salidas desde /user-home ---
-  if (from?.path === '/user-home') {
-    // ÚNICA ruta permitida desde home:
-    const allowedFromHome = new Set(['/game/game'])
-
-    if (!allowedFromHome.has(to.path)) {
-      // Opcional: aviso
-      // alert('Para salir, usa el botón "Game" o "Cerrar Sesión".')
-      return abortNavigation() // se queda en /user-home
-    }
-    return // permitido: /game/game
+  // Permitir navegación a login durante logout o si no está autenticado
+  if (authStore.isLoggingOut || !authStore.isAuthenticated) {
+    return
   }
 
-  // --- 2) (Opcional) Bloquear salidas desde /game/game ---
-  // Si también quieres que desde el juego NO se pueda ir a otras vistas
-  // excepto volver al home (o logout), activa este bloque:
+  // Permitir siempre navegación a login y rutas de auth
+  const ALLOWED_PATHS = new Set([
+    '/login',
+    '/register', 
+    '/verify',
+    '/forgot',
+    '/reset',
+    '/auth/logout'
+  ])
+
+  if (ALLOWED_PATHS.has(to.path)) {
+    return
+  }
+
+  // Bloquear salidas desde /user-home
+  if (from?.path === '/user-home') {
+    const allowedFromHome = new Set(['/game/game'])
+    
+    if (!allowedFromHome.has(to.path)) {
+      console.log('Navegación bloqueada desde user-home. Usa los botones "Game" o "Cerrar Sesión".')
+      return abortNavigation()
+    }
+    return
+  }
+
+  // Bloquear salidas desde /game/game
   if (from?.path === '/game/game') {
     const allowedFromGame = new Set(['/user-home'])
     if (!allowedFromGame.has(to.path)) {
-      return abortNavigation() // se queda en /game/game
+      console.log('Navegación bloqueada desde game. Usa el botón para volver al home.')
+      return abortNavigation()
     }
     return
   }

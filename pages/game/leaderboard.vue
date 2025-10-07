@@ -49,8 +49,14 @@
               </td>
               <td class="player-cell">
                 <div class="player-info">
-                  <span class="player-name">{{ user.name_user || user.email || 'Anónimo' }}</span>
-                  <span class="player-email" v-if="user.email && user.name_user">{{ user.email }}</span>
+                  <!-- ✅ CORREGIDO: Mejor lógica para mostrar nombres -->
+                  <span class="player-name">{{ getUserDisplayName(user) }}</span>
+                  <span 
+                    class="player-email" 
+                    v-if="shouldShowEmail(user)"
+                  >
+                    {{ user.email }}
+                  </span>
                 </div>
               </td>
               <td class="score-cell">
@@ -85,6 +91,18 @@ const leaderboard = ref([])
 const loading = ref(true)
 const error = ref(null)
 
+// ✅ CORREGIDO: Función para determinar qué nombre mostrar
+const getUserDisplayName = (user) => {
+  if (user.name_user) return user.name_user
+  if (user.email) return user.email.split('@')[0] // Mostrar solo la parte antes del @
+  return 'Anónimo'
+}
+
+// ✅ CORREGIDO: Función para determinar si mostrar email
+const shouldShowEmail = (user) => {
+  return user.email && user.name_user // Solo mostrar email si también hay nombre
+}
+
 const loadLeaderboard = async () => {
   try {
     loading.value = true
@@ -93,6 +111,7 @@ const loadLeaderboard = async () => {
     
     const response = await api.get(ROUTES.SCORES.LEADERBOARD)
     console.log('✅ Leaderboard cargado:', response.data)
+    console.log('📊 Total de registros:', response.data.length) // ← Para verificar
     
     leaderboard.value = response.data
   } catch (err) {
