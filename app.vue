@@ -1,8 +1,7 @@
 <!-- app.vue -->
 <template>
   <div>
-    <LoadingOverlay />
-
+<!-- <LoadingOverlay />-->
     <Header />
     <NuxtPage />
     <Footer />

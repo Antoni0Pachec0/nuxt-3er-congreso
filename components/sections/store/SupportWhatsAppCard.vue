@@ -8,7 +8,7 @@
         administrador de ventas y realiza tu compra por WhatsApp.
       </p>
 
-      <a class="wa-btn" :href="waLink" target="_blank" rel="noopener">
+      <a class="wa-btn" :href="href" target="_blank" rel="noopener">
         <Icon icon="simple-icons:whatsapp" width="18" class="wa-btn__icon" />
         <span>Enviar mensaje por WhatsApp</span>
       </a>

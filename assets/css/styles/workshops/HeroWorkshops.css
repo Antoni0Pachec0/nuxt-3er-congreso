@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;800&display=swap");
+
+.ws-hero-section {
+  position: relative;
+  background: linear-gradient(135deg, #0b1534, #1d4ed8);
+  color: #fff;
+  overflow: hidden;
+}
+
+.ws-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1rem 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+}
+
+.ws-hero-text {
+  flex: 1;
+}
+
+.ws-hero-img-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.ws-hero-img {
+  max-width: 450px;
+  width: 100%;
+  border-radius: 16px;
+}
+
+.ws-hero-subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.ws-hero-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  font-family: "Orbitron", sans-serif;
+}
+
+.ws-hero-description {
+  font-size: 1rem;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ws-hero-btn {
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: transparent;
+  color: #ffffff;
+  padding: 1.5rem 2.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  margin-bottom: 1.75rem;
+}
+
+.ws-wave {
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 100vw;
+  height: 170px;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ws-icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.2;
+  margin-right: 1rem;
+}
+
+.ws-hero-btn:hover {
+  background: #ffffff22;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Responsivo */
+@media (min-width: 768px) {
+  .ws-hero-container {
+    flex-direction: row;
+    text-align: left;
+  }
+  .ws-hero-text {
+    align-self: center;
+  }
+}
