@@ -1,66 +1,63 @@
-// middleware/auth.global.ts (o el archivo que ya tienes)
-import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
-import api from '~/plugins/http/api'
-import { ROUTES } from '~/plugins/http/routes'
-
+// middleware/auth.global.js
 export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
 
-  // helper para saber si hay sesión usando cookies httpOnly
-  const isAuthenticated = async () => {
+  const config = useRuntimeConfig()
+  const authStore = useAuthStore()
+  
+  // Cargar estado inicial desde localStorage
+  if (!authStore.isAuthenticated) {
+    authStore.loadFromStorage()
+  }
+
+  // Rutas públicas (sin sesión requerida)
+  const PUBLIC_PATHS = new Set([
+    '/', '/login', '/register', '/verify', '/forgot', '/reset'
+  ])
+  const isPublic = PUBLIC_PATHS.has(to.path) || to.meta?.guestOnly === true
+
+  // Si está en proceso de logout, permitir navegación a login
+  if (authStore.isLoggingOut && to.path === '/login') {
+    return
+  }
+
+  // Si ya está autenticado en el store, permitir
+  let isAuth = authStore.isAuthenticated
+
+  // Si no está autenticado pero va a una ruta privada, verificar con backend
+  if (!isAuth && !isPublic) {
     try {
-      await api.get(ROUTES.AUTH.ME, { withCredentials: true })
-      return true
-    } catch {
-      return false
+      const me = await $fetch(`${config.public.apiBase}/auth/me`, { 
+        credentials: 'include',
+        retry: 0,
+        timeout: 5000
+      })
+      
+      if (me?.user_id) {
+        authStore.setUser({ 
+          id: me.user_id, 
+          email: me.email,
+          name: me.name_user 
+        })
+        authStore.setAuthenticated(true)
+        isAuth = true
+      }
+    } catch (error) {
+      authStore.setAuthenticated(false)
+      authStore.setUser(null)
     }
   }
 
-  // 1) Rutas protegidas
-  if (to.meta?.requiresAuth) {
-    const ok = await isAuthenticated()
-    if (!ok) {
-      return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
-    }
+  // Redirigir a login si no está autenticado y va a ruta privada
+  if (!isPublic && !isAuth) {
+    return navigateTo({ 
+      path: '/login', 
+      query: { redirect: to.fullPath } 
+    })
   }
 
-  // 2) Rutas solo invitados
-  if (to.meta?.guestOnly) {
-    const ok = await isAuthenticated()
-    if (ok) {
-      return navigateTo('/user-home')
-    }
-  }
-
-  // 3) Protección para /verify
-  if (to.name === 'verify' || to.path === '/verify') {
-    const emailToVerify =
-      sessionStorage.getItem('verify_email') ||
-      localStorage.getItem('verify_email')
-
-    if (!emailToVerify) {
-      const purpose = localStorage.getItem('verification_purpose')
-      return navigateTo(
-        purpose === 'reset_password' ? '/forgot' : '/register'
-      )
-    }
-  }
-
-  // 4) Protección para /reset
-  if (to.name === 'reset' || to.path === '/reset') {
-    const resetToken = sessionStorage.getItem('reset_token')
-    const resetEmail = sessionStorage.getItem('reset_email')
-
-    if (!resetToken || !resetEmail) {
-      return navigateTo('/forgot')
-    }
-
-    const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
-    if (tokenExpiry && Date.now() > parseInt(tokenExpiry)) {
-      sessionStorage.removeItem('reset_token')
-      sessionStorage.removeItem('reset_email')
-      sessionStorage.removeItem('reset_token_expiry')
-      return navigateTo('/forgot')
-    }
+  // Redirigir a home si ya está autenticado y va a login/register
+  if ((to.path === '/login' || to.meta?.guestOnly === true) && authStore.isAuthenticated && !authStore.isLoggingOut) {
+    return navigateTo('/user-home')
   }
 })

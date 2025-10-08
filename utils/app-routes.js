@@ -1,4 +1,5 @@
 // utils/app-routes.js
+// utils/app-routes.js
 export const APP_ROUTES = {
   home:     { name: 'index',     path: '/' },
   login:    { name: 'login',     path: '/login' },
@@ -6,18 +7,30 @@ export const APP_ROUTES = {
   verify:   { name: 'verify',    path: '/verify' },
   forgot:   { name: 'forgot',    path: '/forgot' },
   reset:    { name: 'reset',     path: '/reset' },
-  userHome: { name: 'user-home', path: '/user-home' }, // 👈 alíñalo con tu page
+  userHome: { name: 'user-home', path: '/user-home' },
+  game:     { name: 'game',      path: '/game/game' },
+  leaderboard: { name: 'leaderboard', path: '/game/leaderboard' }
 }
 
 export const R = {
   to(key, params, query) {
     const r = APP_ROUTES[key]
+    if (!r) {
+      console.error(`Route ${key} not found in APP_ROUTES`)
+      return { name: 'index' } // Fallback
+    }
     return {
       name: r.name,
       ...(params ? { params } : {}),
       ...(query ? { query } : {}),
     }
   },
-  path(key) { return APP_ROUTES[key].path },
-  name(key) { return APP_ROUTES[key].name },
+  path(key) { 
+    const r = APP_ROUTES[key]
+    return r ? r.path : '/'
+  },
+  name(key) { 
+    const r = APP_ROUTES[key]
+    return r ? r.name : 'index'
+  },
 }

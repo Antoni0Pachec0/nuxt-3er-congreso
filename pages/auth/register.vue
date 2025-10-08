@@ -461,7 +461,7 @@
 
               <template v-if="form.tipo_presentacion === 'conferencia' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
-                  <label class="label" for="titulo_conferencia">Título de la Conferencia</label>
+                  <label class="label" for="titulo_conferencia">Título de la Conferencia o Charla Empresarial</label>
                   <input
                     id="titulo_conferencia"
                     maxlength="100"
@@ -473,7 +473,7 @@
                   />
                 </div>
                 <div class="stack">
-                  <label class="label" for="descripcion_conferencia">Descripción de la Conferencia</label>
+                  <label class="label" for="descripcion_conferencia">Descripción de la Conferencia o Charla Empresarial</label>
                   <textarea
                     id="descripcion_conferencia"
                     v-model.trim="form.descripcion_conferencia"
