@@ -67,6 +67,13 @@ import api from '@/plugins/http/api';
 import '@/assets/css/styles/Game.css';
 import { ROUTES } from '~/plugins/http/routes'
 
+definePageMeta({
+  name: 'game',
+  path: '/game/game',
+  alias: ['/game/game'],
+  requiresAuth: true,
+})
+
 const entryPage = ref(null);
 const gameContainer = ref(null);
 const gameCanvas = ref(null);
@@ -75,7 +82,7 @@ const router = useRouter();
 // Función para obtener cookies
 function getCookie(name) {
   if (typeof document === 'undefined') return null;
-  
+
   try {
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
@@ -86,66 +93,78 @@ function getCookie(name) {
     }
     return null;
   } catch (error) {
+    console.error('❌ Error al leer cookies:', error);
     return null;
   }
 }
 
 // Función para obtener token de acceso
 function getAccessToken() {
-  // 1. Intentar desde cookies
+  // 1. Priorizar cookies (HTTP-only)
   const cookieToken = getCookie('access_token');
   if (cookieToken) {
     return cookieToken;
   }
 
-  // 2. Intentar desde localStorage
+  // 2. Fallback a localStorage
   const localStorageToken = localStorage.getItem('access_token');
   if (localStorageToken) {
     return localStorageToken;
   }
 
-  // 3. Intentar desde sessionStorage
-  const sessionStorageToken = sessionStorage.getItem('access_token');
-  if (sessionStorageToken) {
-    return sessionStorageToken;
-  }
-
   return null;
+}
+
+// Función para refrescar el token
+async function refreshAccessToken() {
+  try {
+    const refreshToken = localStorage.getItem('refresh_token') || getCookie('refresh_token');
+    
+    if (!refreshToken) {
+      throw new Error('No hay refresh token disponible');
+    }
+
+    const response = await api.post(
+      ROUTES.AUTH.REFRESH,
+      { refresh_token: refreshToken },
+      { 
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+
+    if (response.data.access_token) {
+      // Guardar nuevo token
+      localStorage.setItem('access_token', response.data.access_token);
+      return response.data.access_token;
+    }
+  } catch (error) {
+    console.error('❌ Error al refrescar token:', error);
+    // Limpiar credenciales y redirigir al login
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('userId');
+    router.push('/login');
+    throw error;
+  }
 }
 
 // Verificar autenticación
 const checkAuthentication = async () => {
-  // 1. Verificar token de acceso
-  const accessToken = getAccessToken();
-  if (accessToken && accessToken !== 'COOKIE_TOKEN_AVAILABLE') {
-    try {
-      const base64Url = accessToken.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      const decoded = JSON.parse(jsonPayload);
-      
-      if (decoded && decoded.userId) {
-        localStorage.setItem('userId', decoded.userId.toString());
-        return true;
-      }
-    } catch (error) {
-      // Token inválido, continuar con otros métodos
-    }
+  const token = getAccessToken();
+  const userId = localStorage.getItem('userId');
+  
+  if (!token) {
+    console.warn('❌ No hay token disponible');
+    return false;
   }
 
-  // 2. Verificar si ya tenemos userId en localStorage
-  const storedUserId = localStorage.getItem('userId');
-  if (storedUserId) {
-    const tokenResult = await getTokenForExistingUser();
-    if (tokenResult) {
-      return true;
-    }
-    return true; // Permitir jugar pero no guardar score
+  if (!userId) {
+    console.warn('❌ No hay userId en localStorage');
+    return false;
   }
 
-  return false;
+  console.log('✅ Credenciales básicas encontradas, procediendo...');
+  return true;
 };
 
 // Lógica del juego
@@ -168,11 +187,11 @@ class CarRacing {
     this.gameLoopId = null;
     this.userId = null;
     this.scoreSent = false;
-    
+
     // Sistema de carriles
     this.lanes = [];
     this.initializeLanes();
-    
+
     this.backgrounds = [fondo1, fondo2, fondo3];
     this.currentBackgroundIndex = 0;
     this.backgroundImages = this.backgrounds.map(src => {
@@ -180,48 +199,48 @@ class CarRacing {
       img.src = src;
       return img;
     });
-    
+
     this.playerCarImage = new Image();
     this.playerCarImage.src = carMotocle;
-    
+
     this.enemyCarImages = [new Image(), new Image(), new Image(), new Image(), new Image()];
     this.enemyCarImages[0].src = combi;
     this.enemyCarImages[1].src = carro;
     this.enemyCarImages[2].src = hinfinitum;
     this.enemyCarImages[3].src = moto;
     this.enemyCarImages[4].src = bici;
-    
+
     this.crashImages = [new Image(), new Image(), new Image(), new Image(), new Image()];
     this.crashImages[0].src = Pedraza;
     this.crashImages[1].src = Elvis;
     this.crashImages[2].src = Julio;
     this.crashImages[3].src = Victor;
     this.crashImages[4].src = bici;
-    
+
     this.elitLogo = new Image();
     this.elitLogo.src = Elit;
     this.congresoLogo = new Image();
     this.congresoLogo.src = LogoCongreso;
-    
+
     this.enemyPool = [0, 1, 2, 3, 4];
     this.shuffleEnemies();
-    
+
     // Sistema de dificultad progresiva
     this.lastSpawnTime = 0;
-    this.baseSpawnInterval = 2000;
-    this.minSpawnInterval = 500;
+    this.baseSpawnInterval = 1300;
+    this.minSpawnInterval = 350;
     this.difficultyLevel = 1;
     this.maxDifficulty = 10;
-    
+
     this.initialize();
     this.loadUserId();
     this.keys = {};
-    
+
     window.addEventListener("keydown", (e) => {
       this.keys[e.key] = true;
     });
     window.addEventListener("keyup", (e) => this.keys[e.key] = false);
-    
+
     this.touchStartX = null;
     this.touchStartY = null;
     this.canvas.addEventListener("touchstart", (e) => this.handleTouchStart(e));
@@ -234,188 +253,128 @@ class CarRacing {
     const roadWidth = this.base_width / 2;
     const roadX = this.base_width / 4;
     const laneWidth = roadWidth / 3;
-    
+
     this.lanes = [
-      roadX + laneWidth * 0.5 - this.enemy_width * 0.5,
-      roadX + laneWidth * 1.5 - this.enemy_width * 0.5,
-      roadX + laneWidth * 2.5 - this.enemy_width * 0.5
+      roadX + laneWidth * 0.5 - (this.enemy_width || 120) * 0.5,
+      roadX + laneWidth * 1.5 - (this.enemy_width || 120) * 0.5,
+      roadX + laneWidth * 2.5 - (this.enemy_width || 120) * 0.5
     ];
   }
 
   updateDifficulty() {
-    const previousLevel = this.difficultyLevel;
-    
     this.difficultyLevel = Math.min(this.maxDifficulty, Math.floor(this.score / 10) + 1);
-    
-    this.enemy_speed = 4 + (this.difficultyLevel * 0.5);
-    this.bg_speed = this.enemy_speed;
-    
-    const spawnReduction = (this.difficultyLevel - 1) * 0.15;
+    this.enemy_speed = 7 + Math.pow(this.difficultyLevel, 2);
+    this.bg_speed = this.enemy_speed * 1.5;
+
+    const spawnReduction = (this.difficultyLevel - 1) * 0.12;
+    const baseInterval = this.baseSpawnInterval * (1 - spawnReduction);
     this.currentSpawnInterval = Math.max(
-      this.minSpawnInterval, 
-      this.baseSpawnInterval * (1 - spawnReduction)
+      this.minSpawnInterval,
+      baseInterval + (Math.random() * 500 - 100)
     );
-    
-    this.maxEnemiesOnScreen = Math.min(6, 2 + Math.floor(this.difficultyLevel / 2));
+
+    this.maxEnemiesOnScreen = Math.min(10, 3 + Math.floor(this.difficultyLevel * 1.5));
   }
 
   loadUserId() {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
-      this.userId = parseInt(storedUserId, 10);
-      return;
-    }
-
-    const token = getAccessToken();
-    if (token) {
-      this.extractUserIdFromToken(token);
+      this.userId = storedUserId;
     }
   }
 
-  extractUserIdFromToken(token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      const decoded = JSON.parse(jsonPayload);
-      
-      if (decoded) {
-        this.userId = decoded.userId || decoded.user_id || decoded.id || decoded.sub;
-        
-        if (this.userId) {
-          this.userId = parseInt(this.userId, 10);
-          localStorage.setItem('userId', this.userId.toString());
-        }
-      }
-    } catch (error) {
-      // Error silencioso al extraer userId del token
-    }
-  }
-
-  // Enviar puntaje al backend
+  // Lógica para enviar puntaje al backend
   async sendScoreToBackend() {
-    if (this.scoreSent) {
+    if (this.scoreSent || this.score <= 0) {
       return;
     }
 
-    this.scoreSent = true;
+    let accessToken = getAccessToken();
+    const userId = localStorage.getItem('userId');
 
-    if (!this.userId) {
-      this.loadUserId();
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    if (!this.userId) {
-      this.displayAuthMessage();
-      this.scoreSent = false;
+    if (!userId) {
+      console.error('❌ userId no encontrado');
       return;
     }
 
-    if (this.score <= 0) {
-      this.scoreSent = false;
-      return;
-    }
+    let attempts = 0;
+    const maxAttempts = 2;
 
-    try {
-      const accessToken = getAccessToken();
-      
-      if (!accessToken || accessToken === 'COOKIE_TOKEN_AVAILABLE') {
-        const response = await api.post(ROUTES.SCORES.CREATE, {
+    while (attempts < maxAttempts) {
+      try {
+        attempts++;
+
+        // Si no hay token en el primer intento, intentar refrescar
+        if (!accessToken && attempts === 1) {
+          accessToken = await refreshAccessToken();
+        }
+
+        if (!accessToken) {
+          throw new Error('No hay token disponible después del refresh');
+        }
+
+        const requestData = { 
           value: this.score
-        }, {
-          timeout: 10000,
-          withCredentials: true
-        });
+        };
 
-        this.displaySuccessMessage();
+        const response = await api.post(
+          ROUTES.SCORES.CREATE,
+          requestData,
+          { 
+            timeout: 10000,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`
+            }
+          }
+        );
+
+        this.scoreSent = true;
         return;
-      }
 
-      const payload = {
-        value: this.score
-      };
+      } catch (error) {
+        if (error.response?.status === 401 && attempts < maxAttempts) {
+          // Token expirado, intentar refrescar para el próximo intento
+          accessToken = null;
+          continue;
+        }
 
-      const response = await api.post(ROUTES.SCORES.CREATE, payload, {
-        timeout: 10000,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        withCredentials: true
-      });
-
-      this.displaySuccessMessage();
-      
-    } catch (error) {
-      this.scoreSent = false;
-      
-      if (error.response?.status === 401) {
-        this.handleTokenExpired();
-      } else if (error.response?.status === 400) {
-        this.displayErrorMessage('Error en los datos enviados');
-      } else if (error.code === 'ECONNABORTED') {
-        this.displayErrorMessage('Tiempo de espera agotado');
-      } else {
-        this.displayErrorMessage('Error de conexión');
+        this.scoreSent = false;
+        
+        if (error.response?.status === 401) {
+          setTimeout(() => this.router.push('/login'), 2000);
+        }
+        break;
       }
     }
-  }
-
-  // Manejar token expirado
-  async handleTokenExpired() {
-    localStorage.removeItem('userId');
-    this.userId = null;
-    
-    localStorage.removeItem('access_token');
-    sessionStorage.removeItem('access_token');
-    
-    this.displayAuthErrorMessage();
-  }
-
-  displayAuthMessage() {
-    this.drawMessage("⚠️ Inicia sesión para guardar tu puntaje", "#FF6B6B");
-  }
-
-  displaySuccessMessage() {
-    this.drawMessage("✅ Puntaje guardado exitosamente", "#4ECDC4");
   }
 
   displayAuthErrorMessage() {
-    this.drawMessage("🔐 Sesión expirada. Vuelve a iniciar sesión", "#FF6B6B");
+    alert('🔐 Error de autenticación. Por favor, vuelve a iniciar sesión.');
   }
 
-  displayErrorMessage(customMessage = "⚠️ Error al guardar puntaje") {
-    this.drawMessage(customMessage, "#FFA500");
+  displaySuccessMessage() {
+    console.log("✅ Puntaje guardado exitosamente");
   }
 
-  drawMessage(message, color) {
-    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
-    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
-    
-    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
-    this.ctx.font = `bold 24px Comic Sans MS`;
-    this.ctx.fillStyle = color;
-    this.ctx.textAlign = "center";
-    this.ctx.fillText(message, this.base_width / 2, this.base_height / 2 + 250);
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+  displayErrorMessage(customMessage) {
+    console.error(customMessage);
   }
-  
+
   shuffleEnemies() {
     for (let i = this.enemyPool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [this.enemyPool[i], this.enemyPool[j]] = [this.enemyPool[j], this.enemyPool[i]];
     }
   }
-  
+
   resizeCanvas() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     this.scale = Math.min(window.innerWidth / this.base_width, window.innerHeight / this.base_height);
     this.initializeLanes();
   }
-  
+
   initialize() {
     this.car_width = 120;
     this.car_height = 240;
@@ -438,48 +397,44 @@ class CarRacing {
     this.difficultyLevel = 1;
     this.maxEnemiesOnScreen = 2;
     this.currentSpawnInterval = this.baseSpawnInterval;
-    
+
     this.initializeLanes();
     this.updateDifficulty();
   }
-  
-  spawnEnemy() {
-    if (this.enemies.length >= this.maxEnemiesOnScreen) {
-      return;
-    }
 
+  spawnEnemy() {
+    if (this.enemies.length >= this.maxEnemiesOnScreen) return;
     if (this.enemyPool.length === 0) {
       this.enemyPool = [0, 1, 2, 3, 4];
       this.shuffleEnemies();
     }
-    
+
     const designIndex = this.enemyPool.pop();
     const availableLanes = this.getAvailableLanes();
     if (availableLanes.length === 0) {
       this.enemyPool.push(designIndex);
       return;
     }
-    
+
     const randomLaneIndex = Math.floor(Math.random() * availableLanes.length);
-    const enemy_x = availableLanes[randomLaneIndex];
-    
+    const enemy_x = availableLanes[randomLaneIndex] + (Math.random() * 100 - 50);
+
     this.enemies.push({ 
       x: enemy_x, 
       y: -this.enemy_height, 
       designIndex,
       lane: availableLanes.indexOf(enemy_x)
     });
-    
+
     this.lastSpawnTime = Date.now();
   }
-  
+
   getAvailableLanes() {
     const availableLanes = [...this.lanes];
     const safeDistance = this.enemy_height * 1.5;
-    
+
     for (let i = availableLanes.length - 1; i >= 0; i--) {
       const laneX = availableLanes[i];
-      
       for (const enemy of this.enemies) {
         if (Math.abs(enemy.x - laneX) < 10 && enemy.y > -safeDistance) {
           availableLanes.splice(i, 1);
@@ -487,10 +442,10 @@ class CarRacing {
         }
       }
     }
-    
+
     return availableLanes;
   }
-  
+
   handleTouchStart(e) {
     e.preventDefault();
     if (this.game_over) {
@@ -501,7 +456,7 @@ class CarRacing {
       this.touchStartY = e.touches[0].clientY;
     }
   }
-  
+
   handleTouchMove(e) {
     e.preventDefault();
     if (this.touchStartX !== null && this.touchStartY !== null && !this.game_over) {
@@ -515,18 +470,18 @@ class CarRacing {
       this.touchStartY = touchY;
     }
   }
-  
+
   handleTouchEnd(e) {
     e.preventDefault();
     this.touchStartX = null;
     this.touchStartY = null;
   }
-  
+
   draw_objects() {
     const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
     const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
     this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
-    
+
     const bgImage = this.backgroundImages[this.currentBackgroundIndex];
     if (bgImage.complete && bgImage.naturalWidth !== 0) {
       this.ctx.drawImage(bgImage, 0, this.bg_y, this.base_width, this.base_height);
@@ -535,14 +490,14 @@ class CarRacing {
       this.ctx.fillStyle = this.green;
       this.ctx.fillRect(0, 0, this.base_width, this.base_height);
     }
-    
+
     if (this.playerCarImage.complete && this.playerCarImage.naturalWidth !== 0) {
       this.ctx.drawImage(this.playerCarImage, this.car_x, this.car_y, this.car_width, this.car_height);
     } else {
       this.ctx.fillStyle = this.red;
       this.ctx.fillRect(this.car_x, this.car_y, this.car_width, this.car_height);
     }
-    
+
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
       const img = this.enemyCarImages[enemy.designIndex];
@@ -552,18 +507,18 @@ class CarRacing {
         this.ctx.fillStyle = this.white;
         this.ctx.fillRect(enemy.x, enemy.y, this.enemy_width, this.enemy_height);
       }
-      
+
       if (enemy.y > this.base_height + this.enemy_height) {
         this.enemies.splice(i, 1);
         this.score++;
         this.updateDifficulty();
-        
-        if (this.score % 15 === 0) {
+
+        if (this.score % 10 === 0) {
           this.currentBackgroundIndex = (this.currentBackgroundIndex + 1) % this.backgroundImages.length;
         }
       }
     }
-    
+
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     const hudX = Math.round(offsetX + 10 * this.scale);
     const hudY = Math.round(offsetY + 40 * this.scale);
@@ -572,23 +527,49 @@ class CarRacing {
     this.ctx.fillStyle = this.white;
     this.ctx.textAlign = "left";
     this.ctx.fillText(`Puntaje: ${this.score}`, hudX, hudY);
-    
+
     const levelX = Math.round(offsetX + 10 * this.scale);
     const levelY = Math.round(offsetY + 80 * this.scale);
     this.ctx.fillText(`Nivel: ${this.difficultyLevel}`, levelX, levelY);
   }
-  
-  display_message(msg) {
-    if (this.game_over && this.scoreSent) {
-      this.drawGameOverScreen(msg);
-      return;
-    }
 
-    this.game_over = true;
-    this.drawGameOverScreen(msg);
+  async ensureScoreSent() {
+    if (this.scoreSent || this.score <= 0) return;
+    
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts && !this.scoreSent) {
+      try {
+        await this.sendScoreToBackend();
+        
+        if (this.scoreSent) {
+          break;
+        }
+        
+      } catch (error) {
+        console.warn(`❌ Intento ${attempts + 1} fallido:`, error.message);
+      }
+      
+      attempts++;
+      
+      if (!this.scoreSent && attempts < maxAttempts) {
+        const delay = Math.min(1000 * Math.pow(2, attempts), 5000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
     
     if (!this.scoreSent) {
-      this.sendScoreToBackend();
+      console.error('❌ No se pudo enviar el puntaje después de', maxAttempts, 'intentos');
+    }
+  }
+
+  async display_message(msg) {
+    this.game_over = true;
+    this.drawGameOverScreen(msg);
+
+    if (!this.scoreSent && this.score > 0) {
+      await this.ensureScoreSent();
     }
   }
 
@@ -609,11 +590,15 @@ class CarRacing {
     this.ctx.font = `30px Comic Sans MS`;
     this.ctx.fillText("Toca la pantalla o F para reiniciar", this.base_width / 2, baseY + 130);
     this.ctx.fillText(`Nivel alcanzado: ${this.difficultyLevel}`, this.base_width / 2, baseY + 180);
-    
+
+    this.ctx.font = `20px Comic Sans MS`;
+    const statusMessage = this.scoreSent ? "✅ Puntaje guardado" : "⏳ Guardando puntaje...";
+    this.ctx.fillText(statusMessage, this.base_width / 2, baseY + 230);
+
     if (this.crashEnemy !== undefined) {
       const crashImg = this.crashImages[this.crashEnemy];
       if (crashImg && crashImg.complete) {
-        this.ctx.drawImage(crashImg, this.base_width / 2 - 200, baseY + 220, 400, 500);
+        this.ctx.drawImage(crashImg, this.base_width / 2 - 200, baseY + 260, 400, 500);
       }
     }
     if (this.elitLogo && this.elitLogo.complete) {
@@ -626,7 +611,7 @@ class CarRacing {
     }
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
-
+  
   check_collision() {
     const hitboxScale = 0.5;
     const car_rect = {
@@ -652,14 +637,14 @@ class CarRacing {
     }
     return false;
   }
-  
+
   update() {
     if (!this.game_over) {
       this.bg_y += this.bg_speed;
       if (this.bg_y >= this.base_height) {
         this.bg_y = 0;
       }
-      
+
       if (this.keys["ArrowLeft"] || this.keys["a"] || this.keys["A"]) {
         this.car_x -= this.car_speed;
       }
@@ -672,35 +657,35 @@ class CarRacing {
       if (this.keys["ArrowDown"] || this.keys["s"] || this.keys["S"]) {
         this.car_y += this.car_speed;
       }
-      
+
       this.car_x = Math.max(this.road_x, Math.min(this.car_x, this.road_x + this.road_width - this.car_width));
       this.car_y = Math.max(0, Math.min(this.car_y, this.base_height - this.car_height));
-      
+
       for (let enemy of this.enemies) {
         enemy.y += this.enemy_speed;
       }
-      
+
       const currentTime = Date.now();
       if (currentTime - this.lastSpawnTime > this.currentSpawnInterval) {
         this.spawnEnemy();
       }
-      
+
       if (this.check_collision()) {
         this.display_message("¡Choque! Fin del juego");
         return;
       }
-      
+
       this.draw_objects();
     } else {
       this.drawGameOverScreen("¡Choque! Fin del juego");
     }
-    
+
     if (this.game_over && (this.keys["f"] || this.keys["F"])) {
       this.initialize();
       this.game_over = false;
     }
   }
-  
+
   run() {
     const gameLoop = () => {
       this.update();
@@ -710,39 +695,11 @@ class CarRacing {
   }
 }
 
-// Obtener token para usuarios existentes
-const getTokenForExistingUser = async () => {
-  const userId = localStorage.getItem('userId');
-  
-  if (!userId) {
-    return null;
-  }
-
-  const existingToken = localStorage.getItem('access_token');
-  if (existingToken) {
-    return existingToken;
-  }
-
-  try {
-    const response = await api.get(ROUTES.AUTH.ME, {
-      withCredentials: true
-    });
-    
-    if (response.data) {
-      return 'COOKIE_TOKEN_AVAILABLE';
-    }
-  } catch (error) {
-    // Error silencioso
-  }
-
-  return null;
-};
-
 let gameInstance = null;
 
 const startGame = async () => {
   const isAuthenticated = await checkAuthentication();
-  
+
   if (!isAuthenticated) {
     alert('🔐 Debes iniciar sesión para jugar');
     router.push('/login');
@@ -755,6 +712,7 @@ const startGame = async () => {
   if (gameContainer.value) {
     gameContainer.value.style.display = 'block';
   }
+
   if (!gameInstance && gameCanvas.value) {
     gameInstance = new CarRacing(gameCanvas.value, router);
     gameInstance.run();
@@ -775,27 +733,26 @@ const nextSong = () => {
       gameInstance.shuffleSongs();
       gameInstance.currentSongIndex = 0;
     }
-    gameInstance.backgroundMusic.src = gameInstance.songs[gameInstance.songPool[gameInstance.currentSongIndex]];
+    gameInstance.backgroundMusic.src = gameInstance.songs[gameInstance.currentSongIndex];
     gameInstance.backgroundMusic.play();
   }
 };
 
-// 🔥 CORREGIDO: Navegación al leaderboard
 const navigateToLeaderboard = () => {
   router.push('/game/leaderboard');
 };
 
 onMounted(() => {
-  if (gameCanvas.value) {
-    const resizeHandler = () => {
-      if (gameInstance) {
-        gameInstance.resizeCanvas();
-      }
-    };
-    window.addEventListener('resize', resizeHandler);
-    onUnmounted(() => {
-      window.removeEventListener('resize', resizeHandler);
-    });
+  // Verificar que tenemos lo mínimo necesario
+  const userId = localStorage.getItem('userId');
+  const token = getAccessToken();
+  
+  if (!userId || !token) {
+    console.warn('⚠️ Credenciales incompletas');
   }
+});
+
+onUnmounted(() => {
+  gameInstance = null;
 });
 </script>
