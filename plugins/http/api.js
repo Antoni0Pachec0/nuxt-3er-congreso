@@ -1,44 +1,80 @@
 // utils/http/api.js
 import axios from 'axios';
 
-// Función para obtener el valor de una cookie por su nombre
-function getCookie(name) {
-  if (typeof document === 'undefined') return null; // Previene errores en el servidor (Nuxt)
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return null;
-}
+// ===== Entorno / base URL =====
+const isDev = process.env.NODE_ENV === 'development';
+const baseURL = isDev ? 'http://localhost:3001' : 'https://api.congresoti.com.mx';
 
-const baseURL = import.meta.env?.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx/';
+// Logger mínimo: solo imprime en desarrollo
+const log = {
+  error: (...a) => isDev && console.error(...a),
+  warn:  (...a) => isDev && console.warn(...a),
+  info:  (...a) => isDev && console.info(...a),
+};
 
+// ===== Instancia Axios =====
 const api = axios.create({
   baseURL,
-  timeout: 15000,
+  timeout: 15000, // puedes subir a 30000 si /auth/register tarda por el correo
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true, // Esto es vital para enviar y recibir cookies
+  withCredentials: true, // cookies
 });
 
-// Agrega Authorization leyendo el token de la cookie
-api.interceptors.request.use((config) => {
-  // 💡 Nombre de la cookie donde tu backend guarda el token de acceso
-  const token = getCookie('access_token'); 
-  
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  
-  return config;
-});
-
-// Mensaje legible para problemas de red
-api.interceptors.response.use(
-  (res) => res,
+// ===== Interceptor de request =====
+api.interceptors.request.use(
+  (config) => {
+    // Headers esenciales
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    return config;
+  },
   (error) => {
-    if (error.code === 'ERR_NETWORK') {
-      error.message = `No se pudo conectar al servidor (${baseURL}). Verifica que esté arriba.`;
-    }
+    // No “rompas” producción con prints
+    log.error('❌ Error en request:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      message: error.message,
+      code: error.code,
+    });
     return Promise.reject(error);
+  }
+);
+
+// ===== Interceptor de response =====
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Extrae respuesta (puede no existir en timeouts / red)
+    const r = error?.response;
+
+    // Mensaje base
+    let message =
+      r?.data?.message ||
+      (error?.code === 'ECONNABORTED' ? 'Se agotó el tiempo de espera de la solicitud.' : error?.message) ||
+      'Ocurrió un error desconocido.';
+
+    // Ajustes de mensaje por escenario
+    if (error?.code === 'ERR_NETWORK') {
+      message = `No se pudo conectar al servidor (${baseURL}). Verifica tu conexión.`;
+    }
+
+    // Paquete normalizado para tu UI
+    const normalized = {
+      url: error?.config?.url || '',
+      method: (error?.config?.method || 'get').toUpperCase(),
+      status: r?.status ?? 0, // 0 cuando no hay response (timeout/red)
+      code: error?.code || 'ERR_UNKNOWN',
+      message,
+      error: r?.data?.error,
+      errors: Array.isArray(r?.data?.errors) ? r.data.errors : undefined,
+      // raw opcional si quieres inspeccionar
+      // raw: r?.data,
+    };
+
+    // Log SOLO en desarrollo
+    log.warn('❌ API error:', normalized);
+
+    // Adjunta el normalizado al error y rechaza
+    return Promise.reject(Object.assign(error, { normalized }));
   }
 );
 

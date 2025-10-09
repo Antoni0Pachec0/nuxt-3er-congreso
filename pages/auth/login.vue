@@ -132,9 +132,13 @@
 </template>
 
 <script setup>
-import { definePageMeta } from '#imports'
+import { definePageMeta, useRuntimeConfig } from '#imports'
 import { ref } from 'vue'
+<<<<<<< HEAD
 import { useRouter, useRoute } from 'vue-router'
+=======
+import { useRoute } from '#app'
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiAccountCircleOutline,
@@ -149,22 +153,23 @@ import {
   mdiClose               // Icono para cerrar
 } from '@mdi/js'
 
-import api from '~/plugins/http/api'
+import { R } from '~/utils/app-routes'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
+<<<<<<< HEAD
 import { R } from '~/utils/app-routes'
 // Nota: Deberás actualizar este archivo de CSS con los nuevos estilos para la alerta.
 import '@/assets/css/styles/Login.css' 
-
-// Importar el store de autenticación
+=======
 import { useAuthStore } from '~/stores/auth'
+import '@/assets/css/styles/Login.css'
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
-// Mock de notificaciones
+// Notificaciones básicas (puedes reemplazar con tu sistema de toasts)
 function notifyError(title, message) {
   console.error(`[Error ${title}]: ${message}`)
 }
 function notifyLoading(title, message) {
-  console.log(`[Loading ${title}]: ${message}`)
   return {
     resolve: ({ title: t, message: m }) => console.log(`[Toast Closed]: ${t} - ${m}`)
   }
@@ -178,8 +183,12 @@ definePageMeta({
   guestOnly: true,
 })
 
-const router = useRouter()
 const route = useRoute()
+<<<<<<< HEAD
+=======
+const authStore = useAuthStore()
+const config = useRuntimeConfig()
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
 const email = ref('')
 const password = ref('')
@@ -187,6 +196,7 @@ const show = ref(false)
 const loading = ref(false)
 const apiError = ref('')
 
+<<<<<<< HEAD
 // NUEVO ESTADO PARA LA ALERTA INTEGRADA
 const notification = ref({
   visible: false,
@@ -226,6 +236,11 @@ function hideLoading() {
     }
 }
 
+=======
+// -------------------------------
+// 🔹 Funciones de navegación
+// -------------------------------
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 function goHome() {
   return navigateTo(R.to('home'))
 }
@@ -238,6 +253,9 @@ function onForgot() {
   return navigateTo(R.to('forgot'))
 }
 
+// -------------------------------
+// 🔹 Envío de formulario (login)
+// -------------------------------
 async function onSubmit() {
   apiError.value = ''
   
@@ -264,12 +282,29 @@ async function onSubmit() {
       password: password.value,
     }
 
+<<<<<<< HEAD
     // 👇 Esencial: enviar cookies
     const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
+=======
+    // Petición al backend
+    const response = await $fetch(`${config.public.apiBase}/auth/login`, {
+      method: 'POST',
+      body: payload,
+      credentials: 'include',
+    })
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
-    // 1) Verificación pendiente
-    if (data?.require_verification) {
-      const pendingEmail = data?.user?.email || payload.email
+    // 🔥 NUEVO: GUARDAR TOKENS EN LOCALSTORAGE SI VIENEN EN LA RESPUESTA
+    if (response?.access_token) {
+      localStorage.setItem('access_token', response.access_token);
+    }
+    if (response?.refresh_token) {
+      localStorage.setItem('refresh_token', response.refresh_token);
+    }
+
+    // 🔹 Caso 1: verificación pendiente
+    if (response?.require_verification) {
+      const pendingEmail = response?.user?.email || payload.email
       sessionStorage.setItem('verify_email', pendingEmail)
       localStorage.setItem('verification_purpose', 'email_verification')
 
@@ -283,6 +318,7 @@ async function onSubmit() {
       return router.push(R.to('verify'))
     }
 
+<<<<<<< HEAD
     // 2. Manejo de Login Exitoso
     if (data?.message?.toLowerCase().includes('exitoso')) {
       const userId = data.user_id 
@@ -304,6 +340,35 @@ async function onSubmit() {
     const msg = data?.message || 'Respuesta inesperada del servidor.'
     showNotification('Error', msg, 'error')
     apiError.value = msg
+=======
+    // 🔹 Caso 2: login exitoso
+    if (Number.isFinite(response?.user_id)) {
+      const userId = response.user_id
+      authStore.setUser({ id: userId, email: payload.email })
+      authStore.setAuthenticated(true)
+
+      // 🔥 GUARDAR USER ID
+      localStorage.setItem('userId', userId.toString());
+
+      toast?.resolve?.({
+        title: '¡Bienvenido!',
+        message: response?.message || 'Inicio de sesión exitoso.',
+      })
+
+      // Redirección
+      const redirectParam = route.query?.redirect
+      if (redirectParam) {
+        return navigateTo(decodeURIComponent(String(redirectParam)))
+      }
+
+      return navigateTo('/user-home')
+    }
+
+    // 🔹 Caso 3: respuesta inesperada
+    const fallbackMsg = response?.message || 'Respuesta inesperada del servidor.'
+    notifyError('Error', fallbackMsg)
+    apiError.value = fallbackMsg
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
   } catch (e) {
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
@@ -316,6 +381,7 @@ async function onSubmit() {
     hideLoading() // Ocultar el estado de carga
   }
 }
+<<<<<<< HEAD
 
 </script>
 <style>
@@ -423,3 +489,6 @@ async function onSubmit() {
   transform: translateX(100%); /* Desliza desde la derecha */
 }
 </style>
+=======
+</script>
+>>>>>>> fa1e64715c961dab029550c878acce2248c59faa

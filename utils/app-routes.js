@@ -1,4 +1,5 @@
 // utils/app-routes.js
+// utils/app-routes.js
 export const APP_ROUTES = {
   home:     { name: 'index',     path: '/' },
   login:    { name: 'login',     path: '/login' },
@@ -6,8 +7,9 @@ export const APP_ROUTES = {
   verify:   { name: 'verify',    path: '/verify' },
   forgot:   { name: 'forgot',    path: '/forgot' },
   reset:    { name: 'reset',     path: '/reset' },
-  userHome: { name: 'user-home', path: '/user-home' }, // Mantén este nombre
-  game:     { name: 'game',      path: '/game' },
+  userHome: { name: 'user-home', path: '/user-home' },
+  game:     { name: 'game',      path: '/game/game' },
+  leaderboard: { name: 'leaderboard', path: '/game/leaderboard' }
 }
 
 export const R = {
