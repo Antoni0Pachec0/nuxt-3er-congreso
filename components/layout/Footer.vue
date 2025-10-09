@@ -28,7 +28,7 @@
     <div class="footer-container">
       <div class="footer-left">
         <div class="footer-brand">
-          <img src="@/assets/images/Logo.png" alt="Logo Congreso" class="footer-logo" />
+          <img src="@/assets/images/Logo.webp" alt="Logo Congreso" class="footer-logo" />
           <div class="brand-text">
             <h3 class="brand-title">3er. Congreso Internacional 2025</h3>
             <p class="brand-subtitle">Tecnologías de la Información e Innovación</p>

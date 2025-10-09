@@ -20,7 +20,7 @@
       <div class="col-right">
         <div class="logo-wrap">
           <div class="logo-glow"></div>
-          <img src="@/assets/images/Logo.png" alt="Logo Congreso" class="logo-img" />
+          <img src="@/assets/images/Logo.webp" alt="Logo Congreso" class="logo-img" />
           <div class="ring ring-outer"></div>
           <div class="ring ring-inner"></div>
         </div>

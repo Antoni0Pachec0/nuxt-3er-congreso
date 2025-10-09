@@ -51,7 +51,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import logoUrl from '~/assets/images/Logo.png'
+import logoUrl from '~/assets/images/Logo.webp'
 import '~/assets/css/styles/Header.css'
 import { R } from '~/utils/app-routes'
 import { useRouter } from 'vue-router'
