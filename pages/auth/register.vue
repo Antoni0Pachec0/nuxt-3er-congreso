@@ -861,7 +861,6 @@ const form = ref({
  * Computed
  * =================== */
 const isSpeaker = computed(() => form.value.type_user_id === 4);
-// const isStudentOrTeacher = computed(() => [1, 2].includes(Number(form.value.type_user_id))); // No usado
 const isSecretPasswordValid = computed(() => (form.value.secret_password || '').trim().length > 0);
 
 // Password meter
@@ -869,13 +868,11 @@ const reqs = ref({ len: false, upper: false, lower: false, num: false, sym: fals
 const pwdMatch = computed(() => password2.value === form.value.password_user && password2.value.length > 0);
 const strengthScore = computed(() => {
   const validCount = Object.values(reqs.value).filter(Boolean).length;
-  // Solo considerar la contraseña como válida si tiene al menos 3 criterios
   return validCount;
 });
 const strengthPercent = computed(() => `${(strengthScore.value / 5) * 100}%`);
 const strengthLabel = computed(() => {
   const score = strengthScore.value;
-  // Etiquetas más realistas
   if (score <= 2) return 'Muy débil';
   if (score === 3) return 'Media';
   if (score === 4) return 'Fuerte';
@@ -885,7 +882,6 @@ const strengthLabel = computed(() => {
 const isLastStep = computed(() => step.value === steps.value.length - 1);
 const canSubmit = computed(() => isLastStep.value && !!form.value.size_user && accepted.value);
 
-// --- NUEVO: estado para secret remoto
 const secretValidated = ref(false);
 const secretValidating = ref(false);
 
@@ -901,7 +897,6 @@ function centerActiveStep() {
 onMounted(centerActiveStep);
 watch(step, centerActiveStep);
 
-// Cuando cambie tipo o el texto de la clave, reinicia validación
 watch([() => form.value.type_user_id, () => form.value.secret_password], () => {
   secretValidated.value = false;
 });
@@ -913,7 +908,7 @@ async function validateSpeakerSecret() {
   if (!isSpeaker.value) return true;
   const secret = (form.value.secret_password || '').trim();
   if (!secret) {
-    showNotification('Contraseña requerida', 'Ingresa la contraseña de ponente.', 'warning');
+    notifyWarning('Contraseña requerida', 'Ingresa la contraseña de ponente.');
     return false;
   }
 
@@ -951,7 +946,6 @@ watch(() => form.value.password_user, (p = '') => {
 
 watch(isSpeaker, (now) => {
   steps.value = now ? [...speakerSteps] : [...baseSteps];
-  // al cambiar tipo → invalidar verificación y limpiar campos de ponente
   speakerSecretOk.value = false;
   if (!now) {
     const fields = [
@@ -963,11 +957,9 @@ watch(isSpeaker, (now) => {
   }
 });
 
-// 👉 LIMPIEZAS por cambio de tipo de usuario
 watch(() => form.value.type_user_id, (now) => {
   const t = Number(now);
 
-  // Si cambia a EXTERNO (3): limpiar todo lo académico y procedencias
   if (t === 3) {
     resetFields([
       'provenance', 'matricula', 'educational_program', 'grade', 'group_user',
@@ -975,36 +967,27 @@ watch(() => form.value.type_user_id, (now) => {
     ]);
   }
 
-  // Si es ESTUDIANTE/MAESTRO (1/2): limpiar lo que no aplique
   if (t === 1 || t === 2) {
-    // Limpia el nombre libre de universidad (se usa en "otra")
     resetFields(['universidad_procedencia']);
-
-    // Si la procedencia no es UTTECAM, limpia académicos
     if ((form.value.provenance || '').toLowerCase() !== 'uttecam') {
       resetFields(['matricula', 'educational_program', 'grade', 'group_user']);
     }
   }
 
-  // Si ya estás en pasos posteriores, regresa al 2 para evitar confusiones de UI
   if (step.value < 2) return;
   step.value = 2;
   centerActiveStep();
 });
 
-// 👉 LIMPIEZAS por cambio de procedencia (solo aplica a 1/2)
 watch(() => (form.value.provenance || '').toLowerCase(), (prov) => {
-  // Si selecciona "otra" o vacía: NO deben existir matrícula/programa/grado/grupo
   if (['otra', ''].includes(prov)) {
     resetFields(['matricula', 'educational_program', 'grade', 'group_user']);
   }
-  // Si regresa a "uttecam": limpia universidad libre
   if (prov === 'uttecam') {
     resetFields(['universidad_procedencia']);
   }
 });
 
-// si cambia la clave secreta, hay que revalidar
 watch(() => form.value.secret_password, () => { speakerSecretOk.value = false; });
 
 /* ===================
@@ -1071,10 +1054,8 @@ onMounted(() => {
       step.value = saved.step ?? 0;
       accepted.value = !!saved.accepted;
 
-      // RESTAURAR PASSWORD DE CONFIRMACIÓN
       password2.value = saved.form.password_user || '';
 
-      // Si la contraseña de ponente fue guardada, asumimos que fue validada
       if (form.value.secret_password && isSpeaker.value) {
         secretValidated.value = true;
       }
@@ -1133,12 +1114,10 @@ const canProceed = computed(() => {
     case 2: {
       if (!form.value.type_user_id) return false;
 
-      // Para ponente: que haya escrito la contraseña
       if (isSpeaker.value) return secretValidated.value || isSecretPasswordValid.value;
 
-      // UTTECAM / Otra (alumno o docente)
       const t = Number(form.value.type_user_id);
-      if (t === 3) return true; // Externo no requiere procedencia/matrícula
+      if (t === 3) return true;
       const prov = (form.value.provenance || '').toLowerCase();
       const isStudent = t === 1, isTeacher = t === 2;
 
@@ -1169,7 +1148,7 @@ const canProceed = computed(() => {
       }
       return true;
     case 4:
-      return true; // Redes opcionales
+      return true;
     case 5:
       return isSpeaker.value && !!form.value.size_user && accepted.value;
     default:
@@ -1183,7 +1162,6 @@ const canProceed = computed(() => {
  * =================== */
 function prevStep() { if (step.value > 0) step.value--; }
 
-// focus helper
 function focusField(field?: string) {
   if (!field) return;
   const fieldStepMap: Record<string, number> = {
@@ -1276,10 +1254,9 @@ async function nextOrSubmit() {
     return;
   }
 
-  // 👉 Paso 2: si es ponente y aún no validamos, validamos ahora
   if (step.value === 2 && isSpeaker.value && !secretValidated.value) {
     const ok = await validateSpeakerSecret();
-    if (!ok) return; // no avances
+    if (!ok) return;
   }
 
   if (isLastStep.value) {
@@ -1311,7 +1288,6 @@ function normalizePayload(payload: any) {
 
   const userType = Number(payload.type_user_id);
 
-  // === Estudiante/Docente ===
   if ([1, 2].includes(userType)) {
     const provOpt = (payload.provenance || '').toLowerCase();
 
@@ -1324,25 +1300,20 @@ function normalizePayload(payload: any) {
         finalPayload.group_user = payload.group_user?.trim() || '';
       }
     } else if (provOpt === 'otra') {
-      // 👉 manda el NOMBRE real en provenance
       finalPayload.provenance = payload.universidad_procedencia?.trim() || 'Otra';
       finalPayload.universidad_procedencia = payload.universidad_procedencia?.trim() || '';
     } else {
-      // si escribiste un nombre directamente
       finalPayload.provenance = (payload.provenance || '').trim();
     }
   }
 
-  // === Externo (3) ===
   if (userType === 3) {
-    // procedencia libre, sin académicos
     const provOpt = (payload.provenance || '').trim();
     finalPayload.provenance = provOpt && provOpt.toLowerCase() !== 'otra'
       ? provOpt
       : (payload.universidad_procedencia?.trim() || 'Otra');
   }
 
-  // === Ponente (4) ===
   if (userType === 4) {
     finalPayload.secret_password = payload.secret_password?.trim() || '';
     finalPayload.empresa_procedencia = payload.empresa_procedencia?.trim() || '';
@@ -1472,12 +1443,9 @@ function goLogin() {
   router.push(R.to('login'));
 }
 </script>
+<style scoped>
 
-<style>
-/* ========================= */
-/* ESTILOS PARA LA NUEVA ALERTA FLOTANTE */
-/* ========================= */
-
+/* ESTILOS PARA ALERTAS*/
 .app-alert {
   position: fixed;
   top: 20px;
@@ -1488,40 +1456,39 @@ function goLogin() {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: flex-start;
-  z-index: 1000; /* Asegura que esté por encima de todo */
+  z-index: 1000; 
 }
 
-/* Estilo para Errores */
+
 .app-alert--error {
-  background-color: #fef2f2; /* Rojo muy claro */
+  background-color: #fef2f2; 
   border: 1px solid #fecaca; 
-  color: #b91c1c; /* Texto rojo oscuro */
+  color: #b91c1c; 
 }
 
 .app-alert--error .alert-icon svg {
-  fill: #ef4444; /* Icono rojo */
+  fill: #ef4444;
 }
 
-/* Estilo para Éxito */
 .app-alert--success {
-  background-color: #f0fdf4; /* Verde muy claro */
+  background-color: #f0fdf4; 
   border: 1px solid #dcfce7;
-  color: #15803d; /* Texto verde oscuro */
+  color: #15803d; 
 }
 
 .app-alert--success .alert-icon svg {
-  fill: #22c55e; /* Icono verde */
+  fill: #22c55e; 
 }
 
-/* Estilo para Carga/Proceso */
+
 .app-alert--loading {
-  background-color: #eff6ff; /* Azul muy claro */
+  background-color: #eff6ff; 
   border: 1px solid #dbeafe;
-  color: #1e40af; /* Texto azul oscuro */
+  color: #1e40af; 
 }
 
 .app-alert--loading .alert-icon svg {
-  fill: #3b82f6; /* Icono azul */
+  fill: #3b82f6; 
 }
 
 .alert-icon {
@@ -1566,7 +1533,7 @@ function goLogin() {
   fill: currentColor;
 }
 
-/* Transición de entrada/salida (Vue Transition) */
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.3s ease-in-out;
@@ -1575,6 +1542,6 @@ function goLogin() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateX(100%); /* Desliza desde la derecha */
+  transform: translateX(100%);
 }
 </style>

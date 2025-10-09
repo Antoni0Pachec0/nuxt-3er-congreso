@@ -1,165 +1,100 @@
-/* assets/css/notifications.css */
 
-/* Contenedor principal de notificaciones */
-.notivue__container {
+/* ESTILOS PARA ALERTAS*/
+.app-alert {
   position: fixed;
-  z-index: 10000;
-  width: 100%;
-  max-width: 400px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 16px;
-}
-
-/* Para desktop - posicionar a la derecha */
-@media (min-width: 768px) {
-  .notivue__container {
-    left: auto;
-    right: 16px;
-    transform: none;
-    max-width: 420px;
-  }
-}
-
-/* Contenedor de cada notificación */
-.notivue__notification {
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  padding: 18px;
-  margin-bottom: 16px;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Añadimos un elemento decorativo lateral */
-.notivue__notification::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: rgba(255, 255, 255, 0.7);
-}
-
-/* Efecto hover mejorado */
-@media (min-width: 768px) {
-  .notivue__notification:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
-    filter: brightness(1.05);
-  }
-}
-
-/* Encabezado de la notificación con más espacio */
-.notivue__header {
+  top: 20px;
+  right: 20px;
+  max-width: 350px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  z-index: 1000; 
 }
 
-.notivue__icon {
-  font-size: 1.35rem;
-  flex-shrink: 0;
-  opacity: 0.9;
-  transform: translateY(-1px);
+
+.app-alert--error {
+  background-color: #fef2f2; 
+  border: 1px solid #fecaca; 
+  color: #b91c1c; 
 }
 
-.notivue__title {
-  font-weight: 700;
-  font-size: 1.05rem;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+.app-alert--error .alert-icon svg {
+  fill: #ef4444;
 }
 
-.notivue__message {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  opacity: 0.95;
-  margin-left: 34px; /* Alinear con el título considerando el icono */
-  font-weight: 400;
+.app-alert--success {
+  background-color: #f0fdf4; 
+  border: 1px solid #dcfce7;
+  color: #15803d; 
 }
 
-/* Tipos de notificación con gradientes mejorados */
-.notivue__notification--success {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-}
-.notivue__notification--success::before {
-  background: #86efac;
+.app-alert--success .alert-icon svg {
+  fill: #22c55e; 
 }
 
-.notivue__notification--error {
-  background: linear-gradient(135deg, #f87171, #b91c1c);
-  color: white;
-}
-.notivue__notification--error::before {
-  background: #fca5a5;
+
+.app-alert--loading {
+  background-color: #eff6ff; 
+  border: 1px solid #dbeafe;
+  color: #1e40af; 
 }
 
-.notivue__notification--warning {
-  background: linear-gradient(135deg, #fbbf24, #b45309);
-  color: white;
-}
-.notivue__notification--warning::before {
-  background: #fcd34d;
+.app-alert--loading .alert-icon svg {
+  fill: #3b82f6; 
 }
 
-.notivue__notification--info {
-  background: linear-gradient(135deg, #60a5fa, #2563eb);
-  color: white;
-}
-.notivue__notification--info::before {
-  background: #93c5fd;
+.alert-icon {
+  margin-right: 10px;
+  line-height: 0;
 }
 
-.notivue__notification--loading {
-  background: linear-gradient(135deg, #6b7280, #374151);
-  color: white;
-}
-.notivue__notification--loading::before {
-  background: #d1d5db;
-  animation: pulse 1.5s infinite;
+.alert-content {
+  flex-grow: 1;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.4; }
+.alert-title {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
 }
 
-/* Animaciones mejoradas */
-.notivue__enter-active {
-  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+.alert-message {
+  font-size: 0.9em;
+  margin: 0;
 }
 
-.notivue__leave-active {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.alert-close {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 15px;
+  cursor: pointer;
+  color: inherit; 
+  line-height: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
-.notivue__enter-from {
+.alert-close:hover {
+  opacity: 1;
+}
+
+.alert-close svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  transform: translateY(-25px) scale(0.95);
-  filter: blur(2px);
-}
-
-.notivue__leave-to {
-  opacity: 0;
-  transform: translateY(-10px) scale(0.98);
-  filter: blur(1px);
-}
-
-/* Barra de progreso mejorada */
-.notivue__progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.65);
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  transform: translateX(100%);
 }

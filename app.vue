@@ -46,7 +46,7 @@ import Footer from "@/components/layout/Footer.vue";
 import { Notivue, Notification } from "notivue";
 import 'notivue/notifications.css';
 import 'notivue/animations.css';
-import '@/assets/css/notifications.css'; // Tu archivo de estilos personalizados
+import '@/assets/css/notifications.css'; 
 
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
@@ -55,6 +55,5 @@ const route = useRoute()
 const hideOn = new Set(['/login', '/register', '/verify', '/forgot', '/reset'])
 const shouldShowHeader = computed(() => !hideOn.has(route.path))
 const shouldShowFooter = computed(() => !hideOn.has(route.path))
-
 
 </script>
