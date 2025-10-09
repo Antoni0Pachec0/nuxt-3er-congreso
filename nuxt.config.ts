@@ -13,7 +13,6 @@ export default defineNuxtConfig({
   modules: [
     'notivue/nuxt',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt' // Módulo para persistir el estado de Pinia
   ],
   
   // Eliminamos el bloque 'pinia' para evitar el error de tipado,
@@ -31,7 +30,8 @@ export default defineNuxtConfig({
   // ----------------
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx',
+      // apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
     }
   },
 

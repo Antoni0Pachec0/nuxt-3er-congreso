@@ -26,6 +26,11 @@ import evento2022 from '@/assets/img/gallery/evento2022.jpeg'
 import evento2023 from '@/assets/img/gallery/evento2023.jpeg'
 import evento2024 from '@/assets/img/gallery/evento2024.jpeg'
 
+definePageMeta({
+  name: 'home',
+  path: '/',
+  guestOnly: true, // 🧍 solo accesible si NO hay sesión
+})
 
 const slides = [
   {

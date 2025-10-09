@@ -1,24 +1,46 @@
 // middleware/block-exit.global.js
 export default defineNuxtRouteMiddleware((to, from) => {
   if (process.server) return
-  
+
   const authStore = useAuthStore()
-  
-  // Si estamos en user-home y tratamos de navegar fuera (excepto rutas permitidas)
-  if (from.path === '/user-home' && authStore.isAuthenticated) {
-    const allowedRoutes = ['/game', '/login', '/']
-    const isLogoutIntent = to.query.logout === 'true'
+
+  // Permitir navegación a login durante logout o si no está autenticado
+  if (authStore.isLoggingOut || !authStore.isAuthenticated) {
+    return
+  }
+
+  // Permitir siempre navegación a login y rutas de auth
+  const ALLOWED_PATHS = new Set([
+    '/login',
+    '/register', 
+    '/verify',
+    '/forgot',
+    '/reset',
+    '/auth/logout'
+  ])
+
+  if (ALLOWED_PATHS.has(to.path)) {
+    return
+  }
+
+  // Bloquear salidas desde /user-home
+  if (from?.path === '/user-home') {
+    const allowedFromHome = new Set(['/game/game'])
     
-    // Permitir solo si es logout o rutas permitidas
-    if (!allowedRoutes.includes(to.path) && !isLogoutIntent && !authStore.isLoggingOut) {
-      // Mostrar confirmación
-      const confirmExit = window.confirm(
-        'Para salir, por favor usa el botón "Cerrar Sesión". ¿Deseas continuar?'
-      )
-      
-      if (!confirmExit) {
-        return abortNavigation()
-      }
+    if (!allowedFromHome.has(to.path)) {
+      console.log('Navegación bloqueada desde user-home. Usa los botones "Game" o "Cerrar Sesión".')
+      return abortNavigation()
     }
+    return
+  }
+
+  // Bloquear salidas desde /game/game
+  if (from?.path === '/game/game') {
+    const allowedFromGame = new Set(['/user-home'])
+    if (!allowedFromGame.has(to.path)) {
+      console.log('Navegación bloqueada desde game. Usa el botón para volver al home.')
+      return abortNavigation()
+    }
+    return
   }
 })
