@@ -107,7 +107,7 @@
 }
 .speaker-name {
     position: relative;
-    font-size: 2.1em; /* <-- AQUÍ SE HIZO EL CAMBIO */
+    font-size: 1.8rem; /* <-- AQUÍ SE HIZO EL CAMBIO */
     font-weight: bold;
     font-family: 'Orbitron', sans-serif;
     background-image: var(--name-gradient);
