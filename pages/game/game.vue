@@ -23,7 +23,7 @@
       <canvas id="gameCanvas" ref="gameCanvas"></canvas>
 
       <div id="musicControls">
-        <button id="pauseBtn" class="Btn" @click="togglePause">
+        <button id="pauseBtn" class="Btn" :disabled="!gameInstance" @click="togglePause">
           {{ pauseLabel }}
           <svg class="svgIcon" viewBox="0 0 576 512">
             <path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/>
@@ -239,6 +239,10 @@ class CarRacing {
 
     window.addEventListener("keydown", (e) => {
       this.keys[e.key] = true;
+      // Atajo global para pausar/reanudar con la tecla P
+      if (e.key === 'p' || e.key === 'P') {
+        this.setPauseState(!this.paused);
+      }
     });
     window.addEventListener("keyup", (e) => this.keys[e.key] = false);
 
@@ -248,6 +252,24 @@ class CarRacing {
     this.canvas.addEventListener("touchmove", (e) => this.handleTouchMove(e));
     this.canvas.addEventListener("touchend", (e) => this.handleTouchEnd(e));
     window.addEventListener("resize", () => this.resizeCanvas());
+  }
+
+  // Centraliza la lógica de pausar/reanudar el juego y la música
+  setPauseState(state) {
+    this.paused = !!state;
+
+    try {
+      if (this.backgroundMusic) {
+        if (this.paused) {
+          this.backgroundMusic.pause();
+        } else {
+          const p = this.backgroundMusic.play();
+          if (p && p.catch) p.catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.warn('Error controlling background music in setPauseState:', e);
+    }
   }
 
   drawPauseScreen() {
@@ -719,7 +741,7 @@ class CarRacing {
   }
 }
 
-let gameInstance = null;
+const gameInstance = ref(null);
 
 const startGame = async () => {
   const isAuthenticated = await checkAuthentication();
@@ -737,43 +759,38 @@ const startGame = async () => {
     gameContainer.value.style.display = 'block';
   }
 
-  if (!gameInstance && gameCanvas.value) {
-    gameInstance = new CarRacing(gameCanvas.value, router);
-    gameInstance.run();
+  if (!gameInstance.value && gameCanvas.value) {
+    gameInstance.value = new CarRacing(gameCanvas.value, router);
+    gameInstance.value.run();
   }
 };
 
 const togglePause = () => {
-  if (gameInstance) {
-    gameInstance.paused = !gameInstance.paused;
-    pauseLabel.value = gameInstance.paused ? 'Reanudar' : 'Pausa';
-
-    // Manejar música de fondo si existe
-    try {
-      if (gameInstance.backgroundMusic) {
-        if (gameInstance.paused) {
-          gameInstance.backgroundMusic.pause();
-        } else {
-          const p = gameInstance.backgroundMusic.play();
-          if (p && p.catch) p.catch(() => {});
-        }
-      }
-    } catch (e) {
-      console.warn('Error toggling background music:', e);
-    }
+  if (gameInstance.value) {
+    gameInstance.value.setPauseState(!gameInstance.value.paused);
+    pauseLabel.value = gameInstance.value.paused ? 'Reanudar' : 'Pausa';
   }
 };
 
 const nextSong = () => {
-  if (gameInstance && gameInstance.backgroundMusic) {
-    gameInstance.backgroundMusic.pause();
-    gameInstance.currentSongIndex++;
-    if (gameInstance.currentSongIndex >= gameInstance.songPool.length) {
-      gameInstance.shuffleSongs();
-      gameInstance.currentSongIndex = 0;
+  if (gameInstance.value && gameInstance.value.backgroundMusic) {
+    try {
+      gameInstance.value.backgroundMusic.pause();
+    } catch (e) {}
+    if (typeof gameInstance.value.currentSongIndex === 'number') {
+      gameInstance.value.currentSongIndex++;
+      if (gameInstance.value.songPool && gameInstance.value.currentSongIndex >= gameInstance.value.songPool.length) {
+        if (typeof gameInstance.value.shuffleSongs === 'function') {
+          gameInstance.value.shuffleSongs();
+        }
+        gameInstance.value.currentSongIndex = 0;
+      }
     }
-    gameInstance.backgroundMusic.src = gameInstance.songs[gameInstance.currentSongIndex];
-    gameInstance.backgroundMusic.play();
+    if (gameInstance.value.songs && typeof gameInstance.value.currentSongIndex === 'number') {
+      gameInstance.value.backgroundMusic.src = gameInstance.value.songs[gameInstance.value.currentSongIndex];
+      const p = gameInstance.value.backgroundMusic.play();
+      if (p && p.catch) p.catch(() => {});
+    }
   }
 };
 
