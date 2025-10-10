@@ -1,6 +1,7 @@
 <!-- app.vue -->
 <template>
   <div>
+<!-- <LoadingOverlay />-->
     <Header />
     <NuxtPage />
     <Footer />
@@ -10,4 +11,6 @@
 <script setup>
 import Header from "@/components/layout/Header.vue";
 import Footer from "@/components/layout/Footer.vue";
+import LoadingOverlay from "./components/sections/LoadingOverlay.vue";
+
 </script>

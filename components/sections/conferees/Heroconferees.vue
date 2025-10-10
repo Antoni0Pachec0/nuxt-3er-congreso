@@ -19,7 +19,7 @@
       <!-- Imagen -->
       <div class="hero-img-wrapper">
         <img
-          src="~/assets/images/conferees/confereens.png"
+          src="~/assets/images/conferees/Confereens.png"
           alt="Ponentes líderes"
           class="hero-img"
         />

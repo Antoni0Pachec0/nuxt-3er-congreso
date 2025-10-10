@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import "/assets/css/styles/store/cartDrawer.css";
+import "@/assets/css/styles/store/CartDrawer.css";
 import { X, ShoppingCart, Trash2 } from "lucide-vue-next";
 
 const open = defineModel<boolean>({ default: false });
