@@ -1,0 +1,247 @@
+/* =========================================================
+   Location – Universidad (CSS combinado con ajustes SOLO desktop)
+   ========================================================= */
+
+/* Fuentes (opcional mover a layout global) */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Open+Sans:wght@400;600&display=swap');
+
+/* ---------- Encabezado ---------- */
+.loc-head {
+  max-width: 1000px;
+  margin: 0 auto 20px;
+  text-align: center;
+  padding: 0 16px;
+}
+.loc-title {
+  font-family: 'Sora', system-ui, sans-serif;
+  color: #000;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0 0 6px;
+}
+.loc-underline {
+  display: block;
+  width: 72px;
+  height: 4px;
+  margin: 6px auto 12px;
+  background: #3B82F6;
+  border-radius: 999px;
+}
+.loc-desc {
+  font-family: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+  color: #4B5563;
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: clamp(14px, 2vw, 18px);
+  margin: 0 auto;
+  max-width: 820px;
+}
+
+/* ---------- Sección ---------- */
+.location-uni {
+  padding: 50px 0 0;
+  background: #fff;
+  color: #0f172a;
+}
+
+/* ---------- Stage / Escenario ---------- */
+.stage-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+.stage {
+  margin-top: 0;
+  position: relative;
+  width: 100%;
+  max-width: 750px;  /* base; se amplía SOLO en desktop abajo */
+  aspect-ratio: 16 / 9;
+  will-change: transform;
+  overflow: hidden;  /* por defecto (móvil) recorta; en desktop lo abrimos */
+}
+/* Desktop: no recortar para que los tooltips no se corten */
+@media (max-width: 960px) {
+  .stage { overflow: visible;
+  margin-bottom: -50px; }
+}
+
+/* Wrapper animable */
+.canvas {
+  position: relative;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transform-origin: 50% 50%;
+}
+
+/* ---------- Capas ---------- */
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.map    { z-index: 2; width: 100%; margin: 0 auto; }
+.laptop { z-index: 3; width: 85%; margin: auto; }  /* base; desktop se sobreescribe */
+.mascot { z-index: 5; width: 30%; left: 70%; }      /* base; desktop se sobreescribe */
+
+/* ---------- Puntos ---------- */
+.point {
+  position: absolute;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #00153bc0;
+  color: #ffffff;
+  font-weight: 800; font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 4;
+  transition: transform 0.2s ease-in-out;
+  pointer-events: auto;
+}
+.point:hover { transform: scale(1.15); }
+.point:focus-visible { outline: 3px solid #24A1E4; outline-offset: 2px; }
+
+/* Tooltips (escritorio) */
+.point .tooltip {
+  position: absolute;
+  bottom: 130%; left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: #0f172a; color: #fff;
+  font-size: 13px; font-weight: 700;
+  padding: 8px 12px; border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.point:hover .tooltip {
+  opacity: 1; visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Posiciones de los puntos (con mapa al 100%) */
+.p1 { top: 18%; left: 42%; }
+.p2 { top: 27%; left: 37%; }
+.p3 { top: 30%; left: 44%; }
+.p4 { top: 68%; left: 24%; }
+.p5 { top: 70%; left: 58%; }
+
+/* Espacio final (anulado en móvil) */
+.location-uni::after { content: ''; display: block; height: 10vh; }
+
+/* ---------- Lista móvil (base) ---------- */
+.mobile-info {
+  display: none;           /* solo visible en móvil */
+  margin-top: 24px;
+  margin-bottom: 0;
+  padding: 0;              /* gutters se aplican en la media query */
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+.info-box {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  color: #fff;
+  font-weight: 700; font-size: 15px;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, .18);
+}
+.info-box .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #fff; color: #0f172a; font-weight: 900; flex-shrink: 0;
+}
+
+/* Colores por item */
+.i1 { background: #1E3A8A !important; }
+.i2 { background: #1E40AF !important; }
+.i3 { background: #2563EB !important; }
+.i4 { background: #3B82F6 !important; }
+.i5 { background: #93C5FD !important; }
+
+/* ---------- SOLO DESKTOP (>=769px): tamaños más grandes ---------- */
+@media (min-width: 769px) {
+  .stage  { max-width: 900px; }                 /* lienzo más grande */
+  .laptop { width: 100%; }                      /* antes 85% */
+  .mascot { width: 38%; top: 13%; left: 66%; }  /* antes 30%, pos ajustada */
+  .mobile-info { display: none; }               /* cards solo en móvil */
+}
+
+/* =========================
+   MOBILE (<=768px)
+   ========================= */
+@media (max-width: 768px) {
+  /* Sección y encabezado */
+  .location-uni { padding-top: 50px; margin-bottom: 30px;}
+  .location-uni::after { height: 0; }
+  .loc-head { padding: 0 16px; margin-bottom: 16px; text-align: center; }
+  .loc-title { font-size: clamp(22px, 6vw, 28px); line-height: 1.2; }
+  .loc-underline { width: 64px; height: 4px; margin: 8px auto 12px; background: #3B82F6; border-radius: 999px; }
+  .loc-desc { font-size: clamp(13px, 4vw, 16px); line-height: 1.6; max-width: 680px; margin: 0 auto; }
+
+  /* Escenario (parallax intacto en móvil) */
+  .stage { width: 92%; max-width: 750px; margin: 0 auto; overflow: hidden; }
+
+  /* Capas (tamaños móviles NO se tocan) */
+  .map    { width: 100% !important; max-width: 100% !important; z-index: 2; }
+  .laptop { width: 85%; z-index: 3; }
+  .mascot { width: 45%; left: 60%; bottom: -2%; top: auto; z-index: 5; }
+
+  /* Puntos: más pequeños y reposicionados (solo móvil) */
+  .point { width: 18px; height: 18px; font-size: 10px; }
+  .point::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0); /* zona táctil */
+  }
+  /* Reposición hacia arriba */
+  .p1 { top: 18% !important; }
+  .p2 { top: 30% !important; }
+  .p3 { top: 30% !important; }
+  .p4 { top: 64% !important; }
+  .p5 { top: 66% !important; }
+
+  .point .tooltip { display: none !important; }
+
+  /* Gutters laterales para las cards móviles (márgenes) */
+  .mobile-info {
+    display: block;
+    --gutter: clamp(16px, 6vw, 24px);
+    padding-left: var(--gutter) !important;
+    padding-right: var(--gutter) !important;
+  }
+
+  /* Safe areas (iPhone notch) */
+  @supports (padding: max(0px)) {
+    .mobile-info {
+      padding-left: max(var(--gutter), env(safe-area-inset-left));
+      padding-right: max(var(--gutter), env(safe-area-inset-right));
+    }
+  }
+}
+
+/* =========================
+   Rendimiento (móvil y PC)
+   ========================= */
+/* Menos repintados del layout donde ocurre el parallax */
+.stage, .canvas { contain: layout paint; }
+/* Promueve a GPU y evita re-rasterizados */
+.layer, .point, .laptop, .mascot {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

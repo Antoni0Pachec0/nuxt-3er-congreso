@@ -1,0 +1,830 @@
+/* ====================================================================
+   I. VARIABLES - Diseño Fluido y Paleta
+==================================================================== */
+:root {
+  /* Colores base - Alineados con tu paleta */
+  --bg-900: #0B1534; /* Fondo más oscuro */
+  --bg-800: #132953; /* Tono intermedio para el hero */
+  --ink: #F7F8F9; /* Texto principal */
+  --muted: #929CAC; /* Texto secundario (ayuda, etc.) */
+
+  /* Colores de acento */
+  --blue-primary: #1E5A93; /* Azul para botones y elementos clave */
+  --blue-accent: #24A1E4; /* Azul vibrante para acentos */
+  --blue-ghost-bg: rgba(184, 216, 243, 0.1);
+  --blue-ghost-border: rgba(184, 216, 243, 0.4);
+
+  /* Colores de estado (Password Meter, Alerts) */
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --info: #0ea5e9; /* Usado para "Fuerte" */
+
+  /* Estilos de Cristal (Glassmorphism) */
+  --glass-1: rgba(184, 216, 243, 0.08);
+  --glass-2: rgba(184, 216, 243, 0.05);
+  --glass-br: rgba(184, 216, 243, 0.38); /* Borde */
+
+  /* Efectos de fondo */
+  --ring-in: rgba(30, 90, 147, 0.22);
+  --ring-in2: rgba(36, 161, 228, 0.18);
+  --shadow: 0 18px 60px rgba(5, 20, 40, 0.35);
+
+  /* Espaciado / radios / alturas */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --field-h: 44px; /* Altura de campos */
+
+  /* Tipografía fluida (min, preferred, max) */
+  --fz-sm: clamp(0.8rem, 0.75rem + 0.2vw, 0.9rem);
+  --fz-base: clamp(0.9rem, 0.85rem + 0.3vw, 1rem);
+  --fz-lg: clamp(1.05rem, 1rem + 0.6vw, 1.2rem);
+  --fz-hero: clamp(2rem, 6vw, 3.5rem);
+
+  /* Dimensiones del Layout */
+  --card-w: max(300px, min(100%, 600px));
+}
+
+/* ====================================================================
+   II. BASE / RESET
+==================================================================== */
+.auth-screen * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-screen {
+  position: relative;
+  min-height: 100vh; 
+  padding: clamp(var(--space-sm), 2vw, var(--space-xl));
+  color: var(--ink);
+  background: radial-gradient(1200px 600px at 70% 15%, var(--ring-in), transparent 60%),
+    radial-gradient(900px 800px at -10% 90%, var(--ring-in2), transparent 60%),
+    linear-gradient(135deg, var(--bg-800), var(--bg-900));
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Accesibilidad: Reducir animaciones */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ====================================================================
+   III. LAYOUT / ESTRUCTURA PRINCIPAL
+==================================================================== */
+
+/* --- A. Fondo Decorativo --- */
+.auth-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.auth-bg .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+.blob--tl { width: 420px; height: 420px; left: -140px; top: -120px; background: var(--blue-accent); }
+.blob--br { width: 460px; height: 460px; right: -120px; bottom: -120px; background: var(--blue-primary); }
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.ring--1 { width: 520px; height: 520px; right: -200px; top: -40px; box-shadow: inset 0 0 0 2px var(--ring-in), inset 0 0 40px 10px rgba(30, 90, 147, 0.08); }
+.ring--2 { width: 360px; height: 360px; right: -40px; top: 100px; box-shadow: inset 0 0 0 2px var(--ring-in2), inset 0 0 40px 10px rgba(36, 161, 228, 0.06); }
+
+.shape { position: absolute; opacity: 0.25; pointer-events: none; }
+.shape--sq { right: 24px; top: 140px; width: 22px; height: 22px; border: 2px solid var(--blue-accent); transform: rotate(45deg); border-radius: 4px; }
+.shape--dot { left: 26px; top: 220px; width: 8px; height: 8px; background: var(--blue-accent); border-radius: 50%; }
+
+/* --- B. Contenedor Principal (Hero + Form) --- */
+.auth-container {
+  width: min(1180px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  align-items: center; 
+  z-index: 2;
+  position: relative;
+}
+@media (min-width: 980px) {
+  .auth-container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* --- C. Hero / Título del Evento --- */
+.auth-hero {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-md);
+}
+@media (min-width: 980px) {
+  .auth-hero {
+    text-align: left;
+    padding-top: var(--space-lg);
+  }
+}
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  margin: 0 0 var(--space-sm);
+  line-height: 1.1;
+}
+.kicker {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--blue-accent);
+  letter-spacing: 0.3em;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(0.9rem, 0.8rem + 0.4vw, 1.125rem);
+}
+.hero-title .line1,
+.hero-title .line2 {
+  display: block;
+  font-weight: 800;
+  font-size: var(--fz-hero);
+}
+.hero-title .line2 {
+  color: var(--blue-accent);
+}
+
+/* --- D. Card de Registro --- */
+.cardRegister {
+  width: var(--card-w);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  border: 1px solid var(--glass-br);
+  box-shadow: var(--shadow);
+  padding: clamp(var(--space-lg), 3vw, var(--space-xl));
+  backdrop-filter: blur(12px);
+  color-scheme: dark;
+  margin: 0 auto;
+}
+@media (min-width: 980px) {
+  .cardRegister {
+    flex: none;
+    margin-left: auto;
+  }
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-weight: 800;
+  font-size: var(--fz-lg);
+  margin: 0 0 var(--space-lg);
+  position: relative;
+}
+.card-title .arrow svg {
+  width: 24px;
+  height: 24px;
+  color: var(--blue-accent);
+}
+
+/* ====================================================================
+   IV. MÓDULOS / COMPONENTES ESPECÍFICOS
+==================================================================== */
+
+/* --- A. Stepper (Línea de Tiempo / Responsivo) --- */
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(var(--step-count, 4), 1fr);
+  align-items: start;
+  gap: 0;
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  list-style: none;
+  overflow: visible;
+}
+.stepper--timeline { position: relative; }
+
+/* Rail de fondo */
+.stepper--timeline::before {
+  content: "";
+  position: absolute;
+  left: 8px; right: 8px;
+  top: 16px;
+  height: 2px;
+  background: rgba(255,255,255,.14);
+  z-index: 0;
+}
+
+/* Conector hacia la izquierda (progreso) */
+.stepper--timeline .step:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: -50%;
+  right: 50%;
+  top: 16px;
+  height: 2px;
+  background: rgba(255,255,255,.15);
+  z-index: 1;
+}
+.stepper--timeline .step.done:not(:first-child)::before {
+  background: linear-gradient(90deg, var(--blue-primary), var(--blue-accent));
+}
+
+/* Punto */
+.stepper--timeline .step {
+  position: relative;
+  padding-top: 28px;
+  text-align: center;
+}
+.stepper--timeline .step .step__dot {
+  position: absolute;
+  top: 7px; left: 50%;
+  transform: translateX(-50%);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  border: 2px solid rgba(255,255,255,.22);
+  z-index: 2;
+  transition: all 0.2s ease-out;
+}
+
+/* Estilos de paso activo */
+.stepper--timeline .step.active .step__dot {
+  width: 22px; height: 22px;
+  background: var(--blue-accent);
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 6px rgba(36, 161, 228, 0.18);
+}
+.stepper--timeline .step.done .step__dot {
+    background: var(--blue-accent);
+    border-color: var(--blue-primary);
+}
+
+/* Índice pequeño bajo el punto */
+.stepper--timeline .step .step__index {
+  position: absolute;
+  top: 34px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #bde0ff; font-weight: 900;
+}
+.stepper--timeline .step.active .step__index { color: #fff; }
+
+/* Label por defecto (Versión Desktop) */
+.stepper--timeline .step .step__label {
+    display: block;
+    margin-top: 24px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--muted);
+    /* Truncamiento en Desktop */
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 0.25rem;
+}
+.stepper--timeline .step.active .step__label {
+    color: #fff;
+}
+
+
+/* --- B. Formularios y Campos --- */
+.form {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.label {
+  font-weight: 700;
+  color: #d7e6ff;
+  font-size: var(--fz-sm);
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  z-index: 1;
+}
+.input-icon svg { width: 20px; height: 20px; }
+
+.input,
+select,
+textarea {
+  width: 100%;
+  min-height: var(--field-h);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(30, 90, 147, 0.5);
+  background: rgba(11, 21, 52, 0.5);
+  color: var(--ink);
+  padding: 0 12px 0 40px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  caret-color: var(--ink);
+  appearance: none;
+  font-size: var(--fz-base);
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.5; /* Para textarea */
+}
+
+textarea {
+  padding: 10px 12px;
+}
+
+.input:not(textarea) {
+    height: var(--field-h);
+    padding: 0 12px 0 40px;
+}
+
+select {
+  padding-left: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23929CAC' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.input::placeholder { color: #798da2; }
+
+.input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--blue-accent);
+  box-shadow: 0 0 0 4px rgba(36, 161, 228, 0.18);
+  background: rgba(11, 21, 52, 0.8);
+}
+
+.help {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Autofill fixes */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(11, 21, 52, 0.5) inset !important;
+  -webkit-text-fill-color: var(--ink) !important;
+  border: 1px solid rgba(30, 90, 147, 0.5) !important;
+  caret-color: var(--ink) !important;
+  font-family: inherit !important;
+  font-size: var(--fz-base) !important;
+}
+
+/* --- C. Campo de Contraseña con Eye Icon --- */
+.input--pass {
+  padding-right: 48px;
+}
+
+.eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  color: var(--blue-accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.eye svg { width: 20px; height: 20px; }
+.eye:focus-visible { outline: 2px solid var(--blue-accent); border-radius: 8px; }
+
+
+/* --- D. Medidor de Fortaleza de Contraseña --- */
+.pw-meter {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: 0.25rem;
+}
+.pw-meter__bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.pw-meter__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--error), var(--warning), var(--blue-accent));
+  transition: width 0.25s ease;
+}
+.pw-meter__legend {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.pw-reqs {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+.pw-reqs li.ok {
+    color: var(--success);
+}
+.pw-debil { color: var(--error); }
+.pw-media { color: var(--warning); }
+.pw-fuerte { color: var(--blue-accent); }
+
+
+/* --- E. Input de Teléfono (con selector de país) --- */
+.input-wrap--phone {
+  position: relative;
+  isolation: isolate;
+}
+/* Estilo del "pill" de país/código */
+.input-wrap--phone .custom-select {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(var(--field-h) - 12px);
+  min-width: 92px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-br);
+  background: rgba(11, 21, 52, 0.85);
+  cursor: pointer;
+  z-index: 3; /* Valor base */
+  line-height: 1;
+  transition: z-index 0s;
+}
+
+/* Elevar el Z-index del contenedor de la pill cuando está abierto. */
+.input-wrap--phone.open {
+    z-index: 9999;
+}
+
+/* Contenido seleccionado (bandera y código) */
+.input-wrap--phone .selected-option {
+    display: flex;
+    align-items: center;
+}
+
+/* Ajuste de padding para el input */
+.input-wrap--phone .input {
+  padding-left: 122px;
+}
+/* Dropdown de países */
+.input-wrap--phone .options-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 8px;
+  width: 320px;
+  max-width: min(360px, calc(100vw - 56px));
+  max-height: 150px; /* ALTURA MÁXIMA CORREGIDA */
+  overflow: auto; 
+  border-radius: 12px;
+  border: 1px solid var(--glass-br);
+  background: rgba(11, 21, 52, 0.98);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 60px rgba(5, 20, 40, 0.45);
+  padding: 6px 0;
+  z-index: 10;
+}
+.input-wrap--phone .options-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  line-height: 1;
+}
+.input-wrap--phone .options-list li:hover { background: rgba(184, 216, 243, 0.08); }
+.input-wrap--phone .flag-wrap { width: 22px; height: 16px; border-radius: 3px; overflow: hidden; flex: 0 0 22px; }
+.input-wrap--phone .country-name { font-size: 0.9rem; color: var(--ink); flex: 1; min-width: 120px; }
+.input-wrap--phone .country-code { font-weight: 700; color: #bde0ff; }
+/* Espacio cuando el dropdown está abierto */
+.input-wrap--phone.open { margin-bottom: 12px; }
+
+
+/* --- F. Checkbox de Términos --- */
+.checkline {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  color: #d7e6ff;
+  font-size: 0.875rem;
+  margin-top: var(--space-xs);
+}
+.checkline input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+
+/* --- G. Navegación y Botones --- */
+.nav {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.btn {
+  height: var(--field-h);
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--blue-accent);
+  background: linear-gradient(180deg, var(--blue-primary), var(--blue-accent));
+  color: #fff;
+  font-weight: 800;
+  font-size: var(--fz-base);
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.02s;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.btn.ghost {
+  background: var(--blue-ghost-bg);
+  border: 1px solid var(--blue-ghost-border);
+  color: #B8D8F3;
+}
+
+/* Botón de retroceso (BACK) */
+.btn-back {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  border: 1px solid var(--glass-br);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  color: var(--blue-accent);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-back:hover {
+  background: rgba(184, 216, 243, 0.12);
+  transform: translateY(-1px);
+}
+.btn-back svg { width: 22px; height: 22px; }
+
+
+/* --- H. Modal --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+.modal-content {
+  background: var(--bg-800);
+  border: 1px solid var(--glass-br);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+}
+.modal-title { font-size: var(--fz-lg); margin-bottom: var(--space-md); }
+.modal-body { font-size: var(--fz-base); line-height: 1.6; color: var(--muted); }
+.modal-close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+.modal-close:hover { color: var(--ink); background: rgba(255, 255, 255, 0.1); }
+
+/* ====================================================================
+   V. UTILIDADES / RESPONSIVE
+==================================================================== */
+
+/* --- A. Utilidades de Grid/Layout --- */
+.grid.resp {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .grid.resp {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.col-span-2 {
+  grid-column: 1 / -1;
+}
+
+/* --- B. Responsive Móvil (max-width) --- */
+@media (max-width: 768px) {
+  /* MODIFICACIÓN PRINCIPAL: Invertir el orden de los botones en móvil */
+  .nav {
+    flex-direction: column-reverse; /* El último elemento (Continuar) va arriba */
+  }
+  .btn {
+    width: 100%;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-screen {
+    padding: var(--space-sm);
+  }
+  .cardRegister {
+    padding: var(--space-md);
+  }
+  
+  /* --- Ajustes al Stepper para Móvil (Etiquetas Arriba) --- */
+  .stepper {
+      /* Añade espacio inferior extra al stepper en móvil */
+      margin-bottom: var(--space-lg); 
+  }
+
+  .stepper--timeline .step {
+      /* Aumentamos el padding-top para hacer espacio al texto envuelto (55px) */
+      padding-top: 55px; 
+      text-align: center;
+  }
+
+  .stepper--timeline .step .step__dot {
+      /* Reposicionamos el punto basado en el nuevo padding-top */
+      top: 35px; 
+  }
+  
+  .stepper--timeline::before {
+      /* La línea de progreso también se mueve */
+      top: 44px; 
+  }
+  
+  .stepper--timeline .step:not(:first-child)::before {
+      /* El conector de progreso también se mueve */
+      top: 44px; 
+  }
+
+  .stepper--timeline .step .step__index {
+      /* Reposicionamos el índice basado en el nuevo padding-top */
+      top: 62px; 
+  }
+
+  /* **MOSTRAR Y POSICIONAR LA ETIQUETA ARRIBA Y PERMITIR ENVOLTURA** */
+  .stepper--timeline .step .step__label {
+      display: block; 
+      position: absolute; 
+      top: 0; 
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem; 
+      font-weight: 700;
+      color: var(--muted);
+      width: 100%;
+      padding: 0 2px; /* Reducimos padding horizontal para maximizar espacio */
+      white-space: normal; /* Permite que el texto se envuelva */
+      overflow: visible; 
+      text-overflow: clip; 
+      margin-top: 0;
+      text-align: center;
+      line-height: 1.2; /* Líneas compactas */
+  }
+
+  /* Eliminamos el estilo de "pill" del paso activo en móvil */
+  .stepper--timeline .step.active .step__label {
+      color: #fff; 
+      transform: translateX(-50%); 
+      left: 50%;
+      padding: 0 2px;
+      background: transparent;
+      border: none;
+      font-size: 0.65rem;
+  }
+
+
+  /* Ajuste de Input de Teléfono */
+  .input-wrap--phone .custom-select {
+    min-width: 82px;
+    padding: 0 8px;
+    height: calc(var(--field-h) - 14px);
+  }
+  .input-wrap--phone .input { padding-left: 108px; }
+
+  /* Ajuste de Stepper */
+  .pw-reqs {
+      gap: 0.5rem 0.5rem; /* Compactar requerimientos de contraseña */
+      font-size: 0.65rem;
+  }
+
+  .blob--tl,
+  .ring--1 {
+    display: none;
+  }
+}
+
+/* --- C. Responsive Desktop (min-width) --- */
+@media (min-width: 1200px) {
+  .cardRegister {
+    --card-w: 720px;
+  }
+}
+
+/* Ajuste específico para que las etiquetas vuelvan a su estado normal en pantallas más grandes */
+@media (min-width: 481px) {
+    .stepper--timeline .step {
+        padding-top: 28px;
+    }
+    .stepper--timeline .step .step__dot {
+        top: 7px;
+    }
+    .stepper--timeline::before {
+        top: 16px;
+    }
+    .stepper--timeline .step:not(:first-child)::before {
+        top: 16px;
+    }
+    .stepper--timeline .step .step__index {
+        top: 34px;
+    }
+    /* Restaurar el label para desktop (donde la truncación es deseada/aceptada) */
+    .stepper--timeline .step .step__label {
+        position: static;
+        transform: none;
+        margin-top: 24px;
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 0 0.25rem;
+        /* Restaurar truncamiento en Desktop */
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
