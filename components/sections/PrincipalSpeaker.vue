@@ -51,7 +51,7 @@ export default {
             isModalVisible: false, 
             speakers: [
                 {
-                    name: 'Nasly Borrero',
+                    name: 'Nazly Borrero',
                     title: 'Experta en Ciberseguridad y Transformación Digital:',
                     description: 'Desde Colombia, especialista en ciberseguridad y transformación digital, compartiendo su experiencia internacional en el Congreso TI.',
                     photo: speakerImage1,
