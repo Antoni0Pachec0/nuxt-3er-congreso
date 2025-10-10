@@ -1,0 +1,331 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&display=swap");
+
+/* ======== SECCIÓN GENERAL ======== */
+.iw-section {
+  background: #F8F8F8;
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 1rem;
+  font-family: "Inter", sans-serif;
+}
+
+.iw-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  position: relative;
+  z-index: 2;
+}
+/* ======== ICONOS (DISEÑO DIAMANTE) ======== */
+.iw-icons-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 90px);
+  grid-template-rows: repeat(4, 90px);
+  justify-content: center;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1rem;
+  position: relative;
+}
+
+/* === Posiciones personalizadas === */
+.iw-icon:nth-child(1) { /* Git */
+  grid-column: 2;
+  grid-row: 1;
+}
+.iw-icon:nth-child(2) { /* AWS */
+  grid-column: 1;
+  grid-row: 2;
+}
+.iw-icon:nth-child(3) { /* Figma */
+  grid-column: 2;
+  grid-row: 2;
+}
+.iw-icon:nth-child(4) { /* React */
+  grid-column: 3;
+  grid-row: 2;
+}
+.iw-icon:nth-child(5) { /* VSCode */
+  grid-column: 1;
+  grid-row: 3;
+}
+.iw-icon:nth-child(6) { /* Python */
+  grid-column: 2;
+  grid-row: 3;
+}
+.iw-icon:nth-child(7) { /* Node */
+  grid-column: 3;
+  grid-row: 3;
+}
+.iw-icon:nth-child(8) { /* Firebase */
+  grid-column: 2;
+  grid-row: 4;
+}
+
+/* === Ícono base (mismo tamaño para todos) === */
+.iw-icon {
+  background: #EDEDED;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90px;
+  height: 90px;
+  transition: transform 0.4s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+}
+
+.iw-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* === Ícono activo (animación) === */
+.iw-icon.active {
+  transform: scale(1.4);
+  z-index: 3;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.iw-icon.active img {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+
+/* ======== TEXTO ======== */
+.iw-text {
+  text-align: center;
+  max-width: 520px;
+}
+
+.iw-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.iw-underline {
+  width: 80px;
+  height: 4px;
+  background: #2563eb;
+  border-radius: 999px;
+  margin: 0.75rem auto 1.5rem;
+}
+
+.iw-desc {
+  font-size: 1rem;
+  color: #334155;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* ======== BOTÓN CENTRADO ======== */
+.iw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  border-radius: 999px;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  /* ✅ Centrado */
+  margin: 0 auto;
+  display: flex; /* mantiene la alineación interna */
+}
+
+.iw-btn:hover {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.4);
+}
+
+.iw-btn-icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.2;
+}
+
+/* ======== CÍRCULOS DECORATIVOS ======== */
+
+/* 🔵 Azul grande superior izquierdo */
+.iw-section::before {
+  content: "";
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  background: #2563eb;
+  top: -100px;
+  left: -100px;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.iw-section::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: #0f172a;
+  top: 80px;
+  left: -50px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+
+.iw-circle-bottom {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  background: #2563eb;
+  border-radius: 50%;
+  bottom: -80px;
+  right: -80px;
+  z-index: 0;
+}
+
+/* ======== MODAL "PRÓXIMAMENTE" (RESPONSIVE Y FIJO) ======== */
+.iw-modal-overlay {
+  position: fixed;
+  inset: 0; /* top: 0, right: 0, bottom: 0, left: 0 */
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* 👈 se asegura de estar sobre todo */
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Cuadro blanco centrado */
+.iw-modal-content {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  max-width: 420px;
+  width: 90%; /* 👈 ajusta al ancho de pantalla pequeña */
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: slideUp 0.35s ease;
+}
+
+/* Texto */
+.iw-modal-content h2 {
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #0f172a;
+}
+
+.iw-modal-content p {
+  font-size: 1rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Botón de cierre */
+.iw-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #475569;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.iw-modal-close:hover {
+  transform: scale(1.2);
+  color: #2563eb;
+}
+
+/* ======== ANIMACIONES ======== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ======== RESPONSIVE ADAPTATIONS ======== */
+
+/* 📱 Móvil (hasta 600px) */
+@media (max-width: 600px) {
+  .iw-modal-content {
+    width: 90%;
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .iw-modal-content h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .iw-modal-content p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .iw-modal-close {
+    top: 6px;
+    right: 10px;
+    font-size: 1.4rem;
+  }
+}
+
+/* 💻 Tablets */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .iw-modal-content {
+    width: 80%;
+    max-width: 460px;
+    padding: 2rem;
+  }
+}
+
+/* 🖥️ Escritorios */
+@media (min-width: 1025px) {
+  .iw-modal-content {
+    max-width: 500px;
+  }
+}
+
+
+/* ======== RESPONSIVE ======== */
+@media (min-width: 900px) {
+  .iw-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .iw-text {
+    text-align: left;
+    max-width: 540px;
+  }
+
+}

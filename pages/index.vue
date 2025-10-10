@@ -2,6 +2,8 @@
     <main>
     <Hero id="Inicio"/>
     <Description id="Enfoque"/>
+    <InnovationWorkshops id="Talleres"/>
+
     <SectionsGalleryCarousel id="Galeria" :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
     <Maps id="Ubicacion" />
     <Location_uni id="Mapa" />
@@ -15,8 +17,8 @@ import Hero from '@/components/sections/Hero.vue'
 import Description from '@/components/sections/Description.vue'
 import Maps from '@/components/sections/Mapa.vue'
 import Location_uni from '@/components/sections/Location_Uni.vue'
+import InnovationWorkshops from '~/components/sections/InnovationWorkshops.vue'
 import Logos from '@/components/sections/Logos-uni.vue'
-
 import evento2018 from '@/assets/img/gallery/evento2018.jpeg'
 import evento2019 from '@/assets/img/gallery/evento2019.jpeg'
 import evento2021 from '@/assets/img/gallery/evento2021.jpeg'
