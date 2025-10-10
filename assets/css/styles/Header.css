@@ -101,19 +101,20 @@
     transition: color 0.3s ease-in-out;
 }
 
-/* Efecto hover para enlaces de escritorio */
-.desktop-nav a::after {
+/* 🔄 MODIFICACIÓN CLAVE: Aplicar efecto hover solo a enlaces que NO tienen la clase de botón */
+.desktop-nav a:not(.desktop-nav-btn)::after {
     content: '';
     position: absolute;
     width: 0;
     height: 2px;
     bottom: -2px;
     left: 50%;
-    background-color: #0c9eff;
+    /* Uso de la variable de acento */
+    background-color: var(--blue-accent, #0c9eff);
     transition: all 0.3s ease-in-out;
 }
 
-.desktop-nav a:hover::after {
+.desktop-nav a:not(.desktop-nav-btn):hover::after {
     width: 100%;
     left: 0;
 }
@@ -143,7 +144,8 @@
 
 .desktop-nav-btn:hover {
     background-color: #0a7ac1;
-    border-color: #0a7ac1;
+    /* Asegura que no haya un borde adicional por el hover de 'a' */
+    border: 1.5px solid #0a7ac1; 
 }
 
 /* Estilo específico para reducir el tamaño del texto del botón "Inicio de Sesión" 

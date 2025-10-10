@@ -2,6 +2,7 @@
     <main>
     <Hero id="Inicio"/>
     <Description id="Enfoque"/>
+    <PrincipalSpeaker id="Conferencista"/>
     <SectionsGalleryCarousel id="Galeria" :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
     <Maps id="Ubicacion" />
     <Location_uni id="Mapa" />
@@ -14,6 +15,7 @@
 import Hero from '@/components/sections/Hero.vue'
 import Description from '@/components/sections/Description.vue'
 import SectionsGalleryCarousel from '@/components/sections/GalleryCarousel.vue'
+import PrincipalSpeaker from '@/components/sections/PrincipalSpeaker.vue'
 import Maps from '@/components/sections/Mapa.vue'
 import Location_uni from '@/components/sections/Location_Uni.vue'
 import SectionsFaqAccordion from '@/components/sections/SectionsFaqAccordion.vue'
@@ -132,4 +134,5 @@ const faqItems = [
     icon: mdiGift
   }
 ]
+
 </script>
