@@ -51,7 +51,7 @@ export default {
             isModalVisible: false, 
             speakers: [
                 {
-                    name: 'Nasly Barrero',
+                    name: 'Nasly Borrero',
                     title: 'Experta en Ciberseguridad y Transformación Digital:',
                     description: 'Desde Colombia, especialista en ciberseguridad y transformación digital, compartiendo su experiencia internacional en el Congreso TI.',
                     photo: speakerImage1,
@@ -60,7 +60,7 @@ export default {
                 },
                 {
                     name: 'Benjamín Guzmán',
-                    title: 'Desarrollador de Software y Aprendiz Permanente:',
+                    title: 'Desarrollador de Software y Mentor Autodidacta:',
                     description: 'Desarrollador mexicano experto en NodeJS y Go, comparte su visión sobre innovación y mentalidad hacker en el Congreso TI.',
                     photo: speakerImage2,
                     theme: 'theme-blue-purple',

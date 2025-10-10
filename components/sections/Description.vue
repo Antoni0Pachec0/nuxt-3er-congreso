@@ -1,15 +1,15 @@
 <template>
     <section id="description" class="description">
-        <div class="tittle-description fade-in-bottom" ref="titleRef">
+        <div class="description-title fade-in-bottom" ref="titleRef">
             <h2>El Congreso que Marca el Futuro Digital</h2>
-            <div class="line"></div>
+            <div class="description-title-line"></div>
         </div>
 
         <p class="description-text fade-in-bottom" ref="descriptionRef">
-            <span class="circle circle-top">
+            <span class="description-circle description-circle-top">
                 <SvgIcon type="mdi" :path="pathTop" />
             </span>
-            <span class="circle circle-bottom">
+            <span class="description-circle description-circle-bottom">
                 <SvgIcon type="mdi" :path="pathBottom" />
             </span>
             El Congreso de Tecnologías de la Información e Innovación Digital es un espacio académico y
@@ -19,19 +19,20 @@
             inteligencia artificial, ciberseguridad, innovación digital y transformación empresarial.
         </p>
 
-        <div class="cards-container fade-in-bottom" ref="cardsRef">
-            <div v-for="(item, index) in cards" :key="index" class="card">
-                <div class="icon">
+        <div class="description-cards-container fade-in-bottom" ref="cardsRef">
+            <div v-for="(item, index) in cards" :key="index" class="description-card">
+                <div class="description-card-icon">
                     <SvgIcon v-if="item.iconType && item.iconPath" :type="item.iconType" :path="item.iconPath" />
                     <span v-else>{{ item.iconEmoji }}</span>
                 </div>
                 <h3>{{ item.title }}</h3>
-                <div class="line-card"></div>
+                <div class="description-card-line"></div>
                 <p>{{ item.description }}</p>
             </div>
         </div>
     </section>
 </template>
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import '@/assets/css/styles/Description.css';
@@ -45,7 +46,6 @@ const pathBook = mdiBookOpenVariantOutline
 const pathConnection = mdiConnection
 const pathDumbbell = mdiDumbbell
 
-// CAMBIO (1/3): Crear una referencia para el título
 const titleRef = ref(null);
 const descriptionRef = ref(null);
 const cardsRef = ref(null);
@@ -67,7 +67,6 @@ onMounted(() => {
         });
     }, options);
 
-    // CAMBIO (2/3): Empezar a observar el elemento del título
     if (titleRef.value) {
         observer.observe(titleRef.value);
     }
@@ -84,9 +83,7 @@ onUnmounted(() => {
         observer.disconnect();
     }
 });
-// FIN DEL CAMBIO (3/3): No se necesita hacer nada más.
 
-// Cards (sin cambios)
 const cards = [
     {
         title: "Difusión del conocimiento",

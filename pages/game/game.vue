@@ -24,14 +24,21 @@
 
       <div id="musicControls">
         <button id="pauseBtn" class="Btn" @click="togglePause">
-          Pausa
+          {{ pauseLabel }}
+          <svg class="svgIcon" viewBox="0 0 576 512">
+            <path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/>
+          </svg>
+        </button>
+
+        <button id="nextBtn" class="Btn" @click="nextSong">
+          Cambiar canción
           <svg class="svgIcon" viewBox="0 0 576 512">
             <path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/>
           </svg>
         </button>
 
         <button class="Btn" @click="navigateToLeaderboard">
-        Posiciones
+          Clasificaciones
         </button>
       </div>
     </div>
@@ -70,6 +77,7 @@ definePageMeta({
 const entryPage = ref(null);
 const gameContainer = ref(null);
 const gameCanvas = ref(null);
+const pauseLabel = ref('Pausa');
 const router = useRouter();
 
 // Función para obtener cookies
@@ -176,7 +184,7 @@ class CarRacing {
     this.green = "#000000";
     this.gray = "#808080";
     this.fps = 90;
-    this.paused = false;
+  this.paused = false;
     this.gameLoopId = null;
     this.userId = null;
     this.scoreSent = false;
@@ -240,6 +248,23 @@ class CarRacing {
     this.canvas.addEventListener("touchmove", (e) => this.handleTouchMove(e));
     this.canvas.addEventListener("touchend", (e) => this.handleTouchEnd(e));
     window.addEventListener("resize", () => this.resizeCanvas());
+  }
+
+  drawPauseScreen() {
+    // Dibuja una overlay semi-transparente y texto de pausa
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    const offsetX = (this.canvas.width - this.base_width * this.scale) / 2;
+    const offsetY = (this.canvas.height - this.base_height * this.scale) / 2;
+    this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY);
+    this.ctx.font = `bold 72px Comic Sans MS`;
+    this.ctx.fillStyle = this.white;
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('Pausa', this.base_width / 2, this.base_height / 2 - 20);
+    this.ctx.font = `28px Comic Sans MS`;
+    this.ctx.fillText('Presiona Pausa para reanudar', this.base_width / 2, this.base_height / 2 + 30);
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   initializeLanes() {
@@ -633,6 +658,12 @@ class CarRacing {
 
   update() {
     if (!this.game_over) {
+      if (this.paused) {
+        // Mantener dibujados los objetos pero no actualizar la lógica del juego
+        this.draw_objects();
+        this.drawPauseScreen();
+        return;
+      }
       this.bg_y += this.bg_speed;
       if (this.bg_y >= this.base_height) {
         this.bg_y = 0;
@@ -715,6 +746,21 @@ const startGame = async () => {
 const togglePause = () => {
   if (gameInstance) {
     gameInstance.paused = !gameInstance.paused;
+    pauseLabel.value = gameInstance.paused ? 'Reanudar' : 'Pausa';
+
+    // Manejar música de fondo si existe
+    try {
+      if (gameInstance.backgroundMusic) {
+        if (gameInstance.paused) {
+          gameInstance.backgroundMusic.pause();
+        } else {
+          const p = gameInstance.backgroundMusic.play();
+          if (p && p.catch) p.catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.warn('Error toggling background music:', e);
+    }
   }
 };
 
@@ -741,7 +787,7 @@ onMounted(() => {
   const token = getAccessToken();
   
   if (!userId || !token) {
-    console.warn('⚠️ Credenciales incompletas');
+    console.warn('Credenciales incompletas');
   }
 });
 

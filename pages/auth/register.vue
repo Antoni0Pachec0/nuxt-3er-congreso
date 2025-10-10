@@ -119,7 +119,10 @@
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
                 </div>
-                <div class="pw-meter" aria-live="polite" v-if="passwordTouched">
+                <div class="pw-meter" aria-live="polite">
+                  <div>
+                    La contraseña debe conmplir con todos los parametros
+                  </div>
                   <div class="pw-meter__bar">
                     <span class="pw-meter__fill" :style="{ width: strengthPercent }"></span>
                   </div>
@@ -699,6 +702,7 @@ definePageMeta({
 
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
+// @ts-expect-error
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiAccountPlusOutline,
@@ -727,6 +731,8 @@ import '@/assets/css/styles/Register.css';
 // Importa las rutas desde tu archivo app-routes.js
 import { APP_ROUTES, R } from '~/utils/app-routes';
 
+
+const showPasswordWarningModal = ref(false);
 const router = useRouter();
 const STORAGE_KEY = "register_form_v7";
 
@@ -1135,13 +1141,17 @@ function isValidPhone(phone: string) {
 const canProceed = computed(() => {
   switch (step.value) {
     case 0:
+      // ANTES: strengthScore.value >= 3
+      // AHORA: strengthScore.value === 5
+      // Esto asegura que los 5 requisitos de la contraseña se cumplan.
       return (
         !!form.value.email &&
-        isValidEmail(form.value.email) && // validar email
-        form.value.password_user.length >= 8 &&
-        strengthScore.value >= 3 &&
+        isValidEmail(form.value.email) &&
+        form.value.password_user.length >= 8 && // Esta línea es redundante si el score ya lo valida, pero no hace daño
+        strengthScore.value === 5 && // ¡Cambio clave aquí! El score debe ser el máximo.
         pwdMatch.value
       );
+    
     case 1:
       return (
         !!form.value.name_user &&
@@ -1150,6 +1160,7 @@ const canProceed = computed(() => {
         !!form.value.phone &&
         isValidPhone(form.value.phone)
       );
+      
     case 2: {
       if (!form.value.type_user_id) return false;
 
@@ -1188,16 +1199,17 @@ const canProceed = computed(() => {
         return hasBio && (confOk || tallOk || ambasOk);
       }
       return true;
+      
     case 4:
       return true; // Redes opcionales
+      
     case 5:
       return isSpeaker.value && !!form.value.size_user && accepted.value;
+      
     default:
       return true;
   }
 });
-
-
 
 /* ===================
  * Navegación
