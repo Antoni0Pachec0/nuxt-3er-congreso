@@ -38,6 +38,16 @@
         --bg-right-square: #D19BF866;
         --icon-pen: url('@/assets/images/pen-blue.png');
     }
+    .theme-pink {
+        --color-tittle-speaker: black;
+        --name-border-color: #EA81A5;
+        --name-gradient: linear-gradient(90deg, #DD5190, #FDC5C4);
+        --button-gradient: linear-gradient(to right, #B18AF0 0%, #DE4A6E 100%);
+        --icon-stroke-color: #B18AF0;
+        --bg-left-square: #B795EB66;
+        --bg-right-square: #FFBFC366;
+        --icon-pen: url('@/assets/images/pen-pink.png');
+    }
 
     /* ============================================= */
     /* --- BASE STYLES (MOBILE-FIRST) --- */

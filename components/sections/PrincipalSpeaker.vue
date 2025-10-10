@@ -41,6 +41,8 @@
 // Importa ambas imágenes
 import speakerImage1 from '@/assets/images/speaker.png';
 import speakerImage2 from '@/assets/images/spekaer1.png';
+import speakerImage3 from '@/assets/images/speaker2.png';
+
 
 export default {
     data() {
@@ -64,6 +66,14 @@ export default {
                     description: 'Desarrollador mexicano experto en NodeJS y Go, comparte su visión sobre innovación y mentalidad hacker en el Congreso TI.',
                     photo: speakerImage2,
                     theme: 'theme-blue-purple',
+                    flag: 'flag-mexico'
+                },
+                {
+                    name: 'Zoreyda Jara',
+                    title: 'Líder e Inspiración Humana y Pofecional',
+                    description: 'Conferencista magistral que inspira con “Alguien fuera de serie”, una charla sobre autenticidad, superación y destacar siendo uno mismo.',
+                    photo: speakerImage3,
+                    theme: 'theme-pink',
                     flag: 'flag-mexico'
                 }
             ]
