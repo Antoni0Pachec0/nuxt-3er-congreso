@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;800&display=swap");
+
+.hero-alt {
+  position: relative;
+  background: linear-gradient(135deg, #0b1534, #1d4ed8);
+  color: #fff;
+  overflow: hidden;
+}
+
+.hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1rem 6rem;
+  display: flex;
+  flex-direction: column; /* Móvil por defecto */
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-img-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.hero-img {
+  max-width: 380px;
+  width: 100%;
+  border-radius: 16px;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+    font-family: "Orbitron", sans-serif; /* Usar Orbitron para el título */
+
+}
+.hero-description {
+  font-size: 1rem;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+.hero-btn {
+  border-radius: 999px;
+  border: 2px solid #ffffff; /* borde blanco */
+  background: transparent;
+  color: #ffffff; /* texto blanco */
+  padding: 1.5rem 2.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem; /* espacio entre icono y texto */
+  transition: all 0.3s ease;
+    margin-bottom: 1.75rem;
+
+}
+
+.wave{
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 100vw;           /* 👈 ancho del viewport, no del contenedor */
+  height: 170px;          /* ajusta a tu gusto (160–200px) */
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+.hero-btn .icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.2;
+  margin-right: 1rem; 
+}
+
+.hero-btn:hover {
+  background: #ffffff22; /* fondo suave en hover */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .hero-container {
+    flex-direction: row; /* Imagen a la derecha, texto a la izquierda */
+    text-align: left;
+  }
+  .hero-text {
+    align-self: center;
+  }
+}

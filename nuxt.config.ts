@@ -1,7 +1,13 @@
 // nuxt.config.ts
+import vuetify from 'vite-plugin-vuetify'
+
 export default defineNuxtConfig({
+  ssr: true,
   css: [
-    '@/assets/css/main.css'
+    'vuetify/styles',          // ✅ estilos base de Vuetify
+    '@/assets/css/main.css',   // tus estilos
+    // Si prefieres CDN de MDI, puedes omitir la línea de abajo.
+    // '@mdi/font/css/materialdesignicons.css',
   ],
   app: {
     head: {
@@ -12,7 +18,7 @@ export default defineNuxtConfig({
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap'
         },
-        // Agregar Material Design Icons
+        // Si usas CDN para MDI, déjalo (y quita la importación local en css arriba)
         {
           rel: 'stylesheet',
           href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css'
@@ -31,6 +37,14 @@ export default defineNuxtConfig({
         }
       ]
     }
-  }
+  },
+  build: {
+    transpile: ['vuetify'],          // ✅ necesario para SSR
+  },
+  vite: {
+    ssr: { noExternal: ['vuetify'] }, // ✅ evita errores en build SSR
+    plugins: [
+      vuetify({ autoImport: true }),  // ✅ auto-import de <v-btn>, <v-card>, etc.
+    ],
+  },
 })
-
