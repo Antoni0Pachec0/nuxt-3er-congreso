@@ -1,20 +1,21 @@
 <template>
     <section 
         class="principal-speaker-section" 
-        :class="[currentSpeaker.theme, { 'is-fading': isFading }]"
+        :class="[currentSpeaker.theme, { 'is-animating-out': isAnimatingOut }]"
     >
-        <div class="principal-speaker-img fade-in-section">
+        <div class="principal-speaker-img animatable-item">
             <div class="image-circle-container">
                 <img :src="currentSpeaker.photo" :alt="currentSpeaker.name" class="speaker-photo">
             </div>
             <div :class="currentSpeaker.flag"></div>
         </div>
-        <div class="container-speaker fade-in-section">
-            <h2 class="section-title">{{ currentSpeaker.title }}</h2>
-            <h1 class="speaker-name">{{ currentSpeaker.name }}</h1>
-            <p class="speaker-description">{{ currentSpeaker.description }}</p>
+
+        <div class="container-speaker">
+            <h2 class="section-title animatable-item">{{ currentSpeaker.title }}</h2>
+            <h1 class="speaker-name animatable-item">{{ currentSpeaker.name }}</h1>
+            <p class="speaker-description animatable-item">{{ currentSpeaker.description }}</p>
             
-            <a href="#" @click.prevent="showModal" class="all-speakers-btn fade-in-section">
+            <a href="#" @click.prevent="showModal" class="all-speakers-btn animatable-item">
                 <div class="btn-speker">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -38,17 +39,15 @@
 </template>
 
 <script>
-// Importa ambas imágenes
 import speakerImage1 from '@/assets/images/speaker.png';
 import speakerImage2 from '@/assets/images/spekaer1.png';
 import speakerImage3 from '@/assets/images/speaker2.png';
-
 
 export default {
     data() {
         return {
             currentSpeakerIndex: 0,
-            isFading: false,
+            isAnimatingOut: false, // NEW: Reemplaza a 'isFading' para un mejor control
             speakerInterval: null,
             isModalVisible: false, 
             speakers: [
@@ -85,13 +84,21 @@ export default {
         }
     },
     methods: {
+        // NEW: Lógica de cambio reescrita para la animación escalonada
         changeSpeaker() {
-            this.isFading = true; 
+            // 1. Inicia la animación de salida
+            this.isAnimatingOut = true; 
 
+            // 2. Espera a que termine la animación de salida (1000ms en este caso)
+            // Este tiempo debe ser un poco mayor que la suma de la duración + el mayor retraso de la animación de salida en el CSS.
             setTimeout(() => {
+                // 3. Cambia el ponente
                 this.currentSpeakerIndex = (this.currentSpeakerIndex + 1) % this.speakers.length;
-                this.isFading = false;
-            }, 500);
+                
+                // 4. Quita la clase de animación de salida.
+                // Al quitarla, los elementos (ahora con nuevos datos) ejecutarán su animación de entrada por defecto.
+                this.isAnimatingOut = false;
+            }, 1000); // 1 segundo para que salgan todos los elementos
         },
         showModal() {
             this.isModalVisible = true;
@@ -101,7 +108,9 @@ export default {
         }
     },
     mounted() {
-        this.speakerInterval = setInterval(this.changeSpeaker, 4000);
+        // NEW: El intervalo ahora considera el tiempo de animación de entrada, salida y la pausa deseada.
+        // Animación de salida (~1s) + Animación de entrada (~1.5s) + Pausa (3s) = 5.5s total
+        this.speakerInterval = setInterval(this.changeSpeaker, 5500);
     },
     beforeUnmount() {
         clearInterval(this.speakerInterval);
@@ -112,59 +121,4 @@ export default {
 <style scoped>
     /* Importa tus estilos existentes */
     @import '~/assets/css/styles/PrincipalSpeaker.css';
-
-    /* Estilos para el Modal con clases renombradas */
-    .speakers-modal__overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .speakers-modal__content {
-        background-color: #fff;
-        padding: 25px 35px;
-        border-radius: 10px;
-        text-align: center;
-        position: relative;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        color: #333;
-        max-width: 90%;
-        width: 350px;
-    }
-
-    .speakers-modal__content h2 {
-        margin-top: 0;
-        font-size: 24px;
-        color: #2c3e50;
-    }
-    
-    .speakers-modal__content p {
-        font-size: 16px;
-        margin-bottom: 0;
-    }
-
-    .speakers-modal__close-button {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        border: none;
-        background: transparent;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-        color: #aaa;
-        padding: 0;
-        line-height: 1;
-    }
-
-    .speakers-modal__close-button:hover {
-        color: #333;
-    }
 </style>
