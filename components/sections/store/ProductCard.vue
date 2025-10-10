@@ -8,7 +8,6 @@
         </h2>
         <div class="faq__underline"></div>
 
-        <div class="underline mx-auto mb-4"></div>
         <p class="text-medium-emphasis text-body-2 text-md-body-1">
           Explora productos oficiales del Congreso TI: calidad, estilo y
           espíritu tech.

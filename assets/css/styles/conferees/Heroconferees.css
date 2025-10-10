@@ -45,10 +45,11 @@
 
 }
 .hero-description {
-  font-size: 1rem;
-  max-width: 640px;
-  margin: 0 auto 2rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.6;
+  opacity: 0.95;
+  margin-bottom: 1.75rem;
 }
 .hero-btn {
   border-radius: 999px;
@@ -71,8 +72,8 @@
   position: absolute;
   left: 50%;
   bottom: -1px;
-  width: 100vw;           /* 👈 ancho del viewport, no del contenedor */
-  height: 170px;          /* ajusta a tu gusto (160–200px) */
+  width: 100vw;
+  height: 170px;
   transform: translateX(-50%);
   z-index: 1;
   pointer-events: none;

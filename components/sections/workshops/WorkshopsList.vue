@@ -1,5 +1,5 @@
 <template>
-  <section class="workshops-section">
+  <section class="workshops-section" id="workshops">
     <!-- ✅ TOAST -->
     <transition name="toast">
       <div

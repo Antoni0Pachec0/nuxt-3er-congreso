@@ -88,7 +88,7 @@ const speakers = [
     name: "Elena Martínez",
     role: "Senior Architect",
     company: "TechVision Labs",
-    tag: "Full Stack Development",
+    tag: "como crear asistentes virtuales con modelos de IA locales usando ollama",
     bio: "Arquitecta de software con 12+ años creando aplicaciones escalables para Fortune 500. Pionera en microservicios y arquitecturas cloud-native. Speaker internacional en AWS re:Invent y Google Cloud Next.",
     image: ElenaSpeaker,
     socials: [
