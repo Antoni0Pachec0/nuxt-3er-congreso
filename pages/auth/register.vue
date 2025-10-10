@@ -656,11 +656,11 @@
         <h3 class="modal-title">Términos y Aviso de Privacidad</h3>
         <div class="modal-body">
           <p>
-            Al registrarte en el 3er Congreso Internacional, aceptas los siguientes términos y condiciones,
-            así como nuestro aviso de privacidad. Tu información personal será utilizada exclusivamente
-            para la organización y gestión del evento. Nos comprometemos a proteger tus datos y a no
-            compartirlos con terceros sin tu consentimiento explícito. Tienes derecho a acceder, rectificar
-            y cancelar tus datos personales, así como a oponerte al tratamiento de los mismos.
+            Al registrarte en el 3er Congreso Internacional, aceptas los siguientes términos y condiciones, así como nuestro aviso de privacidad.
+            Tu información personal será utilizada exclusivamente para la organización y gestión de este evento.
+            A continuación, se detallan los términos que aceptas:
+            Uso de Información Personal: Tu información personal será utilizada únicamente para fines de organización y gestión del 3er Congreso Internacional.
+            Exclusión de Responsabilidad por Enlaces Externos: Al aceptar estos términos y condiciones, el equipo Elite y la Universidad Tecnológica de Tecamachalco (UTT) no se hacen responsables por daños a dispositivos móviles y/o laptops personales generados por el uso o acceso a enlaces externos.
           </p>
         </div>
       </div>
