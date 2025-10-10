@@ -46,6 +46,7 @@ export default defineNuxtConfig({
   // ----------------
   css: [
     '@/assets/css/main.css',
+    '@/assets/css/styles/inscription.css'
   ],
 
   app: {
