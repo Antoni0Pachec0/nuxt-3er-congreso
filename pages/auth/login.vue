@@ -1,24 +1,5 @@
 <template>
   <main id="login" class="login-screen auth" role="main">
-    <Transition name="fade">
-      <div
-        v-if="notification.visible"
-        :class="['app-alert', `app-alert--${notification.type}`]"
-        role="alert"
-      >
-        <div class="alert-icon" aria-hidden="true">
-          <SvgIcon :path="notification.icon" type="mdi" />
-        </div>
-        <div class="alert-content">
-          <p class="alert-title">{{ notification.title }}</p>
-          <p class="alert-message">{{ notification.message }}</p>
-        </div>
-        <button v-if="notification.type !== 'loading'" @click="notification.visible = false" class="alert-close" aria-label="Cerrar notificación">
-          <SvgIcon :path="mdiClose" type="mdi" />
-        </button>
-      </div>
-    </Transition>
-
     <div class="login-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -134,11 +115,7 @@
 <script setup>
 import { definePageMeta, useRuntimeConfig } from '#imports'
 import { ref } from 'vue'
-<<<<<<< HEAD
-import { useRouter, useRoute } from 'vue-router'
-=======
 import { useRoute } from '#app'
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
   mdiAccountCircleOutline,
@@ -146,24 +123,14 @@ import {
   mdiLockOutline,
   mdiEyeOutline,
   mdiEyeOffOutline,
-  mdiArrowLeft,
-  mdiAlertCircleOutline, // Icono para Error
-  mdiCheckCircleOutline, // Icono para Éxito
-  mdiClockOutline,       // Icono para Carga
-  mdiClose               // Icono para cerrar
+  mdiArrowLeft
 } from '@mdi/js'
 
 import { R } from '~/utils/app-routes'
 import { ROUTES } from '~/plugins/http/routes'
 import { parseAxiosError } from '~/plugins/http/error'
-<<<<<<< HEAD
-import { R } from '~/utils/app-routes'
-// Nota: Deberás actualizar este archivo de CSS con los nuevos estilos para la alerta.
-import '@/assets/css/styles/Login.css' 
-=======
 import { useAuthStore } from '~/stores/auth'
 import '@/assets/css/styles/Login.css'
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
 // Notificaciones básicas (puedes reemplazar con tu sistema de toasts)
 function notifyError(title, message) {
@@ -184,11 +151,8 @@ definePageMeta({
 })
 
 const route = useRoute()
-<<<<<<< HEAD
-=======
 const authStore = useAuthStore()
 const config = useRuntimeConfig()
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
 const email = ref('')
 const password = ref('')
@@ -196,51 +160,9 @@ const show = ref(false)
 const loading = ref(false)
 const apiError = ref('')
 
-<<<<<<< HEAD
-// NUEVO ESTADO PARA LA ALERTA INTEGRADA
-const notification = ref({
-  visible: false,
-  title: '',
-  message: '',
-  type: 'error', // 'error', 'success', 'loading'
-  icon: mdiAlertCircleOutline,
-})
-
-// Función para mostrar la alerta
-function showNotification(title, message, type = 'error', autoHide = true) {
-  notification.value = {
-    visible: true,
-    title,
-    message,
-    type,
-    icon:
-      type === 'success'
-        ? mdiCheckCircleOutline
-        : type === 'loading'
-        ? mdiClockOutline
-        : mdiAlertCircleOutline,
-  }
-  
-  // Oculta automáticamente después de 5 segundos, a menos que sea tipo 'loading'
-  if (autoHide && type !== 'loading') {
-    setTimeout(() => {
-      notification.value.visible = false
-    }, 5000) 
-  }
-}
-
-// Función para ocultar el estado de carga
-function hideLoading() {
-    if (notification.value.type === 'loading') {
-        notification.value.visible = false
-    }
-}
-
-=======
 // -------------------------------
 // 🔹 Funciones de navegación
 // -------------------------------
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 function goHome() {
   return navigateTo(R.to('home'))
 }
@@ -258,23 +180,14 @@ function onForgot() {
 // -------------------------------
 async function onSubmit() {
   apiError.value = ''
-  
-  // Limpiar cualquier notificación previa
-  notification.value.visible = false
 
   if (!email.value || !password.value) {
-    // Reemplazo de notifyError
-    showNotification(
-      'Campos incompletos',
-      'Por favor, llena todos los campos.',
-      'error'
-    )
+    notifyError('Campos incompletos', 'Por favor, llena todos los campos.')
     return
   }
 
   loading.value = true
-  // Reemplazo de notifyLoading
-  showNotification('Ingresando…', 'Estamos validando tus credenciales.', 'loading', false)
+  const toast = notifyLoading('Ingresando…', 'Estamos validando tus credenciales.')
 
   try {
     const payload = {
@@ -282,17 +195,12 @@ async function onSubmit() {
       password: password.value,
     }
 
-<<<<<<< HEAD
-    // 👇 Esencial: enviar cookies
-    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
-=======
     // Petición al backend
     const response = await $fetch(`${config.public.apiBase}/auth/login`, {
       method: 'POST',
       body: payload,
       credentials: 'include',
     })
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
     // 🔥 NUEVO: GUARDAR TOKENS EN LOCALSTORAGE SI VIENEN EN LA RESPUESTA
     if (response?.access_token) {
@@ -308,39 +216,14 @@ async function onSubmit() {
       sessionStorage.setItem('verify_email', pendingEmail)
       localStorage.setItem('verification_purpose', 'email_verification')
 
-      // Reemplazo de toast.resolve (Verificación)
-      showNotification(
-        'Verificación requerida',
-        'Tu cuenta aún no está activa. Revisa tu correo.',
-        'error' // Se usa error para que el usuario tome acción inmediata
-      )
-      
-      return router.push(R.to('verify'))
+      toast?.resolve?.({
+        title: 'Verificación requerida',
+        message: 'Tu cuenta aún no está activa. Revisa tu correo.',
+      })
+
+      return navigateTo(R.to('verify'))
     }
 
-<<<<<<< HEAD
-    // 2. Manejo de Login Exitoso
-    if (data?.message?.toLowerCase().includes('exitoso')) {
-      const userId = data.user_id 
-      
-      console.log('Login exitoso. ID de usuario:', userId) 
-      
-      // Reemplazo de toast.resolve (Éxito)
-      showNotification('¡Bienvenido!', data.message, 'success')
-
-      // Redireccionar con un pequeño retraso para que se vea el mensaje
-      const redirect = route.query?.redirect || R.path('userHome')
-      setTimeout(() => {
-        router.push(redirect)
-      }, 1000)
-      return
-    }
-
-    // 3. Respuesta inesperada (si el servidor no dio éxito ni verificación)
-    const msg = data?.message || 'Respuesta inesperada del servidor.'
-    showNotification('Error', msg, 'error')
-    apiError.value = msg
-=======
     // 🔹 Caso 2: login exitoso
     if (Number.isFinite(response?.user_id)) {
       const userId = response.user_id
@@ -368,127 +251,14 @@ async function onSubmit() {
     const fallbackMsg = response?.message || 'Respuesta inesperada del servidor.'
     notifyError('Error', fallbackMsg)
     apiError.value = fallbackMsg
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
 
   } catch (e) {
     const msg = parseAxiosError(e) || 'Error al iniciar sesión.'
-    // Reemplazo de notifyError (Catch)
-    showNotification('No se pudo iniciar sesión', msg, 'error')
+    notifyError('No se pudo iniciar sesión', msg)
     apiError.value = msg
     toast?.resolve?.({ title: 'Error', message: msg })
   } finally {
     loading.value = false
-    hideLoading() // Ocultar el estado de carga
   }
 }
-<<<<<<< HEAD
-
 </script>
-<style>
-/* ========================= */
-/* ESTILOS PARA LA NUEVA ALERTA FLOTANTE */
-/* ========================= */
-
-.app-alert {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  max-width: 350px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: flex-start;
-  z-index: 1000; /* Asegura que esté por encima de todo */
-}
-
-/* Estilo para Errores */
-.app-alert--error {
-  background-color: #fef2f2; /* Rojo muy claro */
-  border: 1px solid #fecaca; 
-  color: #b91c1c; /* Texto rojo oscuro */
-}
-
-.app-alert--error .alert-icon svg {
-  fill: #ef4444; /* Icono rojo */
-}
-
-/* Estilo para Éxito */
-.app-alert--success {
-  background-color: #f0fdf4; /* Verde muy claro */
-  border: 1px solid #dcfce7;
-  color: #15803d; /* Texto verde oscuro */
-}
-
-.app-alert--success .alert-icon svg {
-  fill: #22c55e; /* Icono verde */
-}
-
-/* Estilo para Carga/Proceso */
-.app-alert--loading {
-  background-color: #eff6ff; /* Azul muy claro */
-  border: 1px solid #dbeafe;
-  color: #1e40af; /* Texto azul oscuro */
-}
-
-.app-alert--loading .alert-icon svg {
-  fill: #3b82f6; /* Icono azul */
-}
-
-.alert-icon {
-  margin-right: 10px;
-  line-height: 0;
-}
-
-.alert-content {
-  flex-grow: 1;
-}
-
-.alert-title {
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  line-height: 1.2;
-}
-
-.alert-message {
-  font-size: 0.9em;
-  margin: 0;
-}
-
-.alert-close {
-  background: none;
-  border: none;
-  padding: 0;
-  margin-left: 15px;
-  cursor: pointer;
-  color: inherit; 
-  line-height: 0;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.alert-close:hover {
-  opacity: 1;
-}
-
-.alert-close svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
-/* Transición de entrada/salida (Vue Transition) */
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease-in-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateX(100%); /* Desliza desde la derecha */
-}
-</style>
-=======
-</script>
->>>>>>> fa1e64715c961dab029550c878acce2248c59faa
