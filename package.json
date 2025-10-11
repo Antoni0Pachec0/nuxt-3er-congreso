@@ -11,6 +11,7 @@
     "cleanup": "nuxi cleanup"
   },
   "dependencies": {
+    "@invictus.codes/nuxt-vuetify": "^0.3.0",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/font": "7.4.47",
     "@mdi/js": "7.4.47",
@@ -20,13 +21,15 @@
     "flag-icon-css": "^4.1.7",
     "flag-icons": "^7.5.0",
     "gsap": "3.13.0",
+    "lucide-vue-next": "^0.545.0",
     "notivue": "^2.4.5",
     "nuxt": "^4.1.2",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
     "vue": "^3.5.21",
     "vue-flag-icon": "^2.1.0",
-    "vue-tel-input": "^9.5.0"
+    "vue-tel-input": "^9.5.0",
+    "vuetify": "^3.5.1"
   },
   "engines": {
     "node": "20.x",
