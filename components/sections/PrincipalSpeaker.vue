@@ -1,8 +1,5 @@
 <template>
-    <section 
-        class="principal-speaker-section" 
-        :class="[currentSpeaker.theme, { 'is-animating-out': isAnimatingOut }]"
-    >
+    <section class="principal-speaker-section" :class="[currentSpeaker.theme, { 'is-animating-out': isAnimatingOut }]">
         <div class="principal-speaker-img animatable-item">
             <div class="image-circle-container">
                 <img :src="currentSpeaker.photo" :alt="currentSpeaker.name" class="speaker-photo">
@@ -14,10 +11,11 @@
             <h2 class="section-title animatable-item">{{ currentSpeaker.title }}</h2>
             <h1 class="speaker-name animatable-item">{{ currentSpeaker.name }}</h1>
             <p class="speaker-description animatable-item">{{ currentSpeaker.description }}</p>
-            
+
             <a href="#" @click.prevent="showModal" class="all-speakers-btn animatable-item">
                 <div class="btn-speker">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -49,7 +47,7 @@ export default {
             currentSpeakerIndex: 0,
             isAnimatingOut: false, // NEW: Reemplaza a 'isFading' para un mejor control
             speakerInterval: null,
-            isModalVisible: false, 
+            isModalVisible: false,
             speakers: [
                 {
                     name: 'Nazly Borrero',
@@ -68,12 +66,12 @@ export default {
                     flag: 'flag-mexico'
                 },
                 {
-                    name: 'Zoreyda Jara',
-                    title: 'Líder e Inspiración Humana y Pofecional',
-                    description: 'Conferencista magistral que inspira con “Alguien fuera de serie”, una charla sobre autenticidad, superación y destacar siendo uno mismo.',
-                    photo: speakerImage3,
-                    theme: 'theme-pink',
-                    flag: 'flag-mexico'
+                    "name": "Zoreyda Jara",
+                    "title": "Líder e Inspiración Humana y Profesional",
+                    "description": "Conferencista magistral que inspira con “Alguien fuera de serie”, una charla sobre autenticidad, superación y destacar siendo uno mismo.",
+                    "photo": "speakerImage3",
+                    "theme": "theme-pink",
+                    "flag": "flag-mexico"
                 }
             ]
         };
@@ -87,14 +85,14 @@ export default {
         // NEW: Lógica de cambio reescrita para la animación escalonada
         changeSpeaker() {
             // 1. Inicia la animación de salida
-            this.isAnimatingOut = true; 
+            this.isAnimatingOut = true;
 
             // 2. Espera a que termine la animación de salida (1000ms en este caso)
             // Este tiempo debe ser un poco mayor que la suma de la duración + el mayor retraso de la animación de salida en el CSS.
             setTimeout(() => {
                 // 3. Cambia el ponente
                 this.currentSpeakerIndex = (this.currentSpeakerIndex + 1) % this.speakers.length;
-                
+
                 // 4. Quita la clase de animación de salida.
                 // Al quitarla, los elementos (ahora con nuevos datos) ejecutarán su animación de entrada por defecto.
                 this.isAnimatingOut = false;
@@ -119,6 +117,6 @@ export default {
 </script>
 
 <style scoped>
-    /* Importa tus estilos existentes */
-    @import '~/assets/css/styles/PrincipalSpeaker.css';
+/* Importa tus estilos existentes */
+@import '~/assets/css/styles/PrincipalSpeaker.css';
 </style>
