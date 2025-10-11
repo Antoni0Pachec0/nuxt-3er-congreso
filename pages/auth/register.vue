@@ -102,7 +102,7 @@
                 </div>
                 <div class="pw-meter" aria-live="polite">
                   <div>
-                    La contraseña debe conmplir con todos los parametros
+                    La contraseña debe cumplir con todos los parámetros.
                   </div>
                   <div class="pw-meter__bar">
                     <span class="pw-meter__fill" :style="{ width: strengthPercent }"></span>
@@ -1418,4 +1418,5 @@ async function submitRegister() {
 function goLogin() {
   router.push(R.to('login'));
 }
+
 </script>
