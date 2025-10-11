@@ -66,12 +66,12 @@ export default {
                     flag: 'flag-mexico'
                 },
                 {
-                    "name": "Zoreyda Jara",
-                    "title": "Líder e Inspiración Humana y Profesional",
-                    "description": "Conferencista magistral que inspira con “Alguien fuera de serie”, una charla sobre autenticidad, superación y destacar siendo uno mismo.",
-                    "photo": "speakerImage3",
-                    "theme": "theme-pink",
-                    "flag": "flag-mexico"
+                    name: "Zoreyda Jara",
+                    title: "Líder e Inspiración Humana y Profesional",
+                    description: "Conferencista magistral que inspira con “Alguien fuera de serie”, una charla sobre autenticidad, superación y destacar siendo uno mismo.",
+                    photo: speakerImage3,
+                    theme: "theme-pink",
+                    flag: "flag-mexico"
                 }
             ]
         };
