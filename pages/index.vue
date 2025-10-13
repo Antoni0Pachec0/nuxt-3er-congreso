@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import Hero from '@/components/sections/hero.vue'
 import Description from '@/components/sections/description.vue'
-import sectionsGalleryCarousel from '@/components/sections/gallery-carousel.vue'
+import SectionsGalleryCarousel from '@/components/sections/gallery-carousel.vue'
 import Maps from '@/components/sections/mapa.vue'
 import Location_uni from '@/components/sections/location-uni.vue'
 import sectionsFaqAccordion from '@/components/sections/sections-faq-accordion.vue'

@@ -14,7 +14,7 @@
         </p>
       </header>
 
-      <!-- Filtros -->
+      <!-- Filtros 
       <div class="d-flex flex-wrap justify-center gap-2 mb-8">
         <v-chip-group
           v-model="activeCategory"
@@ -37,7 +37,7 @@
             <span>Termos</span>
           </v-chip>
         </v-chip-group>
-      </div>
+      </div>-->
 
       <!-- Grid -->
       <v-row dense>
@@ -188,7 +188,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import ProductDetailsDialog from "@/components/sections/store/product-details-dialog.vue";
-import "@/assets/css/styles/pages/store/custom-alert.css";
 
 import CartDrawer from "@/components/sections/store/cart-drawer.vue";
 import CustomAlert from "@/components/sections/store/custom-alert.vue";
@@ -403,3 +402,4 @@ function handleAdd(p: Product) {
   showAlert.value = true;
 }
 </script>
+<style scoped src="@/assets/css/styles/pages/store/product-card.css"></style>

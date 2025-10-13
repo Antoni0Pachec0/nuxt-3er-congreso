@@ -1,125 +1,158 @@
+// nuxt.config.ts
 import { defineNuxtConfig } from 'nuxt/config'
+import vuetify from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
-  // Desactiva explícitamente el SSR para funcionar en modo SPA (Cliente)
-  ssr: false,
+  // ----------------
+  // MODO DE RENDERIZADO
+  // ----------------
+  ssr: false, // Desactiva SSR para modo SPA
 
   // ----------------
-  // MÓDULOS Y CARACTERÍSTICAS
+  // MÓDULOS Y COMPONENTES
   // ----------------
   components: true,
-  
+
   imports: {
     autoImport: true,
   },
 
   modules: [
-    ['notivue/nuxt', {
-      position: 'top-right',
-      limit: 3,
-      pauseOnHover: true,
-      notifications: {
-        success: { duration: 4000, showIcon: true },
-        error:   { duration: 6000, showIcon: true, dismissible: true },
-        warning: { duration: 5000, showIcon: true, dismissible: true },
-        loading: { duration: 0,   showIcon: true },
-        info:    { duration: 4000, showIcon: true }
-      }
-    }],
+    [
+      'notivue/nuxt',
+      {
+        position: 'top-right',
+        limit: 3,
+        pauseOnHover: true,
+        notifications: {
+          success: { duration: 4000, showIcon: true },
+          error: { duration: 6000, showIcon: true, dismissible: true },
+          warning: { duration: 5000, showIcon: true, dismissible: true },
+          loading: { duration: 0, showIcon: true },
+          info: { duration: 4000, showIcon: true },
+        },
+      },
+    ],
     '@pinia/nuxt',
-    '@invictus.codes/nuxt-vuetify', 
   ],
-  
+
   // ----------------
-  // ESTILOS Y HEAD
+  // ESTILOS GLOBALES
   // ----------------
   css: [
     '@/assets/css/main.css',
     'notivue/notification.css',
     'notivue/animations.css',
   ],
-  
+
   devtools: { enabled: false },
-  
+
   experimental: {
     asyncEntry: false,
-    componentIslands: false
+    componentIslands: false,
   },
 
-  // ----------------------------------------------------
-  // CONFIGURACIÓN AMBIENTAL (LA API)
-  // ----------------------------------------------------
+  // ----------------
+  // VARIABLES DE ENTORNO
+  // ----------------
   runtimeConfig: {
     public: {
-      // Usamos la API de producción como fallback si la variable de entorno no está seteada.
-      // Esto elimina la dependencia del backend local en desarrollo.
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx', 
-    }
+      apiBase:
+        process.env.NUXT_PUBLIC_API_BASE_URL ||
+        'https://api.congresoti.com.mx',
+    },
   },
 
+  // ----------------
+  // METADATOS Y HEAD GLOBAL
+  // ----------------
   app: {
     head: {
       titleTemplate: '%s | Congreso TI',
       meta: [
         { name: 'theme-color', content: '#132953' },
         { name: 'msapplication-navbutton-color', content: '#132953' },
-        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-        { name: 'apple-mobile-web-app-capable', content: 'yes' }
+        {
+          name: 'apple-mobile-web-app-status-bar-style',
+          content: 'black-translucent',
+        },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap' },
-        { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css' }
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: 'anonymous',
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap',
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css',
+        },
       ],
       script: [
-        { src: 'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js', defer: true, tagPosition: 'bodyClose' },
-        { src: '/particles-init.js', defer: true, tagPosition: 'bodyClose' }
-      ]
-    }
+        {
+          src: 'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js',
+          defer: true,
+          tagPosition: 'bodyClose',
+        },
+        { src: '/particles-init.js', defer: true, tagPosition: 'bodyClose' },
+      ],
+    },
   },
 
-  // ----------------------------------------------------
-  // CONFIGURACIÓN DEL SERVIDOR (NITRO) - Ajustes de rendimiento
-  // ----------------------------------------------------
-  nitro: { 
+  // ----------------
+  // CONFIGURACIÓN DEL SERVIDOR (NITRO)
+  // ----------------
+  nitro: {
     serveStatic: true,
-    // Eliminamos el warning de compatibilidad
-    compatibilityDate: '2025-10-12', 
+    compatibilityDate: '2025-10-13',
+  },
 
-    // IMPORTANTE: Se elimina el bloque devProxy para no intentar conectar a localhost:3001
-    // Si necesitas el backend local en el futuro, consulta las notas a continuación.
+  // ----------------
+  // CONFIGURACIÓN DE COMPILACIÓN
+  // ----------------
+  build: {
+    transpile: ['vuetify'],
   },
 
   // ----------------
   // CONFIGURACIÓN DE VITE
   // ----------------
   vite: {
+    plugins: [vuetify({ autoImport: true })],
+
     optimizeDeps: {
       exclude: [
         'plugin-vue:export-helper',
-        'vite/modulepreload-polyfill'
-      ]
+        'vite/modulepreload-polyfill',
+      ],
     },
-    
+
     build: {
       modulePreload: {
-        polyfill: false
+        polyfill: false,
       },
       rollupOptions: {
-        external: ['plugin-vue:export-helper'] 
-      }
+        external: ['plugin-vue:export-helper'],
+      },
     },
-    
+
     server: {
       fs: {
-        strict: false
-      }
+        strict: false,
+      },
     },
-    
+
     define: {
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-    }
+      'process.env.NODE_ENV': JSON.stringify(
+        process.env.NODE_ENV || 'development'
+      ),
+    },
   },
 
   // ----------------
@@ -127,6 +160,6 @@ export default defineNuxtConfig({
   // ----------------
   typescript: {
     shim: false,
-    typeCheck: false
-  }
+    typeCheck: false,
+  },
 })
