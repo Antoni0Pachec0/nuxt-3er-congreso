@@ -44,6 +44,12 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      meta: [
+        { name: 'theme-color', content: '#132953' },
+        { name: 'msapplication-navbutton-color', content: '#132953' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' }
+      ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },

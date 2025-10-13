@@ -121,7 +121,7 @@
                 </div>
                 <div class="pw-meter" aria-live="polite">
                   <div>
-                    La contraseña debe conmplir con todos los parametros
+                    La contraseña debe cumplir con todos los parámetros.
                   </div>
                   <div class="pw-meter__bar">
                     <span class="pw-meter__fill" :style="{ width: strengthPercent }"></span>
@@ -1517,109 +1517,5 @@ async function submitRegister() {
 function goLogin() {
   router.push(R.to('login'));
 }
+
 </script>
-<style>
-/* ========================= */
-/* ESTILOS PARA LA NUEVA ALERTA FLOTANTE */
-/* ========================= */
-
-.app-alert {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  max-width: 350px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: flex-start;
-  z-index: 1000; /* Asegura que esté por encima de todo */
-}
-
-/* Estilo para Errores */
-.app-alert--error {
-  background-color: #fef2f2; /* Rojo muy claro */
-  border: 1px solid #fecaca; 
-  color: #b91c1c; /* Texto rojo oscuro */
-}
-
-.app-alert--error .alert-icon svg {
-  fill: #ef4444; /* Icono rojo */
-}
-
-/* Estilo para Éxito */
-.app-alert--success {
-  background-color: #f0fdf4; /* Verde muy claro */
-  border: 1px solid #dcfce7;
-  color: #15803d; /* Texto verde oscuro */
-}
-
-.app-alert--success .alert-icon svg {
-  fill: #22c55e; /* Icono verde */
-}
-
-/* Estilo para Carga/Proceso */
-.app-alert--loading {
-  background-color: #eff6ff; /* Azul muy claro */
-  border: 1px solid #dbeafe;
-  color: #1e40af; /* Texto azul oscuro */
-}
-
-.app-alert--loading .alert-icon svg {
-  fill: #3b82f6; /* Icono azul */
-}
-
-.alert-icon {
-  margin-right: 10px;
-  line-height: 0;
-}
-
-.alert-content {
-  flex-grow: 1;
-}
-
-.alert-title {
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  line-height: 1.2;
-}
-
-.alert-message {
-  font-size: 0.9em;
-  margin: 0;
-}
-
-.alert-close {
-  background: none;
-  border: none;
-  padding: 0;
-  margin-left: 15px;
-  cursor: pointer;
-  color: inherit; 
-  line-height: 0;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.alert-close:hover {
-  opacity: 1;
-}
-
-.alert-close svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
-/* Transición de entrada/salida (Vue Transition) */
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease-in-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateX(100%); /* Desliza desde la derecha */
-}
-</style>

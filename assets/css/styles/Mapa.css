@@ -30,7 +30,7 @@
 .mapa-uni-google iframe {
     width: 100%;
     height: 100%;
-    min-height: 420px;
+    max-height: 420px;
     border: none;
     border-radius: 16px 16px 0 0;
     /* bordes redondeados superiores */
@@ -168,54 +168,53 @@
     width: 28px;
     height: 28px;
 }
-
 @media (max-width: 600px) {
 
     /* Mantener espacio alrededor de la tarjeta */
     .mapa-uni {
-        padding: 40px 30px;
+        padding: 40px 20px; /* Un poco menos de padding lateral */
     }
 
     /* Contenedor tipo card */
     .mapa-uni-container {
-        border: 4px solid #ccc;
         flex-direction: column;
         background-color: white;
         border-radius: 16px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px M30px rgba(0, 0, 0, 0.1);
         max-width: 380px;
         width: 100%;
         margin: 0 auto;
         position: relative;
-        /* 🔑 para posicionar los iconos */
-        z-index: 0;
+        /* Importante para posicionar los iconos */
+        overflow: hidden; /* Evita que cualquier cosa se salga accidentalmente */
+        border: none; /* Se elimina el borde gris, el shadow es suficiente */
     }
 
-    /* Mapa */
+    /* Mapa: se asegura que ocupe todo el ancho */
     .mapa-uni-google {
-        flex-basis: 200px;
-        width: 100%;
-        border-radius: 16px 16px 0 0;
+        flex-basis: 220px; /* Un poco más de altura para el mapa */
+        width: 100%; /* Ocupa el 100% del contenedor */
+        max-width: 100%; /* Se remueve el max-width anterior */
     }
 
+    /* Iframe: ocupa el 100% de su contenedor padre (.mapa-uni-google) */
     .mapa-uni-google iframe {
-        max-width: 340px;
+        width: 100%; /* CORRECCIÓN: Ocupa todo el ancho disponible */
         height: 100%;
         display: block;
         border-radius: 16px 16px 0 0;
+        /* Se quita el max-width: 290px que lo limitaba */
     }
 
     /* Sección de información */
     .info-column-map {
-        margin-left: -10px;
-        padding: 30px 18px;
+        padding: 40px 25px 30px; /* Padding más equilibrado */
         text-align: center;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        /* Se remueve el margin-left negativo */
     }
 
     .info-column-map h2 {
-        font-size: 16px;
+        font-size: 18px;
         line-height: 1.3;
         justify-content: center;
     }
@@ -234,11 +233,10 @@
         justify-content: flex-start;
         align-items: flex-start;
         text-align: left;
-        max-width: 100%;
     }
 
     .info-item p {
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.5;
         margin: 0;
         word-break: break-word;
@@ -247,7 +245,7 @@
     .info-item svg {
         min-width: 20px;
         height: 20px;
-        margin-right: 10px;
+        margin-right: 12px;
     }
 
     /* Icono original oculto */
@@ -255,53 +253,37 @@
         display: none;
     }
 
-    /* ===== NUEVO estilo de iconos en esquinas ===== */
+    /* ===== CORRECCIÓN: Estilo de iconos dentro de las esquinas ===== */
     .map-top-left-icon,
     .floating-pin-icon {
-        display: flex;
-        position: absolute;
-        z-index: 50;
-        /* 🔑 por encima de todo el contenido */
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        justify-content: center;
-        align-items: center;
-        background-color: white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
     }
 
-
-
-    /* Esquina superior izquierda */
+    /* Esquina superior izquierda (DENTRO del contenedor) */
     .map-top-left-icon {
-        top: -27px;
-        /* 🔑 sobresale de la esquina */
-        left: -27px;
+        top: 15px; /* CORRECCIÓN: valor positivo para estar dentro */
+        left: 15px; /* CORRECCIÓN: valor positivo para estar dentro */
     }
 
-    /* Esquina inferior derecha */
+    /* Esquina inferior derecha (DENTRO del contenedor) */
     .floating-pin-icon {
-        bottom: -27px;
-        /* 🔑 sobresale de la esquina */
-        right: -27px;
+        bottom: 15px; /* CORRECCIÓN: valor positivo para estar dentro */
+        right: 15px; /* CORRECCIÓN: valor positivo para estar dentro */
     }
 
     .map-top-left-icon svg,
     .floating-pin-icon svg {
-        width: 26px;
-        height: 26px;
+        width: 24px;
+        height: 24px;
     }
 
     .map-top-left-icon svg {
         color: #00b306;
-        /* 🔑 color azul del ejemplo */
     }
 
     .floating-pin-icon svg {
         color: #db0404;
     }
-
 }
 
 
