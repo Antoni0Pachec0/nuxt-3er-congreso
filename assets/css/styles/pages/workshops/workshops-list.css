@@ -116,7 +116,7 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 3.6em; /* ~3 líneas */
+  min-height: 3.6em; /* @3 líneas */
 }
 
 /* Info */

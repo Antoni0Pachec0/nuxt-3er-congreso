@@ -9,21 +9,16 @@ definePageMeta({
   guestOnly: true, // 🧍 solo accesible si NO hay sesión
 })
 
+const router = useRouter()
+const goCart = () => router.push('/cart')
+const goRegister = () => router.push('/register')
 </script>
 
 <template>
   <HeroSouvenirs
-    logo-src="/logos/congreso-mark.svg"
-    hero-img="/images/hero-modelos.png"
-    @go-cart="() => $router.push('/cart')"
-    @go-register="() => $router.push('/register')"
-
+    @go-cart="goCart"
+    @go-register="goRegister"
   />
-
-  <ProductCard/>
-  
-    <SupportWhatsAppCard />
-
-  
-
+  <ProductCard />
+  <SupportWhatsAppCard />
 </template>

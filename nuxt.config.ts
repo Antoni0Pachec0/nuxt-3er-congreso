@@ -22,25 +22,22 @@ export default defineNuxtConfig({
         success: { duration: 4000, showIcon: true },
         error:   { duration: 6000, showIcon: true, dismissible: true },
         warning: { duration: 5000, showIcon: true, dismissible: true },
-        loading: { duration: 0,    showIcon: true },
+        loading: { duration: 0,   showIcon: true },
         info:    { duration: 4000, showIcon: true }
       }
     }],
     '@pinia/nuxt',
-    '@invictus.codes/nuxt-vuetify',
+    '@invictus.codes/nuxt-vuetify', 
   ],
-
+  
   // ----------------
   // ESTILOS Y HEAD
   // ----------------
   css: [
     '@/assets/css/main.css',
-    'notivue/notification.css', // Only needed if using built-in notifications
-    'notivue/animations.css', // Only needed if using built-in animations
+    'notivue/notification.css',
+    'notivue/animations.css',
   ],
-  
-  // Eliminamos el bloque 'pinia' para evitar el error de tipado,
-  // ya que los autoimports por defecto son suficientes.
   
   devtools: { enabled: false },
   
@@ -49,13 +46,14 @@ export default defineNuxtConfig({
     componentIslands: false
   },
 
-  // ----------------
-  // CONFIGURACIÓN AMBIENTAL
-  // ----------------
+  // ----------------------------------------------------
+  // CONFIGURACIÓN AMBIENTAL (LA API)
+  // ----------------------------------------------------
   runtimeConfig: {
     public: {
-      //apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx',
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+      // Usamos la API de producción como fallback si la variable de entorno no está seteada.
+      // Esto elimina la dependencia del backend local en desarrollo.
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx', 
     }
   },
 
@@ -81,16 +79,20 @@ export default defineNuxtConfig({
     }
   },
 
-  // ----------------
-  // CONFIGURACIÓN DEL SERVIDOR (NITRO)
-  // ----------------
+  // ----------------------------------------------------
+  // CONFIGURACIÓN DEL SERVIDOR (NITRO) - Ajustes de rendimiento
+  // ----------------------------------------------------
   nitro: { 
     serveStatic: true,
-    compatibilityDate: '2025-10-03' 
+    // Eliminamos el warning de compatibilidad
+    compatibilityDate: '2025-10-12', 
+
+    // IMPORTANTE: Se elimina el bloque devProxy para no intentar conectar a localhost:3001
+    // Si necesitas el backend local en el futuro, consulta las notas a continuación.
   },
 
   // ----------------
-  // CONFIGURACIÓN DE VITE (CRÍTICA - SOLUCIONES DE PATHING)
+  // CONFIGURACIÓN DE VITE
   // ----------------
   vite: {
     optimizeDeps: {

@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import "/assets/css/styles/store/CollectionSection.css";
+import "@/assets/css/styles/store/CollectionSection.css";
 
 import { computed, ref } from 'vue'
 
