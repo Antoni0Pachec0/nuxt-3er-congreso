@@ -5,7 +5,7 @@ import Timetable from '@/components/sections/schedule/time-table.vue'
 definePageMeta({
   name: 'schedule',
   path: '/schedule',
-  guestOnly: true, // 🧍 solo accesible si NO hay sesión
+  guestOnly: true, 
 })
 </script>
 
