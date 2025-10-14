@@ -1,0 +1,410 @@
+
+.timetable {
+  --tt-bg: #ffffff;
+  --tt-surface: #ffffff;
+  --tt-primary: #132953;
+  --tt-primary-2: #2a4b9e;
+  --tt-ink: #0b1534;
+  --tt-ink-2: #2b3c5a;
+  --tt-muted: #5b6b82;
+  --tt-line: #dbe4f3;
+
+  --tt-shadow: 0 10px 36px rgba(2, 20, 56, 0.08);
+  --tt-shadow-hover: 0 14px 42px rgba(2, 20, 56, 0.12);
+  --tt-ring-focus: 0 0 0 3px rgba(19, 41, 83, 0.18);
+
+  background: var(--tt-bg);
+  padding: 3.5rem 1rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: var(--tt-ink);
+}
+
+/* ===== Header ===== */
+.tt-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.tt-title {
+  font-weight: 800;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  letter-spacing: 0.2px;
+}
+.tt-underline {
+  width: 90px;
+  height: 4px;
+  background: var(--tt-primary);
+  border-radius: 999px;
+  margin: 0.75rem auto 0;
+}
+.tt-subtitle {
+  color: var(--tt-muted);
+  margin-top: 0.75rem;
+}
+
+/* ===== Tabs (responsivo, sin scroll en móvil) ===== */
+.tt-tabs {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  ); /* 2–3 por fila según ancho */
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.tt-tab {
+  -webkit-tap-highlight-color: transparent;
+  background: #eaf0fb;
+  border: 0;
+  border-radius: 18px;
+  padding: 1rem 1.1rem; /* área táctil cómoda en desktop/tablet */
+  min-height: 48px;
+  cursor: pointer;
+  text-align: center;
+  display: grid;
+  gap: 0.25rem;
+  color: var(--tt-ink);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease,
+    color 0.2s ease;
+  outline: none;
+}
+.tt-tab:hover {
+  transform: translateY(-1px);
+}
+.tt-tab:focus-visible {
+  box-shadow: var(--tt-ring-focus);
+}
+.tt-tab.active {
+  color: #fff;
+  background: linear-gradient(180deg, var(--tt-primary), var(--tt-primary-2));
+  box-shadow: 0 10px 28px rgba(19, 41, 83, 0.28);
+}
+.tt-tab__label {
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: 0.2px;
+  line-height: 1.1;
+}
+.tt-tab__chip {
+  font-size: 0.76rem;
+  opacity: 0.95;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  justify-self: center;
+}
+
+/* ===== Timeline =====
+   Usamos el CENTRO de la línea para alinear el dot (rail-center).
+   Cambia --dot-shift si quieres empujar el dot un poco a la derecha (+) o izquierda (-).
+*/
+.tt-timeline {
+  position: relative;
+
+  --rail-center: 28px; /* X del CENTRO de la línea */
+  --rail-w: 4px; /* ancho de la línea */
+  --pad-left: 92px; /* espacio para que las cards no invadan el dot */
+  --dot-shift: 0px; /* ajuste fino del dot (0 = centrado perfecto) */
+
+  padding-left: var(--pad-left);
+  margin-top: 2rem;
+}
+.tt-line {
+  position: absolute;
+  left: calc(var(--rail-center) - var(--rail-w) / 2);
+  top: 0;
+  bottom: 0;
+  width: var(--rail-w);
+  background: var(--tt-line);
+  border-radius: 999px;
+  z-index: 0; /* debajo del dot/card */
+}
+
+/* ===== Cards ===== */
+.tt-card {
+  position: relative;
+  background: var(--tt-surface);
+  border: 1px solid color-mix(in oklab, var(--tt-line) 70%, transparent);
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: var(--tt-shadow);
+  margin: 22px 0;
+  transition: transform 0.18s ease, box-shadow 0.22s ease,
+    border-color 0.22s ease;
+  animation: tt-appear 0.28s ease both;
+  z-index: 1; /* por encima de la línea */
+}
+.tt-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--tt-shadow-hover);
+  border-color: color-mix(in oklab, var(--tt-primary) 16%, var(--tt-line));
+}
+
+/* ===== Dot (fuera de la card y centrado en la línea) ===== */
+.tt-dot {
+  position: absolute;
+  left: calc(-1 * (var(--pad-left) - var(--rail-center)) + var(--dot-shift));
+  top: 18px;
+  width: 0;
+  height: 0;
+  z-index: 2; /* por encima de la línea */
+}
+.tt-dot__ring {
+  position: absolute;
+  left: 50%;
+  top: -25px;
+  width: 80px;
+  height: 80px;
+  margin-left: -40px; /* 48/2 */
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 2px #fff;
+  opacity: 0.28;
+  background: var(--ring-bg, #cfd3ff);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 3;
+}
+.tt-dot__icon {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  margin-left: -25px; /* 26/2 */
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #2c3267;
+  box-shadow: 0 6px 16px rgba(2, 20, 56, 0.12);
+  background: var(--dot-bg, #eef0ff);
+  transform: translateZ(0); /* base para mantener el centro en hover */
+  transition: transform 0.2s ease;
+  z-index: 4;
+}
+.tt-card:hover .tt-dot__ring {
+  transform: scale(1.06);
+  opacity: 0.36;
+}
+.tt-card:hover .tt-dot__icon {
+  transform: translateZ(0) scale(1.04);
+}
+
+/* ===== Head / Chip / Meta ===== */
+.tt-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.tt-card__title {
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--tt-ink);
+}
+.tt-chip {
+  --chip-from: color-mix(in oklab, var(--tt-primary) 85%, #ffffff);
+  --chip-to: var(--tt-primary);
+  font-size: 0.76rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  color: #fff;
+  user-select: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(2, 20, 56, 0.1);
+  background: linear-gradient(180deg, var(--chip-from), var(--chip-to));
+}
+.tt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: var(--tt-muted);
+  font-size: 0.93rem;
+  margin: 8px 0 6px;
+}
+.tt-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tt-meta__item :deep(svg) {
+  display: block;
+}
+.tt-desc {
+  color: var(--tt-ink-2);
+  font-size: 0.95rem;
+}
+
+/* ===== Colores por tipo ===== */
+[data-type="Registro"] {
+  --chip-from: #2f6bff;
+  --chip-to: #1b52e4;
+  --dot-bg: #dff0ff;
+  --ring-bg: #a9d9ff;
+}
+[data-type="Conferencia"] {
+  --chip-from: #a259ff;
+  --chip-to: #8c3bff;
+  --dot-bg: #f0e6ff;
+  --ring-bg: #d3c2ff;
+}
+[data-type="Pausa"] {
+  --chip-from: #8f9aaa;
+  --chip-to: #6f7a8b;
+  --dot-bg: #eef2f7;
+  --ring-bg: #cfd7e4;
+}
+[data-type="Taller"] {
+  --chip-from: #0dbb7c;
+  --chip-to: #05a36a;
+  --dot-bg: #dbffef;
+  --ring-bg: #bff6d5;
+}
+[data-type="Panel"] {
+  --chip-from: #ff9e5a;
+  --chip-to: #ff8540;
+  --dot-bg: #ffefe1;
+  --ring-bg: #ffd9b8;
+}
+[data-type="Networking"] {
+  --chip-from: #3bb0ff;
+  --chip-to: #2a8be6;
+  --dot-bg: #e4f6ff;
+  --ring-bg: #bfe9ff;
+}
+[data-type="Hackatón"] {
+  --chip-from: #ff6aa9;
+  --chip-to: #ff3f8f;
+  --dot-bg: #ffe8f2;
+  --ring-bg: #ffc4da;
+}
+[data-type="Clausura"] {
+  --chip-from: #7182ff;
+  --chip-to: #5568ff;
+  --dot-bg: #eef0ff;
+  --ring-bg: #cfd3ff;
+}
+[data-type="Feria"] {
+  --chip-from: #ffbd4a;
+  --chip-to: #ffa726;
+  --dot-bg: #fff3dd;
+  --ring-bg: #ffdeb0;
+}
+
+/* ===== Animaciones ===== */
+@keyframes tt-appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsive ===== */
+
+/* Timeline ajustes */
+@media (max-width: 900px) {
+  .tt-timeline {
+    --rail-center: 24px;
+    --rail-w: 4px;
+    --pad-left: 84px;
+    --dot-shift: 2px;
+  }
+}
+
+/* Tablet grande (≤1024px): 2 tabs por fila */
+@media (max-width: 1024px) {
+  .tt-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* una fila con 3 columnas */
+    gap: 0.6rem;
+  }
+}
+
+/* === Móvil: icono dentro de la card, sin línea y layout con aire === */
+@media (max-width: 720px) {
+  @media (max-width: 720px) {
+    .tt-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      overflow: visible;
+    }
+
+    .tt-tab {
+      display: grid;
+      grid-auto-rows: min-content;
+      justify-items: center;
+      padding: 0.55rem 0.5rem;
+      border-radius: 12px;
+      min-height: 40px;
+      row-gap: 2px; /* junta label y fecha */
+    }
+
+    .tt-tab__label {
+      font-size: 0.86rem;
+      line-height: 1.05;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 95%;
+    }
+
+    /* ✅ mostrar fecha como subtítulo */
+    .tt-tab__chip {
+      display: inline-block; /* antes estaba en none */
+      font-size: 0.72rem;
+      line-height: 1;
+      opacity: 0.85;
+      padding: 0; /* sin pill; solo texto */
+      border: 0;
+      color: #475569; /* gris sutil en inactivo */
+    }
+
+    /* Estados */
+    .tt-tab.active .tt-tab__label {
+      color: #fff;
+    }
+    .tt-tab.active .tt-tab__chip {
+      color: #e5edff;
+      opacity: 1;
+    }
+  }
+
+  /* Línea fuera en móvil */
+  .tt-timeline {
+    padding-left: 0;
+  }
+  .tt-line {
+    display: none;
+  }
+
+  @media (max-width: 360px) {
+    .tt-card {
+      --icon-size: 42px;
+      --icon-gap: 10px;
+    }
+    .tt-card__title {
+      font-size: 0.98rem;
+    }
+    .tt-chip {
+      font-size: 0.78rem;
+      padding: 6px 9px;
+    }
+  }
+}
+
+/* Móvil muy estrecho (≤380px): apretar un poquito más */
+@media (max-width: 380px) {
+  .tt-tab {
+    padding: 0.5rem 0.45rem;
+    min-height: 34px;
+  }
+  .tt-tab__label {
+    font-size: 0.82rem;
+  }
+}
