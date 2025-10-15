@@ -4,9 +4,11 @@
     <Description id="Enfoque"/>
     <PrincipalSpeaker id="Conferencista"/>
     <SectionsGalleryCarousel id="Galeria" :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
+    <Souvenirsshowcase/>
     <Maps id="Ubicacion" />
     <Location_uni id="Mapa" />
     <SectionsFaqAccordion id="PregFrec" :items="faqItems" :singleOpen="true" />
+    <
     <Logos/>
   </main>
 </template>
@@ -15,13 +17,13 @@
 import Hero from '~/components/sections/hero.vue'
 import Description from '~/components/sections/description.vue'
 import SectionsGalleryCarousel from '@/components/sections/gallery-carousel.vue'
+//import Souvenirsshowcase from '@/components/sections/souvenirs-showcase.vue'
 import Maps from '~/components/sections/mapa.vue'
 import Location_uni from '@/components/sections/location-uni.vue'
 import sectionsFaqAccordion from '@/components/sections/sections-faq-accordion.vue'
 import Logos from '~/components/sections/logos-uni.vue'
 
 import PrincipalSpeaker from '@/components/sections/conferees/principal-speaker.vue'
-
 import evento2018 from '@/assets/img/events/evento-2018.jpeg'
 import evento2019 from '@/assets/img/events/evento-2019.jpeg'
 import evento2021 from '@/assets/img/events/evento-2021.jpeg'

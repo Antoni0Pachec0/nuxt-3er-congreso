@@ -68,6 +68,7 @@
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease,
     color 0.2s ease;
   outline: none;
+  border-radius: 100px;
 }
 .tt-tab:hover {
   transform: translateY(-1px);
@@ -95,10 +96,7 @@
   justify-self: center;
 }
 
-/* ===== Timeline =====
-   Usamos el CENTRO de la línea para alinear el dot (rail-center).
-   Cambia --dot-shift si quieres empujar el dot un poco a la derecha (+) o izquierda (-).
-*/
+
 .tt-timeline {
   position: relative;
 
