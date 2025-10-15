@@ -67,7 +67,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 // Asegúrate de que logoUrl esté correctamente importado o definido
 import logoUrl from '@/assets/img/pages/logo.png' 
-import '@/assets/css/Header.css'
+import '@/assets/css/header.css'
 import { R } from '@/utils/app-routes'
 // Ya no necesitamos useRouter/router.push para los enlaces de login/registro
 // import { useRouter } from 'vue-router'

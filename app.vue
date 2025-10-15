@@ -50,6 +50,8 @@ const HIDE_PATHS = new Set([
   "/user-home",
   "/game/game",
   "/game/leaderboard",
+  "/stripe/checkout",
+  "/stripe/success",
 ]);
 
 const HIDE_NAMES = new Set([
@@ -61,6 +63,7 @@ const HIDE_NAMES = new Set([
   "user-home",
   "game",
   "leaderboard",
+  "stripe-checkout",
 ]);
 
 // También puedes ocultarlos por meta en cualquier página con: definePageMeta({ hideChrome: true })
