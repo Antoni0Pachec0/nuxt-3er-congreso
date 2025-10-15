@@ -1,0 +1,110 @@
+.hr-line { height: 1px; background: #E5E7EB; width: 100%; margin: 16px 0 16px; }
+.hr-spaced { margin-top: 28px; }
+
+.section-title { font-size: clamp(1.1rem, 1.8vw, 1.2rem); font-weight: 800; color: #0f172a; }
+.section-subtitle { font-size: .95rem; color:#64748b; margin-top: 4px; }
+
+.badge-list { display:flex; flex-direction:column; gap:14px; margin-top:14px; }
+.badge-item {
+  display:flex; align-items:center; gap:16px;
+  background:#fff; border:1px solid #e5e7eb; border-radius:14px;
+  padding:16px 18px;
+}
+.badge-item.printed {
+  background: #fcfdfd;
+  border-color: #e5efe9;
+}
+
+.avatar {
+  width:48px; height:48px; border-radius:50%;
+  background:#eef2ff; color:#374151; display:grid; place-items:center;
+  font-weight:800;
+}
+.info { flex:1; min-width:0; }
+.name { font-weight:800; color:#0f172a; line-height:1.2; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.email { color:#475569; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.meta { display:flex; align-items:center; gap:10px; margin-top:6px; }
+.code { color:#6b7280; font-size:0.85rem; }
+.chip {
+  font-size:0.8rem; font-weight:700; padding:4px 10px; border-radius:999px;
+  color:#2563eb; background:#f5faff;
+}
+
+/* Badge "Gafete impreso" */
+.badge-printed {
+  font-size: .75rem;
+  font-weight: 800;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* Colores ya usados */
+.type-estudiante { color: #1e40af; background: #dbeafe; }
+.type-docente    { color: #9d174d; background: #fce7f3; }
+.type-ponente    { color: #6b21a8; background: #f3e8ff; }
+.type-externo    { color: #dd6c15; background: #ffedd5; }
+
+.actions { display:flex; gap:10px; }
+.icon-btn {
+  width:40px; height:40px; border-radius:10px; background:#fff; color:#2563eb;
+  border:1.5px solid #2563eb; display:grid; place-items:center; cursor:pointer;
+  transition:transform .15s ease, background .2s ease;
+}
+.icon-btn:hover { transform: translateY(-1px); background:#f5faff; }
+
+/* Variación para reimprimir */
+.icon-btn.reprint {
+  color:#0f766e;
+  border-color:#0f766e;
+}
+.icon-btn.reprint:hover { background:#ecfdf5; }
+
+.actions-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:6px; }
+.paid-users { display:flex; align-items:baseline; gap:6px; font-size:clamp(0.95rem,2vw,1rem); }
+.paid-users .label { color:#0f172a; font-weight:600; }
+.paid-users .count { color:#1f2937; font-weight:700; }
+
+.actions-right { margin-left:auto; display:flex; gap:10px; }
+.btn-outline { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; background:#fff; color:#2563eb; border:2px solid #2563eb; border-radius:6px; cursor:pointer; font-weight:700; transition:background .3s ease, transform .2s ease; }
+.btn-outline:hover { transform: translateY(-1px); }
+.btn-solid { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; background:#2563eb; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:700; transition:background .3s ease, transform .2s ease; }
+.btn-solid:hover { background:#1d4ed8; transform: translateY(-1px); }
+.icon-left { width:18px; height:18px; fill:currentColor; }
+
+/* === Animaciones de removal con <transition-group name="card"> === */
+.card-enter-active,
+.card-leave-active {
+  transition: 220ms ease;
+}
+.card-move {
+  transition: transform 220ms ease; /* reacomodo suave del resto */
+}
+.card-enter-from {
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+}
+.card-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.card-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.card-leave-to {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  height: 0 !important; /* colapso visual */
+  overflow: hidden;
+}
+
+@media (max-width:640px){
+  .actions-right{ width:100%; justify-content:flex-end; }
+}

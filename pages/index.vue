@@ -12,12 +12,12 @@
 
 <script setup lang="ts">
 import Hero from '@/components/sections/hero.vue'
-import Description from '@/components/sections/description.vue'
+import Description from '~/components/sections/description.vue'
 import sectionsGalleryCarousel from '@/components/sections/gallery-carousel.vue'
-import Maps from '@/components/sections/mapa.vue'
+import Maps from '~/components/sections/mapa.vue'
 import Location_uni from '@/components/sections/location-uni.vue'
 import sectionsFaqAccordion from '@/components/sections/sections-faq-accordion.vue'
-import Logos from '@/components/sections/logos-uni.vue'
+import Logos from '~/components/sections/logos-uni.vue'
 
 import evento2018 from '@/assets/img/events/evento-2018.jpeg'
 import evento2019 from '@/assets/img/events/evento-2019.jpeg'

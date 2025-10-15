@@ -169,7 +169,7 @@
 
 <script setup>
 import { reactive, ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
-import '~/assets/css/style_admin/Users.css'
+import '~/assets/css/styles/admin/users.css';
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiDownload } from "@mdi/js";
 
