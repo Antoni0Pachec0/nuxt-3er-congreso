@@ -19,7 +19,6 @@ import Maps from '@/components/sections/mapa.vue'
 import Location_uni from '@/components/sections/location-uni.vue'
 import sectionsFaqAccordion from '@/components/sections/sections-faq-accordion.vue'
 import Logos from '@/components/sections/logos-uni.vue'
-
 import PrincipalSpeaker from '@/components/sections/conferees/principal-speaker.vue'
 
 import evento2018 from '@/assets/img/events/evento-2018.jpeg'
