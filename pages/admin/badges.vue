@@ -145,6 +145,13 @@ import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiDownload, mdiPrinter } from "@mdi/js"
 import '~/assets/css/styles/admin/badges.css';
 
+definePageMeta({
+  name: 'admin-badges',
+  path: '/admin/badges',
+  alias: ['/admin-badges'],
+  requiresAuth: true
+})
+
 type User = {
   name: string
   email: string

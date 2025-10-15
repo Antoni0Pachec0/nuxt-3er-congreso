@@ -1,0 +1,94 @@
+/* Card contenida y centrada */
+.wa-card {
+  max-width: clamp(320px, 92vw, 1150px);
+  background: #f3f4f6;
+  padding: clamp(16px, 3vw, 28px);
+  margin-inline: auto;
+  /* margen inferior para no chocar con footers fijos en mobile */
+  margin-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Contenido centrado con línea de lectura más corta */
+.wa-content {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+  /* acolchado inferior adicional por si hay footer fijo */
+  padding-bottom: clamp(8px, 3vw, 20px);
+}
+
+/* Título */
+.wa-title {
+  margin: 0 0 6px 0;
+  font-weight: 700;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: #111827;
+}
+
+/* Subtítulo */
+.wa-subtitle {
+  margin: 0 0 18px 0;
+  color: #6b7280;
+  font-size: clamp(0.9rem, 1.6vw, 1rem);
+  line-height: 1.5;
+}
+
+/* Botón estilo pill */
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 2px solid #2563eb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  min-height: 44px; /* tamaño táctil accesible */
+}
+
+.wa-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.16);
+  background: #f8fbff;
+}
+
+.wa-btn__icon {
+  margin-left: 2px;
+}
+
+/* ====== Responsive ====== */
+
+/* <= 768px: botón a ancho completo, más espacio inferior para footer fijo */
+@media (max-width: 768px) {
+  .wa-card {
+    padding: clamp(14px, 4vw, 22px);
+    margin-bottom: max(80px, env(safe-area-inset-bottom)); /* asume footer @64px */
+  }
+  .wa-content {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+  .wa-btn {
+    display: flex;
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1rem;
+  }
+}
+
+/* <= 480px: tipografía y espacios aún más contenidos */
+@media (max-width: 480px) {
+  .wa-title {
+    font-size: 1rem;
+  }
+  .wa-subtitle {
+    font-size: 0.95rem;
+  }
+  .wa-card {
+    border-radius: 16px;
+  }
+}
