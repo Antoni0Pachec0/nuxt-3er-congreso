@@ -354,7 +354,6 @@
 
     /* ✅ mostrar fecha como subtítulo */
     .tt-tab__chip {
-      display: inline-block; /* antes estaba en none */
       font-size: 0.72rem;
       line-height: 1;
       opacity: 0.85;

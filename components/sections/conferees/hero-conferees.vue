@@ -10,7 +10,7 @@
           charla es una oportunidad para aprender de líderes que están cambiando
           la industria tecnológica.
         </p>
-        <v-btn class="hero-btn" variant="outlined" @click="goTo('workshops')">
+        <v-btn class="hero-btn" variant="outlined" @click="goTo('speakers')">
           <ArrowDown class="icon" />
           Ver ponentes
         </v-btn>

@@ -1,278 +1,161 @@
+/* --- ESTILOS GENERALES DE LA SECCIÓN --- */
 .speakers {
-  padding: 4rem 1rem;
-  max-width: 1500px;
-  margin: 0 auto;
+  --card-bg: #ffffff;
+  --main-text: #0b1534;
+  --muted-text: #6b7280;
+  --default-primary: #2563eb;
+  --card-shadow: 0 20px 45px rgba(4, 14, 44, 0.18);
+  --card-shadow-hover: 0 26px 60px rgba(4, 14, 44, 0.22);
+
+  /* Asegúrate de tener --bg definido en tus estilos globales o reemplázalo */
+  background-color: var(--bg, #ffffff);
+  padding: clamp(2rem, 5vw, 4rem) 1rem;
 }
 
 .speakers-header {
+  max-width: 800px;
+  margin: 0 auto 2.5rem;
   text-align: center;
-  margin-bottom: 3rem;
 }
 
 .speakers-title {
-  font-size: clamp(2rem, 5vw, 2.6rem);
-
-  font-weight: 900;
-}
-
-.speakers-subtitle {
-  max-width: 700px;
-  margin: 0 auto;
-  color: #555;
-  font-size: 1rem;
-  margin-bottom: 6rem;
-}
-
-.speakers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 5rem;
-}
-
-.speaker-card {
-  position: relative;
-  display: flex;
-  background: linear-gradient(90deg, #bfdbfe, #ffffff);
-  /* 👈 de izquierda a derecha */
-  border: 2px solid #60a5fa;
-  border-radius: 16px;
-  padding: 2rem;
-  overflow: visible;
-  min-height: 420px;
-}
-
-/* Imagen */
-.speaker-img-wrapper {
-  position: absolute;
-  bottom: -7px;
-  /* 👈 antes 0 */
-  left: 1rem;
-}
-
-.speaker-img {
-  width: 300px;
-  height: 490px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-/* Info */
-.speaker-info {
-  flex: 1;
-  margin-left: 280px;
-}
-
-.speaker-name {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 0.3rem;
-}
-
-.speaker-role {
-  font-weight: 600;
-  color: #2563eb;
-}
-
-.speaker-company {
-  margin-bottom: 0.8rem;
-  color: #666;
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  color: var(--main-text);
 }
 
 .faq__underline {
-  width: 80px;
+  width: 92px;
   height: 4px;
-  background: #2563eb;
   border-radius: 999px;
-  margin: 10px auto 0;
-  margin-bottom: 1rem;
+  margin: 0.8rem auto 1rem;
+  background-color: var(--default-primary);
 }
 
-.speaker-tag {
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin: 1rem 0;
+.speakers-subtitle {
+  margin: 0;
+  color: var(--main-text);
+  line-height: 1.65;
+  font-size: clamp(1rem, 2vw, 1.1rem);
 }
 
-.speaker-bio {
-  font-size: 0.95rem;
-  color: #444;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-  max-width: 90%;
+/* --- GRID RESPONSIVO PARA LAS TARJETAS --- */
+.speakers-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(1.2rem, 3vw, 2rem);
+  column-gap: clamp(1.5rem, 4vw, 3rem);
 }
 
-/* Redes sociales estilo tarjeta */
-.speaker-socials {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+/* --- ESTILOS DE LA TARJETA --- */
+.spk-card {
+  /* Por defecto (móvil), cada tarjeta ocupa las 12 columnas (1 por fila) */
+  grid-column: span 12;
+  background: var(--card-bg);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.social-icon {
-  display: flex;
+.spk-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+
+/* Conferencia Magistral (Morado) */
+.spk-card--magistral {
+  --color-primary: #973BF9;
+  --color-secondary: #b86eff;
+  --color-bg-light: #f3eaff;
+  --color-border: #e0ccff;
+}
+
+/* Conferencia Empresarial (Azul) */
+.spk-card--empresarial {
+  --color-primary: #3b6df9;
+  --color-secondary: #6a95ff;
+  --color-bg-light: #eaf1ff;
+  --color-border: #dbe7ff;
+}
+
+.spk-card__bar {
+  height: 14px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+.spk-card__body {
+  padding: clamp(1.5rem, 4vw, 2rem);
+}
+
+.spk-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
   align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  /* esquinas más redondeadas */
-  width: 65px;
-  height: 65px;
-  background: #f9fafb;
-  /* gris claro por defecto */
-  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
 }
 
-.social-icon .icon {
-  width: 28px;
-  height: 28px;
+.spk-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+  background: var(--color-bg-light);
+  box-shadow: inset 0 -2px 0 var(--color-border);
 }
 
-/* Estilos específicos por red */
-.social-icon.facebook {
-  background: #eff6ff;
-  /* azul muy suave */
-  color: #1877f2;
+.spk-titlebox {
+  display: grid;
+  gap: 0.3rem;
 }
 
-.social-icon.linkedin {
-  background: #eef2ff;
-  color: #0a66c2;
+.spk-pill {
+  width: fit-content;
+  padding: 0.1rem 0.6rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  border-radius: 999px;
+  color: var(--color-primary);
+  background: var(--color-bg-light);
+  border: 1px solid var(--color-border);
 }
 
-.social-icon.x {
-  background: #f9fafb;
-  color: #000;
+.spk-name {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+  color: var(--main-text);
+  line-height: 1.2;
 }
 
-.social-icon.instagram {
-  background: #fff0f5;
-  color: #e1306c;
+.spk-talk {
+  margin: 0.75rem 0 0.5rem;
+  font-weight: 700;
+  color: #1f2a44;
+  font-size: clamp(1.05rem, 2.2vw, 1.15rem);
+  line-height: 1.4;
 }
 
-/* Hover: un poco de sombra y escala */
-.social-icon:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.spk-desc {
+  margin: 0;
+  color: var(--muted-text);
+  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.8vw, 1rem);
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .speaker-info {
-    margin-left: 250px;
-  }
-}
-
-
-
-/* Imagen grande desktop */
-.speaker-img-wrapper {
-  position: absolute;
-  bottom: -7px;
-  left: 1rem;
-}
-
-.speaker-img {
-  width: 300px;
-  height: 490px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-.speaker-info {
-  flex: 1;
-  margin-left: 280px;
-}
-
-/* ====== Tablet & Mobile ====== */
-@media (max-width: 768px) {
-  .speakers-grid {
-    grid-template-columns: 1fr;
-    /* 👈 1 card por fila */
-    gap: 2rem;
-  }
-
-  .speaker-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1.2rem;
-    width: 100%;
-    min-height: auto;
-    box-sizing: border-box;
-  }
-
-  .speaker-img-wrapper {
-    position: relative;
-    float: left;
-    /* 👈 Imagen a la izquierda */
-  }
-
-  .speaker-img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    /* 👈 Circular */
-    object-fit: cover;
-    object-position: top;
-    background-color: #89B4FF;
-  }
-
-  .speaker-info {
-    margin: 0;
-    width: 100%;
-  }
-
-  .social-icon {
-    width: 50px;
-    height: 50px;
-
-  }
-
-  .social-icon .icon {
-    width: 25px;
-    height: 25px;
-  }
-
-  .speaker-name,
-  .speaker-role,
-  .speaker-company {
-    margin-left: 130px;
-    /* sigue a la derecha de la foto */
-    text-align: left;
-    display: block;
-    /* asegúrate que cada uno esté en línea propia */
-  }
-
-  .speaker-name {
-    margin-top: -80px;
-    /* 👈 sube solo el nombre */
-    margin-bottom: 4px;
-  }
-
-  .speaker-role {
-    margin: 0 0 4px 130px;
-  }
-
-  .speaker-company {
-    margin: 0 0 8px 130px;
-  }
-
-  .speaker-bio,
-  .speaker-socials {
-    margin-top: 0.01rem;
-    margin-left: 0;
-    text-align: left;
-    clear: both;
-    /* 👈 fuerza que bajen debajo de la imagen */
-    width: 100%;
-  }
-
-  .speaker-socials {
-    display: flex;
-    gap: 0.8rem;
-    justify-content: flex-start;
+/* --- MEDIA QUERY PARA ESCRITORIO --- */
+@media (min-width: 768px) {
+  .spk-card {
+    /* En pantallas de 768px o más, cada tarjeta ocupa 6 columnas (2 por fila) */
+    grid-column: span 6;
   }
 }
