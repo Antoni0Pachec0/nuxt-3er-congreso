@@ -6,6 +6,11 @@ node_modules
 .nuxt
 dist
 
+# Logs y archivos de entorno
+npm-debug.log
+.env
+.DS_Store
+
 # Archivos de configuración y logs locales
 .env
 npm-debug.log*
