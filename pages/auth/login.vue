@@ -165,6 +165,7 @@ const apiError = ref('')
 // 🔹 Funciones de navegación
 // -------------------------------
 function goHome() {
+  console.log('Intentando navegar a /') // Agrega esto para ver si se ejecuta
   return navigateTo('/')
 }
 
@@ -263,3 +264,4 @@ async function onSubmit() {
   }
 }
 </script>dq
+
