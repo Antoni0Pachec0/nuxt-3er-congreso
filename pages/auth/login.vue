@@ -164,7 +164,7 @@ const apiError = ref('')
 // 🔹 Funciones de navegación
 // -------------------------------
 function goHome() {
-  return navigateTo(R.to('home'))
+  return navigateTo(R.to('/'))
 }
 
 function onRegister() {
@@ -261,4 +261,5 @@ async function onSubmit() {
     loading.value = false
   }
 }
+
 </script>
