@@ -1,7 +1,7 @@
 .hr-line { height: 1px; background: #E5E7EB; width: 100%; margin: 16px 0 16px; }
 .hr-spaced { margin-top: 28px; }
 
-.section-title { font-size: clamp(1.1rem, 1.8vw, 1.2rem); font-weight: 800; color: #0f172a; }
+.section-title { font-size: clamp(1.1rem, 1.8vw, 1.2rem); font-weight: 700; color: #0f172a; }
 .section-subtitle { font-size: .95rem; color:#64748b; margin-top: 4px; }
 
 .badge-list { display:flex; flex-direction:column; gap:14px; margin-top:14px; }

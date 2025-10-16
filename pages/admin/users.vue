@@ -85,7 +85,7 @@
       <transition-group name="rows" tag="tbody" appear>
         <tr v-for="user in filteredUsers" :key="user.code">
           <td>
-            <div class="name">{{ user.name }}</div>
+            <div class="name-user">{{ user.name }}</div>
             <div class="email">{{ user.email }}</div>
             <div class="code">
               <span class="code-label">{{ getIdLabel(user.type) }}:</span>
@@ -169,7 +169,7 @@
 
 <script setup>
 import { reactive, ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
-import '~/assets/css/styles/admin/users.css';
+import '@/assets/css/styles/admin/users.css';
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiDownload } from "@mdi/js";
 

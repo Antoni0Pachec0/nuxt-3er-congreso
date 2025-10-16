@@ -143,7 +143,7 @@ import { reactive, computed } from "vue"
 // @ts-expect-error
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiDownload, mdiPrinter } from "@mdi/js"
-import '~/assets/css/styles/admin/badges.css';
+import '@/assets/css/styles/admin/badges.css';
 
 definePageMeta({
   name: 'admin-badges',
