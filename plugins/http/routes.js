@@ -1,6 +1,7 @@
 // utils/http/routes.js o donde tengas ROUTES
 export const ROUTES = {
   AUTH: {
+    HOME: '/',
     REGISTER: '/auth/register',
     CHECK_SPEAKER_SECRET: '/auth/speakers/check-secret',
     VERIFY: '/auth/verify',
