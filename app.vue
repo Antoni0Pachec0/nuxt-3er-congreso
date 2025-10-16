@@ -26,8 +26,8 @@
 </template>
 
 <script setup>
-import Header from "@/components/layout/header.vue";
-import Footer from "@/components/layout/footer.vue";
+import Header from "@/components/layout/Header.vue";
+import Footer from "@/components/layout/Footer.vue";
 import { Notivue, Notification } from "notivue";
 
 // Si prefieres, mueve estos CSS a nuxt.config.ts → css: [...]

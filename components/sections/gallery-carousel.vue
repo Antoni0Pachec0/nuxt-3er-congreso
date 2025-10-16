@@ -16,7 +16,7 @@
       <div class="gc__viewport">
         <div class="gc__track" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
           <article v-for="(slide, i) in slides" :key="i" class="gc__slide" :aria-hidden="i !== currentIndex">
-            <img class="gc__img" :src="slide.image" :alt="slide.title" />
+            <img class="gc__img" :src="slide.image" :alt="slide.title" loading="lazy" />
             <div class="gc__overlay"></div>
             <div class="gc__content">
               <span class="gc__badge">{{ slide.year }}</span>

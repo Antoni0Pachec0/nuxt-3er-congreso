@@ -1,0 +1,135 @@
+/* --- Estilos del componente ActivityFlow --- */
+.activity-flow-container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 40px 60px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 100vw;
+    position: relative;
+    z-index: 1;
+}
+
+.activity-flow-title {
+    font-size: 2.2em;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.activity-flow-line {
+    width: 80px;
+    height: 4px;
+    background-color: #2196f3;
+    margin: 0 auto 30px auto;
+    border-radius: 2px;
+}
+
+.activity-flow-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding: 20px 0;
+    margin-bottom: 40px;
+    flex-wrap: nowrap;
+}
+
+.activity-flow-card {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    padding: 10px;
+}
+
+.activity-flow-card-title {
+    font-size: 1.2em;
+    color: #333;
+    margin: 15px 0 10px 0;
+    font-weight: 700;
+}
+
+.activity-flow-card-description {
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.5;
+}
+
+.activity-flow-icon-circle {
+    width: 60px;
+    height: 60px;
+    background-color: #e3f2fd;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+    flex-shrink: 0;
+}
+
+.activity-flow-icon {
+    width: 35px;
+    height: 35px;
+}
+
+/* Modificadores para el zigzag */
+.activity-flow-card--top {
+    margin-top: 0;
+}
+
+.activity-flow-card--bottom {
+    margin-top: 80px;
+}
+
+/* Conectores */
+.activity-flow-connector {
+    position: absolute;
+    border-top: 2px solid #bbdefb;
+    z-index: 1;
+    width: 23%;
+    transform-origin: left center;
+}
+
+/* Modificadores para la posición de cada conector */
+.activity-flow-connector--1 { top: 60px; left: 14%; transform: rotate(25deg); }
+.activity-flow-connector--2 { top: 140px; left: 39%; transform: rotate(-25deg); }
+.activity-flow-connector--3 { top: 60px; left: 64%; transform: rotate(25deg); }
+
+.activity-flow-button {
+    background-color: #3f51b5;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.activity-flow-button:hover {
+    background-color: #303f9f;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 950px) {
+    .activity-flow-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .activity-flow-card--bottom {
+        margin-top: 0;
+    }
+
+    .activity-flow-connector {
+        display: none;
+    }
+}
