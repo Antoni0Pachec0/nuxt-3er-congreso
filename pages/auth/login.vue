@@ -132,6 +132,7 @@ import { parseAxiosError } from '~/plugins/http/error'
 import { useAuthStore } from '~/stores/auth'
 import '@/assets/css/styles/Login.css'
 
+
 // Notificaciones básicas (puedes reemplazar con tu sistema de toasts)
 function notifyError(title, message) {
   console.error(`[Error ${title}]: ${message}`)
@@ -261,6 +262,4 @@ async function onSubmit() {
     loading.value = false
   }
 }
-
-</script>
-
+</script>dq
