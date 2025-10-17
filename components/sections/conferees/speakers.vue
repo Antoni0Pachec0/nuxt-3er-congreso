@@ -57,7 +57,6 @@ import {
 import "@/assets/css/styles/pages/conferees/speakers.css";
 
 const speakers = [
-  // --- Ponentes con múltiples charlas agrupados ---
 
     {
     name: "Adolfo Mateos",
@@ -66,7 +65,6 @@ const speakers = [
     summary: "Aprende a implementar modelos de IA locales para crear asistentes inteligentes privados, rápidos y personalizables, sin depender de la nube.",
     iconComponent: Users,
   },
-  
   
  
   {

@@ -11,16 +11,14 @@
     </div>
 
     <div class="login-container">
-      <!-- Botón de regreso -->
-      <button
-        type="button"
+      <NuxtLink
+        to="/"
         class="btn-back"
-        @click="goHome"
         aria-label="Regresar"
-        :disabled="loading"
+        :class="{ 'disabled-link': loading }"
       >
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
-      </button>
+      </NuxtLink>
 
       <!-- Header del evento -->
       <header class="login-hero" aria-label="Identidad del evento">
@@ -68,9 +66,9 @@
           <div class="form-group">
             <div class="row">
               <label class="label" for="password">Contraseña</label>
-              <button 
-                class="link" 
-                type="button" 
+              <button
+                class="link"
+                type="button"
                 @click="onForgot"
                 :disabled="loading"
               >
@@ -116,9 +114,9 @@
           </p>
 
           <!-- Botón de submit -->
-          <button 
-            class="btn" 
-            type="submit" 
+          <button
+            class="btn"
+            type="submit"
             :disabled="isSubmitDisabled"
             :aria-busy="loading"
           >
@@ -134,9 +132,9 @@
           </div>
 
           <!-- Registro -->
-          <button 
-            type="button" 
-            class="btn ghost" 
+          <button
+            type="button"
+            class="btn ghost"
             @click="onRegister"
             :disabled="loading"
           >
@@ -154,29 +152,36 @@
 </template>
 
 <script setup>
-import '@/assets/css/styles/auth/login.css'
-import { useLogin } from '@/composables/auth/use-login'
+import "@/assets/css/styles/auth/login.css";
+import { useLogin } from "@/composables/auth/use-login";
 
-import SvgIcon from '@jamescoyle/vue-icon'
+import SvgIcon from "@jamescoyle/vue-icon";
 import {
   mdiAccountCircleOutline,
   mdiEmailOutline,
   mdiLockOutline,
   mdiEyeOutline,
   mdiEyeOffOutline,
-  mdiArrowLeft
-} from '@mdi/js'
+  mdiArrowLeft,
+} from "@mdi/js";
 
-definePageMeta({ 
-  name: 'login', 
-  path: '/login', 
-  alias: ['/login'], 
-  guestOnly: true 
-})
+definePageMeta({
+  name: "login",
+  path: "/login",
+  alias: ["/login"],
+  guestOnly: true,
+});
 
 const {
-  email, password, show, loading, apiError,
+  email,
+  password,
+  show,
+  loading,
+  apiError,
   isSubmitDisabled,
-  onSubmit, goHome, onRegister, onForgot
-} = useLogin()
+  onSubmit,
+  goHome,
+  onRegister,
+  onForgot,
+} = useLogin();
 </script>

@@ -1,6 +1,5 @@
 <template>
   <section class="workshops-section" id="workshops">
-    <!-- ✅ TOAST -->
     <transition name="toast">
       <div
         v-if="toast.show"
@@ -9,97 +8,68 @@
         role="status"
         aria-live="polite"
       >
-        <strong class="toast-title">{{ toast.type === 'success' ? '¡Listo!' : 'Aviso' }}</strong>
+        <strong class="toast-title">{{
+          toast.type === "success" ? "¡Listo!" : "Aviso"
+        }}</strong>
         <p class="toast-msg">{{ toast.message }}</p>
-        <button class="toast-close" @click="toast.show = false" aria-label="Cerrar">×</button>
+        <button
+          class="toast-close"
+          @click="toast.show = false"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
       </div>
     </transition>
 
-    <!-- Encabezado -->
-    <header class="ws-header">
-      <h2 class="ws-title">Talleres Prácticos</h2>
-      <div class="ws-underline"></div>
-      <p class="ws-subtitle">
-        Cada día reúne actividades diseñadas para impulsar la innovación, el
-        aprendizaje y el networking entre estudiantes, docentes y profesionales
-        del sector tecnológico.
+    <header class="workshop-header">
+      <h2 class="workshop-title">Talleres Prácticos</h2>
+      <div class="workshop-underline"></div>
+      <p class="workshop-subtitle">
+        Actividades diseñadas para impulsar la innovación, el aprendizaje y el
+        networking entre estudiantes, docentes y profesionales del sector
+        tecnológico.
       </p>
     </header>
 
-    <!-- Lista -->
-    <div class="ws-grid">
+    <div class="workshop-grid">
       <article
-        v-for="(w, i) in workshops"
-        :key="i"
-        class="ws-card"
+        v-for="w in workshops"
+        :key="w.id"
+        class="workshop-card"
         :class="levelClass(w)"
       >
-        <!-- Header -->
-        <div class="ws-card-header" :style="{ background: w.gradient }">
-          <div class="ws-header-top">
-            <div class="ws-header-icon-wrap" :class="levelClass(w)">
-              <component :is="w.icon" class="ws-header-icon" />
+        <div class="workshop-card-header" :style="{ background: w.gradient }">
+          <div class="workshop-header-top">
+            <div class="workshop-header-icon-wrap" :class="levelClass(w)">
+              <component :is="w.icon" class="workshop-header-icon" />
             </div>
-            <span class="ws-badge" :class="levelClass(w)">{{ w.level }}</span>
+            <span class="workshop-badge" :class="levelClass(w)">{{
+              w.level
+            }}</span>
           </div>
-          <div class="ws-header-info">
-            <h3 class="ws-name">{{ w.name }}</h3>
-            <p class="ws-category">{{ w.category }}</p>
+          <div class="workshop-header-info">
+            <h3 class="workshop-name">{{ w.name }}</h3>
+            <p class="workshop-category">{{ w.category }}</p>
           </div>
         </div>
 
-        <!-- Cuerpo -->
-        <div class="ws-card-body">
-          <p class="ws-desc">{{ w.description }}</p>
-
-          <ul class="ws-info">
-            <li><User class="info-icon" /> {{ w.instructor }}</li>
-            <li><Clock class="info-icon" /> {{ w.duration }}</li>
-            <li><Calendar class="info-icon" /> {{ w.date }}</li>
-            <li><MapPin class="info-icon" /> {{ w.location }}</li>
+        <div class="workshop-card-body">
+          <p class="workshop-desc">{{ w.description }}</p>
+          <ul class="workshop-info">
+            <li><User class="infoiconw" /> {{ w.instructor }}</li>
+            <li><Clock class="infoiconw" /> {{ w.duration }}</li>
+            <li><Calendar class="infoiconw" /> {{ w.date }}</li>
+            <li><MapPin class="infoiconw" /> {{ w.location }}</li>
           </ul>
-
-          <!-- Disponibilidad -->
-          <div class="ws-availability">
-            <p>
-              Cupo disponible:
-              <span :class="availabilityClass(w)">
-                {{ remainingSlots(w) > 0 ? `${remainingSlots(w)} lugares disponibles` : "Agotado" }}
-              </span>
-            </p>
-            <div class="bar">
-              <div
-                class="fill"
-                :class="availabilityClass(w)"
-                :style="{ width: getFillWidth(w) + '%' }"
-              ></div>
-            </div>
+          <div class="workshop-tools">
+            <span v-for="t in w.tools" :key="t" class="tool">{{ t }}</span>
           </div>
-
-          <div class="ws-tools">
-            <span v-for="(t, j) in w.tools" :key="j" class="tool">{{ t }}</span>
-          </div>
-
-          <!-- Botón (con confirmación) -->
-          <button
-            class="ws-btn"
-            :class="[ levelClass(w), { 'is-full': remainingSlots(w) === 0 } ]"
-            :disabled="isButtonDisabled(w)"
-            :aria-disabled="isButtonDisabled(w)"
-            @click="requestEnroll(w)"
-          >
-            <User class="btn-icon" />
-            <template v-if="remainingSlots(w) === 0">Cupo Lleno</template>
-            <template v-else-if="enrolledWorkshopId && enrolledWorkshopId !== w.id">No disponible</template>
-            <template v-else-if="enrolledWorkshopId === w.id">Ya inscrito</template>
-            <template v-else>Inscribirse al Taller</template>
-          </button>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- Modal de confirmación -->
   <transition name="fade">
     <div
       v-if="confirm.show"
@@ -109,196 +79,221 @@
       aria-modal="true"
       aria-labelledby="confirmTitle"
     >
-      <div class="confirm-card">
-        <h3 id="confirmTitle" class="confirm-title">Confirmar registro</h3>
-        <p class="confirm-text">
-          ¿Seguro que quieres registrarte al taller
-          <strong v-if="confirm.workshop">"{{ confirm.workshop.name }}"</strong>?
-        </p>
-        <p class="confirm-note">
-          <strong>Después de registrarte ya no podrás inscribirte a otro taller.</strong>
-        </p>
-        <div class="confirm-actions">
-          <button class="btn-cancel" @click="closeConfirm">Cancelar</button>
-          <button class="btn-confirm" @click="confirmEnroll">Confirmar</button>
-        </div>
       </div>
-    </div>
   </transition>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { User, Clock, Calendar, MapPin, Code2, Cpu, PenTool } from "lucide-vue-next";
 import "@/assets/css/styles/pages/workshops/workshops-list.css";
+import { ref } from "vue";
+import {
+  User,
+  Clock,
+  Calendar,
+  MapPin,
+  Code2,
+  Cpu,
+  Database,
+  Smartphone,
+  Shield,
+  Network,
+  Wrench,
+  GitBranchPlus,
+} from "lucide-vue-next";
 
-
-const MAX_PLACES = 20;
-
-/* ===== Estado: 1 sola inscripción ===== */
-const enrolledWorkshopId = ref(null);
-
-/* ===== Toast ===== */
+// --- State ---
 const toast = ref({ show: false, type: "success", message: "" });
-function showToast(type, message, ms = 3500) {
-  toast.value = { show: true, type, message };
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => (toast.value.show = false), ms);
-}
-
-/* ===== Confirmación ===== */
 const confirm = ref({ show: false, workshop: null });
-function requestEnroll(workshop) {
-  if (remainingSlots(workshop) === 0) return;
 
-  // Ya inscrito en otro -> aviso
-  if (enrolledWorkshopId.value && enrolledWorkshopId.value !== workshop.id) {
-    showToast("warning", "Solo puedes inscribirte a un taller.");
-    return;
-  }
-
-  // Ya inscrito en el mismo
-  if (enrolledWorkshopId.value === workshop.id) {
-    showToast("warning", "Ya estás inscrito en este taller.");
-    return;
-  }
-
-  confirm.value = { show: true, workshop };
-}
-function closeConfirm() {
-  confirm.value = { show: false, workshop: null };
-}
-function onEsc(e) {
-  if (e.key === "Escape" && confirm.value.show) closeConfirm();
-}
-onMounted(() => window.addEventListener("keydown", onEsc));
-onBeforeUnmount(() => window.removeEventListener("keydown", onEsc));
-
-/* ✅ Sumar un lugar ocupado (sin pasar de 20) */
-function incrementOccupied(id) {
-  const idx = workshops.value.findIndex(w => w.id === id);
-  if (idx === -1) return;
-  const w = workshops.value[idx];
-  if (w.occupied >= MAX_PLACES) return; // ya lleno
-  w.occupied += 1;
-}
-
-/* ✅ Confirmar inscripción: marca inscrito y aumenta ocupados */
-function confirmEnroll() {
-  const w = confirm.value.workshop;
-  if (!w) return;
-
-  // Re-checar cupo por si cambió
-  if (remainingSlots(w) === 0) {
-    closeConfirm();
-    showToast("warning", "Este taller se llenó mientras confirmabas.");
-    return;
-  }
-
-  // Respetar la regla de 1 taller
-  if (enrolledWorkshopId.value && enrolledWorkshopId.value !== w.id) {
-    closeConfirm();
-    showToast("warning", "Solo puedes inscribirte a un taller.");
-    return;
-  }
-
-  // Asignar inscripción y aumentar ocupación
-  enrolledWorkshopId.value = w.id;
-  incrementOccupied(w.id);
-
-  closeConfirm();
-  showToast("success", `Inscrito en "${w.name}". Ya no podrás inscribirte en otro taller.`);
-  // Opcional: abrir detalles
-  // selectedWorkshop.value = w;
-}
-
-/* ===== Helpers ===== */
-const remainingSlots = (workshop) => Math.max(0, MAX_PLACES - workshop.occupied);
-const getFillWidth = (workshop) => Math.min(100, (workshop.occupied / MAX_PLACES) * 100);
-const availabilityClass = (workshop) => {
-  const remaining = remainingSlots(workshop);
-  if (remaining === 0) return "full";
-  if (remaining <= 4) return "low";
-  if (remaining <= 10) return "medium";
-  return "high";
-};
+// --- Computed & Methods ---
 const levelClass = (w) => {
   const lvl = (w.level || "").toLowerCase();
   if (lvl.includes("avanz")) return "level-advanced";
   if (lvl.includes("inter")) return "level-intermediate";
   return "level-beginner";
 };
-const isButtonDisabled = (w) =>
-  remainingSlots(w) === 0 || (enrolledWorkshopId.value && enrolledWorkshopId.value !== w.id);
 
-/* ===== 🔁 Workshops REACTIVOS (para que el UI se actualice) ===== */
+// --- Data ---
 const workshops = ref([
   {
     id: 1,
-    name: "React Avanzado con TypeScript",
-    category: "Interfaz",
-    description: "Domina conceptos avanzados de React incluyendo hooks personalizados, API de contexto y optimización de rendimiento.",
-    instructor: "Ana Martínez",
+    name: "Construcción de un sistema distribuido de pruebas",
+    instructor: "Benjamín Guzmán",
+    category: "Calidad de Software",
+    description:
+      "Diseña un sistema para ejecutar pruebas en paralelo, reduciendo tiempos y mejorando la eficiencia del ciclo de desarrollo.",
     duration: "4 horas",
-    date: "15 de marzo de 2025 · 14:00 - 18:00",
-    location: "Laboratorio A",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K1",
     level: "Avanzado",
-    gradient: "linear-gradient(135deg, #3b82f6, #ef4444)",
-    occupied: 16,
-    tools: ["React", "TypeScript", "Vite", "+2"],
+    gradient: "linear-gradient(135deg, #EF4444, #2563EB, #111827)",
     icon: Code2,
+    //tools: ["Docker", "RabbitMQ", "Selenium"],
   },
   {
     id: 2,
-    name: "Aprendizaje Automático con Python",
-    category: "IA y ML",
-    description: "Aprende los fundamentos del aprendizaje automático y crea tu primer modelo predictivo usando scikit-learn y pandas.",
-    instructor: "Dr. Carlos Rodríguez",
-    duration: "6 horas",
-    date: "16 de marzo de 2025 · 09:00 - 15:00",
-    location: "Laboratorio B",
+    name: "Blockchain: más allá de las criptomonedas",
+    instructor: "Diana Reynoso",
+    category: "Desarrollo Backend",
+    description:
+      "Explora los fundamentos de blockchain y sus aplicaciones en contratos inteligentes y sistemas distribuidos.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K3",
     level: "Intermedio",
-    gradient: "linear-gradient(135deg, #fde047, #2563eb)",
-    occupied: 1,
-    tools: ["Python", "Scikit-learn", "Pandas", "+3"],
-    icon: Cpu,
+    gradient: "linear-gradient(135deg, #EAB308, #2563EB, #111827)",
+    icon: Code2,
+   // tools: ["Solidity", "Ethereum", "Truffle"],
   },
   {
     id: 3,
-    name: "Diseño UX/UI Moderno",
-    category: "Diseño",
-    description: "Descubre los principios del diseño de experiencia de usuario y crea interfaces atractivas y funcionales desde cero.",
-    instructor: "Sofía López",
-    duration: "5 horas",
-    date: "17 de marzo de 2025 · 10:00 - 15:00",
-    location: "Estudio de Diseño",
+    name: "Como crear un asistente de IA con Ollama",
+    instructor: "Adolfo López",
+    category: "Inteligencia Artificial",
+    description:
+      "Aprende a implementar modelos de lenguaje locales para crear asistentes inteligentes sin depender de la nube.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K11",
     level: "Principiante",
-    gradient: "linear-gradient(135deg, #10b981, #1d4ed8)",
-    occupied: 20,
-    tools: ["Figma", "Adobe XD", "Bosquejo", "+2"],
-    icon: PenTool,
+    gradient: "linear-gradient(135deg, #22C55E, #2563EB, #111827)",
+    icon: Cpu,
+    //tools: ["Ollama", "Python", "LangChain"],
   },
   {
     id: 4,
-    name: "Diseño UX/UI Moderno",
-    category: "Diseño",
-    description: "Descubre los principios del diseño de experiencia de usuario y crea interfaces atractivas y funcionales desde cero.",
-    instructor: "Sofía López",
-    duration: "5 horas",
-    date: "17 de marzo de 2025 · 10:00 - 15:00",
-    location: "Estudio de Diseño",
+    name: "Integrando IA en tu primera PWA",
+    instructor: "Gustavo Andrade",
+    category: "Desarrollo Web",
+    description:
+      "Combina el poder de las Progressive Web Apps con APIs de IA para crear aplicaciones web inteligentes.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K4",
+    level: "Intermedio",
+    gradient: "linear-gradient(135deg, #EAB308, #2563EB, #111827)",
+    icon: Smartphone,
+    //tools: ["Vue.js", "Vite", "OpenAI API"],
+  },
+  {
+    id: 5,
+    name: "Reparación de PC y Laptops",
+    instructor: "Edgar Bravo",
+    category: "Hardware y Soporte",
+    description:
+      "Diagnostica y soluciona problemas comunes de hardware en equipos de cómputo, desde el ensamblaje hasta el mantenimiento.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K7",
     level: "Principiante",
-    gradient: "linear-gradient(135deg, #10b981, #1d4ed8)",
-    occupied: 2,
-    tools: ["Figma", "Adobe XD", "Bosquejo", "+2"],
-    icon: PenTool,
+    gradient: "linear-gradient(135deg, #22C55E, #2563EB, #111827)",
+    icon: Wrench,
+    //tools: ["Diagnóstico", "Ensamblaje", "Soporte"],
+  },
+  {
+    id: 6,
+    name: "Gestión del Ciber Riesgo con IA",
+    instructor: "Ivan Rosales",
+    category: "Ciberseguridad",
+    description:
+      "Utiliza herramientas de IA para identificar, evaluar y reducir la superficie de ataque de una organización.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K5",
+    level: "Avanzado",
+    gradient: "linear-gradient(135deg, #EF4444, #2563EB, #111827)",
+    icon: Shield,
+    //tools: ["IA", "Análisis", "Pentesting"],
+  },
+  {
+    id: 7,
+    name: "Desarrollo de apps móviles con .NET MAUI",
+    instructor: "Héctor Reyes Armenta",
+    category: "Desarrollo Móvil",
+    description:
+      "Crea aplicaciones nativas para iOS y Android desde una única base de código con C# y .NET MAUI.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K6",
+    level: "Intermedio",
+    gradient: "linear-gradient(135deg, #EAB308, #2563EB, #111827)",
+    icon: Smartphone,
+    //tools: [".NET MAUI", "C#", "XAML"],
+  },
+  {
+    id: 8,
+    name: "Arquitectura VRF centralizada",
+    instructor: "Ing. Karina Vázquez",
+    category: "Redes",
+    description:
+      "Aprende a diseñar e implementar redes escalables y seguras utilizando Virtual Routing and Forwarding (VRF).",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K9",
+    level: "Avanzado",
+    gradient: "linear-gradient(135deg, #EF4444, #2563EB, #111827)",
+    icon: Network,
+    //tools: ["VRF", "Cisco", "BGP"],
+  },
+  {
+    id: 9,
+    name: "Programación con Clean Architecture",
+    instructor: "Natividad Turán",
+    category: "Arquitectura de Software",
+    description:
+      "Domina los principios de Clean Architecture para construir aplicaciones robustas, mantenibles y desacopladas.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K10",
+    level: "Avanzado",
+    gradient: "linear-gradient(135deg, #EF4444, #2563EB, #111827)",
+    icon: GitBranchPlus,
+    //tools: ["SOLID", "Diseño", "TDD"],
+  },
+  {
+    id: 10,
+    name: "La forencia en los tiempos académicos",
+    instructor: "Nazly Borrero",
+    category: "Ciberseguridad",
+    description:
+      "Analiza técnicas de informática forense aplicadas al entorno académico para la detección y respuesta a incidentes.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K2",
+    level: "Intermedio",
+    gradient: "linear-gradient(135deg, #EAB308, #2563EB, #111827)",
+    icon: Shield,
+    //tools: ["Análisis Forense", "OSINT"],
+  },
+  {
+    id: 11,
+    name: "Fibra Óptica: Fusión y Pruebas",
+    instructor: "Julio Yair Román",
+    category: "Redes",
+    description:
+      "Aprende de forma práctica el proceso de fusión de fibra óptica y la utilización de OTDR para la certificación de enlaces.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Medios Telemáticos",
+    level: "Principiante",
+    gradient: "linear-gradient(135deg, #22C55E, #2563EB, #111827)",
+    icon: Network,
+    //tools: ["Fibra Óptica", "OTDR", "Fusión"],
+  },
+  {
+    id: 12,
+    name: "Bases de Datos con MongoDB",
+    instructor: "Marisol Manica Bronca",
+    category: "Bases de Datos",
+    description:
+      "Introduce los conceptos de bases de datos NoSQL y aprende a modelar, consultar y administrar datos con MongoDB.",
+    duration: "4 horas",
+    date: "12 y 13 de noviembre · 14:00 - 18:00",
+    location: "Edificio K - Laboratorio K12",
+    level: "Principiante",
+    gradient: "linear-gradient(135deg, #22C55E, #2563EB, #111827)",
+    icon: Database,
+    //tools: ["MongoDB", "NoSQL", "Compass"],
   },
 ]);
-
-const selectedWorkshop = ref(null);
-function closeDetails() { selectedWorkshop.value = null; }
 </script>
-
-
-
-
