@@ -1,0 +1,437 @@
+.timetable {
+  --tt-bg: #ffffff;
+  --tt-surface: #ffffff;
+  --tt-primary: #3473FF;
+  --tt-primary-2: #153886;
+  --tt-ink: #0b1534;
+  --tt-ink-2: #2b3c5a;
+  --tt-muted: #5b6b82;
+  --tt-line: #dbe4f3;
+
+  --tt-shadow: 0 10px 36px rgba(2, 20, 56, 0.08);
+  --tt-shadow-hover: 0 14px 42px rgba(2, 20, 56, 0.12);
+  --tt-ring-focus: 0 0 0 3px rgba(19, 41, 83, 0.18);
+
+  background: var(--tt-bg);
+  padding: 3.5rem 1rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: var(--tt-ink);
+}
+
+/* ===== Header ===== */
+.tt-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.tt-title {
+  font-weight: 800;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  letter-spacing: 0.2px;
+}
+.tt-underline {
+  width: 90px;
+  height: 4px;
+  background: var(--tt-primary);
+  border-radius: 999px;
+  margin: 0.75rem auto 0;
+}
+.tt-subtitle {
+  color: var(--tt-muted);
+  margin-top: 2rem;
+}
+
+/* ===== Tabs (responsivo, sin scroll en móvil) ===== */
+.tt-tabs {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  ); /* 2–3 por fila según ancho */
+  gap: 0.75rem;
+  margin-top: 3rem;
+}
+
+.tt-tab {
+  -webkit-tap-highlight-color: transparent;
+  background: #eaf0fb;
+  border: 0;
+  border-radius: 18px;
+  padding: 1rem 1.1rem; /* área táctil cómoda en desktop/tablet */
+  min-height: 48px;
+  cursor: pointer;
+  text-align: center;
+  display: grid;
+  gap: 0.25rem;
+  color: var(--tt-ink);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease,
+  color 0.2s ease;
+  outline: none;
+  border-radius: 100px;
+}
+.tt-tab:hover {
+  transform: translateY(-1px);
+}
+.tt-tab:focus-visible {
+  box-shadow: var(--tt-ring-focus);
+}
+.tt-tab.active {
+  color: #fff;
+  background: linear-gradient(90deg, var(--tt-primary-2), var(--tt-primary));
+  box-shadow: 0 10px 28px rgba(19, 41, 83, 0.28);
+}
+.tt-tab__label {
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: 0.2px;
+  line-height: 1.1;
+}
+.tt-tab__chip {
+  font-size: 0.76rem;
+  opacity: 0.95;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  justify-self: center;
+}
+
+.tt-timeline {
+  position: relative;
+
+  --rail-center: 28px; /* X del CENTRO de la línea */
+  --rail-w: 4px; /* ancho de la línea */
+  --pad-left: 92px; /* espacio para que las cards no invadan el dot */
+  --dot-shift: 0px; /* ajuste fino del dot (0 = centrado perfecto) */
+
+  padding-left: var(--pad-left);
+  margin-top: 2rem;
+}
+.tt-line {
+  position: absolute;
+  left: calc(var(--rail-center) - var(--rail-w) / 2);
+  top: 0;
+  bottom: 0;
+  width: var(--rail-w);
+  background: var(--tt-line);
+  border-radius: 999px;
+  z-index: 0; /* debajo del dot/card */
+}
+
+/* ===== Cards ===== */
+.tt-card {
+  position: relative;
+  background: var(--tt-surface);
+  border: 1px solid color-mix(in oklab, var(--tt-line) 70%, transparent);
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: var(--tt-shadow);
+  margin: 22px 0;
+  transition: transform 0.18s ease, box-shadow 0.22s ease,
+    border-color 0.22s ease;
+  animation: tt-appear 0.28s ease both;
+  z-index: 1; /* por encima de la línea */
+}
+.tt-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--tt-shadow-hover);
+  border-color: color-mix(in oklab, var(--tt-primary) 16%, var(--tt-line));
+}
+
+/* ===== Dot (fuera de la card y centrado en la línea) ===== */
+.tt-dot {
+  position: absolute;
+  left: calc(-1 * (var(--pad-left) - var(--rail-center)) + var(--dot-shift));
+  top: 18px;
+  width: 0;
+  height: 0;
+  z-index: 2; /* por encima de la línea */
+}
+/* El .tt-dot__ring ahora no necesita un color de fondo dinámico si queremos el estilo de la imagen, ya que la imagen solo muestra el círculo principal de color. Podrías incluso ocultarlo (display: none) o simplificarlo si la burbuja exterior no es necesaria. */
+.tt-dot__ring {
+  position: absolute;
+  left: 50%;
+  top: -25px;
+  width: 80px;
+  height: 80px;
+  margin-left: -40px; /* 48/2 */
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 2px #fff;
+  opacity: 0; /* <-- SUGERENCIA: Poner en 0 para que no se vea a menos que haya hover, como en la imagen de referencia que no lo tiene. */
+  background: var(--ring-bg, #cfd3ff);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 3;
+}
+/* Dentro de la sección de Cards: antes de .tt-card:hover .tt-dot__ring */
+.tt-dot__icon {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  margin-left: -25px; /* 26/2 */
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff; /* <-- CAMBIO CLAVE: Icono BLANCO */
+  box-shadow: 0 6px 16px rgba(2, 20, 56, 0.12);
+  background: var(
+    --chip-to
+  ); /* <-- CAMBIO CLAVE: Fondo del color del chip */
+  transform: translateZ(0); /* base para mantener el centro en hover */
+  transition: transform 0.2s ease;
+  z-index: 4;
+}
+.tt-card:hover .tt-dot__ring {
+  transform: scale(1.06);
+  opacity: 0.36;
+}
+.tt-card:hover .tt-dot__icon {
+  transform: translateZ(0) scale(1.04);
+}
+
+/* ===== Head / Chip / Meta ===== */
+.tt-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.tt-card__title {
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--tt-ink);
+}
+.tt-chip {
+  --chip-from: color-mix(in oklab, var(--tt-primary) 85%, #ffffff);
+  --chip-to: var(--tt-primary);
+  font-size: 0.76rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  color: #fff;
+  user-select: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(2, 20, 56, 0.1);
+  background: linear-gradient(180deg, var(--chip-from), var(--chip-to));
+}
+.tt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: var(--tt-muted);
+  font-size: 0.93rem;
+  margin: 8px 0 6px;
+}
+.tt-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tt-meta__item :deep(svg) {
+  display: block;
+}
+.tt-desc {
+  color: var(--tt-ink-2);
+  font-size: 0.95rem;
+}
+
+/* ===== Colores por tipo ===== */
+[data-type="Registro"] {
+  /* Usando colores de Registro */
+  --chip-from: #2563EB;
+  --chip-to: #2563EB;
+  --dot-bg: #88acff;
+  --ring-bg: #88acff;
+}
+
+[data-type="Apertura"]{
+  /* Usando colores de Clausura */
+  --chip-from: #49d999;
+  --chip-to: #49d999;
+  --dot-bg: #c7ffe6;
+  --ring-bg: #c7ffe6;
+}
+
+[data-type="Convenio"] {
+  /* Usando colores de Registro */
+  --chip-from: #87CEEB;
+  --chip-to: #87CEEB;
+  --dot-bg: #dff0ff;
+  --ring-bg: #dff0ff;
+}
+
+[data-type="Conferencia"] {
+  /* Usando colores de Conferencia */
+  --chip-from: #A855F7;
+  --chip-to: #A855F7;
+  --dot-bg: #f0e6ff;
+  --ring-bg: #d3c2ff;
+}
+
+[data-type="Charla"] {
+  /* Usando colores de Conferencia */
+  --chip-from: #e155f7;
+  --chip-to: #e155f7;
+  --dot-bg: #f8cdff;
+  --ring-bg: #f8cdff;
+}
+
+[data-type="Pausa"] {
+  /* Usando colores de Paneles */
+  --chip-from: #94A3B8;
+  --chip-to: #94A3B8;
+  --dot-bg: #d8dbe0;
+  --ring-bg: #d8dbe0;
+}
+
+[data-type="Taller"] {
+  /* Usando colores de Taller */
+  --chip-from: #06B6D4;
+  --chip-to: #06B6D4;
+  --dot-bg: #cef8ff;
+  --ring-bg: #cef8ff;
+}
+
+[data-type="Cultural"] {
+  /* Usando colores de Networking */
+  --chip-from: #f7d07b;
+  --chip-to: #f7d07b;
+  --dot-bg: #fff4bf;
+  --ring-bg: #fff4bf;
+}
+
+[data-type="Clausura"] {
+  /* Usando colores de Networking */
+  --chip-from: #f44d4d;
+  --chip-to: #f44d4d;
+  --dot-bg: #ffd0d0;
+  --ring-bg: #ffd0d0;
+}
+
+/* === Colorear íconos de meta según el tipo de evento === */
+.tt-card[data-type] .tt-meta__item svg {
+  color: var(--chip-to); /* usa el color principal del tipo */
+  opacity: 0.85;
+  transition: color 0.2s ease;
+}
+
+.tt-card[data-type]:hover .tt-meta__item svg {
+  color: var(--chip-to);
+  opacity: 1;
+}
+
+/* ===== Animaciones ===== */
+@keyframes tt-appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsive ===== */
+
+/* Timeline ajustes */
+@media (max-width: 900px) {
+  .tt-timeline {
+    --rail-center: 24px;
+    --rail-w: 4px;
+    --pad-left: 84px;
+    --dot-shift: 2px;
+  }
+}
+
+/* Tablet grande (≤1024px): 2 tabs por fila */
+@media (max-width: 1024px) {
+  .tt-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* una fila con 3 columnas */
+    gap: 0.6rem;
+  }
+}
+
+/* === Móvil: icono dentro de la card, sin línea y layout con aire === */
+@media (max-width: 720px) {
+  @media (max-width: 720px) {
+    .tt-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      overflow: visible;
+    }
+
+    .tt-tab {
+      display: grid;
+      grid-auto-rows: min-content;
+      justify-items: center;
+      padding: 0.55rem 0.5rem;
+      border-radius: 12px;
+      min-height: 40px;
+      row-gap: 2px; /* junta label y fecha */
+    }
+
+    .tt-tab__label {
+      font-size: 0.86rem;
+      line-height: 1.05;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 95%;
+    }
+
+    /* ✅ mostrar fecha como subtítulo */
+    .tt-tab__chip {
+      font-size: 0.72rem;
+      line-height: 1;
+      opacity: 0.85;
+      padding: 0; /* sin pill; solo texto */
+      border: 0;
+      color: #475569; /* gris sutil en inactivo */
+    }
+
+    /* Estados */
+    .tt-tab.active .tt-tab__label {
+      color: #fff;
+    }
+    .tt-tab.active .tt-tab__chip {
+      color: #e5edff;
+      opacity: 1;
+    }
+  }
+
+  /* Línea fuera en móvil */
+  .tt-timeline {
+    padding-left: 0;
+  }
+  .tt-line {
+    display: none;
+  }
+
+  @media (max-width: 360px) {
+    .tt-card {
+      --icon-size: 42px;
+      --icon-gap: 10px;
+    }
+    .tt-card__title {
+      font-size: 0.98rem;
+    }
+    .tt-chip {
+      font-size: 0.78rem;
+      padding: 6px 9px;
+    }
+  }
+}
+
+/* Móvil muy estrecho (≤380px): apretar un poquito más */
+@media (max-width: 380px) {
+  .tt-tab {
+    padding: 0.5rem 0.45rem;
+    min-height: 34px;
+  }
+  .tt-tab__label {
+    font-size: 0.82rem;
+  }
+}

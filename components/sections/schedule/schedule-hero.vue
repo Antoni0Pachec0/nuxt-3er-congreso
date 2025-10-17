@@ -23,7 +23,7 @@
       <!-- Imagen -->
       <div class="sc-hero-img-wrapper">
         <img
-          src="@/assets/img/pages/schedule/schedule-hero.png"
+          src="@/assets/img/pages/schedule/schedule-hero.webp"
           alt="Cronograma del Congreso"
           class="sc-hero-img"
         />
