@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-import shir1 from "~/assets/img/pages/shirt/shirt-1.png";
+import shir1 from "@/assets/img/pages/shirt/shirt-1.png";
 
 // Imágenes de prueba
 const imgs = {

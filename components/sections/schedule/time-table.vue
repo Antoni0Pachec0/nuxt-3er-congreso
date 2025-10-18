@@ -28,7 +28,12 @@
     <div class="tt-timeline">
       <div class="tt-line" aria-hidden="true"></div>
 
-      <article v-for="ev in items" :key="ev.id" class="tt-card">
+      <article
+        v-for="ev in items"
+        :key="ev.id"
+        class="tt-card"
+        :data-type="ev.type"
+      >
         <div class="tt-dot">
           <div class="tt-dot__ring" :data-type="ev.type"></div>
           <div class="tt-dot__icon" :data-type="ev.type">
@@ -87,15 +92,19 @@ import {
 } from "lucide-vue-next";
 
 type EventType =
-  | "Registro"
-  | "Conferencia"
-  | "Pausa"
-  | "Taller"
-  | "Panel"
-  | "Networking"
-  | "Hackatón"
-  | "Clausura"
-  | "Feria";
+  | "Registro"
+  | "Conferencia"
+  | "Pausa"
+  | "Taller"
+  | "Panel"
+  | "Networking"
+  | "Hackatón"
+  | "Clausura"
+  | "Feria"
+  | "Apertura" 
+  | "Convenio" 
+  | "Charla" 
+  | "Cultural"; 
 
 interface ScheduleItem {
   id: string;
@@ -112,15 +121,20 @@ interface ScheduleItem {
 
 /* Íconos por tipo (burbuja) */
 const iconMap: Record<EventType, any> = {
-  Registro: ClipboardCheck,
-  Conferencia: Mic,
-  Panel: Users,
-  Pausa: Coffee,
-  Taller: Wrench,
-  Networking: Network,
-  Hackatón: Code2,
-  Clausura: Flag,
-  Feria: ShoppingBag,
+  Registro: ClipboardCheck,
+  Conferencia: Mic,
+  Panel: Users,
+  Pausa: Coffee,
+  Taller: Wrench,
+  Networking: Network,
+  Hackatón: Code2,
+  Clausura: Flag,
+  Feria: ShoppingBag,
+  // <-- AGREGADOS
+  Apertura: Flag, // Usar Flag o Mic, por ejemplo.
+  Convenio: ClipboardCheck, // Usar ClipboardCheck o un ícono de firma.
+  Charla: Mic, // Charla es similar a Conferencia.
+  Cultural: Users, // Usar Users o MapPin, por ejemplo.
 };
 const iconFor = (t: EventType) => iconMap[t] ?? Code2;
 
@@ -469,11 +483,10 @@ const days = [
   { key: "2025-11-14", label: "Viernes", chip: "14 de Noviembre" },
 ];
 
-const activeDay = ref<string>(days[0].key);
+const activeDay = ref<string>(days[0]?.key ?? '');
 const items = computed<ScheduleItem[]>(() =>
   (schedule[activeDay.value] || [])
     .slice()
     .sort((a, b) => a.start.localeCompare(b.start))
 );
 </script>
-

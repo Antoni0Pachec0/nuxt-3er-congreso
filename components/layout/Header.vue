@@ -2,7 +2,7 @@
   <div>
     <header :class="['app-header', { 'scrolled-header': isScrolled }]">
       <div class="logo">
-        <NuxtLink to="/">
+        <NuxtLink :to="R.path('home')">
           <img
             :src="logoUrl"
             alt="Logo"
@@ -11,40 +11,32 @@
         </NuxtLink>
       </div>
 
+      <!-- 🌐 NAV DESKTOP -->
       <nav class="desktop-nav">
         <div
           class="menu-item-with-submenu"
           @mouseenter="isSubmenuOpen = true"
           @mouseleave="isSubmenuOpen = false"
         >
-          <NuxtLink to="/#Inicio" @click="closeAllMenus">
+          <NuxtLink :to="R.path('home')" @click="closeAllMenus">
             Inicio
-            <svg
-              class="chevron-icon"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-            >
+            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24">
               <path fill="currentColor" d="m7 10l5 5l5-5z" />
             </svg>
           </NuxtLink>
+
+          <!-- Submenú -->
           <div class="submenu" :class="{ active: isSubmenuOpen }">
-            <NuxtLink to="/#Enfoque" @click="closeAllMenus">Enfoque</NuxtLink>
-            <NuxtLink to="/#Galeria" @click="closeAllMenus">Galería</NuxtLink>
-            <NuxtLink to="/#Ubicacion" @click="closeAllMenus"
-              >Ubicación</NuxtLink
-            >
-            <NuxtLink to="/#PregFrec" @click="closeAllMenus"
-              >Preguntas</NuxtLink
-            >
+            <NuxtLink :to="`${R.path('home')}#Enfoque`" @click="closeAllMenus">Enfoque</NuxtLink>
+            <NuxtLink :to="`${R.path('home')}#Galeria`" @click="closeAllMenus">Galería</NuxtLink>
+            <NuxtLink :to="`${R.path('home')}#Ubicacion`" @click="closeAllMenus">Ubicación</NuxtLink>
+            <NuxtLink :to="`${R.path('home')}#PregFrec`" @click="closeAllMenus">Preguntas</NuxtLink>
           </div>
         </div>
 
-        <NuxtLink to="/schedule" @click="closeAllMenus">Cronograma</NuxtLink>
-        <NuxtLink to="/conferees" @click="closeAllMenus"
-          >Conferencistas</NuxtLink
-        >
-        <NuxtLink to="/workshops" @click="closeAllMenus">Talleres</NuxtLink>
+        <NuxtLink :to="R.path('schedule')" @click="closeAllMenus">Cronograma</NuxtLink>
+        <NuxtLink :to="R.path('conferees')" @click="closeAllMenus">Conferencistas</NuxtLink>
+        <NuxtLink :to="R.path('workshops')" @click="closeAllMenus">Talleres</NuxtLink>
 
         <NuxtLink :to="R.path('register')" class="desktop-nav-btn">
           Registro
@@ -54,6 +46,7 @@
         </NuxtLink>
       </nav>
 
+      <!-- 🍔 Botón hamburguesa -->
       <div
         class="hamburger-menu"
         :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
@@ -65,12 +58,10 @@
       </div>
     </header>
 
-    <div
-      class="overlay"
-      :class="{ active: isMenuOpen }"
-      @click="closeAllMenus"
-    ></div>
+    <!-- 🔳 Overlay -->
+    <div class="overlay" :class="{ active: isMenuOpen }" @click="closeAllMenus"></div>
 
+    <!-- 📱 Sidebar móvil -->
     <nav class="sidebar" :class="{ active: isMenuOpen }">
       <button
         class="close-sidebar"
@@ -92,16 +83,16 @@
         </svg>
       </button>
 
-
-      <NuxtLink to="/#Inicio" @click="closeAllMenus">
+      <NuxtLink :to="R.path('home')" @click="closeAllMenus">
         Inicio
         <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24">
           <path fill="currentColor" d="m7 10l5 5l5-5z" />
         </svg>
       </NuxtLink>
-      <NuxtLink to="/schedule" @click="closeAllMenus">Cronograma</NuxtLink>
-      <NuxtLink to="/conferees" @click="closeAllMenus">Conferencistas</NuxtLink>
-      <NuxtLink to="/workshops" @click="closeAllMenus">Talleres</NuxtLink>
+
+      <NuxtLink :to="R.path('schedule')" @click="closeAllMenus">Cronograma</NuxtLink>
+      <NuxtLink :to="R.path('conferees')" @click="closeAllMenus">Conferencistas</NuxtLink>
+      <NuxtLink :to="R.path('workshops')" @click="closeAllMenus">Talleres</NuxtLink>
 
       <NuxtLink
         :to="R.path('register')"
@@ -110,6 +101,7 @@
       >
         Registro
       </NuxtLink>
+
       <NuxtLink
         :to="R.path('login')"
         class="sidebar_button login-btn-sidebar"
@@ -123,47 +115,38 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { R } from "@/utils/app-routes";
 import logoUrl from "@/assets/img/pages/logo.png";
 import "@/assets/css/Header.css";
-import { R } from "@/utils/app-routes";
 
 const isMenuOpen = ref(false);
 const isScrolled = ref(false);
-const isSubmenuOpen = ref(false); // Estado para el submenú
+const isSubmenuOpen = ref(false);
 
-// Cierra ambos menús
+// 🔒 Cierra ambos menús
 const closeAllMenus = () => {
   isMenuOpen.value = false;
   isSubmenuOpen.value = false;
 };
 
-// Abre/cierra el menú principal del móvil
+// 📱 Alternar menú principal
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
-  if (!isMenuOpen.value) {
-    // Si se cierra el menú principal, también cerrar el submenú
-    isSubmenuOpen.value = false;
-  }
+  if (!isMenuOpen.value) isSubmenuOpen.value = false;
 };
 
-// Abre/cierra el submenú (usado principalmente en móvil)
-const toggleSubmenu = () => {
-  isSubmenuOpen.value = !isSubmenuOpen.value;
-};
-
+// 🔄 Detectar scroll
 const handleScroll = () => {
   if (typeof window === "undefined") return;
   isScrolled.value = window.scrollY > 50;
 };
 
 onMounted(() => {
-  if (typeof window === "undefined") return;
   handleScroll();
   window.addEventListener("scroll", handleScroll, { passive: true });
 });
 
 onBeforeUnmount(() => {
-  if (typeof window === "undefined") return;
   window.removeEventListener("scroll", handleScroll);
 });
 </script>
