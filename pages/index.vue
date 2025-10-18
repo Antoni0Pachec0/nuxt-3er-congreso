@@ -3,6 +3,7 @@
     <Hero id="Inicio"/>
     <Description id="Enfoque"/>
     <PrincipalSpeaker id="Conferencista"/>
+    <ActivityFlow id="Actividades"/>
     <SectionsGalleryCarousel id="Galeria" :slides="slides" :stats="stats" :autoplay="true" :intervalMs="5000" />
     <Souvenirsshowcase/>
     <InnovationWorkshops id="Talleres"/>
@@ -26,6 +27,8 @@ import sectionsFaqAccordion from '@/components/sections/sections-faq-accordion.v
 import Logos from '@/components/sections/logos-uni.vue'
 
 import PrincipalSpeaker from '@/components/sections/conferees/principal-speaker.vue'
+import ActivityFlow from '@/components/sections/activity-flow.vue';
+
 import evento2018 from '@/assets/img/events/evento-2018.jpeg'
 import evento2019 from '@/assets/img/events/evento-2019.jpeg'
 import evento2021 from '@/assets/img/events/evento-2021.jpeg'
