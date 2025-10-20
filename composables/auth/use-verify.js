@@ -2,12 +2,26 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { VerifyApi } from '@/backend/auth/verify-api'
-import { parseAxiosError } from '@/plugins/http/error'
-import { notifyError, notifyWarning, notifyLoading } from '@/utils/notifications'
+import { parseAxiosError } from '@/backend/http/error'
+
+// 👇 Adaptador para notificaciones (igual que en los otros composables)
+import { createNotifyAdapter } from '@/utils/notify/adapter'
 
 export function useVerify () {
   const router = useRouter()
   const route  = useRoute()
+
+  // ---------------------------------
+  // Notificaciones (mismo patrón que use-register, use-reset, use-forgot)
+  // ---------------------------------
+  const notify = typeof createNotifyAdapter === 'function'
+    ? createNotifyAdapter()
+    : null
+
+  const notifyError   = (t, m) => notify?.('error',   t, m)
+  const notifyWarning = (t, m) => notify?.('warning', t, m)
+  const notifySuccess = (t, m) => notify?.('success', t, m)
+  const notifyLoading = (t, m) => notify?.('loading', t, m)
 
   // ===== Constantes / helpers de OTP =====
   const DIGITS = 6
@@ -179,17 +193,17 @@ export function useVerify () {
         sessionStorage.setItem('reset_code', code.value)
         sessionStorage.setItem('reset_token_expiry', (Date.now() + 15 * 60 * 1000).toString())
 
-        toast.resolve({ title: '¡Código verificado!', message: 'Ahora puedes establecer tu nueva contraseña.' })
+        toast?.resolve({ title: '¡Código verificado!', message: 'Ahora puedes establecer tu nueva contraseña.' })
         setTimeout(() => router.push('/reset'), 1500)
       } else {
         localStorage.removeItem('verification_purpose')
-        toast.resolve({ title: '¡Listo!', message: 'Cuenta verificada exitosamente. Ahora inicia sesión.' })
+        toast?.resolve({ title: '¡Listo!', message: 'Cuenta verificada exitosamente. Ahora inicia sesión.' })
         setTimeout(() => router.push('/login'), 1500)
       }
     } catch (err) {
       const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.'
       error.value = msg
-      toast.reject({ title: 'Verificación fallida', message: msg })
+      toast?.reject({ title: 'Verificación fallida', message: msg })
       digits.value = Array(DIGITS).fill('')
       await nextTick()
       focusIndex(0)
@@ -242,7 +256,7 @@ export function useVerify () {
         purpose: verificationPurpose.value // 'email_verification' | 'reset_password'
       })
 
-      toast.resolve({
+      toast?.resolve({
         title: 'Código reenviado',
         message: 'Revisa tu correo. Puede tardar unos segundos.',
         duration: 4000
@@ -252,11 +266,11 @@ export function useVerify () {
       const status = err?.response?.status
       const msg = parseAxiosError(err) || 'No se pudo reenviar el código.'
       if (status === 429) {
-        toast.reject({ title: 'Espera un momento', message: msg })
+        toast?.reject({ title: 'Espera un momento', message: msg })
         startCooldown()
         return
       }
-      toast.reject({ title: 'No se pudo reenviar', message: msg })
+      toast?.reject({ title: 'No se pudo reenviar', message: msg })
     }
   }
 
