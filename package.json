@@ -13,7 +13,6 @@
   "dependencies": {
     "@iconify/vue": "^5.0.0",
     "@jamescoyle/vue-icon": "^0.1.2",
-    
     "@mdi/font": "^7.4.47",
     "@mdi/js": "7.4.47",
     "@pinia/nuxt": "^0.11.2",
