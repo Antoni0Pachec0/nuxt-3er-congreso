@@ -117,7 +117,7 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { R } from "@/utils/app-routes";
 import logoUrl from "@/assets/img/pages/logo.png";
-import "@/assets/css/Header.css";
+import "@/assets/css/header.css";
 
 const isMenuOpen = ref(false);
 const isScrolled = ref(false);

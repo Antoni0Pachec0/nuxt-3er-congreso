@@ -111,7 +111,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue'
-import '@/assets/css/Footer.css'
+import '@/assets/css/footer.css'
 
 const codeCard = ref(null)
 const footerRoot = ref(null)
