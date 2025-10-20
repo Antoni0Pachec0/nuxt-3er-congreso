@@ -27,7 +27,15 @@ export function useRegister () {
   // ---------------------------------
   // Estado base
   // ---------------------------------
+
+  /**
+   * @typedef {{ key: string, label: string }} StepItem
+   */
+
+  /** @type {import('vue').Ref<number>} */
   const step = ref(0)
+
+  /** @type {import('vue').Ref<StepItem[]>} */
   const steps = ref([])
 
   const showPass = ref(false)
@@ -125,12 +133,16 @@ export function useRegister () {
   // ---------------------------------
   // Stepper sets
   // ---------------------------------
+
+  /** @type {StepItem[]} */
   const baseSteps = [
     { key: 'account',     label: 'Cuenta' },
     { key: 'personal',    label: 'Datos personales' },
     { key: 'user_type',   label: 'Tipo de usuario' },
     { key: 'final',       label: 'Finalizar' }
   ]
+
+  /** @type {StepItem[]} */
   const speakerSteps = [
     { key: 'account',       label: 'Cuenta' },
     { key: 'personal',      label: 'Datos personales' },
@@ -211,6 +223,11 @@ export function useRegister () {
         const prov = (form.provenance || '').toLowerCase()
         const isStudent = t === 1
         const isTeacher = t === 2
+
+        // Procedencia requerida para 1 y 2
+        if ((isStudent || isTeacher) && !prov) {
+          return false
+        }
 
         if ((isStudent || isTeacher) && prov === 'uttecam') {
           const hasMat  = !!form.matricula
@@ -313,9 +330,9 @@ export function useRegister () {
   }
 
   // ---------------------------------
-  // Se agrega una función para manejar errores y mostrar alertas
+  // Manejo de errores de UI
   // ---------------------------------
-  function handleFormError(error) {
+  function handleFormError (error) {
     if (notifyError) {
       notifyError('Error en el formulario', error.message || 'Ocurrió un error inesperado.')
     } else {
@@ -329,8 +346,7 @@ export function useRegister () {
   const nextOrSubmit = async () => {
     try {
       if (step.value === 0) {
-        const isValid = reqs.len && reqs.upper && reqs.lower && reqs.num && reqs.sym
-        if (!isValid) {
+        if (strengthScore.value !== 5) {
           throw new Error('La contraseña no cumple con los requisitos mínimos.')
         }
       }
@@ -339,20 +355,17 @@ export function useRegister () {
         step.value++
         centerActiveStep()
       } else {
-        await submitForm()
-        notifySuccess('Registro exitoso', 'Tu cuenta ha sido creada correctamente.')
+        await submitRegister()
       }
     } catch (error) {
       handleFormError(error)
     }
   }
 
-  async function submitForm() {
+  async function submitForm () {
     try {
       loading.value = true
-      // Simulación de envío del formulario
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      // Aquí iría la lógica real del envío del formulario
     } catch (error) {
       throw new Error('No se pudo enviar el formulario. Por favor, intenta de nuevo.')
     } finally {

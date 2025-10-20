@@ -315,14 +315,14 @@
             </template>
 
             <!-- Estudiante/Maestro -->
-            <template v-if="[1, 2].includes(form.type_user_id as number)">
+            <template v-if="isStudentOrTeacher">
               <div class="stack">
                 <label class="label" for="provenance">Procedencia</label>
                 <select
                   id="provenance"
                   v-model="form.provenance"
                   class="input"
-                  :required="[1, 2].includes(Number(form.type_user_id))"
+                  :required="isStudentOrTeacher"
                 >
                   <option disabled value="">Selecciona tu procedencia</option>
                   <option value="uttecam">UTTECAM</option>
@@ -342,7 +342,7 @@
                       class="input"
                       maxlength="20"
                       placeholder="Tu matrícula"
-                      :required="[1, 2].includes(Number(form.type_user_id)) && (form.provenance||'').toLowerCase()==='uttecam'"
+                      :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='uttecam'"
                     />
                   </div>
                   <div class="stack">
@@ -351,7 +351,7 @@
                       id="programa_educativo"
                       v-model.trim="form.educational_program"
                       class="input"
-                      :required="[1, 2].includes(Number(form.type_user_id)) && (form.provenance||'').toLowerCase()==='uttecam'"
+                      :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='uttecam'"
                     >
                       <option disabled value="">Selecciona tu programa</option>
                       <option value="TI">Tecnologías de la Información</option>
@@ -400,7 +400,7 @@
                     type="text"
                     class="input"
                     placeholder="Nombre de tu universidad"
-                    :required="[1, 2].includes(Number(form.type_user_id)) && (form.provenance||'').toLowerCase()==='otra'"
+                    :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='otra'"
                   />
                 </div>
               </template>
@@ -703,7 +703,7 @@ const {
   reqs, strengthPercent, strengthLabel, pwdMatch, touchPwd,
 
   // ponente
-  isSpeaker, secretValidating,
+  isSpeaker, secretValidating, isStudentOrTeacher,
 
   // final
   accepted, showTermsModal,

@@ -18,25 +18,32 @@ export default defineNuxtConfig({
   },
 
   css: [
-    'notivue/notifications.css', // <- nombre correcto (plural)
+    'notivue/notification.css',
     'notivue/animations.css',
     '@/assets/css/main.css',
   ],
+
+  // 👇 El módulo va sin opciones inline
   modules: [
-    ['notivue/nuxt', {
-      position: 'top-right',
-      limit: 3,
-      pauseOnHover: true,
-      notifications: {
-        success: { duration: 4000, showIcon: true },
-        error:   { duration: 6000, showIcon: true, dismissible: true },
-        warning: { duration: 5000, showIcon: true, dismissible: true },
-        loading: { duration: 0,    showIcon: true },
-        info:    { duration: 4000, showIcon: true },
-      }
-    }],
-    '@pinia/nuxt'
+    'notivue/nuxt',
+    '@pinia/nuxt',
   ],
+
+  // 👇 Las opciones van en la clave `notivue` (by-the-book)
+  notivue: {
+    position: 'top-right',
+    limit: 3,
+    pauseOnHover: true,
+    avoidDuplicates: true,
+    // En Notivue el estado "loading" se modela con `promise`
+    notifications: {
+      success: { duration: 4000 },
+      error:   { duration: 6000, ariaLive: 'assertive', ariaRole: 'alert' },
+      warning: { duration: 5000 },
+      info:    { duration: 4000 },
+      promise: { duration: Infinity }, // para push.promise()
+    },
+  },
 
   devtools: { enabled: false },
 
