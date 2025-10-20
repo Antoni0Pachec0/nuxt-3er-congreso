@@ -1,6 +1,6 @@
 // backend/auth/reset-api.js
-import api from '@/plugins/http/api'
-import { ROUTES } from '@/plugins/http/routes'
+import api from '@/backend/http/api'
+import { ROUTES } from '@/backend/http/routes'
 
 // Debe existir ROUTES.AUTH.RESET_PASSWORD
 // Si tu backend requiere cookies, deja withCredentials: true
