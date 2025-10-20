@@ -16,8 +16,8 @@ const router = useRouter()
 //definePageMeta({ middleware: ['auth'] })
 
 // CTA → checkout (dejamos plan en query para usarlo después en Stripe)
-const PLAN_SLUG = 'congreso2025'
+const PLAN_SLUG = 'CONGRESO'
 const goCheckout = () => {
-    router.push({ path: '/checkout', query: { plan: PLAN_SLUG } })
+    router.push({ path: '/stripe/checkout', query: { plan: PLAN_SLUG } })
 }
 </script>

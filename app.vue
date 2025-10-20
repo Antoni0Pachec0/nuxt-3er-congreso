@@ -28,8 +28,8 @@
 </template>
 
 <script setup>
-import Header from "@/components/layout/Header.vue";
-import Footer from "@/components/layout/Footer.vue";
+import Header from "@/components/layout/header.vue";
+import Footer from "@/components/layout/footer.vue";
 // Asegúrate de que esta ruta sea correcta
 import AdminHeader from "@/components/admin/admin-header.vue"; 
 import { Notivue, Notification } from "notivue";

@@ -4,7 +4,9 @@ import { useNuxtApp } from '#app'
 import { useStripeEmbedded } from '~/composables/stripe/use-stripe-embedded'
 
 // SIMULADO: reemplázalo con tu carrito real
-const items = ref([{ price: 'CONGRESO', quantity: 1 }])
+const route = useRoute()
+const plan = (route.query.plan as string) || 'CONGRESO'
+const items = ref([{ price: plan, quantity: 1 }])
 
 const clientSecret = ref<string | null>(null)
 const sessionId = ref<string | null>(null)

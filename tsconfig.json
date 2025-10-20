@@ -7,6 +7,12 @@
     { "path": "./.nuxt/tsconfig.shared.json" },
     { "path": "./.nuxt/tsconfig.node.json" }
   ],
+  
+  "include": [
+    "types/**/*.d.ts",
+    "plugins/**/*.ts",
+    "composables/**/*.ts"
+  ],
 
   "compilerOptions": {
     /* === Soporte de Node y Nuxt === */
