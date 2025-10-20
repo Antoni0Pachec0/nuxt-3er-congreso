@@ -17,32 +17,25 @@ export default defineNuxtConfig({
     autoImport: true,
   },
 
-  modules: [
-    [
-      'notivue/nuxt',
-      {
-        position: 'top-right',
-        limit: 3,
-        pauseOnHover: true,
-        notifications: {
-          success: { duration: 4000, showIcon: true },
-          error: { duration: 6000, showIcon: true, dismissible: true },
-          warning: { duration: 5000, showIcon: true, dismissible: true },
-          loading: { duration: 0, showIcon: true },
-          info: { duration: 4000, showIcon: true },
-        },
-      },
-    ],
-    '@pinia/nuxt',
-  ],
-
-  // ----------------
-  // ESTILOS GLOBALES
-  // ----------------
   css: [
-    '@/assets/css/main.css',
-    'notivue/notification.css',
+    'notivue/notifications.css', // <- nombre correcto (plural)
     'notivue/animations.css',
+    '@/assets/css/main.css',
+  ],
+  modules: [
+    ['notivue/nuxt', {
+      position: 'top-right',
+      limit: 3,
+      pauseOnHover: true,
+      notifications: {
+        success: { duration: 4000, showIcon: true },
+        error:   { duration: 6000, showIcon: true, dismissible: true },
+        warning: { duration: 5000, showIcon: true, dismissible: true },
+        loading: { duration: 0,    showIcon: true },
+        info:    { duration: 4000, showIcon: true },
+      }
+    }],
+    '@pinia/nuxt'
   ],
 
   devtools: { enabled: false },
