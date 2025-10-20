@@ -274,7 +274,7 @@ const workshops = ref([
       "Aprende de forma práctica el proceso de fusión de fibra óptica y la utilización de OTDR para la certificación de enlaces.",
     duration: "4 horas",
     date: "12 y 13 de noviembre · 14:00 - 18:00",
-    location: "Edificio K - Medios Telemáticos",
+    location: "Edificio F - Medios Telemáticos",
     level: "Principiante",
     gradient: "linear-gradient(135deg, #22C55E, #2563EB, #111827)",
     icon: Network,
