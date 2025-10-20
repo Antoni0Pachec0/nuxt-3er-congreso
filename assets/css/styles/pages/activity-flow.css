@@ -1,135 +1,122 @@
-/* --- Estilos del componente ActivityFlow --- */
+/* --- Estilos del componente (con cambios) --- */
 .activity-flow-container {
-    background-color: #ffffff;
-    border-radius: 15px;
-    padding: 40px 60px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 100vw;
-    position: relative;
-    z-index: 1;
+  background: 
+    radial-gradient(circle at 0% 0%, #AFC8FF 0%, transparent 35%),
+    radial-gradient(circle at 100% 100%, #AFC8FF 0%, transparent 35%),
+    #ffffff;
+  border-radius: 15px;
+  padding: 40px 60px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 100vw;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
 .activity-flow-title {
-    font-size: 2.2em;
-    color: #333;
-    margin-bottom: 10px;
-    font-weight: 700;
+  font-size: 2.2em;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: 700;
 }
 
 .activity-flow-line {
-    width: 80px;
-    height: 4px;
-    background-color: #2196f3;
-    margin: 0 auto 30px auto;
-    border-radius: 2px;
+  width: 80px;
+  height: 4px;
+  background-color: #2196f3;
+  margin: 0 auto 30px auto;
+  border-radius: 2px;
 }
 
 .activity-flow-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    position: relative;
-    padding: 20px 0;
-    margin-bottom: 40px;
-    flex-wrap: nowrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative; /* ✨ NECESARIO para posicionar el SVG dentro */
+  padding: 20px 0;
+  margin-bottom: 40px;
+  flex-wrap: nowrap;
 }
+
+/* ✨ NUEVOS ESTILOS PARA EL CONECTOR SVG ✨ */
+.activity-flow-svg-connector {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Detrás de las tarjetas */
+  overflow: visible;
+}
+
+.activity-flow-svg-connector path {
+  stroke: #DDDCEA;
+  stroke-width: 2px;
+  fill: none; /* Muy importante para que solo se vea la línea */
+}
+
 
 .activity-flow-card {
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-    background: #fff;
-    padding: 10px;
-}
-
-.activity-flow-card-title {
-    font-size: 1.2em;
-    color: #333;
-    margin: 15px 0 10px 0;
-    font-weight: 700;
-}
-
-.activity-flow-card-description {
-    font-size: 0.9em;
-    color: #666;
-    line-height: 1.5;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2; /* Encima del SVG */
+  background: transparent;
+  padding: 10px;
 }
 
 .activity-flow-icon-circle {
-    width: 60px;
-    height: 60px;
-    background-color: #e3f2fd;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
-    flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  background-color: #ffffff; /* Le devolvemos el fondo para tapar la línea */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+  flex-shrink: 0;
 }
 
 .activity-flow-icon {
-    width: 35px;
-    height: 35px;
+  width: 35px;
+  height: 35px;
+  color: #5471B1;
 }
 
-/* Modificadores para el zigzag */
-.activity-flow-card--top {
-    margin-top: 0;
+.activity-flow-card--top { margin-top: 0; }
+.activity-flow-card--bottom { margin-top: 80px; }
+
+/* ❌ Los conectores viejos se pueden borrar */
+/* .activity-flow-connector { ... } */
+
+.activity-flow-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  border-radius: 999px;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto;
 }
-
-.activity-flow-card--bottom {
-    margin-top: 80px;
-}
-
-/* Conectores */
-.activity-flow-connector {
-    position: absolute;
-    border-top: 2px solid #bbdefb;
-    z-index: 1;
-    width: 23%;
-    transform-origin: left center;
-}
-
-/* Modificadores para la posición de cada conector */
-.activity-flow-connector--1 { top: 60px; left: 14%; transform: rotate(25deg); }
-.activity-flow-connector--2 { top: 140px; left: 39%; transform: rotate(-25deg); }
-.activity-flow-connector--3 { top: 60px; left: 64%; transform: rotate(25deg); }
-
-.activity-flow-button {
-    background-color: #3f51b5;
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 25px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
 .activity-flow-button:hover {
-    background-color: #303f9f;
-    transform: translateY(-2px);
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.4);
 }
 
-/* Responsive Design */
 @media (max-width: 950px) {
-    .activity-flow-wrapper {
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
-    }
-
-    .activity-flow-card--bottom {
-        margin-top: 0;
-    }
-
-    .activity-flow-connector {
-        display: none;
-    }
+  .activity-flow-wrapper { flex-direction: column; align-items: center; gap: 30px; }
+  .activity-flow-card--bottom { margin-top: 0; }
+  .activity-flow-svg-connector { display: none; } /* Ocultamos el conector en móvil */
 }
