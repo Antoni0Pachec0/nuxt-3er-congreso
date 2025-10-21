@@ -1,58 +1,65 @@
 /* =========================================
-  TOKENS – mismos que Register.css
+  TOKENS – mismos que Register.css
 ========================================= */
 :root {
-  /* Layout generales */
-  --header-h: 72px;
-  --footer-h: 68px;
+    /* Layout generales */
+    --header-h: 72px;
+    --footer-h: 68px;
 
-  /* Paleta - ACTUALIZADA a la nueva paleta */
-  --bg-900: #0B1534; /* Fondo más oscuro */
-  --bg-800: #132953; /* Tono intermedio para el hero */
-  --ink: #F7F8F9; /* Texto principal */
-  --muted: #929CAC; /* Texto secundario */
+    /* Paleta - ACTUALIZADA a la nueva paleta */
+    --bg-900: #0B1534;
+    /* Fondo más oscuro */
+    --bg-800: #132953;
+    /* Tono intermedio para el hero */
+    --ink: #F7F8F9;
+    /* Texto principal */
+    --muted: #929CAC;
+    /* Texto secundario */
 
-  /* Colores de acento */
-  --blue-primary: #1E5A93; /* Azul para botones y elementos clave */
-  --blue-accent: #24A1E4; /* Azul vibrante para acentos */
-  --blue-ghost-bg: rgba(184, 216, 243, 0.1);
-  --blue-ghost-border: rgba(184, 216, 243, 0.4);
+    /* Colores de acento */
+    --blue-primary: #1E5A93;
+    /* Azul para botones y elementos clave */
+    --blue-accent: #24A1E4;
+    /* Azul vibrante para acentos */
+    --blue-ghost-bg: rgba(184, 216, 243, 0.1);
+    --blue-ghost-border: rgba(184, 216, 243, 0.4);
 
-  /* Colores de estado */
-  --error: #ef4444;
-  --warning: #f59e0b;
-  --success: #22c55e;
-  --info: #0ea5e9;
+    /* Colores de estado */
+    --error: #ef4444;
+    --warning: #f59e0b;
+    --success: #22c55e;
+    --info: #0ea5e9;
 
-  /* Vidrio - Ajustados a la paleta */
-  --glass-1: rgba(184, 216, 243, 0.08);
-  --glass-2: rgba(184, 216, 243, 0.05);
-  --glass-br: rgba(184, 216, 243, 0.38);
+    /* Vidrio - Ajustados a la paleta */
+    --glass-1: rgba(184, 216, 243, 0.08);
+    --glass-2: rgba(184, 216, 243, 0.05);
+    --glass-br: rgba(184, 216, 243, 0.38);
 
-  /* Anillos - Ajustados a la paleta */
-  --ring-in: rgba(30, 90, 147, 0.22);
-  --ring-in2: rgba(36, 161, 228, 0.18);
+    /* Anillos - Ajustados a la paleta */
+    --ring-in: rgba(30, 90, 147, 0.22);
+    --ring-in2: rgba(36, 161, 228, 0.18);
 
-  /* Bordes / sombras */
-  --radius-md: 14px;
-  --radius-xl: 22px;
-  --shadow: 0 18px 60px rgba(5, 20, 40, 0.35);
+    /* Bordes / sombras */
+    --radius-md: 14px;
+    --radius-xl: 22px;
+    --shadow: 0 18px 60px rgba(5, 20, 40, 0.35);
 
-  /* Tipografía fluida */
-  --fz-sm: clamp(.85rem, .75rem + .2vw, .95rem);
-  --fz-base: clamp(.95rem, .9rem + .3vw, 1rem);
-  --fz-lg: clamp(1.1rem, 1rem + .6vw, 1.25rem);
-  --fz-hero: clamp(2rem, 6vw, 3.5rem);
+    /* Tipografía fluida */
+    --fz-sm: clamp(.85rem, .75rem + .2vw, .95rem);
+    --fz-base: clamp(.95rem, .9rem + .3vw, 1rem);
+    --fz-lg: clamp(1.1rem, 1rem + .6vw, 1.25rem);
+    --fz-hero: clamp(2rem, 6vw, 3.5rem);
 
-  /* Dimensiones */
-  --field-h: 48px;
-  --card-w: max(320px, min(100%, 520px));
+    /* Dimensiones */
+    --field-h: 48px;
+    --card-w: max(320px, min(100%, 520px));
 }
 
 /* --- Estilos Base (Móvil Primero) --- */
 .app-header {
     background: transparent;
-    padding: 15px 30px;
+    padding: 15px 20px;
+    /* Reducido para móviles */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -60,16 +67,15 @@
     width: 100%;
     top: 0;
     left: 0;
-    z-index: 1000;
-    box-shadow: none;
+    z-index: 1001;
     transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s, border-bottom 0.3s;
 }
 
 .app-header.scrolled-header {
     background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(12px) saturate(100%);
-    -webkit-backdrop-filter: blur(12px) saturate(100%);
-    border-bottom: 1.5px solid rgba(200, 200, 200, 0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1.5px solid var(--glass-br);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
@@ -79,14 +85,12 @@
 }
 
 .logo img.scrolled-logo {
-    /* Color invertido al hacer scroll (ej. de blanco a azul) */
     filter: invert(42%) sepia(99%) saturate(2000%) hue-rotate(185deg) brightness(1.1);
 }
 
-
-/* --- Menú de Escritorio (Oculto en móvil por defecto) --- */
+/* --- Menú de Escritorio --- */
 .desktop-nav {
-    display: none; /* Ocultamos el menú de escritorio en pantallas pequeñas */
+    display: none;
     align-items: center;
     gap: 25px;
 }
@@ -99,18 +103,9 @@
     padding: 5px 0;
     position: relative;
     transition: color 0.3s ease-in-out;
-}
-
-/* Efecto hover para enlaces de escritorio */
-.desktop-nav a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -2px;
-    left: 50%;
-    background-color: #0c9eff;
-    transition: all 0.3s ease-in-out;
+    display: flex;
+    /* Para alinear el ícono */
+    align-items: center;
 }
 
 .desktop-nav a:hover::after {
@@ -118,26 +113,20 @@
     left: 0;
 }
 
-/* --- ESTILOS DE BOTONES DE ESCRITORIO MODIFICADOS --- */
 .desktop-nav-btn {
-    /* Define dimensiones fijas para ambos botones */
-    width: 110px; 
+    width: 110px;
     height: 38px;
-    
-    /* Estilo común */
-    padding: 0; /* Asegura que el padding no interfiera con el alto/ancho fijo */
+    padding: 0;
     border-radius: 50px;
-    border: 1.5px solid #0c9eff;
-    background-color: #0c9eff;
+    border: 1.5px solid var(--blue-accent);
+    background-color: var(--blue-accent);
     color: #ffffff;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
-    /* Centra el texto dentro del botón */
-    display: flex; 
+    display: flex;
     justify-content: center;
     align-items: center;
-    /* CLAVE DEL CAMBIO: Unificar a 0.8rem */
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
@@ -146,30 +135,79 @@
     border-color: #0a7ac1;
 }
 
-/* Estilo específico para reducir el tamaño del texto del botón "Inicio de Sesión" 
-   (Ahora mantenido con el mismo tamaño para unificación) */
 .desktop-nav-btn.login-btn {
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
 }
-/* --- FIN ESTILOS DE BOTONES DE ESCRITORIO MODIFICADOS --- */
 
-
-/* Cambio de color de enlaces de escritorio al hacer scroll */
 .app-header.scrolled-header .desktop-nav a {
-    color: #f0f0f0;
+    color: var(--ink);
 }
 
 .app-header.scrolled-header .desktop-nav a:hover {
     color: #ffffff;
 }
 
+/* --- ESTILOS PARA SUBMENÚ DE ESCRITORIO --- */
+.menu-item-with-submenu {
+    position: relative;
+    display: inline-block;
+}
+
+/* Por defecto (móvil), la flecha está oculta */
+.chevron-icon {
+    display: none;
+}
+
+/* Estilos base del submenú, oculto con opacidad y visibilidad */
+.submenu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    background-color: var(--bg-900);
+    border-radius: 10px;
+    padding: 10px 0;
+    min-width: 160px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    list-style: none;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+/* Clase para mostrar el submenú en escritorio */
+.submenu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+}
+
+.submenu a {
+    padding: 10px 20px;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.submenu a:hover {
+    background-color: var(--ring-in);
+}
+
+.submenu a::after {
+    display: none;
+}
+
+
 /* --- Menú de Hamburguesa (Móvil) --- */
 .hamburger-menu {
     cursor: pointer;
-    display: flex; /* Se mostrará por defecto en móvil */
+    display: flex;
     flex-direction: column;
     gap: 5px;
-    z-index: 9999;
+    z-index: 2001;
+    padding: 5px;
 }
 
 .bar {
@@ -181,7 +219,12 @@
 }
 
 .hamburger-menu.scrolled-hamburger .bar {
-    background-color: #0c9eff;
+    background-color: var(--blue-accent);
+}
+
+.hamburger-menu.active .bar {
+    background-color: #ffffff;
+    /* Asegura que la X sea siempre blanca */
 }
 
 .hamburger-menu.active .bar:nth-child(1) {
@@ -198,58 +241,71 @@
 
 /* --- Menú Lateral (Sidebar) --- */
 .sidebar {
-    height: 100%;
-    width: 280px;
+    height: 100vh;
+    width: min(80vw, 300px);
     position: fixed;
     top: 0;
-    right: -280px;
+    right: 0;
+    transform: translateX(100%);
     background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(12px) saturate(100%);
-    -webkit-backdrop-filter: blur(12px) saturate(100%);
-    border-left: 1.5px solid rgba(200, 200, 200, 0.18);
-    padding-top: 80px;
-    transition: right 0.4s ease-in-out;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-left: 1.5px solid var(--glass-br);
+    padding-top: 100px;
+    padding-bottom: 40px;
+    overflow-y: auto;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 2000;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+    gap: 15px;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
 }
+
 .sidebar.active {
-    right: 0;
+    transform: translateX(0);
 }
 
 .sidebar a,
 .sidebar_button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     text-decoration: none;
-    font-size: 1rem;
-    color: #ecf0f1;
+    font-size: 1.1rem;
+    color: var(--ink);
     background: none;
     border: none;
-    width: 80%;
+    width: 85%;
     text-align: center;
     cursor: pointer;
     border-radius: 50px;
     transition: background-color 0.2s;
+    font-weight: 500;
+    flex-shrink: 0;
 }
 
 .sidebar a:hover {
-    background-color: rgba(52, 73, 94, 0.5);
+    background-color: var(--blue-ghost-bg);
 }
 
-.sidebar_button{
-    background-color: #0c9eff;
-}
-.sidebar_button:hover{
-    background-color: #0a7ac1;
+.sidebar_button {
+    background-color: var(--blue-primary);
 }
 
-/* Estilo específico para reducir el tamaño del texto del botón "Inicio de Sesión" en el sidebar */
+.sidebar_button:hover {
+    background-color: var(--blue-accent);
+}
+
 .sidebar_button.login-btn-sidebar {
-    font-size: 0.9rem; /* Texto ligeramente más pequeño */
+    background-color: transparent;
+    border: 1.5px solid var(--blue-primary);
 }
+
+.sidebar_button.login-btn-sidebar:hover {
+    background-color: var(--blue-ghost-bg);
+}
+
 
 .close-sidebar {
     position: absolute;
@@ -257,9 +313,9 @@
     right: 18px;
     background: none;
     border: none;
-    color: #ecf0f1;
+    color: var(--ink);
     cursor: pointer;
-    padding: 0;
+    padding: 5px;
 }
 
 /* --- Overlay --- */
@@ -269,7 +325,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s ease-in-out, visibility 0.4s;
@@ -282,13 +338,27 @@
 }
 
 
-/* --- ✅ Media Query para Tabletas y Escritorio --- */
+/* --- Media Query para Tabletas y Escritorio --- */
 @media (min-width: 769px) {
-    .hamburger-menu {
-        display: none; /* Ocultamos la hamburguesa en pantallas grandes */
+    .app-header {
+        padding: 15px 30px;
+    }
+
+    .hamburger-menu,
+    .sidebar,
+    .overlay {
+        display: none;
     }
 
     .desktop-nav {
-        display: flex; /* Mostramos la navegación de escritorio */
+        display: flex;
+    }
+
+    /* Muestra la flecha solo en el menú de escritorio */
+    .desktop-nav .chevron-icon {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 4px;
+        transition: transform 0.3s ease;
     }
 }

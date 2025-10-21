@@ -2,12 +2,27 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ForgotApi } from '@/backend/auth/forgot-api'
-import { notifyLoading, notifyError } from '@/utils/notifications'
-import { parseAxiosError } from '@/plugins/http/error'
+import { parseAxiosError } from '@/backend/http/error'
 import { R } from '@/utils/app-routes'
+
+// 👇 Adaptador para notificaciones (igual que en use-register y use-reset)
+import { createNotifyAdapter } from '@/utils/notify/adapter'
 
 export function useForgot () {
   const router  = useRouter()
+  
+  // ---------------------------------
+  // Notificaciones (mismo patrón que use-register)
+  // ---------------------------------
+  const notify = typeof createNotifyAdapter === 'function'
+    ? createNotifyAdapter()
+    : null
+
+  const notifyError   = (t, m) => notify?.('error',   t, m)
+  const notifyWarning = (t, m) => notify?.('warning', t, m)
+  const notifySuccess = (t, m) => notify?.('success', t, m)
+  const notifyLoading = (t, m) => notify?.('loading', t, m)
+
   const email   = ref('')
   const loading = ref(false)
 
@@ -33,7 +48,7 @@ export function useForgot () {
       localStorage.setItem('verify_email', cleanEmail)
       localStorage.setItem('verification_purpose', 'reset_password')
 
-      toast.resolve({
+      toast?.resolve({
         title: 'Código enviado',
         message: 'Revisa tu correo electrónico',
       })
@@ -41,7 +56,7 @@ export function useForgot () {
       setTimeout(() => router.push(R.to('verify')), 1500)
     } catch (err) {
       const msg = parseAxiosError(err) || 'No se pudo procesar tu solicitud'
-      toast.reject({ title: 'Error', message: msg })
+      toast?.reject({ title: 'Error', message: msg })
     } finally {
       loading.value = false
     }

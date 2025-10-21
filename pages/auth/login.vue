@@ -11,14 +11,22 @@
     </div>
 
     <div class="login-container">
+<<<<<<< HEAD
       <button
         type="button"
+=======
+      <NuxtLink
+        to="/"
+>>>>>>> origin/deploy
         class="btn-back"
-        @click="goHome"
         aria-label="Regresar"
+<<<<<<< HEAD
+=======
+        :class="{ 'disabled-link': loading }"
+>>>>>>> origin/deploy
       >
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
-      </button>
+      </NuxtLink>
 
       <!-- Columna izquierda / título -->
       <header class="login-hero" aria-label="Identidad del evento">
@@ -57,12 +65,59 @@
             />
           </div>
 
+<<<<<<< HEAD
           <!-- Password -->
           <div class="row">
             <label class="label" for="password">Contraseña</label>
             <button class="link" type="button" @click="onForgot">
               ¿Olvidaste tu contraseña?
             </button>
+=======
+          <!-- Contraseña -->
+          <div class="form-group">
+            <div class="row">
+              <label class="label" for="password">Contraseña</label>
+              <button
+                class="link"
+                type="button"
+                @click="onForgot"
+                :disabled="loading"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+
+            <div class="input-wrap">
+              <span class="input-icon">
+                <SvgIcon :path="mdiLockOutline" type="mdi" />
+              </span>
+              <input
+                id="password"
+                :type="show ? 'text' : 'password'"
+                v-model.trim="password"
+                required
+                minlength="8"
+                maxlength="50"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                class="input input--pass"
+                :class="{ 'input--error': apiError }"
+                :disabled="loading"
+                @input="apiError = ''"
+              />
+              <button
+                type="button"
+                class="eye"
+                :aria-pressed="show ? 'true' : 'false'"
+                :title="show ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                @click="show = !show"
+                :disabled="loading"
+              >
+                <SvgIcon v-if="show" :path="mdiEyeOffOutline" type="mdi" />
+                <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
+              </button>
+            </div>
+>>>>>>> origin/deploy
           </div>
 
           <div class="input-wrap">
@@ -92,12 +147,24 @@
             </button>
           </div>
 
+<<<<<<< HEAD
           <!-- Error -->
           <p v-if="apiError" class="help error">{{ apiError }}</p>
 
           <!-- CTA -->
           <button class="btn" type="submit" :disabled="loading">
             {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
+=======
+          <!-- Botón de submit -->
+          <button
+            class="btn"
+            type="submit"
+            :disabled="isSubmitDisabled"
+            :aria-busy="loading"
+          >
+            <span v-if="loading">Ingresando…</span>
+            <span v-else>Iniciar Sesión</span>
+>>>>>>> origin/deploy
           </button>
 
           <!-- Divider + Register -->
@@ -107,7 +174,17 @@
             <span class="line"></span>
           </div>
 
+<<<<<<< HEAD
           <button type="button" class="btn ghost" @click="onRegister">
+=======
+          <!-- Registro -->
+          <button
+            type="button"
+            class="btn ghost"
+            @click="onRegister"
+            :disabled="loading"
+          >
+>>>>>>> origin/deploy
             Regístrate aquí
           </button>
 
@@ -121,19 +198,27 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { definePageMeta } from '#imports'
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
 import SvgIcon from '@jamescoyle/vue-icon'
+=======
+import "@/assets/css/styles/auth/login.css";
+import { useLogin } from "@/composables/auth/use-login";
+
+import SvgIcon from "@jamescoyle/vue-icon";
+>>>>>>> origin/deploy
 import {
   mdiArrowRight,
   mdiEmailOutline,
   mdiLockOutline,
   mdiEyeOutline,
   mdiEyeOffOutline,
-  mdiArrowLeft
-} from '@mdi/js'
+  mdiArrowLeft,
+} from "@mdi/js";
 
+<<<<<<< HEAD
 import api from '~/backend/http/api'
 import { ROUTES } from '~/backend/http/routes'
 import { parseAxiosError } from '~/backend/http/error'
@@ -206,4 +291,25 @@ async function onSubmit() {
     loading.value = false
   }
 }
+=======
+definePageMeta({
+  name: "login",
+  path: "/login",
+  alias: ["/login"],
+  guestOnly: true,
+});
+
+const {
+  email,
+  password,
+  show,
+  loading,
+  apiError,
+  isSubmitDisabled,
+  onSubmit,
+  goHome,
+  onRegister,
+  onForgot,
+} = useLogin();
+>>>>>>> origin/deploy
 </script>

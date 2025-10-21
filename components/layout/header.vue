@@ -2,22 +2,42 @@
   <div>
     <header :class="['app-header', { 'scrolled-header': isScrolled }]">
       <div class="logo">
-        <!-- Mantener el enlace de ancla para la home/sección de inicio -->
-        <a href="#Inicio">
-          <img :src="logoUrl" alt="Logo" :class="{ 'scrolled-logo': isScrolled }" />
-        </a>
+        <NuxtLink :to="R.path('home')">
+          <img
+            :src="logoUrl"
+            alt="Logo"
+            :class="{ 'scrolled-logo': isScrolled }"
+          />
+        </NuxtLink>
       </div>
+
+      <!-- 🌐 NAV DESKTOP -->
       <nav class="desktop-nav">
-        <!-- Navegación a secciones internas -->
-        <a href="#Inicio" @click="closeMenu">Inicio</a>
-        <a href="#Enfoque" @click="closeMenu">Enfoque</a>
-        <a href="#Galeria" @click="closeMenu">Galeria</a>
-        <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
-        <a href="#Mapa" @click="closeMenu">Mapa</a>
-        <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-        
-        <!-- ✅ CORRECCIÓN: Usar NuxtLink para navegación externa para precarga instantánea -->
-        <!-- Uso de R.path('register') para obtener el string del path '/register' -->
+        <div
+          class="menu-item-with-submenu"
+          @mouseenter="isSubmenuOpen = true"
+          @mouseleave="isSubmenuOpen = false"
+        >
+          <NuxtLink :to="R.path('home')" @click="closeAllMenus">
+            Inicio
+            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24">
+              <path fill="currentColor" d="m7 10l5 5l5-5z" />
+            </svg>
+          </NuxtLink>
+
+          <!-- Submenú -->
+          <div class="submenu" :class="{ active: isSubmenuOpen }">
+            <NuxtLink :to="`${R.path('home')}#Enfoque`" @click="closeAllMenus">Enfoque</NuxtLink>
+            <NuxtLink :to="`${R.path('home')}#Galeria`" @click="closeAllMenus">Galería</NuxtLink>
+            <NuxtLink :to="`${R.path('home')}#Ubicacion`" @click="closeAllMenus">Ubicación</NuxtLink>
+            <NuxtLink :to="`${R.path('home')}#PregFrec`" @click="closeAllMenus">Preguntas</NuxtLink>
+          </div>
+        </div>
+
+        <NuxtLink :to="R.path('schedule')" @click="closeAllMenus">Cronograma</NuxtLink>
+        <NuxtLink :to="R.path('conferees')" @click="closeAllMenus">Conferencistas</NuxtLink>
+        <NuxtLink :to="R.path('workshops')" @click="closeAllMenus">Talleres</NuxtLink>
+
         <NuxtLink :to="R.path('register')" class="desktop-nav-btn">
           Registro
         </NuxtLink>
@@ -26,37 +46,67 @@
         </NuxtLink>
       </nav>
 
-      <div class="hamburger-menu" :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
-        @click="toggleMenu">
+      <!-- 🍔 Botón hamburguesa -->
+      <div
+        class="hamburger-menu"
+        :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
+        @click="toggleMenu"
+      >
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
       </div>
     </header>
 
-    <div class="overlay" :class="{ active: isMenuOpen }" @click="closeMenu"></div>
+    <!-- 🔳 Overlay -->
+    <div class="overlay" :class="{ active: isMenuOpen }" @click="closeAllMenus"></div>
 
+    <!-- 📱 Sidebar móvil -->
     <nav class="sidebar" :class="{ active: isMenuOpen }">
-      <button class="close-sidebar" @click="closeMenu" aria-label="Cerrar menú">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
+      <button
+        class="close-sidebar"
+        @click="closeAllMenus"
+        aria-label="Cerrar menú"
+      >
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
-      <!-- Navegación interna en Sidebar -->
-      <a href="#Inicio" @click="closeMenu">Inicio</a>
-      <a href="#Enfoque" @click="closeMenu">Enfoque</a>
-      <a href="#Galeria" @click="closeMenu">Galeria</a>
-      <a href="#Ubicacion" @click="closeMenu">Ubicacion</a>
-      <a href="#Mapa" @click="closeMenu">Mapa</a>
-      <a href="#PregFrec" @click="closeMenu">Preguntas</a>
-      
-      <!-- ✅ CORRECCIÓN: Usar NuxtLink en Sidebar -->
-      <NuxtLink :to="R.path('register')" class="sidebar_button" @click="closeMenu">
+
+      <NuxtLink :to="R.path('home')" @click="closeAllMenus">
+        Inicio
+        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="m7 10l5 5l5-5z" />
+        </svg>
+      </NuxtLink>
+
+      <NuxtLink :to="R.path('schedule')" @click="closeAllMenus">Cronograma</NuxtLink>
+      <NuxtLink :to="R.path('conferees')" @click="closeAllMenus">Conferencistas</NuxtLink>
+      <NuxtLink :to="R.path('workshops')" @click="closeAllMenus">Talleres</NuxtLink>
+
+      <NuxtLink
+        :to="R.path('register')"
+        class="sidebar_button"
+        @click="closeAllMenus"
+      >
         Registro
       </NuxtLink>
-      <NuxtLink :to="R.path('login')" class="sidebar_button login-btn-sidebar" @click="closeMenu">
+
+      <NuxtLink
+        :to="R.path('login')"
+        class="sidebar_button login-btn-sidebar"
+        @click="closeAllMenus"
+      >
         Inicio de Sesión
       </NuxtLink>
     </nav>
@@ -64,39 +114,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-// Asegúrate de que logoUrl esté correctamente importado o definido
-import logoUrl from '@/assets/img/pages/logo.png' 
-import '@/assets/css/header.css'
-import { R } from '@/utils/app-routes'
-// Ya no necesitamos useRouter/router.push para los enlaces de login/registro
-// import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { R } from "@/utils/app-routes";
+import logoUrl from "@/assets/img/pages/logo.png";
+import "@/assets/css/header.css";
 
-// const router = useRouter() // Ya no es necesario
-const logo = logoUrl
-const isMenuOpen = ref(false)
-const isScrolled = ref(false)
+const isMenuOpen = ref(false);
+const isScrolled = ref(false);
+const isSubmenuOpen = ref(false);
 
-const closeMenu = () => { isMenuOpen.value = false }
-const toggleMenu = () => { isMenuOpen.value = !isMenuOpen.value }
+// 🔒 Cierra ambos menús
+const closeAllMenus = () => {
+  isMenuOpen.value = false;
+  isSubmenuOpen.value = false;
+};
 
-// ✅ Eliminamos las funciones goToRegister y goToLogin ya que usamos NuxtLink.
-// const goToRegister = () => { router.push(R.to('register')); closeMenu() }
-// const goToLogin = () => { router.push(R.to('login')); closeMenu() }
+// 📱 Alternar menú principal
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+  if (!isMenuOpen.value) isSubmenuOpen.value = false;
+};
 
+// 🔄 Detectar scroll
 const handleScroll = () => {
-  if (typeof window === 'undefined') return
-  isScrolled.value = window.scrollY > 50
-}
+  if (typeof window === "undefined") return;
+  isScrolled.value = window.scrollY > 50;
+};
 
 onMounted(() => {
-  if (typeof window === 'undefined') return
-  handleScroll()
-  window.addEventListener('scroll', handleScroll, { passive: true })
-})
+  handleScroll();
+  window.addEventListener("scroll", handleScroll, { passive: true });
+});
 
 onBeforeUnmount(() => {
-  if (typeof window === 'undefined') return
-  window.removeEventListener('scroll', handleScroll)
-})
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>

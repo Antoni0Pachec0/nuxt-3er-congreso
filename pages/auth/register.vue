@@ -1,5 +1,6 @@
 <template>
   <main id="register" class="auth-screen" role="main">
+    <!-- Fondo decorativo -->
     <div class="auth-bg" aria-hidden="true">
       <span class="blob blob--tl"></span>
       <span class="blob blob--br"></span>
@@ -30,6 +31,7 @@
           <span class="card-title__text">Crear cuenta</span>
         </h2>
 
+        <!-- Stepper -->
         <ol
           class="stepper stepper--timeline"
           :style="{ '--step-count': isSpeaker ? 6 : 4 }"
@@ -48,6 +50,7 @@
           </li>
         </ol>
 
+        <!-- Form -->
         <form class="form" @submit.prevent="nextOrSubmit" novalidate>
           <!-- Paso 0: Cuenta -->
           <template v-if="step === 0">
@@ -66,7 +69,6 @@
                   autocomplete="email"
                   placeholder="tu@email.com"
                   class="input"
-                  :disabled="loading"
                 />
               </div>
             </div>
@@ -88,7 +90,6 @@
                     maxlength="50"
                     placeholder="••••••••"
                     class="input input--pass"
-                    :disabled="loading"
                     @input="touchPwd()"
                   />
                   <button
@@ -97,13 +98,17 @@
                     :aria-pressed="showPass ? 'true' : 'false'"
                     :title="showPass ? 'Ocultar' : 'Mostrar'"
                     @click="showPass = !showPass"
-                    :disabled="loading"
                   >
                     <SvgIcon v-if="showPass" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
                 </div>
-                <div class="pw-meter" aria-live="polite" v-if="passwordTouched">
+
+                <!-- Medidor de contraseña inline -->
+                <div class="pw-meter" aria-live="polite" v-if="form.password_user">
+                  <div class="help" style="margin-bottom:.25rem">
+                    La contraseña debe cumplir con <strong>todos</strong> los parámetros.
+                  </div>
                   <div class="pw-meter__bar">
                     <span class="pw-meter__fill" :style="{ width: strengthPercent }"></span>
                   </div>
@@ -137,7 +142,6 @@
                     maxlength="50"
                     placeholder="••••••••"
                     class="input input--pass"
-                    :disabled="loading"
                   />
                   <button
                     type="button"
@@ -145,15 +149,12 @@
                     :aria-pressed="showPass2 ? 'true' : 'false'"
                     :title="showPass2 ? 'Ocultar' : 'Mostrar'"
                     @click="showPass2 = !showPass2"
-                    :disabled="loading"
                   >
                     <SvgIcon v-if="showPass2" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
                 </div>
-                <small class="help error" v-if="password2 && !pwdMatch">
-                  Las contraseñas no coinciden.
-                </small>
+                <small class="help" v-if="password2 && !pwdMatch">Las contraseñas no coinciden.</small>
               </div>
             </div>
           </template>
@@ -172,7 +173,6 @@
                   maxlength="50"
                   class="input"
                   placeholder="Tu nombre"
-                  :disabled="loading"
                 />
               </div>
               <div class="stack">
@@ -186,7 +186,6 @@
                   maxlength="50"
                   class="input"
                   placeholder="Paterno"
-                  :disabled="loading"
                 />
               </div>
               <div class="stack">
@@ -199,14 +198,13 @@
                   required
                   class="input"
                   placeholder="Materno"
-                  :disabled="loading"
                 />
               </div>
             </div>
 
             <div class="stack">
               <label class="label" for="phone">Teléfono</label>
-              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.main }" ref="mainPhoneRef">
                 <div class="custom-select" @click="toggleDropdown('main')" :aria-expanded="isOpen.main">
                   <div class="selected-option">
                     <div class="flag-wrap">
@@ -233,14 +231,13 @@
                   autocomplete="tel-national"
                   class="input"
                   placeholder="55 1234 5678"
-                  :disabled="loading"
                 />
               </div>
             </div>
 
             <div class="stack">
               <label class="label" for="emergency_phone">Teléfono de emergencia</label>
-              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }">
+              <div class="input-wrap input-wrap--phone" :class="{ open: isOpen.emergency }" ref="emergencyPhoneRef">
                 <div class="custom-select" @click="toggleDropdown('emergency')" :aria-expanded="isOpen.emergency">
                   <div class="selected-option">
                     <div class="flag-wrap">
@@ -269,7 +266,6 @@
                   maxlength="10"
                   class="input"
                   placeholder="Teléfono de contacto (opcional)"
-                  :disabled="loading"
                 />
               </div>
             </div>
@@ -279,7 +275,7 @@
           <template v-else-if="step === 2">
             <div class="stack">
               <label class="label" for="type_user_id">Tipo de usuario</label>
-              <select id="type_user_id" v-model.number="form.type_user_id" class="input" required :disabled="loading">
+              <select id="type_user_id" v-model.number="form.type_user_id" class="input" required>
                 <option disabled value="">Selecciona una opción</option>
                 <option :value="1">Estudiante</option>
                 <option :value="2">Maestro</option>
@@ -302,7 +298,6 @@
                     maxlength="30"
                     class="input input--pass"
                     placeholder="Ingresa la contraseña para continuar"
-                    :disabled="loading || secretValidating"
                   />
                   <button
                     type="button"
@@ -310,32 +305,24 @@
                     :aria-pressed="showSecretPass ? 'true' : 'false'"
                     :title="showSecretPass ? 'Ocultar' : 'Mostrar'"
                     @click="showSecretPass = !showSecretPass"
-                    :disabled="loading || secretValidating"
                   >
                     <SvgIcon v-if="showSecretPass" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
                 </div>
                 <small class="help">Esta contraseña es proporcionada por los organizadores del evento.</small>
-                <div v-if="secretValidating" class="help info">
-                  Validando contraseña...
-                </div>
-                <div v-if="secretValidated" class="help success">
-                  ✓ Contraseña validada correctamente
-                </div>
               </div>
             </template>
 
             <!-- Estudiante/Maestro -->
-            <template v-if="[1, 2].includes(form.type_user_id)">
+            <template v-if="isStudentOrTeacher">
               <div class="stack">
                 <label class="label" for="provenance">Procedencia</label>
                 <select
                   id="provenance"
                   v-model="form.provenance"
                   class="input"
-                  :required="[1, 2].includes(Number(form.type_user_id))"
-                  :disabled="loading"
+                  :required="isStudentOrTeacher"
                 >
                   <option disabled value="">Selecciona tu procedencia</option>
                   <option value="uttecam">UTTECAM</option>
@@ -355,8 +342,7 @@
                       class="input"
                       maxlength="20"
                       placeholder="Tu matrícula"
-                      :required="[1, 2].includes(Number(form.type_user_id)) && form.provenance === 'uttecam'"
-                      :disabled="loading"
+                      :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='uttecam'"
                     />
                   </div>
                   <div class="stack">
@@ -365,19 +351,12 @@
                       id="programa_educativo"
                       v-model.trim="form.educational_program"
                       class="input"
-                      :required="[1, 2].includes(Number(form.type_user_id)) && form.provenance === 'uttecam'"
-                      :disabled="loading"
+                      :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='uttecam'"
                     >
                       <option disabled value="">Selecciona tu programa</option>
-                      <option value="ingenieria-industrial">Ingeniería Industrial</option>
-                      <option value="mantenimiento-industrial">Mantenimiento Industrial</option>
-                      <option value="mecatronica">Mecatrónica</option>
-                      <option value="tecnologias-de-la-informacion">Tecnologías de la información</option>
-                      <option value="agricultura-sustentable-y-protegida">Agricultura sustentable y protegida</option>
-                      <option value="negocios">Negocios</option>
-                      <option value="alimentos">Alimentos</option>
-                      <option value="administracion">Administración</option>
-                      <option value="contaduria">Contaduría</option>
+                      <option value="TI">Tecnologías de la Información</option>
+                      <option value="MCC">Mecatrónica</option>
+                      <option value="AAK">Administración</option>
                     </select>
                   </div>
                 </div>
@@ -392,21 +371,19 @@
                       type="text"
                       class="input"
                       placeholder="Ej. 7"
-                      :required="Number(form.type_user_id)===1 && form.provenance === 'uttecam'"
-                      :disabled="loading"
+                      :required="Number(form.type_user_id)===1 && (form.provenance||'').toLowerCase()==='uttecam'"
                     />
                   </div>
                   <div class="stack">
                     <label class="label" for="grupo">Grupo</label>
                     <input
                       id="grupo"
-                      v.model.trim="form.group_user"
+                      v-model.trim="form.group_user"
                       maxlength="5"
                       type="text"
                       class="input"
                       placeholder="Ej. C"
-                      :required="Number(form.type_user_id)===1 && form.provenance === 'uttecam'"
-                      :disabled="loading"
+                      :required="Number(form.type_user_id)===1 && (form.provenance||'').toLowerCase()==='uttecam'"
                     />
                   </div>
                 </div>
@@ -423,8 +400,7 @@
                     type="text"
                     class="input"
                     placeholder="Nombre de tu universidad"
-                    :required="[1, 2].includes(Number(form.type_user_id)) && form.provenance === 'otra'"
-                    :disabled="loading"
+                    :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='otra'"
                   />
                 </div>
               </template>
@@ -446,7 +422,6 @@
                     maxlength="100"
                     placeholder="Nombre de tu empresa u organización"
                     :required="isSpeaker"
-                    :disabled="loading"
                   />
                 </div>
                 <div class="stack">
@@ -459,7 +434,6 @@
                     class="input"
                     placeholder="Tu cargo o rol actual"
                     :required="isSpeaker"
-                    :disabled="loading"
                   />
                 </div>
               </div>
@@ -474,7 +448,6 @@
                   class="input"
                   placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"
                   :required="isSpeaker"
-                  :disabled="loading"
                 ></textarea>
                 <small class="help">{{ form.descripcion_biografia.length }} / 180 caracteres</small>
               </div>
@@ -486,7 +459,6 @@
                   v-model="form.tipo_presentacion"
                   class="input"
                   :required="isSpeaker"
-                  :disabled="loading"
                 >
                   <option disabled value="">Selecciona el tipo de presentación</option>
                   <option value="conferencia">Conferencia</option>
@@ -506,7 +478,6 @@
                     class="input"
                     placeholder="Título de tu conferencia"
                     :required="isSpeaker && ['conferencia','ambas'].includes(form.tipo_presentacion)"
-                    :disabled="loading"
                   />
                 </div>
                 <div class="stack">
@@ -519,7 +490,6 @@
                     class="input"
                     placeholder="Describe el contenido y objetivos de tu conferencia (máx. 180 caracteres)"
                     :required="isSpeaker && ['conferencia','ambas'].includes(form.tipo_presentacion)"
-                    :disabled="loading"
                   ></textarea>
                   <small class="help">{{ form.descripcion_conferencia.length }} / 180 caracteres</small>
                 </div>
@@ -536,7 +506,6 @@
                     class="input"
                     placeholder="Título de tu taller"
                     :required="isSpeaker && ['taller','ambas'].includes(form.tipo_presentacion)"
-                    :disabled="loading"
                   />
                 </div>
                 <div class="stack">
@@ -549,7 +518,6 @@
                     class="input"
                     placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"
                     :required="isSpeaker && ['taller','ambas'].includes(form.tipo_presentacion)"
-                    :disabled="loading"
                   ></textarea>
                   <small class="help">{{ form.descripcion_taller.length }} / 180 caracteres</small>
                 </div>
@@ -560,7 +528,7 @@
             <template v-else>
               <div class="stack">
                 <label class="label" for="size_user">Talla de playera</label>
-                <select id="size_user" v-model="form.size_user" class="input" required :disabled="loading">
+                <select id="size_user" v-model="form.size_user" class="input" required>
                   <option value="" disabled>Selecciona tu talla</option>
                   <option>S</option>
                   <option>M</option>
@@ -571,7 +539,7 @@
               </div>
 
               <div class="checkline">
-                <input id="terms" v-model="accepted" type="checkbox" required :disabled="loading" />
+                <input id="terms" v-model="accepted" type="checkbox" required />
                 <label for="terms">
                   Acepto los
                   <a href="#" @click.prevent="showTermsModal = true">términos y aviso de privacidad</a>
@@ -595,7 +563,6 @@
                   type="url"
                   class="input"
                   placeholder="Link a tu perfil de Facebook (opcional)"
-                  :disabled="loading"
                 />
               </div>
             </div>
@@ -612,7 +579,6 @@
                   type="url"
                   class="input"
                   placeholder="Link a tu perfil de Instagram (opcional)"
-                  :disabled="loading"
                 />
               </div>
             </div>
@@ -625,11 +591,10 @@
                 <input
                   id="x_link"
                   maxlength="200"
-                  v.model.trim="form.x_link"
+                  v-model.trim="form.x_link"
                   type="url"
                   class="input"
                   placeholder="Link a tu perfil de X (opcional)"
-                  :disabled="loading"
                 />
               </div>
             </div>
@@ -646,7 +611,6 @@
                   type="url"
                   class="input"
                   placeholder="Link a tu perfil de LinkedIn (opcional)"
-                  :disabled="loading"
                 />
               </div>
             </div>
@@ -656,7 +620,7 @@
           <template v-else-if="step === 5 && isSpeaker">
             <div class="stack">
               <label class="label" for="size_user">Talla de playera</label>
-              <select id="size_user" v-model="form.size_user" class="input" required :disabled="loading">
+              <select id="size_user" v-model="form.size_user" class="input" required>
                 <option value="" disabled>Selecciona tu talla</option>
                 <option>S</option>
                 <option>M</option>
@@ -667,7 +631,7 @@
             </div>
 
             <div class="checkline">
-              <input id="terms" v-model="accepted" type="checkbox" required :disabled="loading" />
+              <input id="terms" v-model="accepted" type="checkbox" required />
               <label for="terms">
                 Acepto los
                 <a href="#" @click.prevent="showTermsModal = true">términos y aviso de privacidad</a>
@@ -677,32 +641,14 @@
 
           <!-- Navegación -->
           <div class="nav">
-            <button 
-              v-if="step > 0" 
-              type="button" 
-              class="btn ghost" 
-              @click="prevStep"
-              :disabled="loading"
-            >
+            <button v-if="step > 0" type="button" class="btn ghost" @click="prevStep">
               Atrás
             </button>
-            <button 
-              v-if="isLastStep" 
-              type="submit" 
-              class="btn" 
-              :disabled="loading || !canSubmit"
-              :aria-busy="loading"
-            >
-              <span v-if="loading">Creando cuenta…</span>
-              <span v-else>Crear cuenta</span>
+            <button v-if="isLastStep" type="submit" class="btn" :disabled="loading || !canSubmit">
+              {{ loading ? "Creando cuenta…" : "Crear cuenta" }}
             </button>
-            <button 
-              v-else 
-              type="submit" 
-              class="btn" 
-              :disabled="loading || !canProceed"
-            >
-              Continuar
+            <button v-else type="submit" class="btn" :disabled="!canProceed || secretValidating">
+              {{ secretValidating ? 'Validando…' : 'Continuar' }}
             </button>
           </div>
         </form>
@@ -730,76 +676,47 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { definePageMeta } from '#imports'
-import { useRegister } from '@/composables/auth/use-register'
+definePageMeta({ name: 'register', path: '/register', guestOnly: true })
+
+// @ts-expect-error
 import SvgIcon from '@jamescoyle/vue-icon'
 import {
-  mdiAccountPlusOutline,
-  mdiEmailOutline,
-  mdiLockOutline,
-  mdiLockCheckOutline,
-  mdiEyeOutline,
-  mdiEyeOffOutline,
-  mdiArrowLeft,
-  mdiClose,
-  mdiFacebook,
-  mdiInstagram,
-  mdiTwitter,
-  mdiLinkedin
+  mdiAccountPlusOutline, mdiEmailOutline, mdiLockOutline, mdiLockCheckOutline,
+  mdiEyeOutline, mdiEyeOffOutline, mdiArrowLeft, mdiClose,
+  mdiFacebook, mdiInstagram, mdiTwitter, mdiLinkedin
 } from '@mdi/js'
-import FlagIcon from "@/components/atoms/flag-icon.vue"
-import '@/assets/css/styles/auth/register.css'
 
-definePageMeta({
-  name: 'register',
-  path: '/register',
-  alias: ['/register'],
-  guestOnly: true,
-})
+import FlagIcon from '@/components/atoms/flag-icon.vue'
+
+// 👉 Consumir **únicamente** el composable
+import { useRegister } from '@/composables/auth/use-register'
 
 const {
-  // Estados
-  step,
-  showPass,
-  showPass2,
-  showSecretPass,
-  password2,
-  loading,
-  accepted,
-  showTermsModal,
-  passwordTouched,
-  secretValidated,
-  secretValidating,
-  stepperRef,
-  form,
-  steps,
-  isOpen,
-  selectedCountryCode,
-  emergencyCountryCode,
-  countries,
-  
-  // Computed
-  isSpeaker,
-  isStudentOrTeacher,
-  isSecretPasswordValid,
-  reqs,
-  pwdMatch,
-  strengthScore,
-  strengthPercent,
-  strengthLabel,
-  isLastStep,
-  canSubmit,
-  canProceed,
-  
-  // Métodos
-  touchPwd,
-  centerActiveStep,
-  prevStep,
-  goLogin,
-  toggleDropdown,
-  selectCountry,
-  getPhoneCode,
-  nextOrSubmit
+  // paso / stepper
+  step, steps, stepperRef, isLastStep, canProceed, canSubmit,
+  prevStep, nextOrSubmit, goLogin,
+
+  // cuenta
+  form, showPass, showPass2, showSecretPass, password2,
+  reqs, strengthPercent, strengthLabel, pwdMatch, touchPwd,
+
+  // ponente
+  isSpeaker, secretValidating, isStudentOrTeacher,
+
+  // final
+  accepted, showTermsModal,
+
+  // teléfonos
+  isOpen, selectedCountryCode, emergencyCountryCode, countries,
+  getPhoneCode, toggleDropdown, selectCountry,
+
+  // otros
+  loading
 } = useRegister()
 </script>
+
+<style scoped>
+@import '@/assets/css/styles/auth/register.css';
+</style>

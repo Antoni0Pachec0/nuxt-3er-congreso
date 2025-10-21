@@ -25,7 +25,7 @@
     --icon-stroke-color: #EF4444;
     --bg-left-square: rgba(255, 205, 0, 0.4);
     --bg-right-square: rgba(200, 16, 46, 0.4);
-    --icon-pen: url('@/assets/images/pen.png');
+    --icon-pen: url('@/assets/img/pages/pen.png');
 }
 .theme-blue-purple {
     --color-tittle-speaker: #0F2945;
@@ -35,7 +35,7 @@
     --icon-stroke-color: #89C6F7;
     --bg-left-square: #97D7F166;
     --bg-right-square: #D19BF866;
-    --icon-pen: url('@/assets/images/pen-blue.png');
+    --icon-pen: url('@/assets/img/pages/pen-blue.png');
 }
 .theme-pink {
     --color-tittle-speaker: black;
@@ -45,7 +45,7 @@
     --icon-stroke-color: #B18AF0;
     --bg-left-square: #B795EB66;
     --bg-right-square: #FFBFC366;
-    --icon-pen: url('@/assets/images/pen-pink.png');
+    --icon-pen: url('@/assets/img/pages/pen-pink.png');
 }
 
 /* ============================================= */

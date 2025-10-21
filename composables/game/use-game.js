@@ -20,7 +20,7 @@ import fondo3 from '@/assets/img/game/funds/fondo-noche.webp'
 import carMotocle from '@/assets/img/game/cars/motocle.webp'
 import combi      from '@/assets/img/game/cars/combi.webp'
 import carro      from '@/assets/img/game/cars/carro.webp'
-import hinfinitum from '@/assets/img/game/cars/infinitum.webp'
+import hinfinitum from '@/assets/img/game/cars/hinfinitum.webp'
 import moto       from '@/assets/img/game/cars/moto.webp'
 import bici       from '@/assets/img/game/cars/bici.webp'
 

@@ -1,6 +1,6 @@
 // backend/auth/forgot-api.js
-import api from '@/plugins/http/api'
-import { ROUTES } from '@/plugins/http/routes'
+import api from '@/backend/http/api'
+import { ROUTES } from '@/backend/http/routes'
 
 export const ForgotApi = {
   /**

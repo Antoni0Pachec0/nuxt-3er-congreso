@@ -1,189 +1,154 @@
 
+/* Estilos generales de la sección */
 .workshops-section {
   background: #ffffff;
   padding: 5rem 1rem;
   font-family: "Inter", sans-serif;
   color: #111827;
 }
+.workshop-info li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
 
-/* Header general */
-.ws-header {
+
+.workshop-header {
   text-align: center;
   margin-bottom: 3.5rem;
 }
-.ws-title {
+.workshop-title {
   font-size: clamp(2rem, 5vw, 2.8rem);
   font-weight: 800;
 }
-.ws-underline {
+.workshop-underline {
   width: 100px;
   height: 4px;
   background: #2563eb;
   border-radius: 999px;
   margin: 0.75rem auto;
 }
-.ws-subtitle {
+.workshop-subtitle {
   color: #475569;
   max-width: 700px;
   margin: 0 auto;
   font-size: 1rem;
 }
 
-/* Grid */
-.ws-grid {
+/* Grid de talleres */
+.workshop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 2.5rem;
-  align-items: stretch; /* ✅ estira todas las cards a la misma altura */
+  align-items: stretch;
 }
 
-/* Card base */
-.ws-card {
+/* Tarjeta base */
+.workshop-card {
   background: #fff;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;          /* ✅ card como contenedor vertical */
-  flex-direction: column; /* header + body apilados */
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
-.ws-card:hover {
+.workshop-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
 }
 
-/* Header del card (altura mínima para alinear cabeceras) */
-.ws-card-header {
+/* Encabezado de la tarjeta */
+.workshop-card-header {
   padding: 1.4rem 1.6rem;
   color: #fff;
-  min-height: 130px; /* ✅ ayuda a alinear headers entre cards */
+  min-height: 130px;
 }
-.ws-header-top {
+.workshop-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.2rem;
 }
-.ws-header-icon {
+.workshop-header-icon {
   width: 34px;
   height: 34px;
   color: #fff;
 }
-
-.ws-header-icon-wrap {
+.workshop-header-icon-wrap {
   width: 44px;
   height: 44px;
   display: grid;
   place-items: center;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.25); 
+  background: rgba(224, 215, 215, 0.25);
   backdrop-filter: saturate(140%) blur(2px);
 }
-.ws-badge {
+.workshop-badge {
   font-size: 0.85rem;
   padding: 0.35rem 0.9rem;
   border-radius: 999px;
   font-weight: 600;
-  background: rgba(179, 40, 40, 0.25);
   color: #fff;
 }
-.ws-header-info h3 {
+.workshop-header-info h3 {
   font-size: 1.35rem;
   font-weight: 800;
   margin-bottom: 0.25rem;
 }
-.ws-header-info p {
+.workshop-header-info p {
   font-size: 0.95rem;
   opacity: 0.9;
 }
 
-/* Cuerpo */
-.ws-card-body {
+/* Cuerpo de la tarjeta */
+.workshop-card-body {
   padding: 1.6rem;
-  display: flex;          
+  display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  flex: 1;                
+  flex: 1; /* Permite que el cuerpo crezca y empuje el footer */
 }
-.ws-desc {
+.workshop-desc {
   font-size: 0.95rem;
   color: #334155;
   margin-bottom: 0.2rem;
-
-  /* ✅ limitar a 3 líneas para altura consistente */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 3.6em; /* @3 líneas */
+  min-height: 3.6em;
 }
 
-/* Info */
-.ws-info {
+/* Información del taller (instructor, fecha, etc.) */
+.workshop-info {
   list-style: none;
   padding: 0;
   margin: 0 0 0.6rem;
   font-size: 0.9rem;
   color: #475569;
 }
-.ws-info li {
+.workshop-info li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.4rem;
 }
-.info-icon {
+.infoiconw {
   width: 18px;
   height: 18px;
-  color: #2563eb;
+  color: #3268dd;
 }
 
-/* Barra de disponibilidad */
-.ws-availability {
-  margin-bottom: 0.8rem;
-}
-.ws-availability p {
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
-}
-.ws-availability span {
-  font-weight: 600;
-}
-.ws-availability .high { color: #16a34a; }
-.ws-availability .medium { color: #facc15; }
-.ws-availability .low { color: #ef4444; }
-.ws-availability .full { color: #b91c1c; }
-
-.bar {
-  height: 14px;
-  width: 100%;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-  position: relative;
-}
-.fill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.8s ease, background 0.4s ease;
-  animation: growWidth 1.5s ease forwards;
-}
-/* Colores dinámicos */
-.fill.high { background: linear-gradient(90deg, #16a34a, #22c55e); }
-.fill.medium { background: #fbbf24; } 
-.fill.low,
-.fill.full { background: linear-gradient(90deg, #ef4444, #b91c1c); }
-
-/* Animación */
-@keyframes growWidth { from { width: 0; } }
-
-/* Herramientas */
-.ws-tools {
+/* Herramientas (píldoras) */
+.workshop-tools {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-top: auto; /* Empuja este elemento al final del contenedor flex */
+  padding-top: 0.5rem; /* Espacio por si se pega a la lista de info */
 }
 .tool {
   background: #e0e7ff;
@@ -194,31 +159,18 @@
   font-weight: 500;
 }
 
-/* Botón (siempre abajo) */
-.ws-btn {
-  width: 100%;
-  border-radius: 999px;
-  font-weight: 700;
-  color: #ffffff;
-  padding: 1rem;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  margin-top: auto; /* ✅ empuja el botón al fondo de la card */
+/* --- Estilos por nivel --- */
+.workshop-badge.level-advanced {
+  background: #ef4444;
 }
-.ws-btn:hover { filter: brightness(1.02); }
-.btn-icon { width: 20px; height: 20px; }
-.disabled-btn {
-  background: #9ca3af;
-  cursor: not-allowed;
-  filter: grayscale(0.6);
+.workshop-badge.level-intermediate {
+  background: #eab308;
+}
+.workshop-badge.level-beginner {
+  background: #22c55e;
 }
 
+/* --- Notificación Toast --- */
 .toast {
   position: fixed;
   top: 20px;
@@ -227,7 +179,7 @@
   background: #ffffff;
   color: #0b1534;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   padding: 12px 16px 12px 14px;
   z-index: 10000;
   display: grid;
@@ -235,240 +187,76 @@
   gap: 4px 10px;
   border-left: 6px solid;
 }
-.toast-title { font-weight: 800; margin: 0; }
-.toast-msg { margin: 0; grid-column: 1 / -1; }
-.toast-close { background: transparent; border: 0; font-size: 18px; cursor: pointer; color: #64748b; align-self: start; }
-.toast--success { border-left-color: #22c55e; }
-.toast--warning { border-left-color: #eab308; }
-.toast-enter-active, .toast-leave-active { transition: all .3s ease; }
-.toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(-8px); }
-
-/* ====== CONFIRM MODAL ====== */
-.fade-enter-active, .fade-leave-active { transition: opacity .25s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-
-.confirm-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,.45);
-  display: grid; place-items: center; z-index: 10001;
+.toast-title {
+  font-weight: 800;
+  margin: 0;
 }
-.confirm-card {
-  width: min(560px, 92vw);
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.25);
-  padding: 22px 22px 16px;
+.toast-msg {
+  margin: 0;
+  grid-column: 1 / -1;
 }
-.confirm-title {
-  margin: 0 0 8px;
-  font-size: 1.15rem; font-weight: 800; color: #0b1534;
-}
-.confirm-text { margin: 0 0 6px; color: #1f2937; }
-.confirm-note { margin: 0 0 16px; color: #b91c1c; }
-.confirm-actions {
-  display: flex; justify-content: flex-end; gap: 10px;
-}
-.btn-cancel, .btn-confirm {
-  border: 0; border-radius: 999px; padding: 10px 16px; font-weight: 700; cursor: pointer;
-}
-.btn-cancel { background: #e5e7eb; color: #0b1534; }
-.btn-cancel:hover { filter: brightness(1.03); }
-.btn-confirm { background: #2563eb; color: #fff; }
-.btn-confirm:hover { filter: brightness(1.05); }
-/* Responsive */
-@media (max-width: 768px) {
-  .workshops-section { padding: 3rem 1rem; }
-}
-
-/* Badge por nivel */
-.ws-badge.level-advanced {
-  background: #ef4444;
-  color: #ffffff;
-  border: 1px solid #ef4444;
-}
-.ws-badge.level-intermediate {
-  background: #eab308;
-  color: #ffffff;
-  border: 1px solid #eab308;
-}
-.ws-badge.level-beginner {
-  background: #22c55e;
-  color: #ffffff;
-  border: 1px solid #22c55e;
-}
-
-/* Botón por nivel */
-.ws-btn.level-advanced {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
-}
-
-.ws-btn.level-intermediate {
-  background: #facc15;               /* amarillo suave */
-  color: #0b1534;                     /* mejor contraste */
-  box-shadow:
-    inset 0 -2px 0 rgba(0,0,0,.06),
-    0 6px 16px rgba(234,179,8,.22);
-}
-.ws-btn.level-intermediate:not(:disabled):hover {
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 -2px 0 rgba(0,0,0,.07),
-    0 9px 22px rgba(234,179,8,.30);
-  filter: none;
-}
-
-.ws-btn.level-beginner {
-  background: linear-gradient(90deg, #22c55e, #16a34a);
-}
-
-/* Estado lleno (disabled) */
-.ws-btn.is-full,
-.ws-btn:disabled {
-  background: #9ca3af !important;
-  color: #f9fafb !important;
-  cursor: not-allowed;
-  filter: none;
-  opacity: 0.9;
-  box-shadow: none;
-}
-
-/* (opcional) hover sólo si NO está disabled */
-.ws-btn:not(:disabled):hover { filter: brightness(1.02); }
-
-@media (max-width: 640px) {
-  .ws-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .workshops-section {
-    padding: 2.25rem 0.75rem;
-  }
-
-  /* Header de card más compacto */
-  .ws-card-header {
-    padding: 1rem 1.1rem;
-    min-height: 110px;
-  }
-  .ws-header-info h3 {
-    font-size: 1.1rem;
-  }
-  .ws-header-info p {
-    font-size: 0.9rem;
-  }
-
-  /* Cuerpo con menos padding, mejor densidad */
-  .ws-card-body {
-    padding: 1.1rem;
-    gap: 0.7rem;
-  }
-
-  .ws-desc {
-    -webkit-line-clamp: 3;
-    min-height: 3.4em;
-  }
-
-  /* Lista de info: tipografía y separación */
-  .ws-info {
-    font-size: 0.85rem;
-    margin-bottom: 0.4rem;
-  }
-  .info-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  /* Barra de disponibilidad más delgada */
-  .bar {
-    height: 10px;
-  }
-
-  /* Botón más compacto */
-  .ws-btn {
-    font-size: 0.95rem;
-    padding: 0.85rem;
-  }
-}
-
-/* Aún más compacto para pantallas muy pequeñas */
-@media (max-width: 380px) {
-  .ws-grid {
-    grid-template-columns: 1fr;
-  }
-  .ws-card-header {
-    min-height: 100px;
-  }
-  .ws-title {
-    font-size: clamp(1.6rem, 7vw, 2rem);
-  }
-}
-
-/* =========================
-   ========================= */
-.toast {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  width: min(92vw, 360px);
-  display: block;              /* dejamos de usar grid para controlar mejor la X */
-  padding: 14px 42px 12px 14px;/* espacio para la X a la derecha */
-  border-left: 6px solid;      /* conservamos el acento */
-  border-radius: 12px;
-}
-.toast-title { 
-  font-weight: 800; 
-  margin: 0 0 4px 0; 
-}
-.toast-msg { 
-  margin: 0; 
-}
-.toast { position: fixed; }     /* asegúrate de que esté fixed */
 .toast-close {
-  position: absolute;
-  top: 8px;
-  right: 10px;
   background: transparent;
   border: 0;
   font-size: 18px;
-  line-height: 1;
-  padding: 2px 6px;
   cursor: pointer;
   color: #64748b;
+  align-self: start;
 }
-.toast-close:hover { color: #0f172a; }
+.toast--success {
+  border-left-color: #22c55e;
+}
+.toast--warning {
+  border-left-color: #eab308;
+}
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
 
-/* Transiciones del toast */
-.toast-enter-active, .toast-leave-active { transition: all .28s ease; }
-.toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(-8px); }
+/* --- Modal de Confirmación --- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 10001;
+}
 
-/* =========================
-   🧾 Modal de confirmación en móvil
-   ========================= */
-.confirm-card {
-  width: min(520px, 92vw);
-  padding: 18px 16px 14px;
+/* --- Diseño Responsivo --- */
+@media (max-width: 768px) {
+  .workshops-section {
+    padding: 3rem 1rem;
+  }
 }
-.confirm-actions {
-  gap: 8px;
-}
-@media (max-width: 480px) {
-  .confirm-card {
-    width: min(520px, 94vw);
-    padding: 16px 12px 12px;
+
+@media (max-width: 640px) {
+  .workshop-grid {
+    grid-template-columns: 1fr; /* Una columna en móviles */
+    gap: 1.5rem;
   }
-  .confirm-title {
-    font-size: 1.05rem;
+  .workshops-section {
+    padding: 2.25rem 0.75rem;
   }
-  .confirm-text, .confirm-note {
-    font-size: 0.95rem;
+  .workshop-card-header {
+    padding: 1rem 1.1rem;
+    min-height: auto; /* Altura automática en móvil */
   }
-  /* Botones en columna para pantallas muy chicas */
-  .confirm-actions {
-    flex-direction: column-reverse;
-    align-items: stretch;
-    gap: 10px;
-  }
-  .btn-cancel, .btn-confirm {
-    width: 100%;
-    padding: 10px 14px;
+  .workshop-header-info h3 {
+    font-size: 1.1rem;
   }
 }

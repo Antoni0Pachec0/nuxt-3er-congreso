@@ -2,12 +2,26 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ResetApi } from '@/backend/auth/reset-api'
-import { notifyLoading, notifyError } from '@/utils/notifications'
-import { parseAxiosError } from '@/plugins/http/error'
+import { parseAxiosError } from '@/backend/http/error'
 import { R } from '@/utils/app-routes'
+
+// 👇 Adaptador para notificaciones (igual que en use-register)
+import { createNotifyAdapter } from '@/utils/notify/adapter'
 
 export function useReset () {
   const router = useRouter()
+
+  // ---------------------------------
+  // Notificaciones (igual que en use-register)
+  // ---------------------------------
+  const notify = typeof createNotifyAdapter === 'function'
+    ? createNotifyAdapter()
+    : null
+
+  const notifyError   = (t, m) => notify?.('error',   t, m)
+  const notifyWarning = (t, m) => notify?.('warning', t, m)
+  const notifySuccess = (t, m) => notify?.('success', t, m)
+  const notifyLoading = (t, m) => notify?.('loading', t, m)
 
   // estado UI
   const password   = ref('')
@@ -62,7 +76,7 @@ export function useReset () {
     }
 
     loading.value = true
-    const toast = notifyLoading('Guardando contraseña', 'Procesando...')
+    const loadingToast = notifyLoading('Guardando contraseña', 'Procesando...')
 
     try {
       await ResetApi.resetPassword({
@@ -71,7 +85,7 @@ export function useReset () {
         code: resetCode.value, // código de 6 dígitos
       })
 
-      toast.resolve({
+      loadingToast?.resolve({
         title: 'Contraseña actualizada',
         message: 'Tu contraseña ha sido restablecida.',
       })
@@ -84,7 +98,7 @@ export function useReset () {
       setTimeout(() => router.push(R.to('login')), 1500)
     } catch (err) {
       const errorMsg = parseAxiosError(err) || 'No se pudo restablecer la contraseña'
-      toast.reject({ title: 'Error', message: errorMsg })
+      loadingToast?.reject({ title: 'Error', message: errorMsg })
     } finally {
       loading.value = false
     }
