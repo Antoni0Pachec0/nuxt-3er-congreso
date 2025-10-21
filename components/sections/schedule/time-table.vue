@@ -409,7 +409,7 @@ const schedule: Record<string, ScheduleItem[]> = {
       "date": "2025-11-14",
       "start": "09:30",
       "end": "10:30",
-      "title": "Conferencia 7",
+      "title": "Conferencia",
       "type": "Conferencia",
       "location": "Cancha Techada",
       "speaker": "Ponente de UTTECAM",
@@ -468,10 +468,10 @@ const schedule: Record<string, ScheduleItem[]> = {
       "date": "2025-11-14",
       "start": "12:30",
       "end": "13:00",
-      "title": "Evento cultural RONDALLA 3",
+      "title": "Evento cultural rondalla  3",
       "type": "Cultural",
       "location": "Cancha Techada",
-      "description": "Presentación cultural de la Rondalla 3.",
+      "description": "Presentación cultural de la rondalla  3.",
       "tag": "Cultural"
     },
     {
