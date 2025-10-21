@@ -11,19 +11,11 @@
     </div>
 
     <div class="login-container">
-<<<<<<< HEAD
-      <button
-        type="button"
-=======
       <NuxtLink
         to="/"
->>>>>>> origin/deploy
         class="btn-back"
         aria-label="Regresar"
-<<<<<<< HEAD
-=======
         :class="{ 'disabled-link': loading }"
->>>>>>> origin/deploy
       >
         <SvgIcon :path="mdiArrowLeft" type="mdi" />
       </NuxtLink>
@@ -65,14 +57,6 @@
             />
           </div>
 
-<<<<<<< HEAD
-          <!-- Password -->
-          <div class="row">
-            <label class="label" for="password">Contraseña</label>
-            <button class="link" type="button" @click="onForgot">
-              ¿Olvidaste tu contraseña?
-            </button>
-=======
           <!-- Contraseña -->
           <div class="form-group">
             <div class="row">
@@ -117,7 +101,6 @@
                 <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
               </button>
             </div>
->>>>>>> origin/deploy
           </div>
 
           <div class="input-wrap">
@@ -147,14 +130,6 @@
             </button>
           </div>
 
-<<<<<<< HEAD
-          <!-- Error -->
-          <p v-if="apiError" class="help error">{{ apiError }}</p>
-
-          <!-- CTA -->
-          <button class="btn" type="submit" :disabled="loading">
-            {{ loading ? 'Ingresando…' : 'Iniciar Sesión' }}
-=======
           <!-- Botón de submit -->
           <button
             class="btn"
@@ -164,7 +139,6 @@
           >
             <span v-if="loading">Ingresando…</span>
             <span v-else>Iniciar Sesión</span>
->>>>>>> origin/deploy
           </button>
 
           <!-- Divider + Register -->
@@ -174,9 +148,6 @@
             <span class="line"></span>
           </div>
 
-<<<<<<< HEAD
-          <button type="button" class="btn ghost" @click="onRegister">
-=======
           <!-- Registro -->
           <button
             type="button"
@@ -184,7 +155,6 @@
             @click="onRegister"
             :disabled="loading"
           >
->>>>>>> origin/deploy
             Regístrate aquí
           </button>
 
@@ -198,17 +168,10 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { definePageMeta } from '#imports'
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'          // 👈 auto-imports off
-import SvgIcon from '@jamescoyle/vue-icon'
-=======
 import "@/assets/css/styles/auth/login.css";
 import { useLogin } from "@/composables/auth/use-login";
 
 import SvgIcon from "@jamescoyle/vue-icon";
->>>>>>> origin/deploy
 import {
   mdiArrowRight,
   mdiEmailOutline,
@@ -218,80 +181,6 @@ import {
   mdiArrowLeft,
 } from "@mdi/js";
 
-<<<<<<< HEAD
-import api from '~/backend/http/api'
-import { ROUTES } from '~/backend/http/routes'
-import { parseAxiosError } from '~/backend/http/error'
-import { R } from '~/utils/app-routes'
-import '@/assets/css/styles/auth/login.css'
-
-definePageMeta({
-  name: 'login',
-  path: '/login',
-  guestOnly: true, // si ya está logueado, middleware lo manda a '/'
-})
-
-const router = useRouter()
-const route  = useRoute()
-
-const email = ref('')
-const password = ref('')
-const show = ref(false)
-const loading = ref(false)
-const apiError = ref('')
-
-function goHome() {
-  router.push(R.to('home'))
-}
-
-function onRegister() {
-  router.push(R.to('register'))
-}
-
-function onForgot() {
-  router.push(R.to('verify'))
-}
-
-async function onSubmit() {
-  apiError.value = ''
-  if (!email.value || !password.value) {
-    apiError.value = 'Por favor, llena todos los campos.'
-    return
-  }
-
-  loading.value = true
-  try {
-    const payload = { email: email.value.toLowerCase().trim(), password: password.value }
-    const { data } = await api.post(ROUTES.AUTH.LOGIN, payload, { withCredentials: true })
-
-    // Caso: cuenta inactiva -> requiere verificación
-    if (data?.require_verification) {
-      // El backend te devuelve user: { email, user_id, name_user }
-      const pendingEmail = data?.user?.email || payload.email
-      sessionStorage.setItem('verify_email', pendingEmail)
-      // Redirige a verificar
-      router.push(R.to('verify'))
-      return
-    }
-
-    // Caso: login exitoso
-    // Tu backend devuelve: { message, accessToken, refreshToken, user_id }
-    if (data?.accessToken) {
-      // IMPORTANTE: la clave que lee tu middleware es 'accessToken'
-      localStorage.setItem('accessToken', data.accessToken)
-      if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
-    }
-
-    // Redirige a la vista home.vue en la carpeta user
-    router.push(R.to('userHome'))
-  } catch (e) {
-    console.error('[Login] Error:', e)
-    apiError.value = parseAxiosError(e) || 'Error al iniciar sesión.'
-  } finally {
-    loading.value = false
-  }
-}
-=======
 definePageMeta({
   name: "login",
   path: "/login",
@@ -311,5 +200,4 @@ const {
   onRegister,
   onForgot,
 } = useLogin();
->>>>>>> origin/deploy
 </script>
