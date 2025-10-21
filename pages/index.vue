@@ -25,10 +25,6 @@ import Location_uni from '@/components/sections/location-uni.vue'
 import InnovationWorkshops from '@/components/sections/innovation-workshops.vue'
 import sectionsFaqAccordion from '@/components/sections/sections-faq-accordion.vue'
 import Logos from '@/components/sections/logos-uni.vue'
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/deploy
 import PrincipalSpeaker from '@/components/sections/conferees/principal-speaker.vue'
 import ActivityFlow from '@/components/sections/activity-flow.vue';
 
