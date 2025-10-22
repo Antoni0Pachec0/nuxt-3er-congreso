@@ -92,19 +92,19 @@ import {
 } from "lucide-vue-next";
 
 type EventType =
-  | "Registro"
-  | "Conferencia"
-  | "Pausa"
-  | "Taller"
-  | "Panel"
-  | "Networking"
-  | "Hackatón"
-  | "Clausura"
-  | "Feria"
-  | "Apertura" 
-  | "Convenio" 
-  | "Charla" 
-  | "Cultural"; 
+  | "Registro"
+  | "Conferencia"
+  | "Pausa"
+  | "Taller"
+  | "Panel"
+  | "Networking"
+  | "Hackatón"
+  | "Clausura"
+  | "Feria"
+  | "Apertura"
+  | "Convenio"
+  | "Charla"
+  | "Cultural";
 
 interface ScheduleItem {
   id: string;
@@ -121,20 +121,19 @@ interface ScheduleItem {
 
 /* Íconos por tipo (burbuja) */
 const iconMap: Record<EventType, any> = {
-  Registro: ClipboardCheck,
-  Conferencia: Mic,
-  Panel: Users,
-  Pausa: Coffee,
-  Taller: Wrench,
-  Networking: Network,
-  Hackatón: Code2,
-  Clausura: Flag,
-  Feria: ShoppingBag,
-  // <-- AGREGADOS
-  Apertura: Flag, // Usar Flag o Mic, por ejemplo.
-  Convenio: ClipboardCheck, // Usar ClipboardCheck o un ícono de firma.
-  Charla: Mic, // Charla es similar a Conferencia.
-  Cultural: Users, // Usar Users o MapPin, por ejemplo.
+  Registro: ClipboardCheck,
+  Conferencia: Mic,
+  Panel: Users,
+  Pausa: Coffee,
+  Taller: Wrench,
+  Networking: Network,
+  Hackatón: Code2,
+  Clausura: Flag,
+  Feria: ShoppingBag, // <-- AGREGADOS
+  Apertura: Flag, // Usar Flag o Mic, por ejemplo.
+  Convenio: ClipboardCheck, // Usar ClipboardCheck o un ícono de firma.
+  Charla: Mic, // Charla es similar a Conferencia.
+  Cultural: Users, // Usar Users o MapPin, por ejemplo.
 };
 const iconFor = (t: EventType) => iconMap[t] ?? Code2;
 
@@ -163,7 +162,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Apertura",
       location: "Cancha Techada",
       speaker: "Rector",
-      description: "Palabras de bienvenida e inauguración oficial del congreso.",
+      description:
+        "Palabras de bienvenida e inauguración oficial del congreso.",
       tag: "Apertura",
     },
     {
@@ -187,7 +187,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Conferencia",
       location: "Cancha Techada",
       speaker: "Nazly Borrero",
-      description: "Conferencia sobre estrategias, amenazas y alianzas en la defensa tecnológica.",
+      description:
+        "Conferencia sobre estrategias, amenazas y alianzas en la defensa tecnológica.",
       tag: "Conferencia",
     },
     {
@@ -199,7 +200,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Charla",
       location: "Cancha Techada",
       speaker: "Benjamín Guzmán",
-      description: "Una visión desde la industria sobre el día a día del desarrollo de software.",
+      description:
+        "Una visión desde la industria sobre el día a día del desarrollo de software.",
       tag: "Charla",
     },
     {
@@ -222,7 +224,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Conferencia",
       location: "Cancha Techada",
       speaker: "Miguel Angel Vargas Lomeli",
-      description: "Exploración de los temas actuales y futuros en el campo de la IA.",
+      description:
+        "Exploración de los temas actuales y futuros en el campo de la IA.",
       tag: "Conferencia",
     },
     {
@@ -234,7 +237,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Conferencia",
       location: "Cancha Techada",
       speaker: "Diana Reynoso",
-      description: "Un análisis sobre la seguridad y privacidad en la era del blockchain.",
+      description:
+        "Un análisis sobre la seguridad y privacidad en la era del blockchain.",
       tag: "Conferencia",
     },
     {
@@ -245,8 +249,9 @@ const schedule: Record<string, ScheduleItem[]> = {
       title: "Asistentes virtuales con IA local usando Ollama",
       type: "Charla",
       location: "Cancha Techada",
-      speaker: "Adolfo Mateos",
-      description: "Cómo crear asistentes inteligentes con modelos de IA de código abierto.",
+      speaker: "Adolfo López Mateo",
+      description:
+        "Cómo crear asistentes inteligentes con modelos de IA de código abierto.",
       tag: "Charla",
     },
     {
@@ -294,7 +299,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Conferencia",
       location: "Cancha Techada",
       speaker: "Benjamín Guzmán (Amazon)",
-      description: "Claves para el crecimiento profesional en la industria tecnológica.",
+      description:
+        "Claves para el crecimiento profesional en la industria tecnológica.",
       tag: "Conferencia",
     },
     {
@@ -306,7 +312,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Conferencia",
       location: "Cancha Techada",
       speaker: "Nazly Borrero",
-      description: "Una analogía sobre los perfiles y amenazas en ciberseguridad.",
+      description:
+        "Una analogía sobre los perfiles y amenazas en ciberseguridad.",
       tag: "Conferencia",
     },
     {
@@ -329,7 +336,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Conferencia",
       location: "Cancha Techada",
       speaker: "Zoreyda Jara Ramos",
-      description: "Charla sobre innovación y cómo destacar en el ámbito profesional.",
+      description:
+        "Charla sobre innovación y cómo destacar en el ámbito profesional.",
       tag: "Conferencia",
     },
     {
@@ -341,7 +349,8 @@ const schedule: Record<string, ScheduleItem[]> = {
       type: "Charla",
       location: "Cancha Techada",
       speaker: "Alumnos de IDGS",
-      description: "Demostración del potencial de PyGame para el desarrollo de videojuegos.",
+      description:
+        "Demostración del potencial de PyGame para el desarrollo de videojuegos.",
       tag: "Charla",
     },
     {
@@ -349,11 +358,12 @@ const schedule: Record<string, ScheduleItem[]> = {
       date: "2025-11-13",
       start: "12:30",
       end: "13:00",
-      title: "Uso de librerías de IA para análisis de archivos",
+      title: "Programación con Clean Architecture",
       type: "Charla",
       location: "Cancha Techada",
-      speaker: "Natividad Turán",
-      description: "Aplicaciones prácticas de IA para procesar y analizar documentos.",
+      speaker: "Natividad Terán",
+      description:
+        "Aprende los principios de Clean Architecture para construir software mantenible, escalable y desacoplado.",
       tag: "Charla",
     },
     {
@@ -382,112 +392,116 @@ const schedule: Record<string, ScheduleItem[]> = {
   // --- DÍA 3: VIERNES 14 DE NOVIEMBRE ---
   "2025-11-14": [
     {
-      "id": "d3-01",
-      "date": "2025-11-14",
-      "start": "08:30",
-      "end": "09:00",
-      "title": "Registro",
-      "type": "Registro",
-      "location": "Cancha Techada",
-      "description": "Registro para asistentes del último día.",
-      "tag": "Registro"
+      id: "d3-01",
+      date: "2025-11-14",
+      start: "08:30",
+      end: "09:00",
+      title: "Registro",
+      type: "Registro",
+      location: "Cancha Techada",
+      description: "Registro para asistentes del último día.",
+      tag: "Registro",
     },
     {
-      "id": "d3-02",
-      "date": "2025-11-14",
-      "start": "09:00",
-      "end": "09:30",
-      "title": "Blindaje digital: Construyendo la resiliencia de su empresa en la era de la Ciberseguridad y los datos.",
-      "type": "Charla",
-      "location": "Cancha Techada",
-      "speaker": "Nazly Borrero",
-      "description": "Charla empresarial 4.",
-      "tag": "Charla"
+      id: "d3-02",
+      date: "2025-11-14",
+      start: "09:00",
+      end: "09:30",
+      title:
+        "Blindaje digital: Construyendo la resiliencia de su empresa en la era de la Ciberseguridad y los datos.",
+      type: "Charla",
+      location: "Cancha Techada",
+      speaker: "Nazly Borrero",
+      description: "Charla empresarial 4.",
+      tag: "Charla",
     },
     {
-      "id": "d3-03",
-      "date": "2025-11-14",
-      "start": "09:30",
-      "end": "10:30",
-      "title": "Conferencia",
-      "type": "Conferencia",
-      "location": "Cancha Techada",
-      "speaker": "Ponente de UTTECAM",
-      "description": "Por parte de UTTECAM.",
-      "tag": "Conferencia"
+      id: "d3-03",
+      date: "2025-11-14",
+      start: "09:30",
+      end: "10:30",
+      title: "Conferencia",
+      type: "Conferencia",
+      location: "Cancha Techada",
+      speaker: "Ponente de UTTECAM",
+      description: "Por parte de UTTECAM.",
+      tag: "Conferencia",
     },
     {
-      "id": "d3-04",
-      "date": "2025-11-14",
-      "start": "10:30",
-      "end": "11:00",
-      "title": "Coffee-break y Evento cultural baile moderno",
-      "type": "Pausa",
-      "location": "Cancha Techada",
-      "description": "Receso para café, networking y presentación de Baile Moderno.",
-      "tag": "Pausa"
+      id: "d3-04",
+      date: "2025-11-14",
+      start: "10:30",
+      end: "11:00",
+      title: "Coffee-break y Evento cultural baile moderno",
+      type: "Pausa",
+      location: "Cancha Techada",
+      description:
+        "Receso para café, networking y presentación de Baile Moderno.",
+      tag: "Pausa",
     },
     {
-      "id": "d3-05",
-      "date": "2025-11-14",
-      "start": "11:00",
-      "end": "11:30",
-      "title": "Ciber Riesgo: Una Variable Estratégica para la Toma de Decisiones.",
-      "type": "Charla",
-      "location": "Cancha Techada",
-      "speaker": "Ing. Iván Rosales",
-      "description": "Charla empresarial 5. Speaker: Solutions Architect.",
-      "tag": "Charla"
+      id: "d3-05",
+      date: "2025-11-14",
+      start: "11:00",
+      end: "11:30",
+      title:
+        "Ciber Riesgo: Una Variable Estratégica para la Toma de Decisiones.",
+      type: "Charla",
+      location: "Cancha Techada",
+      speaker: "Ing. Iván Rosales",
+      description: "Charla empresarial 5. Speaker: Solutions Architect.",
+      tag: "Charla",
     },
     {
-      "id": "d3-06",
-      "date": "2025-11-14",
-      "start": "11:30",
-      "end": "12:00",
-      "title": "Conferencia de inteligencia artificial de las cosas (IA embebida)",
-      "type": "Charla",
-      "location": "Cancha Techada",
-      "speaker": "Casimiro Gómez González",
-      "description": "Charla empresarial 5.",
-      "tag": "Charla"
+      id: "d3-06",
+      date: "2025-11-14",
+      start: "11:30",
+      end: "12:00",
+      title:
+        "Conferencia de inteligencia artificial de las cosas (IA embebida)",
+      type: "Charla",
+      location: "Cancha Techada",
+      speaker: "Casimiro Gómez González",
+      description: "Charla empresarial 5.",
+      tag: "Charla",
     },
     {
-      "id": "d3-07",
-      "date": "2025-11-14",
-      "start": "12:00",
-      "end": "12:30",
-      "title": "Cardano BlockChain Masterclass",
-      "type": "Conferencia",
-      "location": "Cancha Techada",
-      "speaker": "Erick Valadez Hernández",
-      "description": "Conferencia 8. Embajador de Cardano en México.",
-      "tag": "Conferencia"
+      id: "d3-07",
+      date: "2025-11-14",
+      start: "12:00",
+      end: "12:30",
+      title: "Cardano BlockChain Masterclass",
+      type: "Conferencia",
+      location: "Cancha Techada",
+      speaker: "Erick Valadez Hernández",
+      description: "Conferencia 8. Embajador de Cardano en México.",
+      tag: "Conferencia",
     },
     {
-      "id": "d3-08",
-      "date": "2025-11-14",
-      "start": "12:30",
-      "end": "13:00",
-      "title": "Evento cultural rondalla  3",
-      "type": "Cultural",
-      "location": "Cancha Techada",
-      "description": "Presentación cultural de la rondalla  3.",
-      "tag": "Cultural"
+      id: "d3-08",
+      date: "2025-11-14",
+      start: "12:30",
+      end: "13:00",
+      title: "Evento cultural rondalla  3",
+      type: "Cultural",
+      location: "Cancha Techada",
+      description: "Presentación cultural de la rondalla  3.",
+      tag: "Cultural",
     },
     {
-      "id": "d3-09",
-      "date": "2025-11-14",
-      "start": "13:00",
-      "end": "13:30",
-      "title": "Evento de Cierre",
-      "type": "Clausura",
-      "location": "Cancha Techada",
-      "speaker": "Comité Organizador",
-      "description": "Agradecimientos, premiaciones y clausura oficial del congreso.",
-      "tag": "Clausura"
-    }
-  ]
-
+      id: "d3-09",
+      date: "2025-11-14",
+      start: "13:00",
+      end: "13:30",
+      title: "Evento de Cierre",
+      type: "Clausura",
+      location: "Cancha Techada",
+      speaker: "Comité Organizador",
+      description:
+        "Agradecimientos, premiaciones y clausura oficial del congreso.",
+      tag: "Clausura",
+    },
+  ],
 };
 
 const days = [
@@ -496,7 +510,7 @@ const days = [
   { key: "2025-11-14", label: "Viernes", chip: "14 de Noviembre" },
 ];
 
-const activeDay = ref<string>(days[0]?.key ?? '');
+const activeDay = ref<string>(days[0]?.key ?? "");
 const items = computed<ScheduleItem[]>(() =>
   (schedule[activeDay.value] || [])
     .slice()

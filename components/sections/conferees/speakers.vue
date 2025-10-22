@@ -57,7 +57,7 @@ import "@/assets/css/styles/pages/conferees/speakers.css";
 
 const speakers = [
   {
-    name: "Adolfo Mateos",
+    name: "Adolfo López Mateo",
     level: "empresarial",
     talk: "Construyendo asistentes virtuales con IA local y Ollama",
     summary:
@@ -73,14 +73,14 @@ const speakers = [
       "Una invitación a descubrir el valor de la constancia. Lo que define a una persona no es su título, sino su capacidad de seguir aprendiendo.",
     iconComponent: Award, // Icono que representa logro/inspiración
   },
-  {
-    name: "Natividad Turán",
-    level: "empresarial",
-    talk: "Uso de librerías de IA para análisis de archivos",
-    summary:
-      "Descubre cómo las librerías de IA permiten interpretar, clasificar y extraer información valiosa de grandes volúmenes de documentos de manera automatizada.",
-    iconComponent: Lightbulb,
-  },
+{
+   name: "Natividad Terán",
+   level: "empresarial",
+   talk: "Programación con Clean Architecture",
+   summary:
+     "Explora cómo implementar Clean Architecture para crear sistemas que sean fáciles de probar, independientes de frameworks y bases de datos, y más sencillos de mantener a largo plazo.",
+   iconComponent: Lightbulb,
+ },
   {
     name: "Diana Reynoso",
     level: "magistral",

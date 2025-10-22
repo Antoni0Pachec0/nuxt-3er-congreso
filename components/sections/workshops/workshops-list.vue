@@ -148,7 +148,7 @@ const workshops = ref([
   {
     id: 3,
     name: "Como crear un asistente de IA con Ollama",
-    instructor: "Adolfo López",
+    instructor: "Adolfo López Mateo",
     category: "Inteligencia Artificial",
     description:
       "Aprende a implementar modelos de lenguaje locales para crear asistentes inteligentes sin depender de la nube.",
@@ -235,21 +235,21 @@ const workshops = ref([
     icon: Network,
     //tools: ["VRF", "Cisco", "BGP"],
   },
-  {
-    id: 9,
-    name: "Programación con Clean Architecture",
-    instructor: "Natividad Turán",
-    category: "Arquitectura de Software",
-    description:
-      "Domina los principios de Clean Architecture para construir aplicaciones robustas, mantenibles y desacopladas.",
-    duration: "4 horas",
-    date: "12 y 13 de noviembre · 14:00 - 18:00",
-    location: "Edificio K - Laboratorio K10",
-    level: "Avanzado",
-    gradient: "linear-gradient(135deg, #EF4444, #2563EB, #111827)",
-    icon: GitBranchPlus,
-    //tools: ["SOLID", "Diseño", "TDD"],
-  },
+{
+   id: 9,
+   name: "Uso de librerías de IA para análisis de archivos",
+   instructor: "Natividad Terán",
+   category: "Inteligencia Artificial", 
+   description:
+     "Descubre cómo las librerías de IA permiten interpretar, clasificar y extraer información valiosa de grandes volúmenes de documentos de manera automatizada.",
+   duration: "4 horas",
+   date: "12 y 13 de noviembre · 14:00 - 18:00",
+   location: "Edificio K - Laboratorio K10",
+   level: "Avanzado",
+   gradient: "linear-gradient(135deg, #EF4444, #2563EB, #111827)",
+   icon: GitBranchPlus,
+   //tools: ["Python", "NPL", "Scikit-learn"], // Sugerencia de herramientas
+ },
   {
     id: 10,
     name: "La forencia en los tiempos académicos",
