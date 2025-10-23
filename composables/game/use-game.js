@@ -57,7 +57,38 @@ export function useGame () {
   }
 
   function getAccessToken () {
-    return getCookie('access_token') || localStorage.getItem('access_token') || null
+    return getCookie('access_token') || null
+  }
+
+  async function checkGameAuthentication () {
+    const token = getAccessToken()
+    const userId = localStorage.getItem('userId')
+    
+    // 🔥 CORREGIDO: Verificar que AMBOS existan
+    if (!token || !userId) {
+      // Intentar refresh si no hay token
+      try {
+        const refreshToken = getCookie('refresh_token')
+        if (refreshToken) {
+          const response = await TokenApi.refresh(refreshToken)
+          if (response.access_token) {
+            document.cookie = `access_token=${response.access_token}; path=/; max-age=900`
+            
+            // 🔥 VERIFICAR que ahora tenemos ambos
+            const newUserId = localStorage.getItem('userId')
+            if (newUserId) {
+              return true
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error en autenticación:', error)
+      }
+      
+      return false
+    }
+    
+    return true
   }
 
   async function refreshAccessToken () {
@@ -438,59 +469,81 @@ export function useGame () {
 
     async ensureScoreSent () {
       if (this.scoreSent || this.score <= 0) return
+      
+      this.scoreSent = true // ← Marcar inmediatamente para evitar duplicados
+      
       let attempts = 0
       const maxAttempts = 3
-      while (attempts < maxAttempts && !this.scoreSent) {
+      
+      while (attempts < maxAttempts) {
         try {
           await this.sendScoreToBackend()
-          if (this.scoreSent) break
-        } catch {}
-        attempts++
-        if (!this.scoreSent && attempts < maxAttempts) {
-          const delay = Math.min(1000 * Math.pow(2, attempts), 5000)
-          await new Promise(r => setTimeout(r, delay))
+          console.log('✅ Score enviado exitosamente')
+          return // ← Salir si tiene éxito
+        } catch (error) {
+          attempts++
+          console.warn(`⚠️ Intento ${attempts} fallido:`, error.message)
+          
+          if (attempts < maxAttempts) {
+            const delay = Math.min(1000 * Math.pow(2, attempts), 5000)
+            await new Promise(r => setTimeout(r, delay))
+          } else {
+            console.error('❌ Todos los intentos fallaron')
+            // 🔥 IMPORTANTE: Si falla después de todos los intentos, permitir reintento
+            this.scoreSent = false
+          }
         }
       }
     }
 
     async sendScoreToBackend () {
-      if (this.scoreSent || this.score <= 0) return
-
-      let accessToken = getAccessToken()
       const userId = localStorage.getItem('userId')
-      if (!userId) return
+      if (!userId) {
+        throw new Error('User ID no encontrado')
+      }
 
-      let attempts = 0
-      const maxAttempts = 2
-
-      while (attempts < maxAttempts) {
+      let accessToken = getCookie('access_token') // 🔥 Usar SOLO cookies
+      
+      // Si no hay token en cookies, intentar refresh
+      if (!accessToken) {
         try {
-          attempts++
-          if (!accessToken && attempts === 1) {
-            accessToken = await refreshAccessToken()
-          }
-          if (!accessToken) throw new Error('No access token')
-
-          await ScoresApi.create({ value: this.score }, accessToken)
-          this.scoreSent = true
-          return
-
+          const refreshToken = getCookie('refresh_token')
+          if (!refreshToken) throw new Error('No hay refresh token')
+          
+          const response = await TokenApi.refresh(refreshToken)
+          accessToken = response.access_token
+          
+          // 🔥 Guardar el nuevo token en cookies (no en localStorage)
+          document.cookie = `access_token=${accessToken}; path=/; max-age=900` // 15 min
         } catch (error) {
-          if (error.response?.status === 401 && attempts < maxAttempts) {
-            accessToken = null
-            continue
-          }
-          // en 401 definitivo -> a login
-          if (error.response?.status === 401) setTimeout(() => router.push('/login'), 1200)
-          break
+          console.error('Error refrescando token:', error)
+          throw new Error('No se pudo renovar la sesión')
         }
       }
+
+      if (!accessToken) {
+        throw new Error('No hay token de acceso')
+      }
+
+      // 🔥 Enviar el score
+      const response = await ScoresApi.create({ value: this.score }, accessToken)
+      
+      if (!response.data) {
+        throw new Error('Respuesta vacía del servidor')
+      }
+      
+      return response.data
     }
 
     async display_message (msg) {
+      // 🔥 PRIMERO intentar enviar el score ANTES de pausar el juego
+      if (!this.scoreSent && this.score > 0) {
+        await this.ensureScoreSent() // ← Esperar a que se complete
+      }
+      
+      // 🔥 LUEGO marcar como game_over
       this.game_over = true
       this.drawGameOverScreen(msg)
-      if (!this.scoreSent && this.score > 0) await this.ensureScoreSent()
     }
 
     // ---- loop ----
@@ -541,7 +594,7 @@ export function useGame () {
 
   // ---------- acciones atadas a la vista ----------
   const startGame = async () => {
-    const ok = await checkAuthentication()
+    const ok = await checkGameAuthentication()
     if (!ok) {
       alert('🔐 Debes iniciar sesión para jugar')
       router.push('/login')
@@ -554,6 +607,11 @@ export function useGame () {
     if (!gameInstance && gameCanvas.value) {
       gameInstance = new CarRacing(gameCanvas.value)
       gameInstance.run()
+    } else if (gameInstance) {
+      // 🔥 Reiniciar instancia existente en lugar de crear nueva
+      gameInstance.initialize()
+      gameInstance.game_over = false
+      gameInstance.paused = false
     }
   }
 
