@@ -358,7 +358,7 @@ const schedule: Record<string, ScheduleItem[]> = {
       date: "2025-11-13",
       start: "12:30",
       end: "13:00",
-      title: "Programación con Clean Architecture",
+      title: "Uso de librerías de IA para análisis de archivos",
       type: "Charla",
       location: "Cancha Techada",
       speaker: "Natividad Terán",

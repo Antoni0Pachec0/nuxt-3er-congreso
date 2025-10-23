@@ -74,13 +74,13 @@ const speakers = [
     iconComponent: Award, // Icono que representa logro/inspiración
   },
 {
-   name: "Natividad Terán",
-   level: "empresarial",
-   talk: "Programación con Clean Architecture",
-   summary:
-     "Explora cómo implementar Clean Architecture para crear sistemas que sean fáciles de probar, independientes de frameworks y bases de datos, y más sencillos de mantener a largo plazo.",
-   iconComponent: Lightbulb,
- },
+    name: "Natividad Terán",
+    level: "empresarial",
+    talk: "Programación con Clean Architecture",
+    summary:
+      "Explora cómo implementar Clean Architecture para crear sistemas que sean fáciles de probar, independientes de frameworks y bases de datos, y más sencillos de mantener a largo plazo.",
+    iconComponent: Lightbulb,
+  },
   {
     name: "Diana Reynoso",
     level: "magistral",

@@ -237,7 +237,7 @@ const workshops = ref([
   },
 {
    id: 9,
-   name: "Uso de librerías de IA para análisis de archivos",
+   name: "Programación con Clean Architecture",
    instructor: "Natividad Terán",
    category: "Inteligencia Artificial", 
    description:
