@@ -57,35 +57,18 @@ export function useGame() {
   }
 
   async function checkGameAuthentication() {
-    const token = getAccessToken()
-    const userId = localStorage.getItem('userId')
-
-    // 🔥 CORREGIDO: Verificar que AMBOS existan
-    if (!token || !userId) {
-      // Intentar refresh si no hay token
-      try {
-        const refreshToken = getCookie('refresh_token')
-        if (refreshToken) {
-          const response = await TokenApi.refresh(refreshToken)
-          if (response.access_token) {
-            document.cookie = `access_token=${response.access_token}; path=/; max-age=900`
-
-            // 🔥 VERIFICAR que ahora tenemos ambos
-            const newUserId = localStorage.getItem('userId')
-            if (newUserId) {
-              return true
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error en autenticación:', error)
-      }
-
+    // Si ya tienes userId guardado, intentamos validar sesión con un ping protegido
+    try {
+      // Llama un endpoint que requiera JWT (cookies via withCredentials)
+      await ScoresApi.getMyBest(); // ajusta al nombre real del método
+      return true; // si no lanza, hay sesión
+    } catch (e) {
+      // Fallback: si falla, no hay sesión válida
+      console.warn('Auth check falló:', e?.response?.status, e?.message)
       return false
     }
-
-    return true
   }
+
 
   async function refreshAccessToken() {
     try {
@@ -516,40 +499,11 @@ export function useGame() {
 
     async sendScoreToBackend(finalScore) {
       const userId = localStorage.getItem('userId')
-      if (!userId) {
-        throw new Error('User ID no encontrado')
-      }
+      if (!userId) throw new Error('User ID no encontrado')
 
-      let accessToken = getCookie('access_token') // 🔥 Usar SOLO cookies
-
-      // Si no hay token en cookies, intentar refresh
-      if (!accessToken) {
-        try {
-          const refreshToken = getCookie('refresh_token')
-          if (!refreshToken) throw new Error('No hay refresh token')
-
-          const response = await TokenApi.refresh(refreshToken)
-          accessToken = response.access_token
-
-          // 🔥 Guardar el nuevo token en cookies (no en localStorage)
-          document.cookie = `access_token=${accessToken}; path=/; max-age=900` // 15 min
-        } catch (error) {
-          console.error('Error refrescando token:', error)
-          throw new Error('No se pudo renovar la sesión')
-        }
-      }
-
-      if (!accessToken) {
-        throw new Error('No hay token de acceso')
-      }
-
-      // 🔥 Enviar el score
-      const response = await ScoresApi.create({ value: finalScore }, accessToken)
-
-      if (!response.data) {
-        throw new Error('Respuesta vacía del servidor')
-      }
-
+      // NO leas ni pases accessToken: usa cookies HttpOnly con withCredentials
+      const response = await ScoresApi.create({ value: finalScore })
+      if (!response?.data) throw new Error('Respuesta vacía del servidor')
       return response.data
     }
 
