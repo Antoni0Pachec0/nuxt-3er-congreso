@@ -12,16 +12,26 @@ export const ROUTES = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
   },
+  
   SCORES: {
     CREATE: '/scores',
     LEADERBOARD: '/scores/leaderboard',
   },
+
   USERS: {
     LIST: '/users',
     BY_ID: (id) => `/users/${id}`,
   },
+
   WORKSHOPS: {
     LIST: '/workshops',
     BY_ID: (id) => `/workshops/${id}`,
+  },
+
+  ADMIN: {
+    USERS: {
+      LIST: '/admin/users',
+      ACTIVATION: (id) => `/admin/users/${id}/activation`,
+    },
   },
 }

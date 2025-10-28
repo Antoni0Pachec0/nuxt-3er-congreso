@@ -25,9 +25,16 @@ const api = axios.create({
 // ─────────────────────────────────────────────────────────────
 api.interceptors.request.use(
   (config) => {
-    // Cabeceras básicas
-    config.headers['X-Requested-With'] = 'XMLHttpRequest';
-    return config;
+    config.headers['X-Requested-With'] = 'XMLHttpRequest'
+
+    // ⬇️ Agrega Bearer si ya hay token en localStorage
+    if (typeof window !== 'undefined') {
+      const t = localStorage.getItem('access_token')
+      if (t && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${t}`
+      }
+    }
+    return config
   },
   (error) => {
     log.error('❌ Error en request:', {
