@@ -1,4 +1,4 @@
-// utils/http/routes.js o donde tengas ROUTES
+// utils/http/routes.js
 export const ROUTES = {
   AUTH: {
     REGISTER: '/auth/register',
@@ -32,6 +32,7 @@ export const ROUTES = {
     USERS: {
       LIST: '/admin/users',
       ACTIVATION: (id) => `/admin/users/${id}/activation`,
+      FILTER_OPTIONS: '/admin/users/filter-options', // 👈 NUEVA RUTA
     },
   },
 }
