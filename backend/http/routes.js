@@ -25,7 +25,9 @@ export const ROUTES = {
 
   WORKSHOPS: {
     LIST: '/workshops',
+    PUBLIC: '/workshops/public',
     BY_ID: (id) => `/workshops/${id}`,
+    AVAILABLE: '/workshops/available/list'
   },
 
   ADMIN: {

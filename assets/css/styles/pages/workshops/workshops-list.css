@@ -1,4 +1,3 @@
-
 /* Estilos generales de la sección */
 .workshops-section {
   background: #ffffff;
@@ -6,6 +5,7 @@
   font-family: "Inter", sans-serif;
   color: #111827;
 }
+
 .workshop-info li {
   display: flex;
   align-items: center;
@@ -13,15 +13,16 @@
   margin-bottom: 0.4rem;
 }
 
-
 .workshop-header {
   text-align: center;
   margin-bottom: 3.5rem;
 }
+
 .workshop-title {
   font-size: clamp(2rem, 5vw, 2.8rem);
   font-weight: 800;
 }
+
 .workshop-underline {
   width: 100px;
   height: 4px;
@@ -29,11 +30,43 @@
   border-radius: 999px;
   margin: 0.75rem auto;
 }
+
 .workshop-subtitle {
   color: #475569;
   max-width: 700px;
   margin: 0 auto;
   font-size: 1rem;
+}
+
+/* Filtros */
+.workshop-filters {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #475569;
+}
+
+.filter-btn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.filter-btn.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
 }
 
 /* Grid de talleres */
@@ -55,6 +88,7 @@
   flex-direction: column;
   height: 100%;
 }
+
 .workshop-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
@@ -66,17 +100,20 @@
   color: #fff;
   min-height: 130px;
 }
+
 .workshop-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.2rem;
 }
+
 .workshop-header-icon {
   width: 34px;
   height: 34px;
   color: #fff;
 }
+
 .workshop-header-icon-wrap {
   width: 44px;
   height: 44px;
@@ -86,6 +123,7 @@
   background: rgba(224, 215, 215, 0.25);
   backdrop-filter: saturate(140%) blur(2px);
 }
+
 .workshop-badge {
   font-size: 0.85rem;
   padding: 0.35rem 0.9rem;
@@ -93,11 +131,13 @@
   font-weight: 600;
   color: #fff;
 }
+
 .workshop-header-info h3 {
   font-size: 1.35rem;
   font-weight: 800;
   margin-bottom: 0.25rem;
 }
+
 .workshop-header-info p {
   font-size: 0.95rem;
   opacity: 0.9;
@@ -109,8 +149,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  flex: 1; /* Permite que el cuerpo crezca y empuje el footer */
+  flex: 1;
 }
+
 .workshop-desc {
   font-size: 0.95rem;
   color: #334155;
@@ -122,6 +163,70 @@
   min-height: 3.6em;
 }
 
+/* Información de cupos */
+.workshop-spots {
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.spots-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.spots-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.spots-text.unlimited {
+  color: #059669;
+  text-align: center;
+}
+
+.spots-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.spots-progress {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Estado del taller */
+.workshop-status {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.workshop-status.active {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.workshop-status.cancelled,
+.workshop-status.completed {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
 /* Información del taller (instructor, fecha, etc.) */
 .workshop-info {
   list-style: none;
@@ -130,12 +235,14 @@
   font-size: 0.9rem;
   color: #475569;
 }
+
 .workshop-info li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.4rem;
 }
+
 .infoiconw {
   width: 18px;
   height: 18px;
@@ -147,9 +254,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: auto; /* Empuja este elemento al final del contenedor flex */
-  padding-top: 0.5rem; /* Espacio por si se pega a la lista de info */
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
+
 .tool {
   background: #e0e7ff;
   color: #1e3a8a;
@@ -163,11 +271,83 @@
 .workshop-badge.level-advanced {
   background: #ef4444;
 }
+
 .workshop-badge.level-intermediate {
   background: #eab308;
 }
+
 .workshop-badge.level-beginner {
   background: #22c55e;
+}
+
+/* --- Estados de carga y error --- */
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  margin: 2rem 0;
+  border: 1px solid #e2e8f0;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+
+.loading-state p,
+.error-state h3,
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.error-state p,
+.empty-state p {
+  color: #6b7280;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.retry-btn {
+  margin-top: 1.5rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.retry-btn:hover {
+  background: #1d4ed8;
 }
 
 /* --- Notificación Toast --- */
@@ -187,14 +367,17 @@
   gap: 4px 10px;
   border-left: 6px solid;
 }
+
 .toast-title {
   font-weight: 800;
   margin: 0;
 }
+
 .toast-msg {
   margin: 0;
   grid-column: 1 / -1;
 }
+
 .toast-close {
   background: transparent;
   border: 0;
@@ -203,16 +386,20 @@
   color: #64748b;
   align-self: start;
 }
+
 .toast--success {
   border-left-color: #22c55e;
 }
-.toast--warning {
-  border-left-color: #eab308;
+
+.toast--error {
+  border-left-color: #ef4444;
 }
+
 .toast-enter-active,
 .toast-leave-active {
   transition: all 0.3s ease;
 }
+
 .toast-enter-from,
 .toast-leave-to {
   opacity: 0;
@@ -224,10 +411,12 @@
 .fade-leave-active {
   transition: opacity 0.25s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
+
 .confirm-backdrop {
   position: fixed;
   inset: 0;
@@ -242,21 +431,189 @@
   .workshops-section {
     padding: 3rem 1rem;
   }
+  
+  .workshop-filters {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .filter-btn {
+    width: 100%;
+    max-width: 280px;
+  }
 }
 
 @media (max-width: 640px) {
   .workshop-grid {
-    grid-template-columns: 1fr; /* Una columna en móviles */
+    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+  
   .workshops-section {
     padding: 2.25rem 0.75rem;
   }
+  
   .workshop-card-header {
     padding: 1rem 1.1rem;
-    min-height: auto; /* Altura automática en móvil */
+    min-height: auto;
   }
+  
   .workshop-header-info h3 {
     font-size: 1.1rem;
   }
+  
+  .loading-state,
+  .error-state,
+  .empty-state {
+    padding: 3rem 1rem;
+    margin: 1rem 0;
+  }
+  
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}
+
+/* Estados mejorados */
+.selection-subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.full-badge {
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.enrollment-note.note--login-required {
+  color: #6b7280;
+}
+
+.enrollment-note.note--needs-payment {
+  color: #92400e;
+}
+
+.enrollment-note.note--disabled {
+  color: #dc2626;
+}
+
+.enrollment-note.note--selected {
+  color: #065f46;
+}
+
+.enrollment-note.note--enroll {
+  color: #1e40af;
+}
+
+/* Mejoras responsive */
+@media (max-width: 768px) {
+  .workshop-badges {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .workshop-header-top {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* Estados de botones de inscripción */
+.enroll-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+}
+
+.enroll-btn--enroll {
+  background: linear-gradient(135deg, #22C55E, #16A34A);
+  color: white;
+}
+
+.enroll-btn--enroll:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16A34A, #15803D);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.enroll-btn--needs-payment {
+  background: linear-gradient(135deg, #EAB308, #CA8A04);
+  color: white;
+}
+
+.enroll-btn--needs-payment:hover:not(:disabled) {
+  background: linear-gradient(135deg, #CA8A04, #A16207);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
+}
+
+.enroll-btn--login-required {
+  background: #6B7280;
+  color: white;
+  cursor: not-allowed;
+}
+
+.enroll-btn--selected {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  cursor: not-allowed;
+}
+
+.enroll-btn--disabled {
+  background: #9CA3AF;
+  color: white;
+  cursor: not-allowed;
+}
+
+.enroll-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Notas de estado */
+.enrollment-note {
+  font-size: 12px;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.note--enroll {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.note--needs-payment {
+  background: #FEF9C3;
+  color: #854D0E;
+}
+
+.note--login-required {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.note--selected {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.note--disabled {
+  background: #F3F4F6;
+  color: #6B7280;
 }

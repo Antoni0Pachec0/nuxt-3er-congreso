@@ -8,27 +8,51 @@ export const useAuthStore = defineStore('auth', {
     isLoggingOut: false
   }),
 
+  getters: {
+    userId: (state) => state.user?.id,
+    userRole: (state) => state.user?.roleId,
+    userRoleName: (state) => state.user?.roleName
+  },
+
   actions: {
-    setUser(user) { 
-      this.user = user; 
-      this.isAuthenticated = !!user 
+    setUser(userData) { 
+      this.user = userData
+      this.isAuthenticated = !!userData
+      
+      // Persistir en localStorage
+      try {
+        localStorage.setItem('auth_store', JSON.stringify({
+          user: userData,
+          isAuthenticated: !!userData
+        }))
+      } catch (error) {
+        console.error('Error saving auth to storage:', error)
+      }
     },
     
-    setAuthenticated(status) { 
-      this.isAuthenticated = status; 
-      if (!status) this.user = null 
+    clearUser() {
+      this.user = null
+      this.isAuthenticated = false
+      this.isLoggingOut = false
+      
+      try {
+        localStorage.removeItem('auth_store')
+      } catch (error) {
+        console.error('Error removing auth from storage:', error)
+      }
     },
     
     loadFromStorage() {
       try { 
-        const raw = localStorage.getItem('auth_store'); 
+        const raw = localStorage.getItem('auth_store')
         if (raw) {
-          const p = JSON.parse(raw); 
-          this.user = p?.user ?? null; 
-          this.isAuthenticated = !!p?.isAuthenticated
+          const parsed = JSON.parse(raw)
+          this.user = parsed?.user ?? null
+          this.isAuthenticated = !!parsed?.isAuthenticated
         }
       } catch (error) {
         console.error('Error loading auth from storage:', error)
+        this.clearUser()
       }
     },
 
@@ -38,39 +62,51 @@ export const useAuthStore = defineStore('auth', {
       this.isLoggingOut = true
       
       try {
-        const config = useRuntimeConfig()
-        
-        // Hacer la petición de logout al backend
-        await $fetch(`${config.public.apiBase}/auth/logout`, {
-          method: 'POST',
-          credentials: 'include'
-        })
-        
+        // Importar dinámicamente para evitar ciclos de dependencia
+        const { AuthApi } = await import('@/backend/auth/login-api')
+        await AuthApi.logout()
       } catch (error) {
         console.error('Error during logout API call:', error)
-        // No lanzamos el error para permitir limpieza local
-      } finally {
-        // Limpiar estado local SIEMPRE
-        this.user = null
-        this.isAuthenticated = false
-        
-        // Limpiar localStorage
-        localStorage.removeItem('auth_store')
-        
-        // Limpiar cookies en el cliente
-        const expire = 'Thu, 01 Jan 1970 00:00:00 GMT'
-        const domain = window.location.hostname
-        const isLocalhost = domain === 'localhost'
-        
-        document.cookie = `access_token=; Path=/; SameSite=Lax; Expires=${expire}${!isLocalhost ? `; Domain=.${domain}` : ''}`
-        document.cookie = `refresh_token=; Path=/; SameSite=Lax; Expires=${expire}${!isLocalhost ? `; Domain=.${domain}` : ''}`
-        document.cookie = `verify=; Path=/; SameSite=Lax; Expires=${expire}${!isLocalhost ? `; Domain=.${domain}` : ''}`
-        
-        // IMPORTANTE: Resetear el estado de logout después de limpiar todo
-        this.isLoggingOut = false
+        // Continuamos con la limpieza local aunque falle el API
+      }
+      
+      // Limpiar estado local SIEMPRE
+      this.clearUser()
+      
+      // Limpiar todas las cookies relacionadas con auth
+      this.clearAuthCookies()
+      
+      // Limpiar headers de API
+      this.clearApiAuth()
+    },
+
+    clearAuthCookies() {
+      if (typeof document === 'undefined') return
+      
+      const cookies = [
+        'access_token',
+        'refresh_token', 
+        'verify'
+      ]
+      
+      const domain = window.location.hostname
+      const isLocalhost = domain === 'localhost'
+      const baseDomain = isLocalhost ? '' : `.${domain.split('.').slice(-2).join('.')}`
+      
+      cookies.forEach(cookieName => {
+        document.cookie = `${cookieName}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax${baseDomain ? `; Domain=${baseDomain}` : ''}`
+        // Intentar también sin domain para coverage completo
+        document.cookie = `${cookieName}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`
+      })
+    },
+
+    async clearApiAuth() {
+      try {
+        const { default: api } = await import('@/backend/http/api')
+        delete api.defaults.headers.Authorization
+      } catch (error) {
+        console.warn('Error clearing API authorization:', error)
       }
     }
-  },
-
-  persist: true
+  }
 })

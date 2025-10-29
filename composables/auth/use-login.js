@@ -1,6 +1,6 @@
 // features/auth/use-login.js
 import { ref, computed } from 'vue'
-import { useAuthStore } from '@/security/stores/auth' // Ruta corregida
+import { useAuthStore } from '@/security/stores/auth'
 import { R } from '@/utils/app-routes'
 import { AuthApi } from '@/backend/auth/login-api'
 import { parseAxiosError } from '@/backend/http/error'
@@ -50,8 +50,6 @@ export function useLogin() {
   }
 
   // Manejo de respuesta exitosa
-  // features/auth/use-login.js (solo la función)
-  // ✅ CORRECTO - función marcada como async
   async function handleSuccessResponse(response) {
     // 1) Verificación pendiente
     if (response?.require_verification) {
@@ -72,7 +70,7 @@ export function useLogin() {
       // Guarda en store
       authStore.setUser({
         id: response.user_id,
-        email: (typeof email !== 'undefined' ? email.value : response?.user?.email) || '',
+        email: email.value || response?.user?.email || '',
         roleId,
         roleName,
         ...(response?.user || {})
@@ -81,11 +79,10 @@ export function useLogin() {
       // Persistencia y fijar Bearer
       try {
         localStorage.setItem('userId', String(response.user_id))
-        localStorage.setItem('userEmail', (typeof email !== 'undefined' ? email.value : response?.user?.email) || '')
+        localStorage.setItem('userEmail', email.value || response?.user?.email || '')
 
         if (response?.access_token) {
           localStorage.setItem('access_token', response.access_token)
-          // 👉 Importación dinámica con await
           try {
             const { default: api } = await import('@/backend/http/api')
             api.defaults.headers.Authorization = `Bearer ${response.access_token}`
@@ -99,7 +96,7 @@ export function useLogin() {
         localStorage.setItem('auth_store', JSON.stringify({
           user: {
             id: response.user_id,
-            email: (typeof email !== 'undefined' ? email.value : response?.user?.email) || '',
+            email: email.value || response?.user?.email || '',
             roleId,
             roleName
           },
@@ -109,18 +106,19 @@ export function useLogin() {
         console.warn('Error saving auth data:', error)
       }
 
-      // 3) Redirección por rol
-      if (roleId === 5) return navigateTo(R.to('adminUsers'))
-      return navigateTo(R.to('userHome'))
+      // 3) Redirección por rol - ✅ CORREGIDO: usuarios normales van a workshops
+      if (roleId === 5) {
+        return navigateTo(R.to('adminUsers'))
+      } else {
+        return navigateTo(R.to('workshops')) // ✅ Cambiado de 'userHome' a 'workshops'
+      }
     }
 
     // 4) Fallback de error
     apiError.value = response?.message || 'Error desconocido en la respuesta'
   }
 
-
   // Submit principal
-  // En la función onSubmit, agrega await:
   async function onSubmit() {
     if (!validateForm()) return
 
@@ -133,7 +131,6 @@ export function useLogin() {
         password: password.value
       })
 
-      // 👇 Agrega await aquí también
       await handleSuccessResponse(response)
     } catch (error) {
       apiError.value = parseAxiosError(error)
@@ -142,6 +139,7 @@ export function useLogin() {
       loading.value = false
     }
   }
+
   // Limpiar formulario
   function resetForm() {
     email.value = ''
