@@ -172,6 +172,7 @@
 
           <!-- Pago desde status_event (boolean) -->
           <td>
+            <!-- Esto muestra "No pagado" porque status_event es false -->
             <span class="badge" :class="u.status_event ? 'payment-pagado' : 'payment-no'">
               {{ u.status_event ? 'Pagado' : 'No pagado' }}
             </span>
@@ -336,38 +337,3 @@ const {
   exportData, logout
 } = useAdminUsers()
 </script>
-
-<style scoped>
-/* chips y selección */
-.toast-container{position:fixed;top:16px;right:16px;z-index:9999;pointer-events:none}
-.col-min{width:44px}
-.row-selectable{cursor:pointer}
-.row-selected{background:rgba(0, 179, 148, .08); box-shadow: inset 0 0 0 2px rgba(0,179,148,.35)}
-.chip-select{min-width:28px;height:28px;border-radius:999px;border:1px solid var(--ink,#0b1534);background:#fff;font-weight:700}
-.chip-select.active{background:#00B394;color:#fff;border-color:#00B394}
-
-/* Barra masiva visible y sin encimar */
-.bulk-bar-sticky{
-  position:sticky; bottom:0; left:0; right:0;
-  display:flex; flex-wrap:wrap;
-  align-items:center; justify-content:space-between;
-  gap:.9rem;
-  padding:.9rem 1.25rem; background:#fff; border-top:2px solid #00B39420; z-index:50;
-  box-shadow:0 -10px 35px rgba(2,20,56,.12);
-}
-.bulk-left, .bulk-right{ display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; }
-.bulk-right .btn.lg{ padding:.7rem 1rem; font-weight:700 }
-.bulk-right .btn.success{ background:#00B394; color:#fff }
-.bulk-right .btn.danger{ background:#EF4444; color:#fff }
-@media (min-width: 768px){ .bulk-left, .bulk-right { flex-wrap: nowrap; } }
-
-/* switch desactivado durante selección */
-.switch.disabled{opacity:.5; pointer-events:none}
-
-/* animación */
-.slide-up-enter-active,.slide-up-leave-active{transition:all .2s ease}
-.slide-up-enter-from,.slide-up-leave-to{transform:translateY(12px);opacity:0}
-
-/* Alineación de botones en header */
-.header-actions{ display:flex; gap:.6rem; align-items:center; }
-</style>
