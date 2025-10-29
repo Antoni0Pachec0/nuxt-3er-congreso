@@ -31,8 +31,9 @@ export const ROUTES = {
   ADMIN: {
     USERS: {
       LIST: '/admin/users',
+      FILTER_OPTIONS: '/admin/users/filter-options',
       ACTIVATION: (id) => `/admin/users/${id}/activation`,
-      FILTER_OPTIONS: '/admin/users/filter-options', // 👈 NUEVA RUTA
-    },
-  },
+      ACTIVATION_BULK: '/admin/users/activation-bulk', // <— NUEVO
+    }
+  }
 }
