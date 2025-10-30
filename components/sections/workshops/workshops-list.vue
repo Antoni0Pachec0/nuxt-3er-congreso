@@ -133,7 +133,7 @@ const workshops = ref([
   {
     id: 2,
     name: "Blockchain: más allá de las criptomonedas",
-    instructor: "Diana Reynoso y Ing.Irwing Durán",
+    instructor: "Diana Reynoso y Ing. Irwing Durán",
     category: "Desarrollo Backend",
     description:
       "Explora los fundamentos de blockchain y sus aplicaciones en contratos inteligentes y sistemas distribuidos.",
