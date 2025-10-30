@@ -1,3 +1,4 @@
+<!-- components/layout/header.vue -->
 <template>
   <div>
     <header :class="['app-header', { 'scrolled-header': isScrolled }]">
@@ -38,12 +39,31 @@
         <NuxtLink :to="R.path('conferees')" @click="closeAllMenus">Conferencistas</NuxtLink>
         <NuxtLink :to="R.path('workshops')" @click="closeAllMenus">Talleres</NuxtLink>
 
-        <NuxtLink :to="R.path('register')" class="desktop-nav-btn">
-          Registro
-        </NuxtLink>
-        <NuxtLink :to="R.path('login')" class="desktop-nav-btn login-btn">
-          Inicio de Sesión
-        </NuxtLink>
+        <!-- 🔁 Condicional por sesión -->
+        <template v-if="isAuthenticated">
+          <NuxtLink :to="R.path('game')" class="desktop-nav-btn">Game</NuxtLink>
+
+          <NuxtLink
+            v-if="authStore.userRole === 5"
+            to="/admin/users"
+            class="desktop-nav-btn"
+          >
+            Admin
+          </NuxtLink>
+
+          <button class="desktop-nav-btn login-btn" @click="onLogout">
+            Cerrar sesión
+          </button>
+        </template>
+
+        <template v-else>
+          <NuxtLink :to="R.path('register')" class="desktop-nav-btn" @click="closeAllMenus">
+            Registro
+          </NuxtLink>
+          <NuxtLink :to="R.path('login')" class="desktop-nav-btn login-btn" @click="closeAllMenus">
+            Inicio de Sesión
+          </NuxtLink>
+        </template>
       </nav>
 
       <!-- 🍔 Botón hamburguesa -->
@@ -51,6 +71,9 @@
         class="hamburger-menu"
         :class="[{ active: isMenuOpen }, { 'scrolled-hamburger': isScrolled }]"
         @click="toggleMenu"
+        aria-label="Abrir menú"
+        :aria-expanded="isMenuOpen ? 'true' : 'false'"
+        aria-controls="mobile-sidebar"
       >
         <div class="bar"></div>
         <div class="bar"></div>
@@ -62,7 +85,7 @@
     <div class="overlay" :class="{ active: isMenuOpen }" @click="closeAllMenus"></div>
 
     <!-- 📱 Sidebar móvil -->
-    <nav class="sidebar" :class="{ active: isMenuOpen }">
+    <nav id="mobile-sidebar" class="sidebar" :class="{ active: isMenuOpen }" role="dialog" aria-modal="true" aria-label="Menú">
       <button
         class="close-sidebar"
         @click="closeAllMenus"
@@ -94,59 +117,154 @@
       <NuxtLink :to="R.path('conferees')" @click="closeAllMenus">Conferencistas</NuxtLink>
       <NuxtLink :to="R.path('workshops')" @click="closeAllMenus">Talleres</NuxtLink>
 
-      <NuxtLink
-        :to="R.path('register')"
-        class="sidebar_button"
-        @click="closeAllMenus"
-      >
-        Registro
-      </NuxtLink>
+      <!-- 📱 Acciones auth en móvil -->
+      <template v-if="isAuthenticated">
+        <NuxtLink :to="R.path('game')" class="sidebar_button" @click="closeAllMenus">
+          Game
+        </NuxtLink>
+        <NuxtLink
+          v-if="authStore.userRole === 5"
+          to="/admin/users"
+          class="sidebar_button"
+          @click="closeAllMenus"
+        >
+          Admin
+        </NuxtLink>
+        <button class="sidebar_button login-btn-sidebar" @click="onLogoutFromMenu">
+          Cerrar sesión
+        </button>
+      </template>
 
-      <NuxtLink
-        :to="R.path('login')"
-        class="sidebar_button login-btn-sidebar"
-        @click="closeAllMenus"
-      >
-        Inicio de Sesión
-      </NuxtLink>
+      <template v-else>
+        <NuxtLink
+          :to="R.path('register')"
+          class="sidebar_button"
+          @click="closeAllMenus"
+        >
+          Registro
+        </NuxtLink>
+
+        <NuxtLink
+          :to="R.path('login')"
+          class="sidebar_button login-btn-sidebar"
+          @click="closeAllMenus"
+        >
+          Inicio de Sesión
+        </NuxtLink>
+      </template>
     </nav>
   </div>
 </template>
 
+<!-- components/layout/header.vue -->
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { R } from "@/utils/app-routes";
-import logoUrl from "@/assets/img/pages/logo.png";
-import "@/assets/css/header.css";
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter } from '#app'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/security/stores/auth'
+import { R } from '@/utils/app-routes'
+import logoUrl from '@/assets/img/pages/logo.png'
+import '@/assets/css/header.css'
 
-const isMenuOpen = ref(false);
-const isScrolled = ref(false);
-const isSubmenuOpen = ref(false);
+const isMenuOpen = ref(false)
+const isScrolled = ref(false)
+const isSubmenuOpen = ref(false)
 
-// 🔒 Cierra ambos menús
-const closeAllMenus = () => {
-  isMenuOpen.value = false;
-  isSubmenuOpen.value = false;
-};
+const router = useRouter()
+
+// ---- UTIL: scroll lock centralizado
+const setScrollLock = (lock) => {
+  if (typeof document === 'undefined') return
+  document.documentElement.classList.toggle('no-scroll', !!lock)
+  document.body.classList.toggle('no-scroll', !!lock)
+}
+
+// Detectar scroll (añade/quita fondo del header)
+const handleScroll = () => {
+  if (typeof window === 'undefined') return
+  isScrolled.value = window.scrollY > 50
+}
 
 // 📱 Alternar menú principal
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-  if (!isMenuOpen.value) isSubmenuOpen.value = false;
-};
+  isMenuOpen.value = !isMenuOpen.value
+  if (!isMenuOpen.value) isSubmenuOpen.value = false
+  setScrollLock(isMenuOpen.value)
+}
 
-// 🔄 Detectar scroll
-const handleScroll = () => {
-  if (typeof window === "undefined") return;
-  isScrolled.value = window.scrollY > 50;
-};
+// 🔒 Cerrar todo y liberar scroll
+const closeAllMenus = () => {
+  isMenuOpen.value = false
+  isSubmenuOpen.value = false
+  setScrollLock(false)
+}
+
+// ---- “Hardening”: desbloqueos defensivos
+// 1) Al montar
+onMounted(() => {
+  // Si por algún motivo quedó bloqueado de un render previo, libera:
+  setScrollLock(false)
+  handleScroll()
+  window.addEventListener('scroll', handleScroll, { passive: true })
+
+  // 2) Cerrar + liberar al cambiar de viewport a desktop
+  const onResize = () => {
+    if (window.innerWidth >= 769 && isMenuOpen.value) {
+      closeAllMenus()
+    }
+  }
+  window.addEventListener('resize', onResize, { passive: true })
+
+  // 3) Cerrar + liberar con ESC
+  const onKey = (e) => {
+    if (e.key === 'Escape' && isMenuOpen.value) closeAllMenus()
+  }
+  window.addEventListener('keydown', onKey)
+
+  // 4) Cerrar + liberar al navegar a otra ruta
+  const offAfter = router.afterEach(() => {
+    if (isMenuOpen.value) closeAllMenus()
+  })
+
+  // Guarda limpiadores en cierre
+  cleanupFns.push(() => window.removeEventListener('resize', onResize))
+  cleanupFns.push(() => window.removeEventListener('keydown', onKey))
+  cleanupFns.push(() => offAfter())
+})
+
+const cleanupFns = []
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
+  cleanupFns.forEach(fn => { try { fn() } catch {} })
+  // Limpieza final defensiva
+  setScrollLock(false)
+})
+
+// ---- Auth
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
 
 onMounted(() => {
-  handleScroll();
-  window.addEventListener("scroll", handleScroll, { passive: true });
-});
+  if (!authStore.isAuthenticated) authStore.loadFromStorage()
+})
 
-onBeforeUnmount(() => {
-  window.removeEventListener("scroll", handleScroll);
-});
+// ---- Navegaciones que cierran menú SIEMPRE
+const goAndClose = (to) => {
+  closeAllMenus()
+  return navigateTo(to)
+}
+
+// Logout (desktop)
+const onLogout = async () => {
+  await authStore.logout()
+  closeAllMenus()
+  navigateTo(R.path('home'))
+}
+
+// Logout (móvil)
+const onLogoutFromMenu = async () => {
+  await authStore.logout()
+  closeAllMenus()
+  navigateTo(R.path('home'))
+}
 </script>

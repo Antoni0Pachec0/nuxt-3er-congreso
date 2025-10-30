@@ -1,372 +1,224 @@
-// composables/workshops/use-workshops.js - Versión sin datos de prueba
+// composables/workshop/use-workshops.js
 import { ref, computed, onMounted } from 'vue'
 import { WorkshopsApi } from '@/backend/workshop/workshops-api'
 import { parseAxiosError } from '@/backend/http/error'
 import { useAuthStore } from '@/security/stores/auth'
 
 export function useWorkshops() {
-  // State
+  // ── state
   const workshops = ref([])
   const loading = ref(false)
   const error = ref('')
   const toast = ref({ show: false, type: 'success', message: '' })
   const showPaymentModal = ref(false)
-  const authStore = useAuthStore()
 
-  // Computed
-  const hasWorkshops = computed(() => workshops.value.length > 0)
+  // ── auth
+  const authStore = useAuthStore()
   const isAuthenticated = computed(() => authStore.isAuthenticated)
-  
-  // Buscar el taller en el que el usuario está inscrito
-  const userWorkshop = computed(() => {
-    return workshops.value.find(w => w.is_user_enrolled) || null
-  })
-  
-  // Verificar si el usuario tiene pago aprobado
-  const hasPayment = computed(() => {
-    const workshopWithPaymentStatus = workshops.value.find(w => 
-      w.enrollment_status === 'can_enroll' || w.enrollment_status === 'already_enrolled'
-    )
-    return !!workshopWithPaymentStatus
-  })
-  
-  const availableWorkshops = computed(() => 
-    workshops.value.filter(w => {
-      const spotsMax = w.spots_max || 0
-      const spotsOccupied = w.spots_occupied || 0
-      return spotsMax === 0 || spotsOccupied < spotsMax
-    })
+
+  // ── derived
+  const hasWorkshops = computed(() => workshops.value.length > 0)
+
+  // “mi taller” (si back marca alguno como already_enrolled / is_user_enrolled)
+  const userWorkshop = computed(() =>
+    workshops.value.find(w => w.is_user_enrolled || w.enrollment_status === 'already_enrolled') || null
   )
 
-  // Mapear datos del backend al formato del frontend
-  function mapWorkshopFromBackend(workshop) {
-    if (!workshop) return null;
+  // ── helpers de presentación
+  const getLevel = (name, description) => {
+    const text = ((name || '') + ' ' + (description || '')).toLowerCase()
+    if (text.includes('avanzad') || text.includes('experto')) return 'Avanzado'
+    if (text.includes('intermed')) return 'Intermedio'
+    return 'Principiante'
+  }
 
-    console.log('🗺️ [useWorkshops] Mapeando taller:', workshop);
+  const getCategory = (description) => {
+    const d = (description || '').toLowerCase()
+    if (d.includes('ia') || d.includes('inteligencia artificial') || d.includes('modelo')) return 'Inteligencia Artificial'
+    if (d.includes('web') || d.includes('pwa') || d.includes('vue')) return 'Desarrollo Web'
+    if (d.includes('móvil') || d.includes('mobile') || d.includes('app')) return 'Desarrollo Móvil'
+    if (d.includes('seguridad') || d.includes('hacking') || d.includes('forense')) return 'Ciberseguridad'
+    if (d.includes('red') || d.includes('vrf') || d.includes('fibra')) return 'Redes'
+    if (d.includes('base de datos') || d.includes('mongodb') || d.includes('nosql')) return 'Bases de Datos'
+    if (d.includes('hardware') || d.includes('pc') || d.includes('laptop')) return 'Hardware y Soporte'
+    if (d.includes('blockchain') || d.includes('contrato inteligente')) return 'Blockchain'
+    if (d.includes('calidad') || d.includes('prueba') || d.includes('test')) return 'Calidad de Software'
+    return 'Desarrollo Backend'
+  }
 
-    // Mapeo de niveles basado en el nombre o descripción
-    const getLevel = (name, description) => {
-      const text = ((name || '') + ' ' + (description || '')).toLowerCase()
-      if (text.includes('avanzado') || text.includes('avanzada') || text.includes('experto')) 
-        return 'Avanzado'
-      if (text.includes('intermedio') || text.includes('intermedia')) 
-        return 'Intermedio'
-      return 'Principiante'
+  const getGradient = (level) => {
+    switch (level) {
+      case 'Avanzado': return 'linear-gradient(135deg, #EF4444, #2563EB, #111827)'
+      case 'Intermedio': return 'linear-gradient(135deg, #EAB308, #2563EB, #111827)'
+      default: return 'linear-gradient(135deg, #22C55E, #2563EB, #111827)'
     }
+  }
 
-    // Mapeo de categorías basado en la descripción
-    const getCategory = (description) => {
-      const desc = (description || '').toLowerCase()
-      if (desc.includes('ia') || desc.includes('inteligencia artificial') || desc.includes('modelo')) 
-        return 'Inteligencia Artificial'
-      if (desc.includes('web') || desc.includes('pwa') || desc.includes('vue')) 
-        return 'Desarrollo Web'
-      if (desc.includes('móvil') || desc.includes('mobile') || desc.includes('app')) 
-        return 'Desarrollo Móvil'
-      if (desc.includes('seguridad') || desc.includes('hacking') || desc.includes('forense')) 
-        return 'Ciberseguridad'
-      if (desc.includes('red') || desc.includes('vrf') || desc.includes('fibra')) 
-        return 'Redes'
-      if (desc.includes('base de datos') || desc.includes('mongodb') || desc.includes('nosql')) 
-        return 'Bases de Datos'
-      if (desc.includes('hardware') || desc.includes('pc') || desc.includes('laptop')) 
-        return 'Hardware y Soporte'
-      if (desc.includes('blockchain') || desc.includes('contrato inteligente')) 
-        return 'Blockchain'
-      if (desc.includes('calidad') || desc.includes('prueba') || desc.includes('test')) 
-        return 'Calidad de Software'
-      return 'Desarrollo Backend'
+  const getIconKey = (category) => {
+    const map = {
+      'Inteligencia Artificial': 'Cpu',
+      'Desarrollo Web': 'Code2',
+      'Desarrollo Móvil': 'Smartphone',
+      'Ciberseguridad': 'Shield',
+      'Redes': 'Network',
+      'Bases de Datos': 'Database',
+      'Hardware y Soporte': 'Wrench',
+      'Blockchain': 'Code2',
+      'Calidad de Software': 'GitBranchPlus'
     }
+    return map[category] || 'Code2'
+  }
 
-    // Gradientes por nivel
-    const getGradient = (level) => {
-      switch (level) {
-        case 'Avanzado': return 'linear-gradient(135deg, #EF4444, #2563EB, #111827)'
-        case 'Intermedio': return 'linear-gradient(135deg, #EAB308, #2563EB, #111827)'
-        default: return 'linear-gradient(135deg, #22C55E, #2563EB, #111827)'
-      }
-    }
+  const getFormattedDate = () => '12 y 13 de noviembre · 14:00 - 18:00'
 
-    // Iconos por categoría
-    const getIcon = (category) => {
-      const icons = {
-        'Inteligencia Artificial': 'Cpu',
-        'Desarrollo Web': 'Code2',
-        'Desarrollo Móvil': 'Smartphone',
-        'Ciberseguridad': 'Shield',
-        'Redes': 'Network',
-        'Bases de Datos': 'Database',
-        'Hardware y Soporte': 'Wrench',
-        'Blockchain': 'Code2',
-        'Calidad de Software': 'GitBranchPlus'
-      }
-      return icons[category] || 'Code2'
-    }
+  // ── mapping sólido (no asume que vengan todos los campos)
+  function mapWorkshopFromBackend(w) {
+    if (!w) return null
 
-    // Formatear fecha y hora desde el backend si está disponible
-    const getFormattedDate = () => {
-      // Por ahora usamos fechas estáticas, pero puedes adaptar esto
-      // para usar datos reales del schedule si están disponibles
-      return '12 y 13 de noviembre · 14:00 - 18:00'
-    }
+    const level = getLevel(w.name_workshop, w.descript)
+    const category = getCategory(w.descript)
 
-    const level = getLevel(workshop.name_workshop, workshop.descript)
-    const category = getCategory(workshop.descript)
+    const spotsMax = Number.isFinite(w.spots_max) ? w.spots_max : 0
+    const spotsOcc = Number.isFinite(w.spots_occupied) ? w.spots_occupied : 0
 
-    const mappedWorkshop = {
-      id: Number(workshop.workshop_id),
-      name: workshop.name_workshop || 'Taller sin nombre',
-      instructor: workshop.instructor_name || 'Instructor por confirmar',
-      category: category,
-      description: workshop.descript || 'Descripción no disponible',
-      duration: '4 horas', // Puedes obtener esto del schedule si está disponible
+    // disponible: si spots_max==0/NULL => ilimitado
+    const available = Number.isFinite(w.available_spots)
+      ? Math.max(w.available_spots, 0)
+      : (spotsMax > 0 ? Math.max(spotsMax - spotsOcc, 0) : Number.MAX_SAFE_INTEGER)
+
+    return {
+      id: Number(w.workshop_id),
+      name: w.name_workshop || 'Taller sin nombre',
+      instructor: w.instructor_name || 'Instructor por confirmar',
+      category,
+      description: w.descript || 'Descripción no disponible',
+      duration: '4 horas',
       date: getFormattedDate(),
-      location: (workshop.building && workshop.classroom) 
-        ? `${workshop.building} - ${workshop.classroom}`
-        : 'Ubicación por confirmar',
-      level: level,
+      location: (w.building && w.classroom) ? `${w.building} - ${w.classroom}` : 'Ubicación por confirmar',
+      level,
       gradient: getGradient(level),
-      icon: getIcon(category),
-      spots_max: workshop.spots_max || 0,
-      spots_occupied: workshop.spots_occupied || 0,
-      available_spots: workshop.available_spots || 0,
-      status: workshop.status || 'active',
-      // Campos de estado de inscripción del backend
-      is_user_enrolled: workshop.is_user_enrolled || false,
-      can_enroll: workshop.can_enroll || false,
-      enrollment_status: workshop.enrollment_status || 'not_authenticated',
-      button_text: workshop.button_text || 'Inscribirse',
-      button_disabled: workshop.button_disabled || true,
-      button_type: workshop.button_type || 'default',
-      // Campos originales del backend
-      _raw: workshop
-    }
+      icon: getIconKey(category),
 
-    console.log('✅ [useWorkshops] Taller mapeado:', mappedWorkshop);
-    return mappedWorkshop;
+      spots_max: spotsMax, // 0 => ilimitado
+      spots_occupied: spotsOcc,
+      available_spots: available,
+      status: w.status || 'active',
+
+      // estados backend
+      is_user_enrolled: Boolean(w.is_user_enrolled),
+      enrollment_status: w.enrollment_status || 'not_authenticated',
+      button_text: w.button_text || 'Inscribirse',
+      button_disabled: w.button_disabled ?? true,
+      button_type: w.button_type || 'default',
+
+      _raw: w
+    }
   }
 
-  // Procesar respuesta del backend
-  function processApiResponse(response) {
-    console.log('📨 [useWorkshops] Procesando respuesta del API:', response);
-    
-    // Si la respuesta es directamente un array
-    if (Array.isArray(response)) {
-      console.log('📊 [useWorkshops] Respuesta es array directo, procesando...');
-      const processed = response.map(mapWorkshopFromBackend).filter(Boolean);
-      console.log(`✅ [useWorkshops] Procesados ${processed.length} talleres`);
-      return processed;
+  function processApiResponse(resp) {
+    if (Array.isArray(resp)) return resp.map(mapWorkshopFromBackend).filter(Boolean)
+    if (resp && typeof resp === 'object') {
+      const key = Object.keys(resp).find(k => Array.isArray(resp[k]))
+      if (key) return resp[key].map(mapWorkshopFromBackend).filter(Boolean)
     }
-    
-    // Si es un objeto con alguna propiedad que sea array
-    if (response && typeof response === 'object') {
-      // Buscar cualquier propiedad que sea array
-      const arrayKeys = Object.keys(response).filter(key => Array.isArray(response[key]));
-      
-      if (arrayKeys.length > 0) {
-        console.log(`📊 [useWorkshops] Encontrada propiedad array: ${arrayKeys[0]}`);
-        const arrayData = response[arrayKeys[0]];
-        const processed = arrayData.map(mapWorkshopFromBackend).filter(Boolean);
-        console.log(`✅ [useWorkshops] Procesados ${processed.length} talleres desde ${arrayKeys[0]}`);
-        return processed;
-      }
-    }
-    
-    console.warn('⚠️ [useWorkshops] No se pudo procesar la respuesta, retornando array vacío');
-    return [];
+    // si llega string u otra cosa => vacío
+    return []
   }
 
-  // Determinar el texto y estado del botón según el estado de inscripción
+  // ── botón por estado
   function getEnrollmentButton(workshop) {
-    if (!workshop) {
-      return {
-        text: 'Error',
-        disabled: true,
-        variant: 'disabled',
-        action: null,
-        tooltip: 'Error cargando taller'
-      }
+    const alreadyInOne = Boolean(userWorkshop.value)
+    const isThisUserWorkshop = alreadyInOne && userWorkshop.value?.id === workshop.id
+
+    if (!isAuthenticated.value) {
+      return { showButton: true, text: 'Inicia sesión', disabled: true, variant: 'login-required', action: null, tooltip: 'Inicia sesión para inscribirte' }
     }
 
-    console.log(`🎯 [useWorkshops] Estado de inscripción para taller ${workshop.id}:`, workshop.enrollment_status);
+    if (alreadyInOne) {
+      if (isThisUserWorkshop) {
+        return { showButton: true, text: '✅ Seleccionado', disabled: true, variant: 'selected', action: null, tooltip: 'Ya estás inscrito en este taller' }
+      }
+      // Ya tiene otro taller => ocultamos botón para evitar confusión
+      return { showButton: false, text: '', disabled: true, variant: 'locked-by-other', action: null, tooltip: 'Ya tienes un taller asignado' }
+    }
 
-    // Usar los estados del backend directamente
     switch (workshop.enrollment_status) {
       case 'already_enrolled':
-        return {
-          text: workshop.button_text || '✅ Seleccionado',
-          disabled: workshop.button_disabled !== false,
-          variant: 'selected',
-          action: null,
-          tooltip: 'Ya estás inscrito en este taller'
+        return { showButton: true, text: '✅ Seleccionado', disabled: true, variant: 'selected', action: null, tooltip: 'Ya estás inscrito en este taller' }
+
+      case 'can_enroll': {
+        const hasCupo = workshop.spots_max === 0 || workshop.available_spots > 0 || workshop.available_spots === Number.MAX_SAFE_INTEGER
+        if (!hasCupo) {
+          return { showButton: true, text: 'Cupo lleno', disabled: true, variant: 'disabled', action: null, tooltip: 'Este taller ya no tiene cupos' }
         }
-      case 'can_enroll':
-        const isAvailable = workshop.available_spots > 0 || workshop.spots_max === 0
-        return {
-          text: workshop.button_text || (isAvailable ? 'Inscribirse' : 'Cupo lleno'),
-          disabled: workshop.button_disabled !== false || !isAvailable,
-          variant: isAvailable ? 'enroll' : 'disabled',
-          action: isAvailable ? () => enrollInWorkshop(workshop.id) : null,
-          tooltip: isAvailable ? 'Haz clic para inscribirte' : 'Este taller ya no tiene cupos disponibles'
-        }
+        return { showButton: true, text: 'Inscribirse', disabled: false, variant: 'enroll', action: () => enrollInWorkshop(workshop.id), tooltip: 'Haz clic para inscribirte' }
+      }
+
       case 'needs_payment':
-        return {
-          text: workshop.button_text || 'Completar Pago',
-          disabled: workshop.button_disabled !== false,
-          variant: 'needs-payment',
-          action: () => showPaymentModal.value = true,
-          tooltip: 'Requiere pago del congreso para inscribirse'
-        }
+        return { showButton: true, text: 'Completar Pago', disabled: false, variant: 'needs-payment', action: () => { showPaymentModal.value = true }, tooltip: 'Requiere pago del congreso' }
+
+      case 'no_spots':
+        return { showButton: true, text: 'Cupo lleno', disabled: true, variant: 'disabled', action: null, tooltip: 'Este taller ya no tiene cupos' }
+
       case 'not_authenticated':
       default:
-        return {
-          text: workshop.button_text || 'Inscribirse',
-          disabled: workshop.button_disabled !== false,
-          variant: 'login-required',
-          action: null,
-          tooltip: 'Inicia sesión para inscribirte'
-        }
+        return { showButton: true, text: 'Inicia sesión', disabled: true, variant: 'login-required', action: null, tooltip: 'Inicia sesión para inscribirte' }
     }
   }
 
-  // Inscribirse en taller
   async function enrollInWorkshop(workshopId) {
     if (!isAuthenticated.value) {
       showToast('Debes iniciar sesión para inscribirte', 'error')
       return
     }
-
-    try {
-      // TODO: Conectar con el endpoint del módulo de usuarios
-      // await UsersApi.enrollInWorkshop(workshopId)
-      
-      // Por ahora solo mostramos un mensaje
-      showToast('Función de inscripción en desarrollo. Pronto podrás inscribirte en talleres.', 'info')
-      console.log(`📝 [useWorkshops] Intentando inscribirse en taller ${workshopId}`);
-      
-      // Recargar los talleres para actualizar el estado
-      await loadWorkshops()
-      
-    } catch (err) {
-      const errorMessage = parseAxiosError(err)
-      showToast(errorMessage, 'error')
-      console.error('❌ [useWorkshops] Error inscribiéndose en taller:', err)
-    }
+    // TODO: conectar a endpoint real de inscripción
+    showToast('Función de inscripción en desarrollo.', 'info')
+    await loadWorkshops()
   }
 
-  // Cargar talleres (con autenticación si existe)
+  // ── cargar SIEMPRE TODOS (auth => /workshops, guest => /workshops/public)
   async function loadWorkshops() {
     loading.value = true
     error.value = ''
-    console.log('🔄 [useWorkshops] Iniciando carga de talleres...');
-
     try {
-      console.log('🔐 [useWorkshops] Estado autenticación:', isAuthenticated.value);
-      
-      let response
-      if (isAuthenticated.value) {
-        console.log('👤 [useWorkshops] Cargando talleres autenticados...');
-        response = await WorkshopsApi.getAll()
-      } else {
-        console.log('👥 [useWorkshops] Cargando talleres públicos...');
-        response = await WorkshopsApi.getPublic()
-      }
-      
-      console.log('📦 [useWorkshops] Respuesta cruda recibida:', response);
-      
-      // Procesar la respuesta
-      const processedWorkshops = processApiResponse(response)
-      
-      if (processedWorkshops.length > 0) {
-        workshops.value = processedWorkshops
-        console.log(`🎉 [useWorkshops] ${workshops.value.length} talleres cargados exitosamente`);
-        showToast(`${workshops.value.length} talleres cargados`, 'success')
-      } else {
-        workshops.value = []
-        console.log('ℹ️ [useWorkshops] No se encontraron talleres activos');
+      const resp = isAuthenticated.value ? await WorkshopsApi.getAll() : await WorkshopsApi.getPublic()
+      const processed = processApiResponse(resp)
+      workshops.value = processed
+      if (processed.length === 0) {
+        // En vez de “No se encontraron”, muestra algo amigable y sin bloquear
         showToast('No se encontraron talleres activos', 'info')
       }
-      
     } catch (err) {
-      const errorMessage = parseAxiosError(err)
-      error.value = errorMessage
-      console.error('❌ [useWorkshops] Error completo cargando talleres:', err)
-      showToast(errorMessage, 'error')
+      const msg = parseAxiosError(err)
+      error.value = msg
       workshops.value = []
-    } finally {
-      loading.value = false
-      console.log('🏁 [useWorkshops] Carga de talleres completada');
-    }
-  }
-
-  // Cargar talleres disponibles
-  async function loadAvailableWorkshops() {
-    loading.value = true
-    error.value = ''
-
-    try {
-      let response
-      if (isAuthenticated.value) {
-        response = await WorkshopsApi.getAvailable()
-      } else {
-        response = await WorkshopsApi.getPublicAvailable()
-      }
-      
-      // Procesar la respuesta
-      const processedWorkshops = processApiResponse(response)
-      
-      if (processedWorkshops.length > 0) {
-        workshops.value = processedWorkshops
-        showToast(`${workshops.value.length} talleres disponibles cargados`, 'success')
-      } else {
-        workshops.value = []
-        showToast('No se encontraron talleres disponibles', 'info')
-      }
-    } catch (err) {
-      const errorMessage = parseAxiosError(err)
-      error.value = errorMessage
-      showToast(errorMessage, 'error')
-      console.error('Error cargando talleres disponibles:', err)
-      workshops.value = []
+      showToast(msg, 'error')
     } finally {
       loading.value = false
     }
   }
 
-  // Mostrar toast
   function showToast(message, type = 'success') {
     toast.value = { show: true, type, message }
-    setTimeout(() => {
-      toast.value.show = false
-    }, 5000)
+    window.setTimeout(() => { toast.value = { ...toast.value, show: false } }, 4000)
   }
 
-  // Cargar datos al montar el componente
-  onMounted(() => {
-    console.log('🚀 [useWorkshops] Composable montado, cargando talleres...');
-    loadWorkshops()
-  })
+  onMounted(() => { loadWorkshops() })
 
   return {
-    // State
     workshops,
     loading,
     error,
     toast,
     showPaymentModal,
-    
-    // Computed
+
     hasWorkshops,
-    availableWorkshops,
     isAuthenticated,
     userWorkshop,
-    hasPayment,
-    
-    // Methods
+
     loadWorkshops,
-    loadAvailableWorkshops,
     getEnrollmentButton,
     enrollInWorkshop,
-    showToast
+    showToast,
   }
 }

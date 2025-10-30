@@ -1,4 +1,4 @@
-// features/auth/use-login.js
+// composables/auth/use-login.js
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/security/stores/auth'
 import { R } from '@/utils/app-routes'
@@ -52,15 +52,28 @@ export function useLogin() {
   // Manejo de respuesta exitosa
   async function handleSuccessResponse(response) {
     // 1) Verificación pendiente
-    if (response?.require_verification) {
-      try {
-        if (response?.user?.email) {
-          sessionStorage.setItem('verify_email', response.user.email)
-        }
-        localStorage.setItem('verification_purpose', 'email_verification')
-      } catch { }
-      return navigateTo(R.to('verify'))
+    if (Number.isFinite(response?.user_id)) {
+      const roleId = Number(response?.user?.type_user_id ?? 0)
+      const roleName = response?.user?.type_user_name || null
+
+      authStore.setUser({
+        id: response.user_id,
+        email: email.value || response?.user?.email || '',
+        roleId,
+        roleName,
+        ...(response?.user || {})
+      })
+
+      // ✅ fija Authorization y persiste token
+      if (response?.access_token) authStore.setAccessToken(response.access_token)
+
+      // (opcional) guarda refresh_token si lo ocupas para otros flujos
+      if (response?.refresh_token) try { localStorage.setItem('refresh_token', response.refresh_token) } catch {}
+
+      // ✅ Redirección por rol
+      return roleId === 5 ? navigateTo('/admin/users') : navigateTo('/workshops')
     }
+
 
     // 2) Login exitoso
     if (Number.isFinite(response?.user_id)) {
