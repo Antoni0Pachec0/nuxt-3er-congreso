@@ -117,9 +117,9 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import api from '~/backend/http/api'
 import { ROUTES } from '~/backend/http/routes'
 import { parseAxiosError } from '~/backend/http/error'
-import { notifyError, notifyWarning, notifyLoading } from '~/utils/notifications'
+//import { notifyError, notifyWarning } from '~/utils/notify/adapter'
 import { R } from '~/utils/app-routes'
-import '@/assets/css/styles/Verify.css'
+import '@/assets/css/styles/auth/verify.css'
 
 definePageMeta({
   name: 'verify',
@@ -256,7 +256,7 @@ async function onVerify() {
 
   loading.value = true
   error.value = ''
-  const toast = notifyLoading('Verificando código', 'Estamos validando tu código…')
+  //const toast = notifyLoading('Verificando código', 'Estamos validando tu código…')
 
   try {
     const payload = { email: email.value.toLowerCase().trim(), code: code.value }

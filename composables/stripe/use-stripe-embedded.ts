@@ -1,34 +1,41 @@
 // composables/stripe/use-stripe-embedded.ts
-import { useRuntimeConfig } from '#app'
+import type { LineItem, CreateSessionResponse, VerifyPaymentResponse } from '~/types/payment'
 
-type LineItem = { price: string; quantity: number }
-type CreateSessionRes = { sessionId: string; clientSecret: string }
-type VerifyRes = {
-    isComplete: boolean
-    paymentStatus: string
-    customerId: string | null
+export function useStripeEmbedded() {
+    const { public: pub } = useRuntimeConfig()
+    const { post, get } = useApi()
+
+    const createSession = async (items: LineItem[]) => {
+        return await post('/payment-stripe/create-checkout-session', {
+            items, 
+            returnUrl: pub.returnUrl
+        })
+    }
+
+    const verifySession = async (sessionId: string) => {
+        return await get(`/payment-stripe/verify-payment/${sessionId}`)
+    }
+
+    return { createSession, verifySession }
+}
+    /**customerId: string | null
     amount: number
 }
 
 export function useStripeEmbedded() {
     const { public: pub } = useRuntimeConfig()
+    const { post, get } = useApi()
 
     const createSession = async (items: LineItem[]) => {
-        return await $fetch<CreateSessionRes>('/payment-stripe/create-checkout-session', {
-            baseURL: pub.apiBase,     // 👈 toma host desde runtimeConfig
-            method: 'POST',
-            credentials: 'include',   // 👈 cookies
-            body: { items, returnUrl: pub.returnUrl }
+        return await post('/payment-stripe/create-checkout-session', {
+            items, 
+            returnUrl: pub.returnUrl
         })
     }
 
     const verifySession = async (sessionId: string) => {
-        return await $fetch<VerifyRes>(`/payment-stripe/verify-payment/${sessionId}`, {
-            baseURL: pub.apiBase,
-            method: 'POST',
-            credentials: 'include'
-        })
+        return await get(`/payment-stripe/verify-payment/${sessionId}`)
     }
 
     return { createSession, verifySession }
-}
+} */

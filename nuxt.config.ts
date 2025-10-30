@@ -57,7 +57,7 @@ export default defineNuxtConfig({
   // ----------------
   runtimeConfig: {
     public: {
-      apiBase:
+      apiBase: 
         process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3001',
         stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ,
         returnUrl: process.env.NUXT_PUBLIC_RETURN_URL || 'http://localhost:3000/stripe/success',

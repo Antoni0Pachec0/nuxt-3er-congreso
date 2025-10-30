@@ -103,33 +103,6 @@
             </div>
           </div>
 
-          <div class="input-wrap">
-            <span class="input-icon">
-              <SvgIcon :path="mdiLockOutline" type="mdi" />
-            </span>
-            <input
-              id="password"
-              :type="show ? 'text' : 'password'"
-              v-model.trim="password"
-              required
-              minlength="8"
-              maxlength="50"
-              autocomplete="current-password"
-              placeholder="••••••••"
-              class="input input--pass"
-            />
-            <button
-              type="button"
-              class="eye"
-              :aria-pressed="show ? 'true' : 'false'"
-              :title="show ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-              @click="show = !show"
-            >
-              <SvgIcon v-if="show" :path="mdiEyeOffOutline" type="mdi" />
-              <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
-            </button>
-          </div>
-
           <!-- Botón de submit -->
           <button
             class="btn"
