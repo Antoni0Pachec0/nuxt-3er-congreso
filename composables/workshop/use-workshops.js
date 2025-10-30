@@ -1,8 +1,48 @@
+// composables/workshop/use-workshops.js
 import { ref, computed, onMounted } from 'vue'
 import { WorkshopsApi } from '@/backend/workshop/workshops-api'
 import { UsersApi } from '@/backend/user/users-api'
 import { parseAxiosError } from '@/backend/http/error'
 import { useAuthStore } from '@/security/stores/auth'
+
+/** Mapea posibles valores del backend a etiqueta en español */
+function toLevelLabel(levelRaw, name, descript) {
+  const v = (levelRaw || '').toString().toLowerCase()
+  if (['advanced','avanzado','avanzada'].includes(v)) return 'Avanzado'
+  if (['intermediate','intermedio','intermedia'].includes(v)) return 'Intermedio'
+  if (['beginner','principiante','básico','basico'].includes(v)) return 'Principiante'
+
+  // Fallback heurístico (por si un taller viejo no trae level)
+  const text = ((name || '') + ' ' + (descript || '')).toLowerCase()
+  if (text.includes('avanzad') || text.includes('experto')) return 'Avanzado'
+  if (text.includes('intermed')) return 'Intermedio'
+  return 'Principiante'
+}
+
+function getGradient(levelLabel) {
+  switch (levelLabel) {
+    case 'Avanzado': return 'linear-gradient(135deg, #EF4444, #2563EB, #111827)'
+    case 'Intermedio': return 'linear-gradient(135deg, #EAB308, #2563EB, #111827)'
+    default: return 'linear-gradient(135deg, #22C55E, #2563EB, #111827)'
+  }
+}
+
+function getIconKey(category) {
+  const map = {
+    'Inteligencia Artificial': 'Cpu',
+    'Desarrollo Web': 'Code2',
+    'Desarrollo Móvil': 'Smartphone',
+    'Ciberseguridad': 'Shield',
+    'Redes': 'Network',
+    'Bases de Datos': 'Database',
+    'Hardware y Soporte': 'Wrench',
+    'Blockchain': 'Code2',
+    'Calidad de Software': 'GitBranchPlus'
+  }
+  return map[category] || 'Code2'
+}
+
+function getFormattedDate() { return '12 y 13 de noviembre · 14:00 - 18:00' }
 
 export function useWorkshops() {
   const workshops = ref([])
@@ -26,77 +66,40 @@ export function useWorkshops() {
     workshops.value.find(w => w.is_user_enrolled || w.enrollment_status === 'already_enrolled') || null
   )
 
-  const getLevel = (name, description) => {
-    const text = ((name || '') + ' ' + (description || '')).toLowerCase()
-    if (text.includes('avanzad') || text.includes('experto')) return 'Avanzado'
-    if (text.includes('intermed')) return 'Intermedio'
-    return 'Principiante'
-  }
-
-  const getCategory = (description) => {
-    const d = (description || '').toLowerCase()
-    if (d.includes('ia') || d.includes('inteligencia artificial') || d.includes('modelo')) return 'Inteligencia Artificial'
-    if (d.includes('web') || d.includes('pwa') || d.includes('vue')) return 'Desarrollo Web'
-    if (d.includes('móvil') || d.includes('mobile') || d.includes('app')) return 'Desarrollo Móvil'
-    if (d.includes('seguridad') || d.includes('hacking') || d.includes('forense')) return 'Ciberseguridad'
-    if (d.includes('red') || d.includes('vrf') || d.includes('fibra')) return 'Redes'
-    if (d.includes('base de datos') || d.includes('mongodb') || d.includes('nosql')) return 'Bases de Datos'
-    if (d.includes('hardware') || d.includes('pc') || d.includes('laptop')) return 'Hardware y Soporte'
-    if (d.includes('blockchain') || d.includes('contrato inteligente')) return 'Blockchain'
-    if (d.includes('calidad') || d.includes('prueba') || d.includes('test')) return 'Calidad de Software'
-    return 'Desarrollo Backend'
-  }
-
-  const getGradient = (level) => {
-    switch (level) {
-      case 'Avanzado': return 'linear-gradient(135deg, #EF4444, #2563EB, #111827)'
-      case 'Intermedio': return 'linear-gradient(135deg, #EAB308, #2563EB, #111827)'
-      default: return 'linear-gradient(135deg, #22C55E, #2563EB, #111827)'
-    }
-  }
-
-  const getIconKey = (category) => {
-    const map = {
-      'Inteligencia Artificial': 'Cpu',
-      'Desarrollo Web': 'Code2',
-      'Desarrollo Móvil': 'Smartphone',
-      'Ciberseguridad': 'Shield',
-      'Redes': 'Network',
-      'Bases de Datos': 'Database',
-      'Hardware y Soporte': 'Wrench',
-      'Blockchain': 'Code2',
-      'Calidad de Software': 'GitBranchPlus'
-    }
-    return map[category] || 'Code2'
-  }
-
-  const getFormattedDate = () => '12 y 13 de noviembre · 14:00 - 18:00'
-
   function mapWorkshopFromBackend(w) {
     if (!w) return null
-    const level = getLevel(w.name_workshop, w.descript)
-    const category = getCategory(w.descript)
-    const spotsMax = Number.isFinite(w.spots_max) ? w.spots_max : 0
-    const spotsOcc = Number.isFinite(w.spots_occupied) ? w.spots_occupied : 0
+
+    // Valores crudos backend
+    const spotsMaxRaw = Number.isFinite(w.spots_max) ? w.spots_max : 0
+    const spotsOccRaw = Number.isFinite(w.spots_occupied) ? w.spots_occupied : 0
+    // Backend ya envía available_spots (unificado). Aseguramos no-negativo:
     const available = Number.isFinite(w.available_spots)
       ? Math.max(w.available_spots, 0)
-      : (spotsMax > 0 ? Math.max(spotsMax - spotsOcc, 0) : Number.MAX_SAFE_INTEGER)
+      : (spotsMaxRaw > 0 ? Math.max(spotsMaxRaw - spotsOccRaw, 0) : Number.MAX_SAFE_INTEGER)
+
+    // level: usar backend y normalizar etiqueta
+    const levelLabel = toLevelLabel(w.level, w.name_workshop, w.descript)
+    const category = w.category || null // si no viene, el UI lo mostrará vacío
+    const gradient = getGradient(levelLabel)
 
     return {
       id: Number(w.workshop_id),
       name: w.name_workshop || 'Taller sin nombre',
       instructor: w.instructor_name || 'Instructor por confirmar',
-      category,
+      category: category || '—',
       description: w.descript || 'Descripción no disponible',
       duration: '4 horas',
       date: getFormattedDate(),
       location: (w.building && w.classroom) ? `${w.building} - ${w.classroom}` : 'Ubicación por confirmar',
-      level,
-      gradient: getGradient(level),
+
+      level: levelLabel,
+      gradient,
       icon: getIconKey(category),
 
-      spots_max: spotsMax,
-      spots_occupied: spotsOcc,
+      tools: Array.isArray(w.tools) ? w.tools : [],
+
+      spots_max: spotsMaxRaw,
+      spots_occupied: spotsOccRaw,
       available_spots: available,
       status: w.status || 'active',
 
@@ -105,6 +108,7 @@ export function useWorkshops() {
       button_text: w.button_text || 'Inscribirse',
       button_disabled: w.button_disabled ?? true,
       button_type: w.button_type || 'default',
+
       _raw: w
     }
   }
@@ -118,12 +122,11 @@ export function useWorkshops() {
     return []
   }
 
-  // Botón por estado (limpio para NO autenticados)
+  // Botón por estado (mismo contrato que ya usas en el template)
   function getEnrollmentButton(workshop) {
     const alreadyInOne = Boolean(userWorkshop.value)
     const isThisUserWorkshop = alreadyInOne && userWorkshop.value?.id === workshop.id
 
-    // 🔒 No autenticado: NO mostrar nada
     if (!isAuthenticated.value) {
       return { showButton: false, text: '', disabled: true, variant: 'hidden', action: null, tooltip: '' }
     }
@@ -193,7 +196,6 @@ export function useWorkshops() {
   }
 
   async function enrollInWorkshop(workshopId) {
-    // (ya no se usa directo; se usa el modal de confirmación)
     openConfirm(workshopId)
   }
 
@@ -202,8 +204,7 @@ export function useWorkshops() {
     error.value = ''
     try {
       const resp = isAuthenticated.value ? await WorkshopsApi.getAll() : await WorkshopsApi.getPublic()
-      const processed = processApiResponse(resp)
-      workshops.value = processed
+      workshops.value = processApiResponse(resp)
     } catch (err) {
       const msg = parseAxiosError(err)
       error.value = msg
@@ -225,7 +226,6 @@ export function useWorkshops() {
     workshops, loading, error, toast, showPaymentModal,
     hasWorkshops, isAuthenticated, userWorkshop,
     loadWorkshops, getEnrollmentButton, enrollInWorkshop,
-    // modal confirmación
     confirmModal, openConfirm, closeConfirm, confirmEnroll,
     showToast,
   }

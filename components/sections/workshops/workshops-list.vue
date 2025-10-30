@@ -123,6 +123,9 @@
 
           <div class="workshop-card-body">
             <p class="workshop-desc">{{ workshop.description }}</p>
+            <ul v-if="Array.isArray(workshop.tools) && workshop.tools.length" class="tools-list" aria-label="Herramientas">
+              <li v-for="t in workshop.tools" :key="t" class="tool-chip">{{ t }}</li>
+            </ul>
 
             <div class="workshop-spots">
               <div class="spots-info">
@@ -151,15 +154,15 @@
 
             <div class="enrollment-section">
               <button
-                v-if="getEnrollmentButton(workshop).showButton"
-                @click="getEnrollmentButton(workshop).action"
-                :disabled="getEnrollmentButton(workshop).disabled"
-                class="enroll-btn"
-                :class="`enroll-btn--${getEnrollmentButton(workshop).variant}`"
-                :title="getEnrollmentButton(workshop).tooltip"
-              >
-                {{ getEnrollmentButton(workshop).text }}
-              </button>
+              v-if="getEnrollmentButton(workshop).showButton"
+              @click="getEnrollmentButton(workshop).action && getEnrollmentButton(workshop).action()"
+              :disabled="getEnrollmentButton(workshop).disabled"
+              class="enroll-btn"
+              :class="`enroll-btn--${getEnrollmentButton(workshop).variant}`"
+              :title="getEnrollmentButton(workshop).tooltip"
+            >
+              {{ getEnrollmentButton(workshop).text }}
+            </button>
 
               <!-- Ya no se muestra nota 'login-required' -->
               <div
