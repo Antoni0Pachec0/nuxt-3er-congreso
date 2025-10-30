@@ -12,7 +12,7 @@ export const ROUTES = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
   },
-  
+
   SCORES: {
     CREATE: '/scores',
     LEADERBOARD: '/scores/leaderboard',
@@ -21,6 +21,7 @@ export const ROUTES = {
   USERS: {
     LIST: '/users',
     BY_ID: (id) => `/users/${id}`,
+    ENROLL_WORKSHOP: '/users/me/workshop', // 👈 NUEVO
   },
 
   WORKSHOPS: {
@@ -35,7 +36,7 @@ export const ROUTES = {
       LIST: '/admin/users',
       FILTER_OPTIONS: '/admin/users/filter-options',
       ACTIVATION: (id) => `/admin/users/${id}/activation`,
-      ACTIVATION_BULK: '/admin/users/activation-bulk', // <— NUEVO
+      ACTIVATION_BULK: '/admin/users/activation-bulk',
     }
   }
 }

@@ -617,3 +617,138 @@
   background: #F3F4F6;
   color: #6B7280;
 }
+
+/* --- Modal base compartido --- */
+.payment-modal {
+  width: min(560px, 92vw);
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 25px 70px rgba(2, 20, 56, 0.18);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  animation: popIn .18s ease-out both;
+}
+
+@keyframes popIn {
+  from { transform: translateY(8px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+  padding: 14px 16px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.modal-close {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.modal-body {
+  padding: 18px 16px;
+  color: #0b1534;
+}
+
+.modal-body p {
+  margin: 0 0 10px;
+}
+
+.payment-steps {
+  margin: 10px 0 6px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.payment-steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  color: #0b1534;
+}
+
+.modal-note {
+  margin-top: 4px;
+  font-size: .9rem;
+  color: #475569;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .25s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+}
+
+.btn-primary:hover { transform: translateY(-1px); }
+
+.btn-secondary {
+  background: #eef2f7;
+  color: #0b1534;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #e9edf5;
+}
+
+/* Iconitos utilitarios */
+.mi-icon { width: 18px; height: 18px; }
+.mi-icon.lg { width: 42px; height: 42px; }
+.mi-icon.xl { width: 64px; height: 64px; }
+.mi-icon.ok { color: #10b981; }
+.mi-icon.warn { color: #eab308; }
+
+/* Badges */
+.enrolled-badge, .full-badge {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.35);
+}

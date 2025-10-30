@@ -3,7 +3,7 @@
     <!-- Toast -->
     <transition name="toast">
       <div v-if="toast.show" class="toast" :class="`toast--${toast.type}`" role="status" aria-live="polite">
-        <strong class="toast-title">{{ toast.type === 'success' ? '¡Listo!' : 'Aviso' }}</strong>
+        <strong class="toast-title">{{ toast.type === 'success' ? 'Listo' : 'Aviso' }}</strong>
         <p class="toast-msg">{{ toast.message }}</p>
         <button class="toast-close" @click="toast.show = false" aria-label="Cerrar">×</button>
       </div>
@@ -14,19 +14,44 @@
       <div v-if="showPaymentModal" class="confirm-backdrop" @click.self="showPaymentModal = false" role="dialog" aria-modal="true">
         <div class="payment-modal">
           <div class="modal-header">
-            <h3 class="modal-title">Pago Requerido</h3>
+            <h3 class="modal-title">Pago requerido</h3>
             <button @click="showPaymentModal = false" class="modal-close">×</button>
           </div>
           <div class="modal-body">
             <p>Para poder inscribirte en un taller, debes:</p>
             <ul class="payment-steps">
-              <li>✅ Haber pagado el congreso</li>
-              <li>⏳ Esperar la validación del administrador</li>
+              <li><CheckCircle class="mi-icon ok" /> Haber pagado el congreso</li>
+              <li><Info class="mi-icon warn" /> Esperar la validación del administrador</li>
             </ul>
             <p class="modal-note">Una vez verificado tu pago, podrás inscribirte.</p>
           </div>
           <div class="modal-footer">
             <button @click="showPaymentModal = false" class="btn btn-primary">Entendido</button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Modal confirmación inscripción -->
+    <transition name="fade">
+      <div v-if="confirmModal.open" class="confirm-backdrop" @click.self="closeConfirm()" role="dialog" aria-modal="true">
+        <div class="payment-modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Confirmar inscripción</h3>
+            <button @click="closeConfirm()" class="modal-close">×</button>
+          </div>
+          <div class="modal-body">
+            <p>
+              ¿Confirmas tu inscripción al taller
+              <strong v-if="confirmModal.workshopName">“{{ confirmModal.workshopName }}”</strong>?
+            </p>
+            <p class="modal-note">Solo puedes estar inscrito en <strong>un</strong> taller.</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="closeConfirm()">Cancelar</button>
+            <button class="btn btn-primary" :disabled="confirmModal.loading" @click="confirmEnroll()">
+              {{ confirmModal.loading ? 'Inscribiendo…' : 'Confirmar' }}
+            </button>
           </div>
         </div>
       </div>
@@ -39,7 +64,7 @@
     </div>
 
     <div v-else-if="error && !hasWorkshops" class="error-state" role="alert">
-      <div class="error-icon">⚠️</div>
+      <div class="error-icon"><Info class="mi-icon lg" /></div>
       <h3>Error al cargar los talleres</h3>
       <p>{{ error }}</p>
       <button @click="loadWorkshops" class="btn retry-btn">Reintentar</button>
@@ -55,7 +80,7 @@
         <div v-if="isAuthenticated" class="user-workshop-status">
           <div v-if="userWorkshop" class="user-selected-workshop">
             <div class="selected-badge">
-              <span class="badge-icon">✅</span>
+              <CheckCircle class="mi-icon ok" />
               <span class="badge-text">Ya estás inscrito en: <strong>{{ userWorkshop.name }}</strong></span>
             </div>
             <p class="selected-note">Solo puedes estar inscrito en un taller.</p>
@@ -65,13 +90,9 @@
             <p class="selection-subtitle">Tu estado de inscripción se mostrará en cada tarjeta.</p>
           </div>
         </div>
-
-        <div v-else class="auth-notice">
-          <p>💡 <strong>Inicia sesión</strong> para inscribirte en los talleres</p>
-        </div>
       </header>
 
-      <!-- SIEMPRE: todos los talleres -->
+      <!-- Cards -->
       <div v-if="hasWorkshops" class="workshop-grid">
         <article
           v-for="workshop in workshops"
@@ -86,8 +107,12 @@
               </div>
               <div class="workshop-badges">
                 <span class="workshop-badge" :class="levelClass(workshop)">{{ workshop.level }}</span>
-                <span v-if="workshop.is_user_enrolled" class="enrolled-badge">✅ Tu taller</span>
-                <span v-else-if="workshop.available_spots === 0 && workshop.spots_max > 0" class="full-badge">🔒 Cupo lleno</span>
+                <span v-if="workshop.is_user_enrolled" class="enrolled-badge">
+                  <CheckCircle class="mi-icon ok" /> Tu taller
+                </span>
+                <span v-else-if="workshop.available_spots === 0 && workshop.spots_max > 0" class="full-badge">
+                  <Lock class="mi-icon" /> Cupo lleno
+                </span>
               </div>
             </div>
             <div class="workshop-header-info">
@@ -103,8 +128,9 @@
               <div class="spots-info">
                 <span class="spots-text">
                   Cupos: {{ workshop.spots_occupied || 0 }}/{{ workshop.spots_max || 'Ilimitado' }}
-                  <span v-if="workshop.available_spots > 0" class="available-text">({{ workshop.available_spots }} disponibles)</span>
-                  <span v-else-if="workshop.spots_max > 0" class="full-text">(Cupo lleno)</span>
+                  <span v-if="workshop.available_spots > 0 && workshop.spots_max > 0" class="available-text">
+                    ({{ workshop.available_spots }} disponibles)
+                  </span>
                 </span>
                 <div v-if="workshop.spots_max > 0" class="spots-bar">
                   <div
@@ -135,13 +161,16 @@
                 {{ getEnrollmentButton(workshop).text }}
               </button>
 
-              <div class="enrollment-note" :class="`note--${getEnrollmentButton(workshop).variant}`">
-                <span v-if="getEnrollmentButton(workshop).variant === 'login-required'">Inicia sesión para inscribirte</span>
-                <span v-else-if="getEnrollmentButton(workshop).variant === 'needs-payment'">Requiere pago verificado</span>
+              <!-- Ya no se muestra nota 'login-required' -->
+              <div
+                v-if="['needs-payment','disabled','selected','enroll'].includes(getEnrollmentButton(workshop).variant)"
+                class="enrollment-note"
+                :class="`note--${getEnrollmentButton(workshop).variant}`"
+              >
+                <span v-if="getEnrollmentButton(workshop).variant === 'needs-payment'">Requiere pago verificado</span>
                 <span v-else-if="getEnrollmentButton(workshop).variant === 'disabled'">Cupo agotado</span>
                 <span v-else-if="getEnrollmentButton(workshop).variant === 'selected'">Taller seleccionado</span>
                 <span v-else-if="getEnrollmentButton(workshop).variant === 'enroll'">Disponible para inscripción</span>
-                <span v-else-if="getEnrollmentButton(workshop).variant === 'locked-by-other'">Ya tienes un taller asignado</span>
               </div>
             </div>
           </div>
@@ -149,7 +178,7 @@
       </div>
 
       <div v-else class="empty-state">
-        <div class="empty-icon">📚</div>
+        <div class="empty-icon"><Info class="mi-icon xl" /></div>
         <h3>No hay talleres disponibles</h3>
         <p>No se encontraron talleres activos en este momento.</p>
         <button @click="loadWorkshops" class="btn retry-btn">Reintentar</button>
@@ -161,7 +190,7 @@
 <script setup>
 import "@/assets/css/styles/pages/workshops/workshops-list.css";
 import {
-  User, Clock, Calendar, MapPin,
+  User, Clock, Calendar, MapPin, CheckCircle, Lock, Info,
   Code2, Cpu, Database, Smartphone, Shield, Network, Wrench, GitBranchPlus
 } from "lucide-vue-next";
 import { useWorkshops } from "@/composables/workshop/use-workshops";
@@ -171,7 +200,8 @@ const iconMap = { Cpu, Code2, Smartphone, Shield, Network, Database, Wrench, Git
 const {
   workshops, loading, error, toast, showPaymentModal,
   hasWorkshops, isAuthenticated, userWorkshop,
-  loadWorkshops, getEnrollmentButton
+  loadWorkshops, getEnrollmentButton,
+  confirmModal, openConfirm, closeConfirm, confirmEnroll
 } = useWorkshops();
 
 const levelClass = (workshop) => {
