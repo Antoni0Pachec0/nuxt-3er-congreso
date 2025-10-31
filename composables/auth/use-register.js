@@ -194,6 +194,40 @@ export function useRegister () {
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const isValidPhone = (phone) => /^\d{10}$/.test(phone)
 
+
+  // validacion de grado y grupo
+const validateGrade = () => {
+  if (form.grade) {
+    // Limpiar cualquier caracter no numérico
+    form.grade = form.grade.replace(/[^0-9]/g, '');
+    
+    // Validar que el número esté entre 1 y 11
+    if (form.grade) {
+      const gradeNum = parseInt(form.grade);
+      if (gradeNum < 1) {
+        form.grade = '1';
+      } else if (gradeNum > 11) {
+        form.grade = '11';
+      }
+    }
+  }
+};
+
+const validateGroup = () => {
+  if (form.group_user) {
+    // Convertir a mayúsculas
+    form.group_user = form.group_user.toUpperCase();
+    
+    // Limitar a caracteres de la A a la F
+    form.group_user = form.group_user.replace(/[^A-F]/g, '');
+    
+    // Limitar a un solo carácter
+    if (form.group_user.length > 1) {
+      form.group_user = form.group_user.charAt(0);
+    }
+  }
+};
+
   // Gate de avance
   const canProceed = computed(() => {
     switch (step.value) {
@@ -716,6 +750,10 @@ export function useRegister () {
     toggleDropdown,
     selectCountry,
     getPhoneCode,
-    nextOrSubmit
+    nextOrSubmit,
+
+    // Validación grado y grupo
+    validateGrade,
+    validateGroup
   }
 }
