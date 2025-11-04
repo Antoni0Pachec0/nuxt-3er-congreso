@@ -1,63 +1,62 @@
 // middleware/auth.global.js
-export default defineNuxtRouteMiddleware(async (to, from) => {
+import { useAuthStore } from '@/security/stores/auth'
+
+export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
 
-  const config = useRuntimeConfig()
-  const authStore = useAuthStore()
+  const auth = useAuthStore()
 
-  // 🔥 Asegurar sincronización
-  if (!authStore.isAuthenticated) {
-    authStore.loadFromStorage()
-  }
+  // 1) Hidratar del storage (para que el header cambie al instante)
+  if (!auth.isAuthenticated) auth.loadFromStorage()
 
   const PUBLIC_PATHS = new Set([
-    '/', '/login', '/register', '/verify', '/forgot', '/reset'
+    '/', '/login', '/register', '/verify', '/forgot-password', '/reset-password',
+    '/schedule', '/conferees', '/workshops'
   ])
+
   const isPublic = PUBLIC_PATHS.has(to.path) || to.meta?.guestOnly === true
   const requiresAuth = to.meta?.requiresAuth === true
 
-  // Verificar sesión
-  let isAuth = authStore.isAuthenticated
+  // 2) Si la ruta requiere auth y no hay sesión en memoria → intenta con cookies (GET /auth/me)
+  let isAuth = auth.isAuthenticated
   if (!isAuth && requiresAuth) {
     try {
-      const me = await $fetch(`${config.public.apiBase}/auth/me`, {
-        credentials: 'include'
-      })
+      const { AuthApi } = await import('@/backend/auth/login-api')
+      const me = await AuthApi.getMe()
       if (me?.user_id) {
-        authStore.setUser({
-          id: me.user_id,
-          email: me.email,
-          name: me.name_user
+        auth.setUser({
+          id: Number(me.user_id),
+          email: me.email || '',
+          name: me.name_user || '',
+          roleId: me.type_user_id ?? null,
+          roleName: me?.type_user?.name_type ?? null
         })
-        authStore.setAuthenticated(true)
         isAuth = true
       }
-    } catch {
-      authStore.setAuthenticated(false)
-      authStore.setUser(null)
+    } catch (e) {
+      auth.clearUser()
+      isAuth = false
     }
   }
 
-  // 🔒 Si requiere login y no está autenticado
-  if (requiresAuth && !isAuth) {
-    return navigateTo('/login')
+  // 3) Si requiere auth y no hay sesión → login
+  if (requiresAuth && !isAuth) return navigateTo('/login')
+
+  // 4) Si hay sesión e intenta entrar a páginas de invitado → redirigir por rol
+  if (isAuth && to.meta?.guestOnly) {
+    return auth.userRole === 5 ? navigateTo('/admin/users') : navigateTo('/workshops')
   }
 
-  // 🚫 Si está logueado e intenta ir a página pública
-  if (authStore.isAuthenticated && isPublic) {
-    return navigateTo('/user-home')
+  // 5) Bloquear admin si no es roleId 5
+  if (isAuth && to.path.startsWith('/admin') && auth.userRole !== 5) {
+    return navigateTo('/workshops')
   }
 
-  // 🚷 Bloquear navegación fuera de rutas permitidas
-  if (authStore.isAuthenticated) {
-    const ALLOWED_AUTH_ROUTES = new Set([
-      '/user-home',
-      '/game/game',
-      '/game/leaderboard'
-    ])
-    if (!ALLOWED_AUTH_ROUTES.has(to.path)) {
-      console.warn(`Bloqueo: ${to.path} no permitido con sesión activa`)
-      return false // 🚫 detiene navegación
+  // 6) (Opcional) Si es auth y va a rutas no permitidas, reubicar
+  if (isAuth && !isPublic) {
+    const ALLOWED = new Set(['/workshops','/game','/game/leaderboard','/admin/users','/profile'])
+    if (!ALLOWED.has(to.path)) {
+      return auth.userRole === 5 ? navigateTo('/admin/users') : navigateTo('/workshops')
     }
   }
 })

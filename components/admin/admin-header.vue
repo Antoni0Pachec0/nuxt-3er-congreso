@@ -18,10 +18,10 @@
         <span class="nav-text">Usuarios</span>
       </NuxtLink>
 
-      <NuxtLink to="/admin/badges" class="nav-item" active-class="active">
+      <!-- <NuxtLink to="/admin/badges" class="nav-item" active-class="active">
         <SvgIcon type="mdi" :path="mdiCardAccountDetails" class="icon" />
         <span class="nav-text">Gafetes</span>
-      </NuxtLink>
+      </NuxtLink> -->
     </nav>
   </header>
 </template>

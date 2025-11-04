@@ -10,118 +10,113 @@ export const useAuthStore = defineStore('auth', {
     refreshToken: null // 👈 Añadir esta línea
   }),
 
+  getters: {
+    userId: (s) => s.user?.id,
+    userRole: (s) => s.user?.roleId,
+    userRoleName: (s) => s.user?.roleName
+  },
+
   actions: {
-    setUser(user) {
-      this.user = user;
-      this.isAuthenticated = !!user
+    setUser(userData) {
+      this.user = userData
+      this.isAuthenticated = !!userData
+      this.persist()
     },
 
-    setAuthenticated(status) {
-      this.isAuthenticated = status;
-      if (!status) {
-        this.user = null
-        this.accessToken = null
-        this.refreshToken = null
-      }
+    // ✅ Guarda token y fija Authorization en Axios
+    setAccessToken(token) {
+      this.accessToken = token || ''
+      this.persist()
+      this.applyApiAuthHeader()
     },
 
-    // 👇 NUEVA ACCIÓN: Guardar tokens
-    setTokens(accessToken, refreshToken = null) {
-      this.accessToken = accessToken
-      this.refreshToken = refreshToken
-
-      // Guardar en localStorage para persistencia
-      if (process.client) {
-        if (accessToken) {
-          localStorage.setItem('access_token', accessToken)
-        }
-        if (refreshToken) {
-          localStorage.setItem('refresh_token', refreshToken)
-        }
-      }
+    // ✅ Centraliza guardado
+    persist() {
+      try {
+        localStorage.setItem('auth_store', JSON.stringify({
+          user: this.user,
+          isAuthenticated: this.isAuthenticated,
+          accessToken: this.accessToken || ''
+        }))
+      } catch (e) { console.error('Error saving auth to storage:', e) }
     },
 
-    // 👇 NUEVA ACCIÓN: Obtener token
-    getToken() {
-      return this.accessToken || (process.client ? localStorage.getItem('access_token') : null)
-    },
-
-    // 👇 NUEVA ACCIÓN: Verificar autenticación con token
-    isUserAuthenticated() {
-      const hasToken = !!this.getToken()
-      const hasUser = !!this.user
-      return this.isAuthenticated && hasToken && hasUser
+    clearUser() {
+      this.user = null
+      this.isAuthenticated = false
+      this.isLoggingOut = false
+      this.accessToken = ''
+      try {
+        localStorage.removeItem('auth_store')
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('userEmail')
+        localStorage.removeItem('verification_purpose')
+        sessionStorage.removeItem('verify_email')
+      } catch (e) { console.error('Error removing auth from storage:', e) }
     },
 
     loadFromStorage() {
       try {
-        const raw = localStorage.getItem('auth_store');
+        const raw = localStorage.getItem('auth_store')
         if (raw) {
-          const p = JSON.parse(raw);
-          this.user = p?.user ?? null;
-          this.isAuthenticated = !!p?.isAuthenticated
+          const parsed = JSON.parse(raw)
+          this.user = parsed?.user ?? null
+          this.isAuthenticated = !!parsed?.isAuthenticated
+          this.accessToken = parsed?.accessToken || ''
+          if (this.accessToken) this.applyApiAuthHeader()
         }
-
-        if (process.client) {
-          const storedToken = localStorage.getItem('access_token')
-          const storedRefreshToken = localStorage.getItem('refresh_token')
-
-          if (storedToken) {
-            this.accessToken = storedToken
-          }
-          if (storedRefreshToken) {
-            this.refreshToken = storedRefreshToken
-          }
-        }
-
-      } catch (error) {
-        console.error('Error loading auth from storage:', error)
+      } catch (e) {
+        console.error('Error loading auth from storage:', e)
+        this.clearUser()
       }
     },
 
     async logout() {
       if (this.isLoggingOut) return
-
       this.isLoggingOut = true
-
       try {
-        const config = useRuntimeConfig()
+        const { AuthApi } = await import('@/backend/auth/login-api')
+        await AuthApi.logout()
+      } catch (e) {
+        console.error('Error during logout API call:', e)
+      }
+      this.clearUser()
+      this.clearAuthCookies()
+      await this.clearApiAuth()
+    },
 
-        // Hacer la petición de logout al backend
-        await $fetch(`${config.public.apiBase}/auth/logout`, {
-          method: 'POST',
-          credentials: 'include'
-        })
+    clearAuthCookies() {
+      if (typeof document === 'undefined') return
+      const cookies = ['access_token','refresh_token','verify']
+      const domain = window.location.hostname
+      const isLocalhost = domain === 'localhost'
+      const baseDomain = isLocalhost ? '' : `.${domain.split('.').slice(-2).join('.')}`
+      cookies.forEach((name) => {
+        document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax${baseDomain ? `; Domain=${baseDomain}` : ''}`
+        document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`
+      })
+    },
 
-      } catch (error) {
-        console.error('Error during logout API call:', error)
-        // No lanzamos el error para permitir limpieza local
-      } finally {
-        // Limpiar estado local SIEMPRE
-        this.user = null
-        this.isAuthenticated = false
-        this.accessToken = null
-        this.refreshToken = null
+    async applyApiAuthHeader() {
+      try {
+        const { default: api } = await import('@/backend/http/api')
+        if (this.accessToken) {
+          api.defaults.headers.Authorization = `Bearer ${this.accessToken}`
+        }
+      } catch (e) {
+        console.warn('Error applying API authorization:', e)
+      }
+    },
 
-        // Limpiar localStorage
-        localStorage.removeItem('auth_store')
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-
-        // Limpiar cookies en el cliente
-        const expire = 'Thu, 01 Jan 1970 00:00:00 GMT'
-        const domain = window.location.hostname
-        const isLocalhost = domain === 'localhost'
-
-        document.cookie = `access_token=; Path=/; SameSite=Lax; Expires=${expire}${!isLocalhost ? `; Domain=.${domain}` : ''}`
-        document.cookie = `refresh_token=; Path=/; SameSite=Lax; Expires=${expire}${!isLocalhost ? `; Domain=.${domain}` : ''}`
-        document.cookie = `verify=; Path=/; SameSite=Lax; Expires=${expire}${!isLocalhost ? `; Domain=.${domain}` : ''}`
-
-        // IMPORTANTE: Resetear el estado de logout después de limpiar todo
-        this.isLoggingOut = false
+    async clearApiAuth() {
+      try {
+        const { default: api } = await import('@/backend/http/api')
+        delete api.defaults.headers.Authorization
+      } catch (e) {
+        console.warn('Error clearing API authorization:', e)
       }
     }
-  },
-
-  persist: true
+  }
 })

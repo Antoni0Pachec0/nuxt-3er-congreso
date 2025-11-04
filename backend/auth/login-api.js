@@ -8,10 +8,14 @@ export const AuthApi = {
     return data
   },
 
-  // Podrías agregar más métodos relacionados con auth
   async logout() {
-    const { data } = await api.post(ROUTES.AUTH.LOGOUT)
-    return data
+    try {
+      const response = await api.post('/auth/logout')
+      return response.data
+    } catch (error) {
+      console.error('Logout error:', error)
+      throw error
+    }
   },
 
   async getMe() {

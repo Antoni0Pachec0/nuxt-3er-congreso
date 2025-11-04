@@ -43,7 +43,6 @@
 </template>
 
 <script setup>
-
 // Importa los iconos que necesites de lucide-vue-next
 import {
   Briefcase,
@@ -52,92 +51,100 @@ import {
   Code,
   Users,
   Award,
-} from 'lucide-vue-next';
+} from "lucide-vue-next";
 
 import "@/assets/css/styles/pages/conferees/speakers.css";
 
 const speakers = [
-
-    {
-    name: "Adolfo Mateos",
+  {
+    name: "Adolfo López Mateo",
     level: "empresarial",
     talk: "Construyendo asistentes virtuales con IA local y Ollama",
-    summary: "Aprende a implementar modelos de IA locales para crear asistentes inteligentes privados, rápidos y personalizables, sin depender de la nube.",
+    summary:
+      "Aprende a implementar modelos de IA locales para crear asistentes inteligentes privados, rápidos y personalizables, sin depender de la nube.",
     iconComponent: Users,
   },
-  
- 
+
   {
     name: "Benjamín Guzmán",
     level: "magistral",
     talk: "Más allá del título: Resiliencia y aprendizaje continuo",
-    summary: "Una invitación a descubrir el valor de la constancia. Lo que define a una persona no es su título, sino su capacidad de seguir aprendiendo.",
+    summary:
+      "Una invitación a descubrir el valor de la constancia. Lo que define a una persona no es su título, sino su capacidad de seguir aprendiendo.",
     iconComponent: Award, // Icono que representa logro/inspiración
   },
-    {
-    name: "Natividad Turán",
+{
+    name: "Natividad Terán",
     level: "empresarial",
-    talk: "Uso de librerías de IA para análisis de archivos",
-    summary: "Descubre cómo las librerías de IA permiten interpretar, clasificar y extraer información valiosa de grandes volúmenes de documentos de manera automatizada.",
+    talk: "Programación con Clean Architecture",
+    summary:
+      "Explora cómo implementar Clean Architecture para crear sistemas que sean fáciles de probar, independientes de frameworks y bases de datos, y más sencillos de mantener a largo plazo.",
     iconComponent: Lightbulb,
   },
-    {
+  {
     name: "Diana Reynoso",
     level: "magistral",
     talk: "Blockchain y Tecnologías de Privacidad",
-    summary: "Descubre cómo el blockchain redefine la forma en que protegemos nuestros datos e identidades, construyendo un futuro digital sobre bloques de transparencia.",
+    summary:
+      "Descubre cómo el blockchain redefine la forma en que protegemos nuestros datos e identidades, construyendo un futuro digital sobre bloques de transparencia.",
     iconComponent: Code,
   },
 
-   {
+  {
     name: "Nazly Borrero",
     level: "empresarial",
     talk: "Blindaje digital: Construyendo la resiliencia de su empresa.",
-    summary: "En un entorno donde la información es valiosa, la protección es prioridad. Blindar una empresa significa anticiparse, adaptarse y fortalecer su capacidad de respuesta.",
+    summary:
+      "En un entorno donde la información es valiosa, la protección es prioridad. Blindar una empresa significa anticiparse, adaptarse y fortalecer su capacidad de respuesta.",
     iconComponent: Shield,
   },
   {
     name: "Miguel Ángel Vargas Lomeli",
     level: "magistral",
     talk: "Temática en Inteligencia Artificial",
-    summary: "Un recorrido por la mente digital que está transformando el mundo. Una mirada al poder, los límites y la ética de la tecnología que aprende de nosotros.",
+    summary:
+      "Un recorrido por la mente digital que está transformando el mundo. Una mirada al poder, los límites y la ética de la tecnología que aprende de nosotros.",
     iconComponent: Lightbulb,
   },
-    {
+  {
     name: "Benjamín Guzmán",
     level: "empresarial",
     talk: "La práctica real del desarrollador de software.",
-    summary: "Más allá del código, la práctica real implica resolver problemas y aprender cada día. Un recorrido por los retos y metodologías que moldean el trabajo en software.",
+    summary:
+      "Más allá del código, la práctica real implica resolver problemas y aprender cada día. Un recorrido por los retos y metodologías que moldean el trabajo en software.",
     iconComponent: Briefcase,
   },
 
-  
   {
     name: "Zoreyda Jara Ramos",
     level: "magistral",
     talk: "Alguien fuera de serie",
-    summary: "Una historia que celebra la autenticidad, la perseverancia y el poder de ser diferente. Porque destacar no es seguir un patrón, sino atreverse a romperlo.",
+    summary:
+      "Una historia que celebra la autenticidad, la perseverancia y el poder de ser diferente. Porque destacar no es seguir un patrón, sino atreverse a romperlo.",
     iconComponent: Award,
   },
+{
+   "name": "Dr. Casimiro Gómez Gonzales",
+   "level": "empresarial",
+   "talk": "Conferencia de inteligencia artificial de las cosas (IA embebida)",
+   "summary":
+     "Una inmersión técnica y estratégica en la 'IA de las Cosas'. El procesamiento de IA en el dispositivo (on-device) permite respuestas instantáneas, mayor privacidad y eficiencia energética, redefiniendo el futuro de los productos inteligentes.",
+   "iconComponent": Briefcase,
+ },
   {
-    name: "Ricardo Hernández",
-    level: "empresarial",
-    talk: "Realidad Virtual",
-    summary: "Una experiencia inmersiva que borra los límites entre lo físico y lo digital, redefiniendo la forma en que aprendemos, creamos y nos conectamos con el mundo.",
-    iconComponent: Briefcase,
-  },
-    {
     name: "Nazly Borrero",
     level: "magistral",
     talk: "La liga de justicia en la Ciberseguridad y sus riesgos míticos.",
-    summary: "Una mirada a cómo la supervivencia digital se convierte en un juego de poder, control e información. Cada decisión define estrategias y alianzas.",
+    summary:
+      "Una mirada a cómo la supervivencia digital se convierte en un juego de poder, control e información. Cada decisión define estrategias y alianzas.",
     iconComponent: Shield,
   },
   {
     name: "Iván Rosales",
     level: "empresarial",
     talk: "Decisiones Estratégicas frente al Ciber Riesgo",
-    summary: "Comprender y gestionar el ciber riesgo permite anticipar amenazas y fortalecer la resiliencia organizacional en un entorno impulsado por la tecnología.",
+    summary:
+      "Comprender y gestionar el ciber riesgo permite anticipar amenazas y fortalecer la resiliencia organizacional en un entorno impulsado por la tecnología.",
     iconComponent: Briefcase,
   },
 ];

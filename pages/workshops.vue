@@ -5,7 +5,6 @@ import WorkshopsList from '@/components/sections/workshops/workshops-list.vue'
 definePageMeta({
   name: 'workshops',
   path: '/workshops',
-  guestOnly: true, // 🧍 solo accesible si NO hay sesión
 })
 </script>
 

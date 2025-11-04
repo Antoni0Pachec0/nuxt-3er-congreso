@@ -3,23 +3,21 @@ import api from '@/backend/http/api'
 import { ROUTES } from '@/backend/http/routes'
 
 export const ScoresApi = {
-  /**
-   * Crea un score.
-   * @param {{ value: number }} payload
-   * @param {string} accessToken
-   */
-  async create (payload, accessToken) {
-    return api.post(
-      ROUTES.SCORES.CREATE,
-      payload,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        timeout: 10000
-      }
-    )
-  }
+  // ✅ Crear score usando solo cookies (withCredentials true viene desde api.js)
+  create (payload) {
+    return api.post(ROUTES.SCORES.CREATE, payload, {
+      // No agregues Authorization aquí
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 10000,
+    })
+  },
+
+  // ✅ Método que tu checkGameAuthentication está intentando usar
+  getMyBest () {
+    return api.get(ROUTES.SCORES.MY_BEST, {
+      withCredentials: true,
+      timeout: 10000,
+    })
+  },
 }

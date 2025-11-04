@@ -4,13 +4,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-// 2) Utilidades/constantes del proyecto
-import { ROUTES } from '@/backend/http/routes'   // ajusta si tus ROUTES viven en otro lugar
-import api from '@/backend/http/api'
-
 // 3) Capa API específica
 import { ScoresApi } from '@/backend/game/scores-api'
-import { TokenApi }  from '@/backend/auth/token-api'
+import { TokenApi } from '@/backend/auth/token-api'
 
 // 4) Assets (agrupados por carpeta/tipo)
 import fondo1 from '@/assets/img/game/funds/fondo.webp'
@@ -18,31 +14,31 @@ import fondo2 from '@/assets/img/game/funds/fondo-tarde.webp'
 import fondo3 from '@/assets/img/game/funds/fondo-noche.webp'
 
 import carMotocle from '@/assets/img/game/cars/motocle.webp'
-import combi      from '@/assets/img/game/cars/combi.webp'
-import carro      from '@/assets/img/game/cars/carro.webp'
+import combi from '@/assets/img/game/cars/combi.webp'
+import carro from '@/assets/img/game/cars/carro.webp'
 import hinfinitum from '@/assets/img/game/cars/hinfinitum.webp'
-import moto       from '@/assets/img/game/cars/moto.webp'
-import bici       from '@/assets/img/game/cars/bici.webp'
+import moto from '@/assets/img/game/cars/moto.webp'
+import bici from '@/assets/img/game/cars/bici.webp'
 
 import Pedraza from '@/assets/img/game/professors/pedraza.webp'
-import Elvis   from '@/assets/img/game/professors/elvis.webp'
-import Julio   from '@/assets/img/game/professors/julio.webp'
-import Victor  from '@/assets/img/game/professors/victor.webp'
+import Elvis from '@/assets/img/game/professors/elvis.webp'
+import Julio from '@/assets/img/game/professors/julio.webp'
+import Victor from '@/assets/img/game/professors/victor.webp'
 
-import Elit         from '@/assets/img/game/logos/elit.webp'
+import Elit from '@/assets/img/game/logos/elit.webp'
 import LogoCongreso from '@/assets/img/game/logos/logo-congreso.webp'
 
-export function useGame () {
+export function useGame() {
   // ---------- refs para el template ----------
-  const entryPage     = ref(null)
+  const entryPage = ref(null)
   const gameContainer = ref(null)
-  const gameCanvas    = ref(null)
+  const gameCanvas = ref(null)
 
   const router = useRouter()
   let gameInstance = null
 
   // ---------- helpers auth ----------
-  function getCookie (name) {
+  function getCookie(name) {
     if (typeof document === 'undefined') return null
     try {
       const cookies = document.cookie.split(';')
@@ -56,11 +52,25 @@ export function useGame () {
     }
   }
 
-  function getAccessToken () {
-    return getCookie('access_token') || localStorage.getItem('access_token') || null
+  function getAccessToken() {
+    return getCookie('access_token') || null
   }
 
-  async function refreshAccessToken () {
+  async function checkGameAuthentication() {
+    // Si ya tienes userId guardado, intentamos validar sesión con un ping protegido
+    try {
+      // Llama un endpoint que requiera JWT (cookies via withCredentials)
+      await ScoresApi.getMyBest(); // ajusta al nombre real del método
+      return true; // si no lanza, hay sesión
+    } catch (e) {
+      // Fallback: si falla, no hay sesión válida
+      console.warn('Auth check falló:', e?.response?.status, e?.message)
+      return false
+    }
+  }
+
+
+  async function refreshAccessToken() {
     try {
       const refreshToken = localStorage.getItem('refresh_token') || getCookie('refresh_token')
       if (!refreshToken) throw new Error('No hay refresh token')
@@ -78,33 +88,36 @@ export function useGame () {
   }
 
   const checkAuthentication = async () => {
-    const token  = getAccessToken()
+    const token = getAccessToken()
     const userId = localStorage.getItem('userId')
     return !!token && !!userId
   }
 
   // ---------- clase del juego ----------
   class CarRacing {
-    constructor (canvas) {
+    constructor(canvas) {
       this.canvas = canvas
-      this.ctx    = this.canvas.getContext('2d')
+      this.ctx = this.canvas.getContext('2d')
+      this.touchStartX = null
+      this.touchStartY = null
 
       // dimensiones base
-      this.base_width  = 800
+      this.base_width = 800
       this.base_height = 1510
       this.scale = 1
 
       // colores y runtime
       this.black = '#000000'
       this.white = '#FFFFFF'
-      this.red   = '#FF0000'
+      this.red = '#FF0000'
       this.green = '#000000'
-      this.gray  = '#808080'
-      this.fps   = 90
-      this.paused      = false
-      this.gameLoopId  = null
-      this.userId      = null
-      this.scoreSent   = false
+      this.gray = '#808080'
+      this.fps = 90
+      this.paused = false
+      this.gameLoopId = null
+      this.userId = null
+      this.scoreSent = false
+      this.sendingScore = false
 
       // carriles
       this.lanes = []
@@ -137,17 +150,17 @@ export function useGame () {
         img.src = src
         return img
       })
-      this.elitLogo = new Image();        this.elitLogo.src = Elit
-      this.congresoLogo = new Image();    this.congresoLogo.src = LogoCongreso
+      this.elitLogo = new Image(); this.elitLogo.src = Elit
+      this.congresoLogo = new Image(); this.congresoLogo.src = LogoCongreso
 
       // dificultad/spawn
-      this.enemyPool = [0,1,2,3,4]
+      this.enemyPool = [0, 1, 2, 3, 4]
       this.shuffleEnemies()
       this.lastSpawnTime = 0
       this.baseSpawnInterval = 1300
-      this.minSpawnInterval  = 350
-      this.difficultyLevel   = 1
-      this.maxDifficulty     = 10
+      this.minSpawnInterval = 350
+      this.difficultyLevel = 1
+      this.maxDifficulty = 10
 
       // estado juego
       this.initialize()
@@ -155,15 +168,20 @@ export function useGame () {
       this.keys = {}
 
       // listeners
-      window.addEventListener('keydown', (e) => { this.keys[e.key] = true })
-      window.addEventListener('keyup',   (e) => { this.keys[e.key] = false })
+      this._onKeyDown = (e) => { this.keys[e.key] = true }
+      this._onKeyUp = (e) => { this.keys[e.key] = false }
+      this._onResize = () => this.resizeCanvas()
+      this._onTouchStart = (e) => this.handleTouchStart(e)
+      this._onTouchMove = (e) => this.handleTouchMove(e)
+      this._onTouchEnd = (e) => this.handleTouchEnd(e)
 
-      this.touchStartX = null
-      this.touchStartY = null
-      this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e))
-      this.canvas.addEventListener('touchmove',  (e) => this.handleTouchMove(e))
-      this.canvas.addEventListener('touchend',   (e) => this.handleTouchEnd(e))
-      window.addEventListener('resize', () => this.resizeCanvas())
+      // Registrar con esas referencias
+      window.addEventListener('keydown', this._onKeyDown)
+      window.addEventListener('keyup', this._onKeyUp)
+      window.addEventListener('resize', this._onResize)
+      this.canvas.addEventListener('touchstart', this._onTouchStart, { passive: false })
+      this.canvas.addEventListener('touchmove', this._onTouchMove, { passive: false })
+      this.canvas.addEventListener('touchend', this._onTouchEnd, { passive: false })
 
       // música (opcional simple)
       this.songs = []
@@ -173,9 +191,9 @@ export function useGame () {
     }
 
     // ---- helpers de lanes / resize ----
-    initializeLanes () {
+    initializeLanes() {
       const roadWidth = this.base_width / 2
-      const roadX     = this.base_width / 4
+      const roadX = this.base_width / 4
       const laneWidth = roadWidth / 3
 
       const enemyW = this.enemy_width || 120
@@ -186,8 +204,8 @@ export function useGame () {
       ]
     }
 
-    resizeCanvas () {
-      this.canvas.width  = window.innerWidth
+    resizeCanvas() {
+      this.canvas.width = window.innerWidth
       this.canvas.height = window.innerHeight
       this.scale = Math.min(
         window.innerWidth / this.base_width,
@@ -197,13 +215,13 @@ export function useGame () {
     }
 
     // ---- dificultad / spawn ----
-    updateDifficulty () {
+    updateDifficulty() {
       this.difficultyLevel = Math.min(this.maxDifficulty, Math.floor(this.score / 10) + 1)
       this.enemy_speed = 7 + Math.pow(this.difficultyLevel, 2)
-      this.bg_speed    = this.enemy_speed * 1.5
+      this.bg_speed = this.enemy_speed * 1.5
 
       const spawnReduction = (this.difficultyLevel - 1) * 0.12
-      const baseInterval   = this.baseSpawnInterval * (1 - spawnReduction)
+      const baseInterval = this.baseSpawnInterval * (1 - spawnReduction)
       this.currentSpawnInterval = Math.max(
         this.minSpawnInterval,
         baseInterval + (Math.random() * 500 - 100)
@@ -212,15 +230,15 @@ export function useGame () {
       this.maxEnemiesOnScreen = Math.min(10, 3 + Math.floor(this.difficultyLevel * 1.5))
     }
 
-    shuffleEnemies () {
+    shuffleEnemies() {
       for (let i = this.enemyPool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
-        ;[this.enemyPool[i], this.enemyPool[j]] = [this.enemyPool[j], this.enemyPool[i]]
+          ;[this.enemyPool[i], this.enemyPool[j]] = [this.enemyPool[j], this.enemyPool[i]]
       }
     }
 
     // ---- estado inicial ----
-    initialize () {
+    initialize() {
       this.car_width = 120
       this.car_height = 240
       this.car_x = this.base_width / 2 - this.car_width / 2
@@ -228,9 +246,9 @@ export function useGame () {
       this.car_speed = 4
 
       this.enemies = []
-      this.enemy_width  = 120
+      this.enemy_width = 120
       this.enemy_height = 240
-      this.enemy_speed  = 4
+      this.enemy_speed = 4
 
       this.bg_y = 0
       this.bg_speed = this.enemy_speed
@@ -238,9 +256,10 @@ export function useGame () {
       this.score = 0
       this.game_over = false
       this.scoreSent = false
+      this.sendingScore = false
 
       this.road_width = this.base_width / 2
-      this.road_x     = this.base_width / 4
+      this.road_x = this.base_width / 4
 
       this.currentBackgroundIndex = 0
       this.lastSpawnTime = 0
@@ -252,14 +271,17 @@ export function useGame () {
       this.updateDifficulty()
     }
 
-    loadUserId () {
+    loadUserId() {
       const storedUserId = localStorage.getItem('userId')
       if (storedUserId) this.userId = storedUserId
     }
 
     // ---- control táctil ----
-    handleTouchStart (e) {
+    handleTouchStart(e) {
       e.preventDefault()
+      if (this.paused) {
+        return           // no hagas nada en pausa
+      }
       if (this.game_over) {
         this.initialize()
         this.game_over = false
@@ -268,9 +290,10 @@ export function useGame () {
         this.touchStartY = e.touches[0].clientY
       }
     }
-    handleTouchMove (e) {
+
+    handleTouchMove(e) {
       e.preventDefault()
-      if (this.touchStartX !== null && this.touchStartY !== null && !this.game_over) {
+      if (this.touchStartX !== null && this.touchStartY !== null && !this.game_over && !this.paused) {
         const touchX = e.touches[0].clientX
         const touchY = e.touches[0].clientY
         const deltaX = (touchX - this.touchStartX) / this.scale
@@ -281,14 +304,15 @@ export function useGame () {
         this.touchStartY = touchY
       }
     }
-    handleTouchEnd (e) {
+    handleTouchEnd(e) {
       e.preventDefault()
+      if (this.paused) return
       this.touchStartX = null
       this.touchStartY = null
     }
 
     // ---- spawn / lanes ----
-    getAvailableLanes () {
+    getAvailableLanes() {
       const available = [...this.lanes]
       const safeDistance = this.enemy_height * 1.5
 
@@ -304,14 +328,14 @@ export function useGame () {
       return available
     }
 
-    spawnEnemy () {
+    spawnEnemy() {
       if (this.enemies.length >= this.maxEnemiesOnScreen) return
       if (this.enemyPool.length === 0) {
-        this.enemyPool = [0,1,2,3,4]
+        this.enemyPool = [0, 1, 2, 3, 4]
         this.shuffleEnemies()
       }
       const designIndex = this.enemyPool.pop()
-      const available   = this.getAvailableLanes()
+      const available = this.getAvailableLanes()
       if (!available.length) { this.enemyPool.push(designIndex); return }
 
       const randomLaneIndex = Math.floor(Math.random() * available.length)
@@ -322,7 +346,7 @@ export function useGame () {
     }
 
     // ---- dibujo / HUD ----
-    draw_objects () {
+    draw_objects() {
       const offsetX = (this.canvas.width - this.base_width * this.scale) / 2
       const offsetY = (this.canvas.height - this.base_height * this.scale) / 2
       this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY)
@@ -345,7 +369,7 @@ export function useGame () {
 
       for (let i = this.enemies.length - 1; i >= 0; i--) {
         const enemy = this.enemies[i]
-        const img   = this.enemyCarImages[enemy.designIndex]
+        const img = this.enemyCarImages[enemy.designIndex]
         if (img?.complete) {
           this.ctx.drawImage(img, enemy.x, enemy.y, this.enemy_width, this.enemy_height)
         } else {
@@ -375,19 +399,19 @@ export function useGame () {
     }
 
     // ---- colisiones / fin de juego ----
-    check_collision () {
+    check_collision() {
       const hitboxScale = 0.5
       const car_rect = {
         x: this.car_x + this.car_width * (1 - hitboxScale) / 2,
         y: this.car_y + this.car_height * (1 - hitboxScale) / 2,
-        width:  this.car_width * hitboxScale,
+        width: this.car_width * hitboxScale,
         height: this.car_height * hitboxScale
       }
       for (const enemy of this.enemies) {
         const enemy_rect = {
           x: enemy.x + this.enemy_width * (1 - hitboxScale) / 2,
           y: enemy.y + this.enemy_height * (1 - hitboxScale) / 2,
-          width:  this.enemy_width * hitboxScale,
+          width: this.enemy_width * hitboxScale,
           height: this.enemy_height * hitboxScale
         }
         if (
@@ -397,16 +421,19 @@ export function useGame () {
           car_rect.y + car_rect.height > enemy_rect.y
         ) {
           this.crashEnemy = enemy.designIndex
+          // Consgelar ya mismo y mostrar UI en el mismo frame
+          this.freezeOnGameOver()
+          this.display_message('¡Choque! Fin del Juego')
           return true
         }
       }
       return false
     }
 
-    drawGameOverScreen (msg) {
-      this.ctx.setTransform(1,0,0,1,0,0)
+    drawGameOverScreen(msg) {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0)
       this.ctx.fillStyle = this.black
-      this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height)
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       const offsetX = (this.canvas.width - this.base_width * this.scale) / 2
       const offsetY = (this.canvas.height - this.base_height * this.scale) / 2
       this.ctx.setTransform(this.scale, 0, 0, this.scale, offsetX, offsetY)
@@ -416,7 +443,7 @@ export function useGame () {
       this.ctx.textAlign = 'center'
       this.ctx.fillText(msg, this.base_width / 2, Y)
       this.ctx.font = `40px Comic Sans MS`
-      this.ctx.fillText(`Puntaje final: ${this.score}`, this.base_width / 2, Y + 70)
+      this.ctx.fillText(`Puntaje final: ${this.finalScore ?? this.score}`, this.base_width / 2, Y + 70)
       this.ctx.font = `30px Comic Sans MS`
       this.ctx.fillText(`Toca la pantalla o F para reiniciar`, this.base_width / 2, Y + 130)
       this.ctx.fillText(`Nivel alcanzado: ${this.difficultyLevel}`, this.base_width / 2, Y + 180)
@@ -425,7 +452,7 @@ export function useGame () {
 
       if (this.crashEnemy !== undefined) {
         const crashImg = this.crashImages[this.crashEnemy]
-        if (crashImg?.complete) this.ctx.drawImage(crashImg, this.base_width/2 - 200, Y + 260, 400, 500)
+        if (crashImg?.complete) this.ctx.drawImage(crashImg, this.base_width / 2 - 200, Y + 260, 400, 500)
       }
       if (this.elitLogo?.complete) {
         this.ctx.drawImage(this.elitLogo, this.base_width - 110, this.base_height - 110, 100, 100)
@@ -433,68 +460,77 @@ export function useGame () {
       if (this.congresoLogo?.complete) {
         this.ctx.drawImage(this.congresoLogo, 10, this.base_height - 130, 120, 120)
       }
-      this.ctx.setTransform(1,0,0,1,0,0)
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0)
     }
 
-    async ensureScoreSent () {
-      if (this.scoreSent || this.score <= 0) return
+    async ensureScoreSent(scoreToSend) {
+      if (this.scoreSent || !Number.isFinite(scoreToSend) || scoreToSend <= 0) return
+
+      this.scoreSent = true         // evita duplicados
+      this.sendingScore = true      // bloquea restart mientras enviamos
+
       let attempts = 0
       const maxAttempts = 3
-      while (attempts < maxAttempts && !this.scoreSent) {
-        try {
-          await this.sendScoreToBackend()
-          if (this.scoreSent) break
-        } catch {}
-        attempts++
-        if (!this.scoreSent && attempts < maxAttempts) {
-          const delay = Math.min(1000 * Math.pow(2, attempts), 5000)
-          await new Promise(r => setTimeout(r, delay))
+
+      try {
+        while (attempts < maxAttempts) {
+          try {
+            await this.sendScoreToBackend(scoreToSend)
+            console.log('✅ Score enviado exitosamente')
+            return
+          } catch (error) {
+            attempts++
+            console.warn(`⚠️ Intento ${attempts} fallido:`, error.message)
+            if (attempts < maxAttempts) {
+              const delay = Math.min(1000 * Math.pow(2, attempts), 5000)
+              await new Promise(r => setTimeout(r, delay))
+            } else {
+              console.error('❌ Todos los intentos fallaron')
+              // permitimos reintento manual en un futuro
+              this.scoreSent = false
+            }
+          }
         }
+      } finally {
+        this.sendingScore = false   // SIEMPRE liberar, salga bien o mal
       }
     }
 
-    async sendScoreToBackend () {
-      if (this.scoreSent || this.score <= 0) return
 
-      let accessToken = getAccessToken()
+    async sendScoreToBackend(finalScore) {
       const userId = localStorage.getItem('userId')
-      if (!userId) return
+      if (!userId) throw new Error('User ID no encontrado')
 
-      let attempts = 0
-      const maxAttempts = 2
-
-      while (attempts < maxAttempts) {
-        try {
-          attempts++
-          if (!accessToken && attempts === 1) {
-            accessToken = await refreshAccessToken()
-          }
-          if (!accessToken) throw new Error('No access token')
-
-          await ScoresApi.create({ value: this.score }, accessToken)
-          this.scoreSent = true
-          return
-
-        } catch (error) {
-          if (error.response?.status === 401 && attempts < maxAttempts) {
-            accessToken = null
-            continue
-          }
-          // en 401 definitivo -> a login
-          if (error.response?.status === 401) setTimeout(() => router.push('/login'), 1200)
-          break
-        }
-      }
+      // NO leas ni pases accessToken: usa cookies HttpOnly con withCredentials
+      const response = await ScoresApi.create({ value: finalScore })
+      if (!response?.data) throw new Error('Respuesta vacía del servidor')
+      return response.data
     }
 
-    async display_message (msg) {
+    freezeOnGameOver() {
       this.game_over = true
-      this.drawGameOverScreen(msg)
-      if (!this.scoreSent && this.score > 0) await this.ensureScoreSent()
+      this.finalScore = this.score  // ← inmutable
+      // Congelar movimiento
+      this.bg_speed = 0
+      this.enemy_speed = 0
     }
+
+    async display_message(msg) {
+      // 1) Congelar de inmediato para que nada cambie
+      if (!this.game_over) this.freezeOnGameOver()
+
+      // 2) Enviar score final (si aplica) y esperar a que termine
+      if (!this.scoreSent && (this.finalScore ?? 0) > 0) {
+        await this.ensureScoreSent(this.finalScore)
+      }
+
+      // 3) Pintar UI de fin
+      this.drawGameOverScreen(msg)
+    }
+
 
     // ---- loop ----
-    update () {
+    update() {
       if (!this.game_over) {
         this.bg_y += this.bg_speed
         if (this.bg_y >= this.base_height) this.bg_y = 0
@@ -524,24 +560,37 @@ export function useGame () {
         this.drawGameOverScreen('¡Choque! Fin del juego')
       }
 
-      if (this.game_over && (this.keys['f'] || this.keys['F'])) {
-        this.initialize()
-        this.game_over = false
+      if (this.game_over && !this.paused && (this.keys['f'] || this.keys['F'])) {
+        if (!this.sendingScore) {
+          this.initialize()
+          this.game_over = false
+        }
       }
     }
 
-    run () {
+    run() {
+      if (this._running) return        // evita arrancar dos veces
+      this._running = true
       const loop = () => {
+        if (!this._running) return
         if (!this.paused) this.update()
-        setTimeout(() => requestAnimationFrame(loop), 1000 / this.fps)
+        this._rafId = requestAnimationFrame(loop)
       }
-      requestAnimationFrame(loop)
+      this._rafId = requestAnimationFrame(loop)
+    }
+
+    stop() {
+      this._running = false
+      if (this._rafId) {
+        cancelAnimationFrame(this._rafId)
+        this._rafId = null
+      }
     }
   }
 
   // ---------- acciones atadas a la vista ----------
   const startGame = async () => {
-    const ok = await checkAuthentication()
+    const ok = await checkGameAuthentication()
     if (!ok) {
       alert('🔐 Debes iniciar sesión para jugar')
       router.push('/login')
@@ -554,6 +603,11 @@ export function useGame () {
     if (!gameInstance && gameCanvas.value) {
       gameInstance = new CarRacing(gameCanvas.value)
       gameInstance.run()
+    } else if (gameInstance) {
+      // 🔥 Reiniciar instancia existente en lugar de crear nueva
+      gameInstance.initialize()
+      gameInstance.game_over = false
+      gameInstance.paused = false
     }
   }
 
@@ -574,15 +628,33 @@ export function useGame () {
   // ---------- lifecycle ----------
   onMounted(() => {
     const userId = localStorage.getItem('userId')
-    const token  = getAccessToken()
+    const token = getAccessToken()
     if (!userId || !token) {
       console.warn('⚠️ Credenciales incompletas (userId/token)')
     }
   })
 
   onUnmounted(() => {
-    gameInstance = null
+    if (gameInstance) {
+      // 1) Detener el loop
+      gameInstance.stop?.()
+
+      // 2) Quitar listeners con las mismas referencias
+      window.removeEventListener('keydown', gameInstance._onKeyDown)
+      window.removeEventListener('keyup', gameInstance._onKeyUp)
+      window.removeEventListener('resize', gameInstance._onResize)
+
+      if (gameInstance.canvas) {
+        gameInstance.canvas.removeEventListener('touchstart', gameInstance._onTouchStart)
+        gameInstance.canvas.removeEventListener('touchmove', gameInstance._onTouchMove)
+        gameInstance.canvas.removeEventListener('touchend', gameInstance._onTouchEnd)
+      }
+
+      gameInstance = null
+    }
   })
+
+
 
   // ---------- expose ----------
   return {

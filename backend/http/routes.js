@@ -1,4 +1,4 @@
-// utils/http/routes.js o donde tengas ROUTES
+// utils/http/routes.js
 export const ROUTES = {
   AUTH: {
     REGISTER: '/auth/register',
@@ -12,16 +12,31 @@ export const ROUTES = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
   },
+
   SCORES: {
     CREATE: '/scores',
     LEADERBOARD: '/scores/leaderboard',
   },
+
   USERS: {
     LIST: '/users',
     BY_ID: (id) => `/users/${id}`,
+    ENROLL_WORKSHOP: '/users/me/workshop', // 👈 NUEVO
   },
+
   WORKSHOPS: {
     LIST: '/workshops',
+    PUBLIC: '/workshops/public',
     BY_ID: (id) => `/workshops/${id}`,
+    AVAILABLE: '/workshops/available/list'
   },
+
+  ADMIN: {
+    USERS: {
+      LIST: '/admin/users',
+      FILTER_OPTIONS: '/admin/users/filter-options',
+      ACTIVATION: (id) => `/admin/users/${id}/activation`,
+      ACTIVATION_BULK: '/admin/users/activation-bulk',
+    }
+  }
 }

@@ -25,9 +25,16 @@ const api = axios.create({
 // ─────────────────────────────────────────────────────────────
 api.interceptors.request.use(
   (config) => {
-    // Cabeceras básicas
-    config.headers['X-Requested-With'] = 'XMLHttpRequest';
-    return config;
+    config.headers['X-Requested-With'] = 'XMLHttpRequest'
+
+    // ⬇️ Agrega Bearer si ya hay token en localStorage
+    if (typeof window !== 'undefined') {
+      const t = localStorage.getItem('access_token')
+      if (t && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${t}`
+      }
+    }
+    return config
   },
   (error) => {
     log.error('❌ Error en request:', {
@@ -72,13 +79,16 @@ function shouldSkipRefresh(config = {}) {
 // ─────────────────────────────────────────────────────────────
 // Response interceptor (normalización + auto-refresh 401)
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Response interceptor (normalización + auto-refresh 401/400 UnauthorizedException)
+// ─────────────────────────────────────────────────────────────
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const r = error?.response;
     const original = error?.config || {};
 
-    // ========== Normalización de error ==========
+    // ===== Normalización de error =====
     let message =
       r?.data?.message ||
       (error?.code === 'ECONNABORTED'
@@ -93,52 +103,53 @@ api.interceptors.response.use(
     const normalized = {
       url: original?.url || '',
       method: (original?.method || 'get').toUpperCase(),
-      status: r?.status ?? 0, // 0 cuando no hay response (timeout / red)
+      status: r?.status ?? 0,
       code: error?.code || 'ERR_UNKNOWN',
       message,
       error: r?.data?.error,
       errors: Array.isArray(r?.data?.errors) ? r.data.errors : undefined,
     };
 
-    // Log SOLO en dev
     log.warn('❌ API error:', normalized);
 
-    // ========== Auto-refresh si 401 ==========
-    if (r?.status === 401 && !original._retry && !shouldSkipRefresh(original)) {
-      original._retry = true; // marca el intento para evitar bucles
+    // ===== Detectar "Unauthorized" aunque venga como 400 =====
+    const looksUnauthorized =
+      r?.status === 401 ||
+      (r?.status === 400 && (
+        String(r?.data?.error || '').includes('Unauthorized') ||
+        String(r?.data?.message || '').includes('Unauthorized')
+      ));
 
-      // si ya hay un refresh en curso, espera a que termine y reintenta
+    // Auto-refresh si está no logueado y NO debemos saltarnos (para evitar bucles)
+    if (looksUnauthorized && !original._retry && !shouldSkipRefresh(original)) {
+      original._retry = true;
+
       if (isRefreshing) {
         await enqueueRefresh();
         return api(original);
       }
 
-      // inicia refresh
       isRefreshing = true;
       try {
-        // evita que este request caiga de nuevo en el bloque 401-refresh
         await api.post('/auth/refresh', null, {
           withCredentials: true,
           headers: { 'x-skip-refresh': 'true' },
         });
 
-        // despierta a los que esperaban
         flushQueue();
         isRefreshing = false;
 
-        // reintenta la original
-        return api(original);
+        return api(original); // reintenta la original
       } catch (e) {
-        // falla el refresh: limpia la cola y propaga error original
         refreshQueue = [];
         isRefreshing = false;
         return Promise.reject(Object.assign(error, { normalized }));
       }
     }
 
-    // Adjunta el normalizado y rechaza
     return Promise.reject(Object.assign(error, { normalized }));
   }
 );
+
 
 export default api;

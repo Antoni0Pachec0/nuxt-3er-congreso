@@ -32,18 +32,9 @@
         </h2>
 
         <!-- Stepper -->
-        <ol
-          class="stepper stepper--timeline"
-          :style="{ '--step-count': isSpeaker ? 6 : 4 }"
-          aria-label="Registration progress"
-          ref="stepperRef"
-        >
-          <li
-            v-for="(s, i) in steps"
-            :key="s.key"
-            class="step"
-            :class="{ active: i === step, done: i < step }"
-          >
+        <ol class="stepper stepper--timeline" :style="{ '--step-count': isSpeaker ? 6 : 4 }"
+          aria-label="Registration progress" ref="stepperRef">
+          <li v-for="(s, i) in steps" :key="s.key" class="step" :class="{ active: i === step, done: i < step }">
             <span class="step__label">{{ s.label }}</span>
             <span class="step__dot" aria-hidden="true"></span>
             <span class="step__index" aria-hidden="true">{{ i + 1 }}</span>
@@ -60,16 +51,8 @@
                 <span class="input-icon">
                   <SvgIcon :path="mdiEmailOutline" type="mdi" />
                 </span>
-                <input
-                  id="email"
-                  v-model.trim="form.email"
-                  maxlength="100"
-                  type="email"
-                  required
-                  autocomplete="email"
-                  placeholder="tu@email.com"
-                  class="input"
-                />
+                <input id="email" v-model.trim="form.email" maxlength="100" type="email" required autocomplete="email"
+                  placeholder="tu@email.com" class="input" />
               </div>
             </div>
 
@@ -80,25 +63,11 @@
                   <span class="input-icon">
                     <SvgIcon :path="mdiLockOutline" type="mdi" />
                   </span>
-                  <input
-                    id="password_user"
-                    :type="showPass ? 'text' : 'password'"
-                    v-model.trim="form.password_user"
-                    required
-                    minlength="8"
-                    autocomplete="new-password"
-                    maxlength="50"
-                    placeholder="••••••••"
-                    class="input input--pass"
-                    @input="touchPwd()"
-                  />
-                  <button
-                    type="button"
-                    class="eye"
-                    :aria-pressed="showPass ? 'true' : 'false'"
-                    :title="showPass ? 'Ocultar' : 'Mostrar'"
-                    @click="showPass = !showPass"
-                  >
+                  <input id="password_user" :type="showPass ? 'text' : 'password'" v-model.trim="form.password_user"
+                    required minlength="8" autocomplete="new-password" maxlength="50" placeholder="••••••••"
+                    class="input input--pass" @input="touchPwd()" />
+                  <button type="button" class="eye" :aria-pressed="showPass ? 'true' : 'false'"
+                    :title="showPass ? 'Ocultar' : 'Mostrar'" @click="showPass = !showPass">
                     <SvgIcon v-if="showPass" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
@@ -132,24 +101,11 @@
                   <span class="input-icon">
                     <SvgIcon :path="mdiLockCheckOutline" type="mdi" />
                   </span>
-                  <input
-                    id="password2"
-                    :type="showPass2 ? 'text' : 'password'"
-                    v-model.trim="password2"
-                    required
-                    minlength="8"
-                    autocomplete="new-password"
-                    maxlength="50"
-                    placeholder="••••••••"
-                    class="input input--pass"
-                  />
-                  <button
-                    type="button"
-                    class="eye"
-                    :aria-pressed="showPass2 ? 'true' : 'false'"
-                    :title="showPass2 ? 'Ocultar' : 'Mostrar'"
-                    @click="showPass2 = !showPass2"
-                  >
+                  <input id="password2" :type="showPass2 ? 'text' : 'password'" v-model.trim="password2" required
+                    minlength="8" autocomplete="new-password" maxlength="50" placeholder="••••••••"
+                    class="input input--pass" />
+                  <button type="button" class="eye" :aria-pressed="showPass2 ? 'true' : 'false'"
+                    :title="showPass2 ? 'Ocultar' : 'Mostrar'" @click="showPass2 = !showPass2">
                     <SvgIcon v-if="showPass2" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
@@ -164,41 +120,18 @@
             <div class="grid resp">
               <div class="stack">
                 <label class="label" for="name_user">Nombre(s)</label>
-                <input
-                  id="name_user"
-                  v-model.trim="form.name_user"
-                  type="text"
-                  required
-                  autocomplete="given-name"
-                  maxlength="50"
-                  class="input"
-                  placeholder="Tu nombre"
-                />
+                <input id="name_user" v-model.trim="form.name_user" type="text" required autocomplete="given-name"
+                  maxlength="50" class="input" placeholder="Tu nombre" />
               </div>
               <div class="stack">
                 <label class="label" for="paternal_surname">Apellido paterno</label>
-                <input
-                  id="paternal_surname"
-                  v-model.trim="form.paternal_surname"
-                  type="text"
-                  required
-                  autocomplete="family-name"
-                  maxlength="50"
-                  class="input"
-                  placeholder="Paterno"
-                />
+                <input id="paternal_surname" v-model.trim="form.paternal_surname" type="text" required
+                  autocomplete="family-name" maxlength="50" class="input" placeholder="Paterno" />
               </div>
               <div class="stack">
                 <label class="label" for="maternal_surname">Apellido materno</label>
-                <input
-                  id="maternal_surname"
-                  maxlength="50"
-                  v-model.trim="form.maternal_surname"
-                  type="text"
-                  required
-                  class="input"
-                  placeholder="Materno"
-                />
+                <input id="maternal_surname" maxlength="50" v-model.trim="form.maternal_surname" type="text" required
+                  class="input" placeholder="Materno" />
               </div>
             </div>
 
@@ -222,16 +155,8 @@
                     </li>
                   </ul>
                 </div>
-                <input
-                  id="phone"
-                  v-model.trim="form.phone"
-                  type="tel"
-                  required
-                  maxlength="10"
-                  autocomplete="tel-national"
-                  class="input"
-                  placeholder="55 1234 5678"
-                />
+                <input id="phone" v-model.trim="form.phone" type="tel" required maxlength="10"
+                  autocomplete="tel-national" class="input" placeholder="55 1234 5678" />
               </div>
             </div>
 
@@ -246,11 +171,8 @@
                     <span class="country-code">{{ getPhoneCode(emergencyCountryCode) }}</span>
                   </div>
                   <ul v-if="isOpen.emergency" class="options-list" role="listbox">
-                    <li
-                      v-for="country in countries"
-                      :key="country.code"
-                      @click.stop="selectCountry(country, 'emergency')"
-                    >
+                    <li v-for="country in countries" :key="country.code"
+                      @click.stop="selectCountry(country, 'emergency')">
                       <div class="flag-wrap">
                         <FlagIcon :country="country.code" />
                       </div>
@@ -259,14 +181,8 @@
                     </li>
                   </ul>
                 </div>
-                <input
-                  id="emergency_phone"
-                  v-model.trim="form.emergency_phone"
-                  type="tel"
-                  maxlength="10"
-                  class="input"
-                  placeholder="Teléfono de contacto (opcional)"
-                />
+                <input id="emergency_phone" v-model.trim="form.emergency_phone" type="tel" maxlength="10" class="input"
+                  placeholder="Teléfono de contacto (opcional)" />
               </div>
             </div>
           </template>
@@ -289,23 +205,11 @@
               <div class="stack">
                 <label class="label" for="secret_password">Contraseña Secreta</label>
                 <div class="input-wrap">
-                  <input
-                    id="secret_password"
-                    v-model.trim="form.secret_password"
-                    :type="showSecretPass ? 'text' : 'password'"
-                    :required="isSpeaker"
-                    minlength="8"
-                    maxlength="30"
-                    class="input input--pass"
-                    placeholder="Ingresa la contraseña para continuar"
-                  />
-                  <button
-                    type="button"
-                    class="eye"
-                    :aria-pressed="showSecretPass ? 'true' : 'false'"
-                    :title="showSecretPass ? 'Ocultar' : 'Mostrar'"
-                    @click="showSecretPass = !showSecretPass"
-                  >
+                  <input id="secret_password" v-model.trim="form.secret_password"
+                    :type="showSecretPass ? 'text' : 'password'" :required="isSpeaker" minlength="8" maxlength="30"
+                    class="input input--pass" placeholder="Ingresa la contraseña para continuar" />
+                  <button type="button" class="eye" :aria-pressed="showSecretPass ? 'true' : 'false'"
+                    :title="showSecretPass ? 'Ocultar' : 'Mostrar'" @click="showSecretPass = !showSecretPass">
                     <SvgIcon v-if="showSecretPass" :path="mdiEyeOffOutline" type="mdi" />
                     <SvgIcon v-else :path="mdiEyeOutline" type="mdi" />
                   </button>
@@ -318,12 +222,7 @@
             <template v-if="isStudentOrTeacher">
               <div class="stack">
                 <label class="label" for="provenance">Procedencia</label>
-                <select
-                  id="provenance"
-                  v-model="form.provenance"
-                  class="input"
-                  :required="isStudentOrTeacher"
-                >
+                <select id="provenance" v-model="form.provenance" class="input" :required="isStudentOrTeacher">
                   <option disabled value="">Selecciona tu procedencia</option>
                   <option value="uttecam">UTTECAM</option>
                   <option value="otra">Otra</option>
@@ -335,28 +234,23 @@
                 <div class="grid resp">
                   <div class="stack">
                     <label class="label" for="matricula">Matrícula</label>
-                    <input
-                      id="matricula"
-                      v-model.trim="form.matricula"
-                      type="text"
-                      class="input"
-                      maxlength="20"
+                    <input id="matricula" v-model.trim="form.matricula" type="text" class="input" maxlength="20"
                       placeholder="Tu matrícula"
-                      :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='uttecam'"
-                    />
+                      :required="isStudentOrTeacher && (form.provenance || '').toLowerCase() === 'uttecam'" />
                   </div>
                   <div class="stack">
                     <label class="label" for="programa_educativo">Programa Educativo</label>
-                    <select
-                      id="programa_educativo"
-                      v-model.trim="form.educational_program"
-                      class="input"
-                      :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='uttecam'"
-                    >
+                    <select id="programa_educativo" v-model.trim="form.educational_program" class="input"
+                      :required="isStudentOrTeacher && (form.provenance || '').toLowerCase() === 'uttecam'">
                       <option disabled value="">Selecciona tu programa</option>
                       <option value="TI">Tecnologías de la Información</option>
                       <option value="MCC">Mecatrónica</option>
                       <option value="AAK">Administración</option>
+                      <option value="II">Ingeniería Industrial</option>
+                      <option value="MI">Mantenimiento Industrial</option>
+                      <option value="ASP">Agricultura sustentable y protegida</option>
+                      <option value="NEG">Negocios</option>
+                      <option value="CONT">Contaduría</option>
                     </select>
                   </div>
                 </div>
@@ -364,27 +258,17 @@
                 <div class="grid resp" v-if="form.type_user_id === 1">
                   <div class="stack">
                     <label class="label" for="grado">Grado</label>
-                    <input
-                      id="grado"
-                      v-model.trim="form.grade"
-                      maxlength="5"
-                      type="text"
-                      class="input"
+                    <input id="grado" v-model.trim="form.grade" maxlength="2" type="text" class="input"
                       placeholder="Ej. 7"
-                      :required="Number(form.type_user_id)===1 && (form.provenance||'').toLowerCase()==='uttecam'"
-                    />
+                      :required="Number(form.type_user_id) === 1 && (form.provenance || '').toLowerCase() === 'uttecam'"
+                      @input="validateGrade" />
                   </div>
                   <div class="stack">
                     <label class="label" for="grupo">Grupo</label>
-                    <input
-                      id="grupo"
-                      v-model.trim="form.group_user"
-                      maxlength="5"
-                      type="text"
-                      class="input"
+                    <input id="grupo" v-model.trim="form.group_user" maxlength="1" type="text" class="input"
                       placeholder="Ej. C"
-                      :required="Number(form.type_user_id)===1 && (form.provenance||'').toLowerCase()==='uttecam'"
-                    />
+                      :required="Number(form.type_user_id) === 1 && (form.provenance || '').toLowerCase() === 'uttecam'"
+                      @input="validateGroup" />
                   </div>
                 </div>
               </template>
@@ -393,15 +277,9 @@
               <template v-if="form.provenance === 'otra'">
                 <div class="stack">
                   <label class="label" for="universidad_procedencia">Universidad de procedencia</label>
-                  <input
-                    id="universidad_procedencia"
-                    maxlength="100"
-                    v-model.trim="form.universidad_procedencia"
-                    type="text"
-                    class="input"
-                    placeholder="Nombre de tu universidad"
-                    :required="isStudentOrTeacher && (form.provenance||'').toLowerCase()==='otra'"
-                  />
+                  <input id="universidad_procedencia" maxlength="100" v-model.trim="form.universidad_procedencia"
+                    type="text" class="input" placeholder="Nombre de tu universidad"
+                    :required="isStudentOrTeacher && (form.provenance || '').toLowerCase() === 'otra'" />
                 </div>
               </template>
             </template>
@@ -414,52 +292,27 @@
               <div class="grid resp">
                 <div class="stack">
                   <label class="label" for="empresa_procedencia">Empresa/Institución de procedencia</label>
-                  <input
-                    id="empresa_procedencia"
-                    v-model.trim="form.empresa_procedencia"
-                    type="text"
-                    class="input"
-                    maxlength="100"
-                    placeholder="Nombre de tu empresa u organización"
-                    :required="isSpeaker"
-                  />
+                  <input id="empresa_procedencia" v-model.trim="form.empresa_procedencia" type="text" class="input"
+                    maxlength="100" placeholder="Nombre de tu empresa u organización" :required="isSpeaker" />
                 </div>
                 <div class="stack">
                   <label class="label" for="rol_dentro_empresa">Rol/Cargo</label>
-                  <input
-                    id="rol_dentro_empresa"
-                    maxlength="100"
-                    v-model.trim="form.rol_dentro_empresa"
-                    type="text"
-                    class="input"
-                    placeholder="Tu cargo o rol actual"
-                    :required="isSpeaker"
-                  />
+                  <input id="rol_dentro_empresa" maxlength="100" v-model.trim="form.rol_dentro_empresa" type="text"
+                    class="input" placeholder="Tu cargo o rol actual" :required="isSpeaker" />
                 </div>
               </div>
 
               <div class="stack">
                 <label class="label" for="descripcion_biografia">Biografía profesional</label>
-                <textarea
-                  id="descripcion_biografia"
-                  v-model.trim="form.descripcion_biografia"
-                  rows="4"
-                  maxlength="180"
-                  class="input"
-                  placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"
-                  :required="isSpeaker"
-                ></textarea>
+                <textarea id="descripcion_biografia" v-model.trim="form.descripcion_biografia" rows="4" maxlength="180"
+                  class="input" placeholder="Describe tu experiencia profesional y perfil (máx. 180 caracteres)"
+                  :required="isSpeaker"></textarea>
                 <small class="help">{{ form.descripcion_biografia.length }} / 180 caracteres</small>
               </div>
 
               <div class="stack">
                 <label class="label" for="tipo_presentacion">Tipo de participación</label>
-                <select
-                  id="tipo_presentacion"
-                  v-model="form.tipo_presentacion"
-                  class="input"
-                  :required="isSpeaker"
-                >
+                <select id="tipo_presentacion" v-model="form.tipo_presentacion" class="input" :required="isSpeaker">
                   <option disabled value="">Selecciona el tipo de presentación</option>
                   <option value="conferencia">Conferencia</option>
                   <option value="taller">Taller</option>
@@ -470,27 +323,17 @@
               <template v-if="form.tipo_presentacion === 'conferencia' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_conferencia">Título de la Conferencia o Charla Empresarial</label>
-                  <input
-                    id="titulo_conferencia"
-                    maxlength="100"
-                    v-model.trim="form.titulo_conferencia"
-                    type="text"
-                    class="input"
-                    placeholder="Título de tu conferencia"
-                    :required="isSpeaker && ['conferencia','ambas'].includes(form.tipo_presentacion)"
-                  />
+                  <input id="titulo_conferencia" maxlength="100" v-model.trim="form.titulo_conferencia" type="text"
+                    class="input" placeholder="Título de tu conferencia"
+                    :required="isSpeaker && ['conferencia', 'ambas'].includes(form.tipo_presentacion)" />
                 </div>
                 <div class="stack">
-                  <label class="label" for="descripcion_conferencia">Descripción de la Conferencia o Charla Empresarial</label>
-                  <textarea
-                    id="descripcion_conferencia"
-                    v-model.trim="form.descripcion_conferencia"
-                    rows="4"
-                    maxlength="180"
-                    class="input"
+                  <label class="label" for="descripcion_conferencia">Descripción de la Conferencia o Charla
+                    Empresarial</label>
+                  <textarea id="descripcion_conferencia" v-model.trim="form.descripcion_conferencia" rows="4"
+                    maxlength="180" class="input"
                     placeholder="Describe el contenido y objetivos de tu conferencia (máx. 180 caracteres)"
-                    :required="isSpeaker && ['conferencia','ambas'].includes(form.tipo_presentacion)"
-                  ></textarea>
+                    :required="isSpeaker && ['conferencia', 'ambas'].includes(form.tipo_presentacion)"></textarea>
                   <small class="help">{{ form.descripcion_conferencia.length }} / 180 caracteres</small>
                 </div>
               </template>
@@ -498,27 +341,15 @@
               <template v-if="form.tipo_presentacion === 'taller' || form.tipo_presentacion === 'ambas'">
                 <div class="stack">
                   <label class="label" for="titulo_taller">Título del Taller</label>
-                  <input
-                    id="titulo_taller"
-                    maxlength="50"
-                    v-model.trim="form.titulo_taller"
-                    type="text"
-                    class="input"
+                  <input id="titulo_taller" maxlength="50" v-model.trim="form.titulo_taller" type="text" class="input"
                     placeholder="Título de tu taller"
-                    :required="isSpeaker && ['taller','ambas'].includes(form.tipo_presentacion)"
-                  />
+                    :required="isSpeaker && ['taller', 'ambas'].includes(form.tipo_presentacion)" />
                 </div>
                 <div class="stack">
                   <label class="label" for="descripcion_taller">Descripción del Taller</label>
-                  <textarea
-                    id="descripcion_taller"
-                    v-model.trim="form.descripcion_taller"
-                    rows="4"
-                    maxlength="180"
-                    class="input"
-                    placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"
-                    :required="isSpeaker && ['taller','ambas'].includes(form.tipo_presentacion)"
-                  ></textarea>
+                  <textarea id="descripcion_taller" v-model.trim="form.descripcion_taller" rows="4" maxlength="180"
+                    class="input" placeholder="Describe el contenido y objetivos de tu taller (máx. 180 caracteres)"
+                    :required="isSpeaker && ['taller', 'ambas'].includes(form.tipo_presentacion)"></textarea>
                   <small class="help">{{ form.descripcion_taller.length }} / 180 caracteres</small>
                 </div>
               </template>
@@ -556,14 +387,8 @@
                 <span class="input-icon">
                   <SvgIcon :path="mdiFacebook" type="mdi" />
                 </span>
-                <input
-                  id="facebook_link"
-                  maxlength="200"
-                  v-model.trim="form.facebook_link"
-                  type="url"
-                  class="input"
-                  placeholder="Link a tu perfil de Facebook (opcional)"
-                />
+                <input id="facebook_link" maxlength="200" v-model.trim="form.facebook_link" type="url" class="input"
+                  placeholder="Link a tu perfil de Facebook (opcional)" />
               </div>
             </div>
             <div class="stack">
@@ -572,14 +397,8 @@
                 <span class="input-icon">
                   <SvgIcon :path="mdiInstagram" type="mdi" />
                 </span>
-                <input
-                  id="instagram_link"
-                  maxlength="200"
-                  v-model.trim="form.instagram_link"
-                  type="url"
-                  class="input"
-                  placeholder="Link a tu perfil de Instagram (opcional)"
-                />
+                <input id="instagram_link" maxlength="200" v-model.trim="form.instagram_link" type="url" class="input"
+                  placeholder="Link a tu perfil de Instagram (opcional)" />
               </div>
             </div>
             <div class="stack">
@@ -588,14 +407,8 @@
                 <span class="input-icon">
                   <SvgIcon :path="mdiTwitter" type="mdi" />
                 </span>
-                <input
-                  id="x_link"
-                  maxlength="200"
-                  v-model.trim="form.x_link"
-                  type="url"
-                  class="input"
-                  placeholder="Link a tu perfil de X (opcional)"
-                />
+                <input id="x_link" maxlength="200" v-model.trim="form.x_link" type="url" class="input"
+                  placeholder="Link a tu perfil de X (opcional)" />
               </div>
             </div>
             <div class="stack">
@@ -604,14 +417,8 @@
                 <span class="input-icon">
                   <SvgIcon :path="mdiLinkedin" type="mdi" />
                 </span>
-                <input
-                  id="linkedin_link"
-                  maxlength="200"
-                  v-model.trim="form.linkedin_link"
-                  type="url"
-                  class="input"
-                  placeholder="Link a tu perfil de LinkedIn (opcional)"
-                />
+                <input id="linkedin_link" maxlength="200" v-model.trim="form.linkedin_link" type="url" class="input"
+                  placeholder="Link a tu perfil de LinkedIn (opcional)" />
               </div>
             </div>
           </template>
@@ -664,11 +471,17 @@
         <h3 class="modal-title">Términos y Aviso de Privacidad</h3>
         <div class="modal-body">
           <p>
-            Al registrarte en el 3er Congreso Internacional, aceptas los siguientes términos y condiciones, así como nuestro aviso de privacidad.
+            Al registrarte en el 3er Congreso Internacional, aceptas los siguientes términos y condiciones, así como
+            nuestro
+            aviso de privacidad.
             Tu información personal será utilizada exclusivamente para la organización y gestión de este evento.
             A continuación, se detallan los términos que aceptas:
-            Uso de Información Personal: Tu información personal será utilizada únicamente para fines de organización y gestión del 3er Congreso Internacional.
-            Exclusión de Responsabilidad por Enlaces Externos: Al aceptar estos términos y condiciones, el equipo Elite y la Universidad Tecnológica de Tecamachalco (UTT) no se hacen responsables por daños a dispositivos móviles y/o laptops personales generados por el uso o acceso a enlaces externos.
+            Uso de Información Personal: Tu información personal será utilizada únicamente para fines de organización y
+            gestión del 3er Congreso Internacional.
+            Exclusión de Responsabilidad por Enlaces Externos: Al aceptar estos términos y condiciones, el equipo Elite
+            y la
+            Universidad Tecnológica de Tecamachalco (UTT) no se hacen responsables por daños a dispositivos móviles y/o
+            laptops personales generados por el uso o acceso a enlaces externos.
           </p>
         </div>
       </div>
@@ -713,7 +526,7 @@ const {
   getPhoneCode, toggleDropdown, selectCountry,
 
   // otros
-  loading
+  loading, validateGrade, validateGroup
 } = useRegister()
 </script>
 

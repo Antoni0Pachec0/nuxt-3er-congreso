@@ -362,3 +362,40 @@
         transition: transform 0.3s ease;
     }
 }
+
+/* Evita que overlay/sidebar tapen el scroll cuando no están activos */
+.overlay { pointer-events: none; }
+.overlay.active { pointer-events: auto; }
+.sidebar { pointer-events: none; }
+.sidebar.active { pointer-events: auto; }
+
+/* Bloqueo de scroll cuando el menú está abierto */
+html.no-scroll, body.no-scroll { overflow: hidden; }
+
+/* Evita capturar scroll cuando estén inactivos */
+.overlay { pointer-events: none; }
+.overlay.active { pointer-events: auto; }
+.sidebar { pointer-events: none; }
+.sidebar.active { pointer-events: auto; }
+
+/* Bloqueo de scroll cuando el menú está abierto */
+html.no-scroll, body.no-scroll { overflow: hidden !important; }
+
+/* Asegura que no haya locks globales heredados de otros CSS */
+html, body {
+  /* NO usar height: 100vh en body/html; debe poder crecer */
+  height: auto;
+  overflow-x: hidden;
+}
+
+/* Sidebar no debe desplazar el documento */
+.sidebar {
+  position: fixed;
+  will-change: transform;
+}
+
+/* Overlay realmente se desactiva cuando no está visible */
+.overlay {
+  position: fixed;
+  will-change: opacity;
+}
