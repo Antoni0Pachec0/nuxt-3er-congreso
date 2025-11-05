@@ -1,5 +1,5 @@
 <template>
-    <section class="insc" aria-labelledby="gifts-title">
+    <section class="inscP" aria-labelledby="gifts-title">
         <header class="insc-hdr">
             <h2 id="gifts-title" class="insc-title">¡Tu inscripción incluye regalos oficiales!</h2>
             <div class="insc-underline" aria-hidden="true"></div>

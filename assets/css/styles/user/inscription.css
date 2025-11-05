@@ -1,6 +1,6 @@
 /* ===== Apartado Inscripción (prefijo .insc- para no colisionar) ===== */
 
-.insc {
+.inscP {
     padding: clamp(2rem, 5vw, 4rem) 1rem;
     background-image: linear-gradient(to bottom, #182D6B, #FFFFFF 60px);
 }
