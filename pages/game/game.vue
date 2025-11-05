@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="GamePage">
     <!-- Pantalla de entrada -->
     <div id="entry-page" ref="entryPage">
       <center><h1>MotocleRace</h1></center>
