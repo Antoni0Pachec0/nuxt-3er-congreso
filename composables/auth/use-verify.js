@@ -4,16 +4,14 @@ import { useRouter, useRoute } from 'vue-router'
 import { VerifyApi } from '@/backend/auth/verify-api'
 import { parseAxiosError } from '@/backend/http/error'
 
-// 👇 Adaptador para notificaciones (igual que en los otros composables)
+// 👇 Adaptador para notificaciones
 import { createNotifyAdapter } from '@/utils/notify/adapter'
 
 export function useVerify () {
   const router = useRouter()
   const route  = useRoute()
 
-  // ---------------------------------
-  // Notificaciones (mismo patrón que use-register, use-reset, use-forgot)
-  // ---------------------------------
+  // Notificaciones
   const notify = typeof createNotifyAdapter === 'function'
     ? createNotifyAdapter()
     : null
@@ -27,8 +25,8 @@ export function useVerify () {
   const DIGITS = 6
   const DIGITS_ARR = Array.from({ length: DIGITS }, (_, i) => i)
 
-  const otpRefs = ref([])             // refs de inputs
-  const digits  = ref(Array(DIGITS).fill(''))  // valores por dígito
+  const otpRefs = ref([])
+  const digits  = ref(Array(DIGITS).fill(''))
 
   // ===== Estado general =====
   const loading  = ref(false)
@@ -36,15 +34,16 @@ export function useVerify () {
   const cooldown = ref(0)
   const canUseClipboard = ref(false)
 
-  // Email y propósito (verificación o reset)
-  const email = ref(import.meta.client
-    ? (sessionStorage.getItem('verify_email') || localStorage.getItem('verify_email') || '')
-    : ''
-  )
-  const verificationPurpose = ref(import.meta.client
-    ? (localStorage.getItem('verification_purpose') || 'email_verification')
-    : 'email_verification'
-  )
+  // Email y propósito
+  const email = ref('')
+  const verificationPurpose = ref('email_verification')
+
+  // ✅ CORREGIDO: Cargar email y propósito en mounted
+  onMounted(() => {
+    email.value = sessionStorage.getItem('verify_email') || 
+                  localStorage.getItem('verify_email') || ''
+    verificationPurpose.value = localStorage.getItem('verification_purpose') || 'email_verification'
+  })
 
   const safeEmail = computed(() =>
     email.value
@@ -91,7 +90,6 @@ export function useVerify () {
     error.value = ''
     const v = e.target.value
 
-    // Si pegaron varios de golpe en un input
     if (v && v.length > 1) {
       distribute(v)
       return
@@ -154,7 +152,6 @@ export function useVerify () {
   }
 
   // ===== Verificar código =====
-  // ✅ CORREGIDO: Usar VerifyApi correctamente
   async function onVerify() {
     if (!email.value) {
       notifyWarning('Falta email', 'Vuelve al registro para obtener tu código.')
@@ -173,11 +170,15 @@ export function useVerify () {
       const payload = { 
         email: email.value.toLowerCase().trim(), 
         code: code.value,
-        token_type: verificationPurpose.value // ✅ Agregar token_type
+        token_type: verificationPurpose.value
       }
 
-      // ✅ CORREGIDO: Usar VerifyApi en lugar de api directamente
+      console.log('Enviando verificación:', payload) // Debug
+
+      // ✅ CORREGIDO: Usar VerifyApi correctamente
       const response = await VerifyApi.verifyCode(payload)
+
+      console.log('Respuesta de verificación:', response) // Debug
 
       // Éxito - manejar según el propósito
       if (verificationPurpose.value === 'email_verification') {
@@ -194,7 +195,6 @@ export function useVerify () {
         // Verificación de reset password exitosa
         notifySuccess('¡Código válido!', 'Ahora puedes establecer tu nueva contraseña.')
         setTimeout(() => {
-          // Redirigir a la página de reset password
           router.push({ 
             name: 'reset',
             query: { 
@@ -206,6 +206,8 @@ export function useVerify () {
       }
 
     } catch (err) {
+      console.error('Error en verificación:', err) // Debug
+      
       const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.'
       error.value = msg
       notifyError('Verificación fallida', msg)
@@ -252,30 +254,46 @@ export function useVerify () {
   async function resend () {
     if (!email.value || cooldown.value > 0 || loading.value) return
     
-    const toast = notifyLoading('Reenviando código', 'Generando un nuevo código de verificación…')
+    // ✅ CORREGIDO: Usar notifyLoading en lugar de toast
+    const loadingNotification = notifyLoading('Reenviando código', 'Generando un nuevo código de verificación…')
     
     try {
       await VerifyApi.resend({
         email: email.value.toLowerCase().trim(),
-        purpose: verificationPurpose.value // 'email_verification' | 'reset_password'
+        purpose: verificationPurpose.value
       })
 
-      toast?.resolve({
-        title: 'Código reenviado',
-        message: 'Revisa tu correo. Puede tardar unos segundos.',
-        duration: 4000
-      })
+      // ✅ CORREGIDO: Usar resolve directamente
+      if (loadingNotification?.resolve) {
+        loadingNotification.resolve({
+          title: 'Código reenviado',
+          message: 'Revisa tu correo. Puede tardar unos segundos.',
+          duration: 4000
+        })
+      } else {
+        notifySuccess('Código reenviado', 'Revisa tu correo. Puede tardar unos segundos.')
+      }
+      
       startCooldown()
     } catch (err) {
       const status = err?.response?.status
       const msg = parseAxiosError(err) || 'No se pudo reenviar el código.'
       
       if (status === 429) {
-        toast?.reject({ title: 'Espera un momento', message: msg })
+        if (loadingNotification?.reject) {
+          loadingNotification.reject({ title: 'Espera un momento', message: msg })
+        } else {
+          notifyWarning('Espera un momento', msg)
+        }
         startCooldown()
         return
       }
-      toast?.reject({ title: 'No se pudo reenviar', message: msg })
+      
+      if (loadingNotification?.reject) {
+        loadingNotification.reject({ title: 'No se pudo reenviar', message: msg })
+      } else {
+        notifyError('No se pudo reenviar', msg)
+      }
     }
   }
 
@@ -307,10 +325,7 @@ export function useVerify () {
 
   // Exponer a la vista
   return {
-    // constantes/listas
     DIGITS_ARR,
-
-    // estado
     otpRefs,
     digits,
     safeEmail,
@@ -319,9 +334,7 @@ export function useVerify () {
     cooldown,
     isComplete,
     canUseClipboard,
-    verificationPurpose, // ✅ Exponer para la vista
-
-    // eventos/acciones
+    verificationPurpose,
     onVerify,
     onInput,
     onKeydown,
