@@ -2,21 +2,14 @@
 import api from '@/backend/http/api'
 import { ROUTES } from '@/backend/http/routes'
 
-// Asumo que ya tienes definidos en ROUTES:
-// ROUTES.AUTH.VERIFY
-// ROUTES.AUTH.RESEND
-// ROUTES.AUTH.FORGOT_PASSWORD
-//
-// Si no, cambia los endpoints aquí mismo.
-
 export const VerifyApi = {
   /**
    * Verifica el código OTP
    * @param {{ email: string, code: string, token_type: 'email_verification'|'reset_password' }} payload
    */
   async verifyCode (payload) {
-    // withCredentials si tu backend usa cookies
-    return api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
+    const { data } = await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
+    return data
   },
 
   /**
@@ -28,6 +21,7 @@ export const VerifyApi = {
       ? ROUTES.AUTH.FORGOT_PASSWORD // envía mail de reset
       : ROUTES.AUTH.RESEND          // reenvía código de verificación
 
-    return api.post(endpoint, { email }, { withCredentials: true })
+    const { data } = await api.post(endpoint, { email }, { withCredentials: true })
+    return data
   },
 }

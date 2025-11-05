@@ -5,6 +5,9 @@ import { R } from '@/utils/app-routes'
 import { AuthApi } from '@/backend/auth/login-api'
 import { parseAxiosError } from '@/backend/http/error'
 
+// 👇 Adaptador para notificaciones
+import { createNotifyAdapter } from '@/utils/notify/adapter'
+
 export function useLogin() {
   const email = ref('')
   const password = ref('')
@@ -12,6 +15,15 @@ export function useLogin() {
   const loading = ref(false)
   const apiError = ref('')
   const authStore = useAuthStore()
+
+  // Notificaciones
+  const notify = typeof createNotifyAdapter === 'function'
+    ? createNotifyAdapter()
+    : null
+
+  const notifyError = (t, m) => notify?.('error', t, m)
+  const notifySuccess = (t, m) => notify?.('success', t, m)
+  const notifyWarning = (t, m) => notify?.('warning', t, m)
 
   // Computed para validación en tiempo real
   const isFormValid = computed(() => {
@@ -110,6 +122,25 @@ export function useLogin() {
     }
   }
 
+  // Manejo de usuario no verificado
+  async function handleUnverifiedUser(response) {
+    // Guardar email para la verificación
+    sessionStorage.setItem('verify_email', email.value)
+    localStorage.setItem('verify_email', email.value)
+    localStorage.setItem('verification_purpose', 'email_verification')
+
+    // Mostrar notificación
+    notifyWarning(
+      'Cuenta no verificada', 
+      'Tu cuenta requiere verificación. Te hemos enviado un nuevo código al correo.'
+    )
+
+    // Redirigir a verificación
+    setTimeout(() => {
+      navigateTo(R.to('verify'))
+    }, 2000)
+  }
+
   // Submit principal
   async function onSubmit() {
     if (!validateForm()) return
@@ -123,15 +154,55 @@ export function useLogin() {
         password: password.value
       })
 
+      // ✅ CORREGIDO: Manejar caso de verificación requerida
+      if (response?.require_verification) {
+        await handleUnverifiedUser(response)
+        return
+      }
+
+      // Login exitoso
       await handleSuccessResponse(response)
-    } catch (error) {
-      const errorMessage = parseAxiosError(error)
       
-      // Manejar específicamente error 400 (credenciales incorrectas)
-      if (error.response?.status === 400) {
-        apiError.value = 'Correo o contraseña incorrectos'
-      } else {
-        apiError.value = errorMessage
+    } catch (error) {
+      // ✅ CORREGIDO: Mejor manejo de errores específicos
+      const status = error.response?.status
+      const serverMessage = error.response?.data?.message
+      
+      switch (status) {
+        case 400:
+          apiError.value = serverMessage || 'Credenciales incorrectas'
+          notifyError('Error de inicio de sesión', apiError.value)
+          break
+          
+        case 401:
+          apiError.value = serverMessage || 'No autorizado'
+          notifyError('Acceso denegado', apiError.value)
+          break
+          
+        case 404:
+          apiError.value = 'Usuario no encontrado'
+          notifyError('Cuenta no existe', 'Verifica tu correo electrónico')
+          break
+          
+        case 422:
+          apiError.value = serverMessage || 'Datos de entrada inválidos'
+          notifyError('Datos incorrectos', apiError.value)
+          break
+          
+        case 429:
+          apiError.value = 'Demasiados intentos. Intenta más tarde.'
+          notifyWarning('Demasiados intentos', apiError.value)
+          break
+          
+        case 500:
+          apiError.value = 'Error del servidor. Intenta más tarde.'
+          notifyError('Error del servidor', apiError.value)
+          break
+          
+        default:
+          const errorMessage = parseAxiosError(error)
+          apiError.value = errorMessage || 'Error desconocido al iniciar sesión'
+          notifyError('Error', apiError.value)
       }
       
       console.error('Login error:', error)
