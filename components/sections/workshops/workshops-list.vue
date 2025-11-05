@@ -22,11 +22,14 @@
             <ul class="payment-steps">
               <li><CheckCircle class="mi-icon ok" /> Haber pagado el congreso</li>
               <li><Info class="mi-icon warn" /> Esperar la validación del administrador</li>
+              <li><Info class="mi-icon warn" /> Para pago inmediato sin validación, usa tarjeta crédito/débito con el botón Inscríbete.</li>
             </ul>
             <p class="modal-note">Una vez verificado tu pago, podrás inscribirte.</p>
           </div>
           <div class="modal-footer">
-            <button @click="showPaymentModal = false" class="btn btn-primary">Entendido</button>
+            <button @click="showPaymentModal = false" class="btn btn-secondary">Entendido</button>
+            
+            <button @click="goToInscription" class="btn btn-primary">Inscríbete ahora</button>
           </div>
         </div>
       </div>
@@ -196,16 +199,24 @@ import {
   User, Clock, Calendar, MapPin, CheckCircle, Lock, Info,
   Code2, Cpu, Database, Smartphone, Shield, Network, Wrench, GitBranchPlus
 } from "lucide-vue-next";
+import { useRouter } from 'vue-router' // Asegúrate de que esto esté
 import { useWorkshops } from "@/composables/workshop/use-workshops";
 
 const iconMap = { Cpu, Code2, Smartphone, Shield, Network, Database, Wrench, GitBranchPlus }
-
+const router = useRouter()
 const {
   workshops, loading, error, toast, showPaymentModal,
   hasWorkshops, isAuthenticated, userWorkshop,
   loadWorkshops, getEnrollmentButton,
   confirmModal, openConfirm, closeConfirm, confirmEnroll
 } = useWorkshops();
+const goToInscription = () => {
+  // Oculta el modal
+  showPaymentModal.value = false // Asumiendo que showPaymentModal es un ref
+  
+  // Navega a la página de inscripción (sin recargar)
+  router.push('/user/inscription')
+}
 
 const levelClass = (workshop) => {
   const lvl = (workshop.level || "").toLowerCase();

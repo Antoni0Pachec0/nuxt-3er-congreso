@@ -1,12 +1,19 @@
 // composables/useApi.ts
+import { useAuthStore } from '~/security/stores/auth' // 1. Importar el store de Pinia
+
 export const useApi = () => {
-    const auth = useAuth()
+    // 2. Obtener la instancia del store
+    //    IMPORTANTE: Se obtiene aquí, pero el token se lee *dentro* de la función fetch
+    const authStore = useAuthStore()
 
     const authenticatedFetch = async (url: string, options: any = {}) => {
-        const token = auth.getToken()
+        // 3. Leer el token desde el estado de Pinia
+        //    Esto se hace en el momento de la llamada, no cuando se crea el composable
+        const token = authStore.accessToken
 
         if (!token) {
-            throw new Error('No authentication token found')
+            // 4. Si no hay token, fallar (esto es lo que pasa en la "carrera")
+            throw new Error('No authentication token found (desde useApi)')
         }
 
         const headers = {

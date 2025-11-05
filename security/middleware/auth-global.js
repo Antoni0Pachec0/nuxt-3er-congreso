@@ -32,6 +32,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
           roleName: me?.type_user?.name_type ?? null
         })
         isAuth = true
+      }else{
+        isAuth = false
       }
     } catch (e) {
       auth.clearUser()
@@ -40,7 +42,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // 3) Si requiere auth y no hay sesión → login
-  if (requiresAuth && !isAuth) return navigateTo('/login')
+  if (requiresAuth && !isAuth){
+    auth.clearUser()
+    return navigateTo('/login')
+  }
 
   // 4) Si hay sesión e intenta entrar a páginas de invitado → redirigir por rol
   if (isAuth && to.meta?.guestOnly) {

@@ -16,10 +16,14 @@ const errorMsg = ref<string | null>(null)
 const { $stripe } = useNuxtApp()
 const { createSession } = useStripeEmbedded()
 
+definePageMeta({
+    requiresAuth: true
+})
+
 onMounted(async () => {
     try {
         // 1) Crear la sesión en tu backend
-        
+
         const { sessionId: sid, clientSecret: cs } = await createSession(items.value)
         sessionId.value = sid
         clientSecret.value = cs

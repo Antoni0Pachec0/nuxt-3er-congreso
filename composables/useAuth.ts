@@ -1,4 +1,4 @@
-import { useAuthStore } from "~/security/stores/auth"
+/**import { useAuthStore } from "~/security/stores/auth"
 
 // composables/useAuth.js
 export const useAuth = () => {
@@ -43,4 +43,4 @@ export const useAuth = () => {
     isAuthenticated,
     logout
   }
-}
+}**/
