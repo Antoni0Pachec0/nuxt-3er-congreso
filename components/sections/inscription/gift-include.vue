@@ -1,4 +1,4 @@
-<template>
+<template classs="Pagos05">
     <section class="inscP" aria-labelledby="gifts-title">
         <header class="insc-hdr">
             <h2 id="gifts-title" class="insc-title">¡Tu inscripción incluye regalos oficiales!</h2>
