@@ -32,6 +32,8 @@
   max-width: 450px;
   width: 100%;
   border-radius: 16px;
+  animation: float 4.5s ease-in-out infinite;
+
 }
 
 .ws-hero-subtitle {
@@ -99,6 +101,7 @@
     flex-direction: row;
     text-align: left;
   }
+
   .ws-hero-text {
     align-self: center;
   }
