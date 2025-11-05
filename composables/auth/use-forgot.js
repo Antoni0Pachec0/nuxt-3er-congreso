@@ -30,33 +30,33 @@ export function useForgot () {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '')
   }
 
-  async function onSubmit () {
+  async function onSubmit() {
     if (!isValidEmail(email.value)) {
       notifyError('Error', 'Por favor ingresa un correo válido')
       return
     }
 
     loading.value = true
-    const toast = notifyLoading('Enviando código', 'Procesando tu solicitud...')
 
     try {
       const cleanEmail = email.value.toLowerCase().trim()
-
       await ForgotApi.sendResetCode({ email: cleanEmail })
 
-      // contexto para la pantalla de verificación
+      // Guardar en sessionStorage para verify
+      sessionStorage.setItem('verify_email', cleanEmail)
+      sessionStorage.setItem('verification_purpose', 'reset_password')
+      
+      // También en localStorage como backup
       localStorage.setItem('verify_email', cleanEmail)
       localStorage.setItem('verification_purpose', 'reset_password')
 
-      toast?.resolve({
-        title: 'Código enviado',
-        message: 'Revisa tu correo electrónico',
-      })
-
-      setTimeout(() => router.push(R.to('verify')), 1500)
+      notifySuccess('Código enviado', 'Revisa tu correo electrónico para el código de verificación')
+      
+      // Redirección inmediata
+      await router.push(R.to('verify'))
     } catch (err) {
       const msg = parseAxiosError(err) || 'No se pudo procesar tu solicitud'
-      toast?.reject({ title: 'Error', message: msg })
+      notifyError('Error', msg)
     } finally {
       loading.value = false
     }

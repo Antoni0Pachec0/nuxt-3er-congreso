@@ -1,24 +1,28 @@
-// middleware/auth.global.js
+// security/middleware/auth.global.js
 import { useAuthStore } from '@/security/stores/auth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) return
 
   const auth = useAuthStore()
-
-  // 1) Hidratar del storage (para que el header cambie al instante)
-  if (!auth.isAuthenticated) auth.loadFromStorage()
-
+  
+  // Definir rutas públicas
   const PUBLIC_PATHS = new Set([
     '/', '/login', '/register', '/verify', '/forgot-password', '/reset-password',
-    '/schedule', '/conferees', '/workshops'
+    '/schedule', '/conferees', '/workshops', '/game', '/game/leaderboard'
   ])
 
   const isPublic = PUBLIC_PATHS.has(to.path) || to.meta?.guestOnly === true
   const requiresAuth = to.meta?.requiresAuth === true
 
-  // 2) Si la ruta requiere auth y no hay sesión en memoria → intenta con cookies (GET /auth/me)
+  // 1) Hidratar del storage
+  if (!auth.isAuthenticated) {
+    auth.loadFromStorage()
+  }
+
   let isAuth = auth.isAuthenticated
+
+  // 2) Si no está autenticado pero requiere auth, intentar verificar con backend
   if (!isAuth && requiresAuth) {
     try {
       const { AuthApi } = await import('@/backend/auth/login-api')
@@ -31,25 +35,28 @@ export default defineNuxtRouteMiddleware(async (to) => {
           roleId: me.type_user_id ?? null,
           roleName: me?.type_user?.name_type ?? null
         })
+        auth.setAccessToken(localStorage.getItem('access_token') || '')
         isAuth = true
-      }else{
-        isAuth = false
       }
     } catch (e) {
+      console.warn('Auth check failed:', e)
       auth.clearUser()
       isAuth = false
     }
   }
 
-  // 3) Si requiere auth y no hay sesión → login
-  if (requiresAuth && !isAuth){
-    auth.clearUser()
+  // 3) Si requiere auth y no está autenticado → redirigir a login
+  if (requiresAuth && !isAuth) {
     return navigateTo('/login')
   }
 
-  // 4) Si hay sesión e intenta entrar a páginas de invitado → redirigir por rol
-  if (isAuth && to.meta?.guestOnly) {
-    return auth.userRole === 5 ? navigateTo('/admin/users') : navigateTo('/workshops')
+  // 4) Si está autenticado e intenta acceder a páginas de invitado → redirigir según rol
+  if (isAuth && (isPublic || to.meta?.guestOnly)) {
+    if (auth.userRole === 5) {
+      return navigateTo('/admin/users')
+    } else {
+      return navigateTo('/workshops')
+    }
   }
 
   // 5) Bloquear admin si no es roleId 5
@@ -57,10 +64,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/workshops')
   }
 
-  // 6) (Opcional) Si es auth y va a rutas no permitidas, reubicar
-  if (isAuth && !isPublic) {
-    const ALLOWED = new Set(['/workshops','/game','/game/leaderboard','/admin/users','/profile'])
-    if (!ALLOWED.has(to.path)) {
+  // 6) Rutas específicas por rol
+  if (isAuth) {
+    const userRoutes = ['/workshops', '/game', '/game/leaderboard', '/profile']
+    const adminRoutes = ['/admin/users', '/admin/dashboard']
+    
+    const allowedRoutes = auth.userRole === 5 
+      ? [...userRoutes, ...adminRoutes]
+      : userRoutes
+
+    if (!allowedRoutes.includes(to.path) && to.path !== '/') {
       return auth.userRole === 5 ? navigateTo('/admin/users') : navigateTo('/workshops')
     }
   }

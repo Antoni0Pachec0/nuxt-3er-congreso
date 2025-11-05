@@ -154,10 +154,11 @@ export function useVerify () {
   }
 
   // ===== Verificar código =====
-  async function onVerify () {
+  // ✅ CORREGIDO: Usar notify directamente
+  async function onVerify() {
     if (!email.value) {
-      notifyWarning('Falta email', 'Debes iniciar el flujo desde registro o recuperación.')
-      router.push('/register')
+      notifyWarning('Falta email', 'Vuelve al registro para obtener tu código.')
+      router.push({ name: 'register' })
       return
     }
     if (!isComplete.value) {
@@ -166,44 +167,20 @@ export function useVerify () {
     }
 
     loading.value = true
-    error.value   = ''
-    const toast = notifyLoading('Verificando código', 'Estamos validando tu código…')
+    error.value = ''
 
     try {
-      const payload = {
-        email: String(email.value).toLowerCase().trim(),
-        code:  code.value,
-        token_type: verificationPurpose.value === 'reset_password'
-          ? 'reset_password'
-          : 'email_verification'
-      }
+      const payload = { email: email.value.toLowerCase().trim(), code: code.value }
+      await api.post(ROUTES.AUTH.VERIFY, payload, { withCredentials: true })
 
-      await VerifyApi.verifyCode(payload)
-
-      // Limpieza
+      // Éxito
       sessionStorage.removeItem('verify_email')
-      localStorage.removeItem('verify_email')
-
-      if (verificationPurpose.value === 'reset_password') {
-        localStorage.removeItem('verification_purpose')
-
-        const resetToken = generateResetToken()
-        sessionStorage.setItem('reset_token', resetToken)
-        sessionStorage.setItem('reset_email', email.value)
-        sessionStorage.setItem('reset_code', code.value)
-        sessionStorage.setItem('reset_token_expiry', (Date.now() + 15 * 60 * 1000).toString())
-
-        toast?.resolve({ title: '¡Código verificado!', message: 'Ahora puedes establecer tu nueva contraseña.' })
-        setTimeout(() => router.push('/reset'), 1500)
-      } else {
-        localStorage.removeItem('verification_purpose')
-        toast?.resolve({ title: '¡Listo!', message: 'Cuenta verificada exitosamente. Ahora inicia sesión.' })
-        setTimeout(() => router.push('/login'), 1500)
-      }
+      notifySuccess('¡Listo!', 'Código verificado. Ahora inicia sesión.')
+      router.push({ name: 'login' })
     } catch (err) {
       const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.'
       error.value = msg
-      toast?.reject({ title: 'Verificación fallida', message: msg })
+      notifyError('Verificación fallida', msg)
       digits.value = Array(DIGITS).fill('')
       await nextTick()
       focusIndex(0)

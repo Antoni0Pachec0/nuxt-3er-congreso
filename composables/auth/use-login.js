@@ -51,84 +51,63 @@ export function useLogin() {
 
   // Manejo de respuesta exitosa
   async function handleSuccessResponse(response) {
-    // 1) Verificación pendiente
-    if (Number.isFinite(response?.user_id)) {
-      const roleId = Number(response?.user?.type_user_id ?? 0)
-      const roleName = response?.user?.type_user_name || null
-
-      authStore.setUser({
-        id: response.user_id,
-        email: email.value || response?.user?.email || '',
-        roleId,
-        roleName,
-        ...(response?.user || {})
-      })
-
-      // ✅ fija Authorization y persiste token
-      if (response?.access_token) authStore.setAccessToken(response.access_token)
-
-      // (opcional) guarda refresh_token si lo ocupas para otros flujos
-      if (response?.refresh_token) try { localStorage.setItem('refresh_token', response.refresh_token) } catch {}
-
-      // ✅ Redirección por rol
-      return roleId === 5 ? navigateTo('/admin/users') : navigateTo('/workshops')
+    if (!Number.isFinite(response?.user_id)) {
+      apiError.value = response?.message || 'Error desconocido en la respuesta'
+      return
     }
 
+    const roleId = Number(response?.user?.type_user_id ?? 0)
+    const roleName = response?.user?.type_user_name || null
 
-    // 2) Login exitoso
-    if (Number.isFinite(response?.user_id)) {
-      const roleId = Number(response?.user?.type_user_id ?? 0)
-      const roleName = response?.user?.type_user_name || null
+    // Guarda en store
+    authStore.setUser({
+      id: response.user_id,
+      email: email.value || response?.user?.email || '',
+      roleId,
+      roleName,
+      ...(response?.user || {})
+    })
 
-      // Guarda en store
-      authStore.setUser({
-        id: response.user_id,
-        email: email.value || response?.user?.email || '',
-        roleId,
-        roleName,
-        ...(response?.user || {})
-      })
+    // Persistencia y fijar Bearer
+    try {
+      localStorage.setItem('userId', String(response.user_id))
+      localStorage.setItem('userEmail', email.value || response?.user?.email || '')
 
-      // Persistencia y fijar Bearer
-      try {
-        localStorage.setItem('userId', String(response.user_id))
-        localStorage.setItem('userEmail', email.value || response?.user?.email || '')
-
-        if (response?.access_token) {
-          localStorage.setItem('access_token', response.access_token)
-          try {
-            const { default: api } = await import('@/backend/http/api')
-            api.defaults.headers.Authorization = `Bearer ${response.access_token}`
-          } catch (error) {
-            console.warn('Error setting API authorization:', error)
-          }
+      if (response?.access_token) {
+        authStore.setAccessToken(response.access_token)
+        localStorage.setItem('access_token', response.access_token)
+        
+        try {
+          const { default: api } = await import('@/backend/http/api')
+          api.defaults.headers.Authorization = `Bearer ${response.access_token}`
+        } catch (error) {
+          console.warn('Error setting API authorization:', error)
         }
-
-        if (response?.refresh_token) localStorage.setItem('refresh_token', response.refresh_token)
-
-        localStorage.setItem('auth_store', JSON.stringify({
-          user: {
-            id: response.user_id,
-            email: email.value || response?.user?.email || '',
-            roleId,
-            roleName
-          },
-          isAuthenticated: true
-        }))
-      } catch (error) {
-        console.warn('Error saving auth data:', error)
       }
 
-      // 3) Redirección por rol - ✅ CORREGIDO: usuarios normales van a workshops
-      if (roleId === 5) {
-        return navigateTo(R.to('adminUsers'))
-      } else {
-        return navigateTo(R.to('workshops')) // ✅ Cambiado de 'userHome' a 'workshops'
+      if (response?.refresh_token) {
+        localStorage.setItem('refresh_token', response.refresh_token)
       }
+
+      localStorage.setItem('auth_store', JSON.stringify({
+        user: {
+          id: response.user_id,
+          email: email.value || response?.user?.email || '',
+          roleId,
+          roleName
+        },
+        isAuthenticated: true
+      }))
+    } catch (error) {
+      console.warn('Error saving auth data:', error)
     }
 
-    // 4) Fallback de error
-    apiError.value = response?.message || 'Error desconocido en la respuesta'
+    // Redirección por rol
+    if (roleId === 5) {
+      return navigateTo(R.to('adminUsers'))
+    } else {
+      return navigateTo(R.to('workshops'))
+    }
   }
 
   // Submit principal
@@ -146,7 +125,15 @@ export function useLogin() {
 
       await handleSuccessResponse(response)
     } catch (error) {
-      apiError.value = parseAxiosError(error)
+      const errorMessage = parseAxiosError(error)
+      
+      // Manejar específicamente error 400 (credenciales incorrectas)
+      if (error.response?.status === 400) {
+        apiError.value = 'Correo o contraseña incorrectos'
+      } else {
+        apiError.value = errorMessage
+      }
+      
       console.error('Login error:', error)
     } finally {
       loading.value = false
