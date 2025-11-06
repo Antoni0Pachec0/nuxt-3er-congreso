@@ -152,48 +152,44 @@ export function useVerify () {
   }
 
   // ===== Verificar código =====
+  // En use-verify.js - Versión corregida
   async function onVerify() {
     if (!email.value) {
-      notifyWarning('Falta email', 'Vuelve al registro para obtener tu código.')
-      router.push({ name: 'register' })
-      return
+      error.value = 'Falta email. Vuelve al registro para obtener tu código.';
+      return;
     }
     if (!isComplete.value) {
-      error.value = 'Completa los 6 dígitos antes de verificar.'
-      return
+      error.value = 'Completa los 6 dígitos antes de verificar.';
+      return;
     }
 
-    loading.value = true
-    error.value = ''
+    loading.value = true;
+    error.value = '';
 
     try {
       const payload = { 
         email: email.value.toLowerCase().trim(), 
         code: code.value,
         token_type: verificationPurpose.value
-      }
+      };
 
-      console.log('Enviando verificación:', payload) // Debug
+      console.log('📤 Enviando verificación:', payload);
 
-      // ✅ CORREGIDO: Usar VerifyApi correctamente
-      const response = await VerifyApi.verifyCode(payload)
-
-      console.log('Respuesta de verificación:', response) // Debug
+      const response = await VerifyApi.verifyCode(payload);
+      console.log('✅ Respuesta de verificación:', response);
 
       // Éxito - manejar según el propósito
+      sessionStorage.removeItem('verify_email');
+      localStorage.removeItem('verify_email');
+      localStorage.removeItem('verification_purpose');
+      
       if (verificationPurpose.value === 'email_verification') {
-        // Verificación de email exitosa
-        sessionStorage.removeItem('verify_email')
-        localStorage.removeItem('verify_email')
-        localStorage.removeItem('verification_purpose')
-        
-        notifySuccess('¡Cuenta verificada!', 'Tu cuenta ha sido verificada exitosamente. Ahora puedes iniciar sesión.')
+        console.log('🎉 Cuenta verificada - redirigiendo a login');
         setTimeout(() => {
-          router.push({ name: 'login' })
-        }, 1500)
+          router.push({ name: 'login' });
+        }, 1000);
       } else if (verificationPurpose.value === 'reset_password') {
-        // Verificación de reset password exitosa
-        notifySuccess('¡Código válido!', 'Ahora puedes establecer tu nueva contraseña.')
+        console.log('🎉 Código de reset válido - redirigiendo a reset');
         setTimeout(() => {
           router.push({ 
             name: 'reset',
@@ -201,23 +197,22 @@ export function useVerify () {
               email: email.value,
               code: code.value
             }
-          })
-        }, 1500)
+          });
+        }, 1000);
       }
 
     } catch (err) {
-      console.error('Error en verificación:', err) // Debug
+      console.error('❌ Error en verificación:', err);
       
-      const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.'
-      error.value = msg
-      notifyError('Verificación fallida', msg)
+      const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.';
+      error.value = msg;
       
       // Limpiar campos en caso de error
-      digits.value = Array(DIGITS).fill('')
-      await nextTick()
-      focusIndex(0)
+      digits.value = Array(DIGITS).fill('');
+      await nextTick();
+      focusIndex(0);
     } finally {
-      loading.value = false
+      loading.value = false;
     }
   }
 
