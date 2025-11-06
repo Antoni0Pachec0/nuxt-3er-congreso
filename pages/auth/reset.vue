@@ -86,6 +86,7 @@
   </main>
 </template>
 
+<!-- En tu template de reset.vue -->
 <script setup>
 import { definePageMeta } from '#imports'
 import SvgIcon from '@jamescoyle/vue-icon'
@@ -98,6 +99,7 @@ import {
 } from '@mdi/js'
 import { useReset } from '@/composables/auth/use-reset'
 import '@/assets/css/styles/auth/reset.css'
+import { onMounted } from 'vue'
 
 definePageMeta({
   name: 'reset',
@@ -115,4 +117,10 @@ const {
   // acciones
   onSubmit, goLogin
 } = useReset()
+
+// ✅ Debug adicional en la vista
+onMounted(() => {
+  console.log('🏠 [RESET PAGE] Vista montada');
+  console.log('🔍 [RESET PAGE] SessionStorage actual:', { ...sessionStorage });
+})
 </script>

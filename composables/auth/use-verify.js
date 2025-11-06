@@ -154,53 +154,57 @@ export function useVerify () {
     error.value = '';
 
     try {
-      const payload = { 
-        email: email.value.toLowerCase().trim(), 
-        code: code.value,
-        token_type: verificationPurpose.value === 'reset_password' 
-          ? 'reset_password' 
-          : 'email_verification'
-      };
+    const payload = { 
+      email: email.value.toLowerCase().trim(), 
+      code: code.value,
+      token_type: verificationPurpose.value === 'reset_password' 
+        ? 'reset_password' 
+        : 'email_verification'
+    };
 
-      console.log('📤 [FRONTEND] Enviando verificación:', payload);
+    console.log('📤 [VERIFY] Enviando verificación:', payload);
 
-      const response = await VerifyApi.verifyCode(payload);
-      console.log('✅ [FRONTEND] Respuesta de verificación:', response);
+    const response = await VerifyApi.verifyCode(payload);
+    console.log('✅ [VERIFY] Respuesta recibida:', response);
 
-      // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
-      notify('success', '¡Código verificado!', 'Tu código ha sido verificado correctamente.');
+    // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
+    notify('success', '¡Código verificado!', 'Tu código ha sido verificado correctamente.');
 
-      // ✅ CORREGIDO: Manejo diferente según el tipo de verificación
-      if (verificationPurpose.value === 'reset_password') {
-        // Para reset: Guardar datos en sessionStorage para la página de reset
-        sessionStorage.setItem('reset_email', email.value);
-        sessionStorage.setItem('reset_code', code.value);
-        sessionStorage.setItem('reset_token_expiry', String(Date.now() + 15 * 60 * 1000)); // 15 min
-        
-        console.log('💾 [FRONTEND] Datos guardados para reset:', {
-          email: email.value,
-          code: code.value
-        });
-      } else {
-        // Para verificación de email: limpiar datos
-        sessionStorage.removeItem('verify_email');
-      }
-
-      // Limpiar localStorage (esto está bien)
-      localStorage.removeItem('verify_email');
-      localStorage.removeItem('verification_purpose');
+    // ✅ GUARDAR DATOS SOLO PARA RESET_PASSWORD
+    if (verificationPurpose.value === 'reset_password') {
+      // Limpiar primero por si acaso
+      sessionStorage.removeItem('reset_email');
+      sessionStorage.removeItem('reset_code');
+      sessionStorage.removeItem('reset_token_expiry');
       
-      console.log('🎉 [FRONTEND] Verificación exitosa');
+      // Guardar nuevos datos
+      sessionStorage.setItem('reset_email', email.value);
+      sessionStorage.setItem('reset_code', code.value);
+      sessionStorage.setItem('reset_token_expiry', String(Date.now() + 15 * 60 * 1000)); // 15 min
+      
+      console.log('💾 [VERIFY] Datos guardados en sessionStorage:', {
+        reset_email: email.value,
+        reset_code: code.value,
+        sessionStorage: { ...sessionStorage }
+      });
+    }
 
-      // ✅ ESPERAR ANTES DE REDIRIGIR
-      setTimeout(() => {
-        if (verificationPurpose.value === 'email_verification') {
-          router.push({ name: 'login' });
-        } else if (verificationPurpose.value === 'reset_password') {
-          console.log('🔄 [FRONTEND] Redirigiendo a reset password');
-          router.push({ name: 'reset' });
-        }
-      }, 2000);
+    // Limpiar localStorage
+    localStorage.removeItem('verify_email');
+    localStorage.removeItem('verification_purpose');
+    
+    console.log('🎉 [VERIFY] Verificación exitosa - redirigiendo...');
+
+    // Redirigir después de un delay
+    setTimeout(() => {
+      if (verificationPurpose.value === 'email_verification') {
+        console.log('🔄 [VERIFY] Redirigiendo a login');
+        router.push({ name: 'login' });
+      } else if (verificationPurpose.value === 'reset_password') {
+        console.log('🔄 [VERIFY] Redirigiendo a reset password');
+        router.push({ name: 'reset' });
+      }
+    }, 2000);
 
     } catch (err) {
       console.error('❌ [FRONTEND] Error en verificación:', err);
