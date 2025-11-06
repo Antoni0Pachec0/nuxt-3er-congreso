@@ -3,10 +3,12 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { VerifyApi } from '@/backend/auth/verify-api'
 import { parseAxiosError } from '@/backend/http/error'
+import { createNotifyAdapter } from '@/utils/notify/adapter'
 
 export function useVerify () {
   const router = useRouter()
   const route  = useRoute()
+  const notify = createNotifyAdapter() // ✅ Agregar el adapter
 
   // ===== Constantes / helpers de OTP =====
   const DIGITS = 6
@@ -152,45 +154,53 @@ export function useVerify () {
     error.value = '';
 
     try {
+      // ✅ CORREGIDO: Asegurar que el token_type sea correcto
       const payload = { 
         email: email.value.toLowerCase().trim(), 
         code: code.value,
-        token_type: verificationPurpose.value
+        token_type: verificationPurpose.value === 'reset_password' 
+          ? 'reset_password' 
+          : 'email_verification'
       };
 
-      console.log('📤 Enviando verificación:', payload);
+      console.log('📤 [FRONTEND] Enviando verificación:', payload);
 
       const response = await VerifyApi.verifyCode(payload);
-      console.log('✅ Respuesta de verificación:', response);
+      console.log('✅ [FRONTEND] Respuesta de verificación:', response);
 
-      // Éxito
+      // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
+      notify('success', '¡Código verificado!', 'Tu código ha sido verificado correctamente.');
+
+      // Limpiar almacenamiento
       sessionStorage.removeItem('verify_email');
       localStorage.removeItem('verify_email');
       localStorage.removeItem('verification_purpose');
       
-      console.log('🎉 Verificación exitosa');
+      console.log('🎉 [FRONTEND] Verificación exitosa');
 
-      if (verificationPurpose.value === 'email_verification') {
-        setTimeout(() => {
+      // ✅ ESPERAR ANTES DE REDIRIGIR PARA QUE SE VEA LA NOTIFICACIÓN
+      setTimeout(() => {
+        if (verificationPurpose.value === 'email_verification') {
           router.push({ name: 'login' });
-        }, 1000);
-      } else if (verificationPurpose.value === 'reset_password') {
-        setTimeout(() => {
+        } else if (verificationPurpose.value === 'reset_password') {
           router.push({ 
             name: 'reset',
             query: { 
-              email: email.value,
+              email: encodeURIComponent(email.value),
               code: code.value
             }
           });
-        }, 1000);
-      }
+        }
+      }, 2000);
 
     } catch (err) {
-      console.error('❌ Error en verificación:', err);
+      console.error('❌ [FRONTEND] Error en verificación:', err);
       
       const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.';
       error.value = msg;
+      
+      // ✅ MOSTRAR NOTIFICACIÓN DE ERROR
+      notify('error', 'Error de verificación', msg);
       
       digits.value = Array(DIGITS).fill('');
       await nextTick();
@@ -237,12 +247,21 @@ export function useVerify () {
     error.value = '';
     
     try {
+      // ✅ MOSTRAR NOTIFICACIÓN DE CARGA
+      const notification = notify('loading', 'Reenviando código', 'Por favor espera...');
+
       await VerifyApi.resend({
         email: email.value.toLowerCase().trim(),
         purpose: verificationPurpose.value
       });
 
-      console.log('✅ Código reenviado: Revisa tu correo. Puede tardar unos segundos.');
+      // ✅ RESOLVER NOTIFICACIÓN CON ÉXITO
+      notification.resolve({
+        title: 'Código reenviado',
+        message: 'Revisa tu correo. Puede tardar unos segundos.'
+      });
+
+      console.log('✅ Código reenviado');
       
       startCooldown();
     } catch (err) {
@@ -257,6 +276,9 @@ export function useVerify () {
       
       console.error('❌ No se pudo reenviar:', msg);
       error.value = msg;
+      
+      // ✅ MOSTRAR NOTIFICACIÓN DE ERROR
+      notify('error', 'Error al reenviar', msg);
     } finally {
       loading.value = false;
     }
