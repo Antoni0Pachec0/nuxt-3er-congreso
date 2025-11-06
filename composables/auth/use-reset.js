@@ -36,30 +36,62 @@ export function useReset () {
 
   // composables/auth/use-reset.js
   onMounted(() => {
-    const resetEmail  = sessionStorage.getItem('reset_email')
-    const resetCode   = sessionStorage.getItem('reset_code')
-    const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
+    console.log('🚀 [RESET] Composable montado - verificando sessionStorage');
+    
+    // Verificar TODOS los items en sessionStorage para debug
+    const allSessionItems = {};
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      allSessionItems[key] = sessionStorage.getItem(key);
+    }
+    
+    console.log('📋 [RESET] Todo el sessionStorage:', allSessionItems);
 
-    console.log('🔍 [RESET] Datos cargados:', { resetEmail, resetCode, tokenExpiry })
+    const resetEmail  = sessionStorage.getItem('reset_email');
+    const resetCode   = sessionStorage.getItem('reset_code');
+    const tokenExpiry = sessionStorage.getItem('reset_token_expiry');
+
+    console.log('🔍 [RESET] Datos específicos buscados:', { 
+      resetEmail, 
+      resetCode, 
+      tokenExpiry
+    });
 
     if (!resetEmail || !resetCode) {
-      notifyError('Error', 'Sesión expirada. Solicita un nuevo código.')
-      router.push('/forgot')
-      return
+      console.error('❌ [RESET] Faltan datos en sessionStorage');
+      console.error('❌ [RESET] reset_email:', resetEmail);
+      console.error('❌ [RESET] reset_code:', resetCode);
+      
+      notifyError('Error', 'Sesión expirada. Solicita un nuevo código.');
+      
+      // Redirigir a forgot pero manteniendo el email si está disponible
+      const verifyEmail = sessionStorage.getItem('verify_email') || localStorage.getItem('verify_email');
+      if (verifyEmail) {
+        router.push(`/forgot?email=${encodeURIComponent(verifyEmail)}`);
+      } else {
+        router.push('/forgot');
+      }
+      return;
     }
 
     if (tokenExpiry && Date.now() > Number(tokenExpiry)) {
-      sessionStorage.removeItem('reset_email')
-      sessionStorage.removeItem('reset_code')
-      sessionStorage.removeItem('reset_token_expiry')
-      notifyError('Error', 'Sesión expirada. Solicita un nuevo código.')
-      router.push('/forgot')
-      return
+      console.warn('⚠️ [RESET] Token expirado');
+      sessionStorage.removeItem('reset_email');
+      sessionStorage.removeItem('reset_code');
+      sessionStorage.removeItem('reset_token_expiry');
+      notifyError('Error', 'Sesión expirada. Solicita un nuevo código.');
+      router.push('/forgot');
+      return;
     }
 
-    userEmail.value = resetEmail
-    resetCode.value = resetCode
-  })
+    userEmail.value = resetEmail;
+    resetCode.value = resetCode;
+    
+    console.log('✅ [RESET] Datos configurados correctamente:', {
+      userEmail: userEmail.value,
+      resetCode: resetCode.value
+    });
+  });
 
   // computed
   const pwdMatch   = computed(() => password.value && password.value === password2.value)
@@ -70,11 +102,22 @@ export function useReset () {
   // acciones
   async function onSubmit () {
     if (!pwdMatch.value) {
-      notifyError('Error', 'Las contraseñas no coinciden.')
-      return
+      notifyError('Error', 'Las contraseñas no coinciden.');
+      return;
     }
+    
+    console.log('🔍 [RESET SUBMIT] Verificando datos:', {
+      userEmail: userEmail.value,
+      resetCode: resetCode.value,
+      sessionStorage: {
+        reset_email: sessionStorage.getItem('reset_email'),
+        reset_code: sessionStorage.getItem('reset_code')
+      }
+    });
+
     if (!userEmail.value || !resetCode.value) {
-      notifyError('Error', 'No se pudo identificar tu cuenta.')
+      console.error('❌ [RESET SUBMIT] Datos faltantes');
+      notifyError('Error', 'No se pudo identificar tu cuenta.');
       router.push('/forgot')
       return
     }
@@ -86,7 +129,7 @@ export function useReset () {
       await ResetApi.resetPassword({
         email: userEmail.value,
         password: password.value,
-        code: resetCode.value, // código de 6 dígitos
+        code: resetCode.value,
       })
 
       loadingToast?.resolve({
@@ -94,14 +137,19 @@ export function useReset () {
         message: 'Tu contraseña ha sido restablecida.',
       })
 
-      // limpiar contexto
-      sessionStorage.clear()
+      // ✅ CORREGIDO: Limpiar solo los datos de reset, no todo
+      sessionStorage.removeItem('reset_email')
+      sessionStorage.removeItem('reset_code')
+      sessionStorage.removeItem('reset_token_expiry')
       localStorage.removeItem('verify_email')
       localStorage.removeItem('verification_purpose')
+
+      console.log('✅ [RESET SUBMIT] Contraseña actualizada exitosamente');
 
       setTimeout(() => router.push(R.to('login')), 1500)
     } catch (err) {
       const errorMsg = parseAxiosError(err) || 'No se pudo restablecer la contraseña'
+      console.error('❌ [RESET SUBMIT] Error:', err);
       loadingToast?.reject({ title: 'Error', message: errorMsg })
     } finally {
       loading.value = false

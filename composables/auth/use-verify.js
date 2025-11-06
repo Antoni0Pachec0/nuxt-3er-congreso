@@ -170,15 +170,23 @@ export function useVerify () {
       // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
       notify('success', '¡Código verificado!', 'Tu código ha sido verificado correctamente.');
 
-      // ✅ CORREGIDO: Para reset_password, guardar el código en sessionStorage
+      // ✅ CORREGIDO: Manejo diferente según el tipo de verificación
       if (verificationPurpose.value === 'reset_password') {
-        sessionStorage.setItem('reset_code', code.value);
+        // Para reset: Guardar datos en sessionStorage para la página de reset
         sessionStorage.setItem('reset_email', email.value);
+        sessionStorage.setItem('reset_code', code.value);
         sessionStorage.setItem('reset_token_expiry', String(Date.now() + 15 * 60 * 1000)); // 15 min
+        
+        console.log('💾 [FRONTEND] Datos guardados para reset:', {
+          email: email.value,
+          code: code.value
+        });
+      } else {
+        // Para verificación de email: limpiar datos
+        sessionStorage.removeItem('verify_email');
       }
 
-      // Limpiar almacenamiento
-      sessionStorage.removeItem('verify_email');
+      // Limpiar localStorage (esto está bien)
       localStorage.removeItem('verify_email');
       localStorage.removeItem('verification_purpose');
       
@@ -189,13 +197,8 @@ export function useVerify () {
         if (verificationPurpose.value === 'email_verification') {
           router.push({ name: 'login' });
         } else if (verificationPurpose.value === 'reset_password') {
-          router.push({ 
-            name: 'reset',
-            query: { 
-              email: encodeURIComponent(email.value),
-              // No necesitamos pasar el código en query params si lo guardamos en sessionStorage
-            }
-          });
+          console.log('🔄 [FRONTEND] Redirigiendo a reset password');
+          router.push({ name: 'reset' });
         }
       }, 2000);
 
@@ -252,7 +255,6 @@ export function useVerify () {
     error.value = '';
     
     try {
-      // ✅ MOSTRAR NOTIFICACIÓN DE CARGA
       const notification = notify('loading', 'Reenviando código', 'Por favor espera...');
 
       await VerifyApi.resend({
@@ -260,7 +262,12 @@ export function useVerify () {
         purpose: verificationPurpose.value
       });
 
-      // ✅ RESOLVER NOTIFICACIÓN CON ÉXITO
+      // ✅ CORREGIDO: Para reset, asegurar que el email esté guardado
+      if (verificationPurpose.value === 'reset_password') {
+        sessionStorage.setItem('reset_email', email.value);
+        console.log('📧 [RESEND] Email guardado para reset:', email.value);
+      }
+
       notification.resolve({
         title: 'Código reenviado',
         message: 'Revisa tu correo. Puede tardar unos segundos.'
@@ -282,7 +289,6 @@ export function useVerify () {
       console.error('❌ No se pudo reenviar:', msg);
       error.value = msg;
       
-      // ✅ MOSTRAR NOTIFICACIÓN DE ERROR
       notify('error', 'Error al reenviar', msg);
     } finally {
       loading.value = false;
