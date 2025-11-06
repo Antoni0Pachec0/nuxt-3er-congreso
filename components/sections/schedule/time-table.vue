@@ -345,7 +345,7 @@ const schedule: Record<string, ScheduleItem[]> = {
       date: "2025-11-13",
       start: "12:00",
       end: "12:30",
-      title: "PyGame y su poder Arcade",
+      title: "PyGame y su poder Arcade / Mini Hackathon de Ciberseguridad CTF",
       type: "Charla",
       location: "Cancha Techada",
       speaker: "Alumnos de IDGS",
@@ -353,6 +353,7 @@ const schedule: Record<string, ScheduleItem[]> = {
         "Demostración del potencial de PyGame para el desarrollo de videojuegos.",
       tag: "Charla",
     },
+    
     {
       id: "d2-07",
       date: "2025-11-13",
