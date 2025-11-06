@@ -4,22 +4,9 @@ import { useRouter, useRoute } from 'vue-router'
 import { VerifyApi } from '@/backend/auth/verify-api'
 import { parseAxiosError } from '@/backend/http/error'
 
-// 👇 Adaptador para notificaciones
-import { createNotifyAdapter } from '@/utils/notify/adapter'
-
 export function useVerify () {
   const router = useRouter()
   const route  = useRoute()
-
-  // Notificaciones
-  const notify = typeof createNotifyAdapter === 'function'
-    ? createNotifyAdapter()
-    : null
-
-  const notifyError   = (t, m) => notify?.('error',   t, m)
-  const notifyWarning = (t, m) => notify?.('warning', t, m)
-  const notifySuccess = (t, m) => notify?.('success', t, m)
-  const notifyLoading = (t, m) => notify?.('loading', t, m)
 
   // ===== Constantes / helpers de OTP =====
   const DIGITS = 6
@@ -147,12 +134,12 @@ export function useVerify () {
       const text = await navigator.clipboard.readText()
       if (text) distribute(text)
     } catch {
-      notifyError('Error', 'No se pudo pegar desde el portapapeles')
+      // ✅ CORREGIDO: Usar error.value en lugar de notifyError
+      error.value = 'No se pudo pegar desde el portapapeles'
     }
   }
 
   // ===== Verificar código =====
-  // En use-verify.js - Versión corregida
   async function onVerify() {
     if (!email.value) {
       error.value = 'Falta email. Vuelve al registro para obtener tu código.';
@@ -178,18 +165,18 @@ export function useVerify () {
       const response = await VerifyApi.verifyCode(payload);
       console.log('✅ Respuesta de verificación:', response);
 
-      // Éxito - manejar según el propósito
+      // Éxito
       sessionStorage.removeItem('verify_email');
       localStorage.removeItem('verify_email');
       localStorage.removeItem('verification_purpose');
       
+      console.log('🎉 Verificación exitosa');
+
       if (verificationPurpose.value === 'email_verification') {
-        console.log('🎉 Cuenta verificada - redirigiendo a login');
         setTimeout(() => {
           router.push({ name: 'login' });
         }, 1000);
       } else if (verificationPurpose.value === 'reset_password') {
-        console.log('🎉 Código de reset válido - redirigiendo a reset');
         setTimeout(() => {
           router.push({ 
             name: 'reset',
@@ -207,7 +194,6 @@ export function useVerify () {
       const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.';
       error.value = msg;
       
-      // Limpiar campos en caso de error
       digits.value = Array(DIGITS).fill('');
       await nextTick();
       focusIndex(0);
@@ -249,46 +235,33 @@ export function useVerify () {
   async function resend () {
     if (!email.value || cooldown.value > 0 || loading.value) return
     
-    // ✅ CORREGIDO: Usar notifyLoading en lugar de toast
-    const loadingNotification = notifyLoading('Reenviando código', 'Generando un nuevo código de verificación…')
+    loading.value = true;
+    error.value = '';
     
     try {
       await VerifyApi.resend({
         email: email.value.toLowerCase().trim(),
         purpose: verificationPurpose.value
-      })
+      });
 
-      // ✅ CORREGIDO: Usar resolve directamente
-      if (loadingNotification?.resolve) {
-        loadingNotification.resolve({
-          title: 'Código reenviado',
-          message: 'Revisa tu correo. Puede tardar unos segundos.',
-          duration: 4000
-        })
-      } else {
-        notifySuccess('Código reenviado', 'Revisa tu correo. Puede tardar unos segundos.')
-      }
+      // ✅ CORREGIDO: Usar console.log en lugar de notificaciones
+      console.log('✅ Código reenviado: Revisa tu correo. Puede tardar unos segundos.');
       
-      startCooldown()
+      startCooldown();
     } catch (err) {
-      const status = err?.response?.status
-      const msg = parseAxiosError(err) || 'No se pudo reenviar el código.'
+      const status = err?.response?.status;
+      const msg = parseAxiosError(err) || 'No se pudo reenviar el código.';
       
       if (status === 429) {
-        if (loadingNotification?.reject) {
-          loadingNotification.reject({ title: 'Espera un momento', message: msg })
-        } else {
-          notifyWarning('Espera un momento', msg)
-        }
-        startCooldown()
-        return
+        console.warn('⚠️ Espera un momento:', msg);
+        startCooldown();
+        return;
       }
       
-      if (loadingNotification?.reject) {
-        loadingNotification.reject({ title: 'No se pudo reenviar', message: msg })
-      } else {
-        notifyError('No se pudo reenviar', msg)
-      }
+      console.error('❌ No se pudo reenviar:', msg);
+      error.value = msg;
+    } finally {
+      loading.value = false;
     }
   }
 

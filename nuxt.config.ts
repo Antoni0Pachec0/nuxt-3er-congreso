@@ -1,4 +1,4 @@
-// nuxt.config.ts
+// nuxt.config.ts - VERSIÓN CORREGIDA
 import { defineNuxtConfig } from 'nuxt/config'
 import vuetify from 'vite-plugin-vuetify'
 
@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   // ----------------
   // MODO DE RENDERIZADO
   // ----------------
-  ssr: false, // Desactiva SSR para modo SPA
+  ssr: false,
 
   // ----------------
   // MÓDULOS Y COMPONENTES
@@ -23,25 +23,22 @@ export default defineNuxtConfig({
     '@/assets/css/main.css',
   ],
 
-  // 👇 El módulo va sin opciones inline
   modules: [
     'notivue/nuxt',
     '@pinia/nuxt',
   ],
 
-  // 👇 Las opciones van en la clave `notivue` (by-the-book)
   notivue: {
     position: 'top-right',
     limit: 3,
     pauseOnHover: true,
     avoidDuplicates: true,
-    // En Notivue el estado "loading" se modela con `promise`
     notifications: {
       success: { duration: 4000 },
       error:   { duration: 6000, ariaLive: 'assertive', ariaRole: 'alert' },
       warning: { duration: 5000 },
       info:    { duration: 4000 },
-      promise: { duration: Infinity }, // para push.promise()
+      promise: { duration: Infinity },
     },
   },
 
@@ -57,14 +54,13 @@ export default defineNuxtConfig({
   // ----------------
   runtimeConfig: {
     public: {
-      apiBase: 
-        process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx/',
-        stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ,
-        returnUrl: process.env.NUXT_PUBLIC_RETURN_URL || 'https://congresoti.com.mx/stripe/success',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://api.congresoti.com.mx/',
+      stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      returnUrl: process.env.NUXT_PUBLIC_RETURN_URL || 'https://congresoti.com.mx/stripe/success',
     },
   },
 
-  // ---------------->
+  // ----------------
   // METADATOS Y HEAD GLOBAL
   // ----------------
   app: {
@@ -118,20 +114,30 @@ export default defineNuxtConfig({
   // CONFIGURACIÓN DE COMPILACIÓN
   // ----------------
   build: {
-    transpile: ['vuetify'],
+    transpile: ['vuetify', 'gsap'], // ✅ GSAP agregado aquí
   },
 
   // ----------------
-  // CONFIGURACIÓN DE VITE
+  // CONFIGURACIÓN DE VITE - CORREGIDA
   // ----------------
   vite: {
     plugins: [vuetify({ autoImport: true })],
 
+    // ✅ CONFIGURACIÓN DEFINE CORREGIDA (sin duplicados)
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+    },
+
+    // ✅ OPTIMIZE DEPS CORREGIDO
     optimizeDeps: {
       exclude: [
         'plugin-vue:export-helper',
         'vite/modulepreload-polyfill',
+        'gsap' // ✅ GSAP excluido correctamente
       ],
+      include: ['vuetify'] // ✅ Solo vuetify aquí
     },
 
     build: {
@@ -148,12 +154,6 @@ export default defineNuxtConfig({
         strict: false,
       },
     },
-
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(
-        process.env.NODE_ENV || 'development'
-      ),
-    },
   },
 
   // ----------------
@@ -163,4 +163,9 @@ export default defineNuxtConfig({
     shim: false,
     typeCheck: false,
   },
+
+  // ✅ PLUGINS CORREGIDOS
+  plugins: [
+    '~/plugins/gsap.client.ts'
+  ],
 })
