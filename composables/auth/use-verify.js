@@ -25,7 +25,6 @@ export function useVerify () {
   const email = ref('')
   const verificationPurpose = ref('email_verification')
 
-  // ✅ CORREGIDO: Cargar email y propósito en mounted
   onMounted(() => {
     email.value = sessionStorage.getItem('verify_email') || 
                   localStorage.getItem('verify_email') || ''
@@ -134,7 +133,6 @@ export function useVerify () {
       const text = await navigator.clipboard.readText()
       if (text) distribute(text)
     } catch {
-      // ✅ CORREGIDO: Usar error.value en lugar de notifyError
       error.value = 'No se pudo pegar desde el portapapeles'
     }
   }
@@ -244,7 +242,6 @@ export function useVerify () {
         purpose: verificationPurpose.value
       });
 
-      // ✅ CORREGIDO: Usar console.log en lugar de notificaciones
       console.log('✅ Código reenviado: Revisa tu correo. Puede tardar unos segundos.');
       
       startCooldown();
@@ -267,7 +264,6 @@ export function useVerify () {
 
   // ===== Lifecycle =====
   onMounted(async () => {
-    // Si entró sin contexto, redirige al flujo correcto
     if (!email.value) {
       const purpose = localStorage.getItem('verification_purpose')
       if (purpose === 'reset_password') {
@@ -281,7 +277,6 @@ export function useVerify () {
     canUseClipboard.value = typeof navigator !== 'undefined' && !!navigator.clipboard
     readCooldown()
 
-    // Prefill por query ?code=XXXXXX
     const qCode = String(route.query.code || '').trim()
     if (/^\d{6}$/.test(qCode)) distribute(qCode)
 
