@@ -154,7 +154,6 @@ export function useVerify () {
     error.value = '';
 
     try {
-      // ✅ CORREGIDO: Asegurar que el token_type sea correcto
       const payload = { 
         email: email.value.toLowerCase().trim(), 
         code: code.value,
@@ -171,6 +170,13 @@ export function useVerify () {
       // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
       notify('success', '¡Código verificado!', 'Tu código ha sido verificado correctamente.');
 
+      // ✅ CORREGIDO: Para reset_password, guardar el código en sessionStorage
+      if (verificationPurpose.value === 'reset_password') {
+        sessionStorage.setItem('reset_code', code.value);
+        sessionStorage.setItem('reset_email', email.value);
+        sessionStorage.setItem('reset_token_expiry', String(Date.now() + 15 * 60 * 1000)); // 15 min
+      }
+
       // Limpiar almacenamiento
       sessionStorage.removeItem('verify_email');
       localStorage.removeItem('verify_email');
@@ -178,7 +184,7 @@ export function useVerify () {
       
       console.log('🎉 [FRONTEND] Verificación exitosa');
 
-      // ✅ ESPERAR ANTES DE REDIRIGIR PARA QUE SE VEA LA NOTIFICACIÓN
+      // ✅ ESPERAR ANTES DE REDIRIGIR
       setTimeout(() => {
         if (verificationPurpose.value === 'email_verification') {
           router.push({ name: 'login' });
@@ -187,7 +193,7 @@ export function useVerify () {
             name: 'reset',
             query: { 
               email: encodeURIComponent(email.value),
-              code: code.value
+              // No necesitamos pasar el código en query params si lo guardamos en sessionStorage
             }
           });
         }
@@ -199,7 +205,6 @@ export function useVerify () {
       const msg = parseAxiosError(err) || 'Código inválido o expirado. Intenta de nuevo.';
       error.value = msg;
       
-      // ✅ MOSTRAR NOTIFICACIÓN DE ERROR
       notify('error', 'Error de verificación', msg);
       
       digits.value = Array(DIGITS).fill('');

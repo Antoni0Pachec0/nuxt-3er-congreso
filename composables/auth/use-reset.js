@@ -34,27 +34,31 @@ export function useReset () {
   const userEmail = ref('')
   const resetCode = ref('')
 
+  // composables/auth/use-reset.js
   onMounted(() => {
-    const resetToken  = sessionStorage.getItem('reset_token')
     const resetEmail  = sessionStorage.getItem('reset_email')
+    const resetCode   = sessionStorage.getItem('reset_code')
     const tokenExpiry = sessionStorage.getItem('reset_token_expiry')
-    const code        = sessionStorage.getItem('reset_code')
 
-    if (!resetToken || !resetEmail || !code) {
+    console.log('🔍 [RESET] Datos cargados:', { resetEmail, resetCode, tokenExpiry })
+
+    if (!resetEmail || !resetCode) {
       notifyError('Error', 'Sesión expirada. Solicita un nuevo código.')
       router.push('/forgot')
       return
     }
 
     if (tokenExpiry && Date.now() > Number(tokenExpiry)) {
-      sessionStorage.clear()
+      sessionStorage.removeItem('reset_email')
+      sessionStorage.removeItem('reset_code')
+      sessionStorage.removeItem('reset_token_expiry')
       notifyError('Error', 'Sesión expirada. Solicita un nuevo código.')
       router.push('/forgot')
       return
     }
 
     userEmail.value = resetEmail
-    resetCode.value = code
+    resetCode.value = resetCode
   })
 
   // computed
