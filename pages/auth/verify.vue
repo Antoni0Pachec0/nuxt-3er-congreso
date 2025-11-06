@@ -113,6 +113,7 @@ import { definePageMeta } from '#imports'
 import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useVerify } from '@/composables/auth/use-verify'
+import '@/assets/css/styles/auth/verify.css'
 
 definePageMeta({
   name: 'verify',
