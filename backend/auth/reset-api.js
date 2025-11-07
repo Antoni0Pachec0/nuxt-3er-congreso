@@ -8,18 +8,12 @@ export const ResetApi = {
    * @param {{ email: string, password: string, code: string }} payload
    */
   async resetPassword(payload) {
-    console.log('📤 [RESET-API] Enviando solicitud de reset:', {
-      email: payload.email,
-      code: payload.code,
-      passwordLength: payload.password?.length
-    });
 
     try {
       const response = await api.post(ROUTES.AUTH.RESET_PASSWORD, payload, { 
         withCredentials: true 
       });
       
-      console.log('✅ [RESET-API] Respuesta exitosa:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ [RESET-API] Error en la solicitud:', {

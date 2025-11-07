@@ -99,9 +99,6 @@ export function useScheduleStatic () {
     }
   }
 
-  const onEdit = item => console.log('Editar', item)
-  const exportSchedule = () => console.log('Exportar cronograma de', selectedDay.value)
-
   /* ===== Crear nueva actividad ===== */
   const uid = () => Math.random().toString(36).slice(2, 9)
 

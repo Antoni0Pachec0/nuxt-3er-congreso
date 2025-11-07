@@ -142,14 +142,4 @@ const {
   pasteFromClipboard,
   resend,
 } = useVerify()
-
-// ✅ AGREGAR DEBUG PARA VERIFICAR DATOS
-onMounted(() => {
-  console.log('🔍 [VISTA VERIFY] Datos cargados:', {
-    email: sessionStorage.getItem('verify_email') || localStorage.getItem('verify_email'),
-    purpose: localStorage.getItem('verification_purpose'),
-    verificationPurpose: verificationPurpose.value,
-    safeEmail: safeEmail.value
-  })
-})
 </script>

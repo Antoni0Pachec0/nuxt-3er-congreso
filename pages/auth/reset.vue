@@ -118,9 +118,4 @@ const {
   onSubmit, goLogin
 } = useReset()
 
-// ✅ Debug adicional en la vista
-onMounted(() => {
-  console.log('🏠 [RESET PAGE] Vista montada');
-  console.log('🔍 [RESET PAGE] SessionStorage actual:', { ...sessionStorage });
-})
 </script>

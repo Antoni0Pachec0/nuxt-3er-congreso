@@ -115,11 +115,8 @@ const loadLeaderboard = async () => {
   try {
     loading.value = true
     error.value = null
-    console.log('🔄 Cargando leaderboard...')
     
     const response = await api.get(ROUTES.SCORES.LEADERBOARD)
-    console.log('✅ Leaderboard cargado:', response.data)
-    console.log('📊 Total de registros:', response.data.length) // ← Para verificar
     
     leaderboard.value = response.data
   } catch (err) {

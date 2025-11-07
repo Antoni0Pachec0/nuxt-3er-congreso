@@ -162,10 +162,7 @@ export function useVerify () {
         : 'email_verification'
     };
 
-    console.log('📤 [VERIFY] Enviando verificación:', payload);
-
     const response = await VerifyApi.verifyCode(payload);
-    console.log('✅ [VERIFY] Respuesta recibida:', response);
 
     // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
     notify('success', '¡Código verificado!', 'Tu código ha sido verificado correctamente.');
@@ -181,27 +178,17 @@ export function useVerify () {
       sessionStorage.setItem('reset_email', email.value);
       sessionStorage.setItem('reset_code', code.value);
       sessionStorage.setItem('reset_token_expiry', String(Date.now() + 15 * 60 * 1000)); // 15 min
-      
-      console.log('💾 [VERIFY] Datos guardados en sessionStorage:', {
-        reset_email: email.value,
-        reset_code: code.value,
-        sessionStorage: { ...sessionStorage }
-      });
     }
 
     // Limpiar localStorage
     localStorage.removeItem('verify_email');
     localStorage.removeItem('verification_purpose');
     
-    console.log('🎉 [VERIFY] Verificación exitosa - redirigiendo...');
-
     // Redirigir después de un delay
     setTimeout(() => {
       if (verificationPurpose.value === 'email_verification') {
-        console.log('🔄 [VERIFY] Redirigiendo a login');
         router.push({ name: 'login' });
       } else if (verificationPurpose.value === 'reset_password') {
-        console.log('🔄 [VERIFY] Redirigiendo a reset password');
         router.push({ name: 'reset' });
       }
     }, 2000);
@@ -269,7 +256,6 @@ export function useVerify () {
       // ✅ CORREGIDO: Para reset, asegurar que el email esté guardado
       if (verificationPurpose.value === 'reset_password') {
         sessionStorage.setItem('reset_email', email.value);
-        console.log('📧 [RESEND] Email guardado para reset:', email.value);
       }
 
       notification.resolve({
@@ -277,8 +263,6 @@ export function useVerify () {
         message: 'Revisa tu correo. Puede tardar unos segundos.'
       });
 
-      console.log('✅ Código reenviado');
-      
       startCooldown();
     } catch (err) {
       const status = err?.response?.status;

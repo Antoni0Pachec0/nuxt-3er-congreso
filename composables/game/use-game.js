@@ -476,7 +476,6 @@ export function useGame() {
         while (attempts < maxAttempts) {
           try {
             await this.sendScoreToBackend(scoreToSend)
-            console.log('✅ Score enviado exitosamente')
             return
           } catch (error) {
             attempts++
@@ -618,7 +617,6 @@ export function useGame() {
   // Si no usas música real, deja este stub sin romper la UI
   const nextSong = () => {
     // TODO: implementar lista de canciones reales
-    console.log('Cambiar canción (stub)')
   }
 
   const navigateToLeaderboard = () => {

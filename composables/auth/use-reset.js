@@ -9,8 +9,6 @@ import { createNotifyAdapter } from '@/utils/notify/adapter'
 export function useReset() {
   const router = useRouter()
 
-  console.log('🚀 [USE-RESET] Composable inicializado');
-
   // Notificaciones
   const notify = createNotifyAdapter()
   const notifyError = (t, m) => notify?.('error', t, m)
@@ -30,8 +28,6 @@ export function useReset() {
   const resetCode = ref('')
 
   onMounted(() => {
-    console.log('🔍 [RESET-ON-MOUNTED] Iniciando verificación de sessionStorage');
-    
     // Debug completo del sessionStorage
     const sessionData = {};
     for (let i = 0; i < sessionStorage.length; i++) {
@@ -39,19 +35,11 @@ export function useReset() {
       sessionData[key] = sessionStorage.getItem(key);
     }
     
-    console.log('📋 [RESET] SessionStorage completo:', sessionData);
 
     // Obtener datos específicos
     const storedEmail = sessionStorage.getItem('reset_email');
     const storedCode = sessionStorage.getItem('reset_code');
     const tokenExpiry = sessionStorage.getItem('reset_token_expiry');
-
-    console.log('🎯 [RESET] Datos buscados:', {
-      storedEmail,
-      storedCode,
-      tokenExpiry,
-      isExpired: tokenExpiry ? Date.now() > Number(tokenExpiry) : 'no expiry'
-    });
 
     // Verificar si tenemos los datos necesarios
     if (!storedEmail || !storedCode) {
@@ -61,7 +49,6 @@ export function useReset() {
       
       // Intentar recuperar de localStorage como fallback
       const fallbackEmail = localStorage.getItem('verify_email');
-      console.log('🔄 [RESET] Intentando fallback con verify_email:', fallbackEmail);
       
       if (fallbackEmail) {
         notifyWarning('Sesión incompleta', 'Redirigiendo para solicitar nuevo código.');
@@ -87,11 +74,6 @@ export function useReset() {
     // Asignar datos a las refs
     userEmail.value = storedEmail;
     resetCode.value = storedCode;
-    
-    console.log('✅ [RESET] Datos configurados correctamente:', {
-      userEmail: userEmail.value,
-      resetCode: resetCode.value
-    });
   });
 
   // Computed
@@ -102,24 +84,11 @@ export function useReset() {
 
   // Acciones
   async function onSubmit() {
-    console.log('🎯 [RESET-SUBMIT] Iniciando envío de formulario');
-    
     if (!pwdMatch.value) {
       console.warn('⚠️ [RESET-SUBMIT] Contraseñas no coinciden');
       notifyError('Error', 'Las contraseñas no coinciden.');
       return;
     }
-    
-    // Debug completo antes de enviar
-    console.log('🔍 [RESET-SUBMIT] Estado actual:', {
-      userEmail: userEmail.value,
-      resetCode: resetCode.value,
-      passwordLength: password.value.length,
-      sessionStorage: {
-        reset_email: sessionStorage.getItem('reset_email'),
-        reset_code: sessionStorage.getItem('reset_code')
-      }
-    });
 
     if (!userEmail.value || !resetCode.value) {
       console.error('❌ [RESET-SUBMIT] Datos faltantes para enviar');
@@ -134,15 +103,11 @@ export function useReset() {
     const loadingToast = notifyLoading('Guardando contraseña', 'Procesando...')
 
     try {
-      console.log('📤 [RESET-SUBMIT] Enviando a API...');
-      
       const result = await ResetApi.resetPassword({
         email: userEmail.value,
         password: password.value,
         code: resetCode.value,
       })
-
-      console.log('✅ [RESET-SUBMIT] Respuesta del backend:', result);
 
       loadingToast?.resolve({
         title: 'Contraseña actualizada',
@@ -156,10 +121,8 @@ export function useReset() {
       localStorage.removeItem('verify_email')
       localStorage.removeItem('verification_purpose')
 
-      console.log('🧹 [RESET-SUBMIT] Datos de sesión limpiados');
 
       setTimeout(() => {
-        console.log('🔄 [RESET-SUBMIT] Redirigiendo a login');
         router.push(R.to('login'))
       }, 1500)
 
@@ -179,7 +142,6 @@ export function useReset() {
   }
 
   function goLogin() {
-    console.log('🔙 [RESET] Redirigiendo a login');
     router.push(R.to('login'))
   }
 

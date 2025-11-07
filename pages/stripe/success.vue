@@ -35,10 +35,7 @@ onMounted(async () => {
     }
 
     try {
-        console.log('Verificando pago para sesión:', sessionId)
         const response = (await verifySession(sessionId)) as VerifyPaymentResponse
-
-        console.log('Respuesta de verificación:', response)
 
         paymentData.value = response
 
@@ -48,7 +45,6 @@ onMounted(async () => {
 
             // --- 💡 INICIO DE LA SOLUCIÓN ---
             // El pago está confirmado, ahora actualizamos la sesión del frontend
-            console.log('Actualizando estado del usuario en el frontend...');
             try {
                 // Volvemos a llamar a 'getMe' para obtener los datos frescos (ej. status_event: true)
                 const me = await AuthApi.getMe();
@@ -61,7 +57,6 @@ onMounted(async () => {
                         roleId: me.type_user_id ?? null,
                         roleName: me?.type_user?.name_type ?? null
                     });
-                    console.log('¡Estado del usuario actualizado en Pinia!');
                 }
             } catch (userError) {
                 // Esto no debería fallar ya que la página tiene 'requiresAuth', pero por si acaso

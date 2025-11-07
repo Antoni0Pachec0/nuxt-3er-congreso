@@ -213,13 +213,11 @@ function onPrintBadges() {
 
 /** Reimprimir gafete individual (inactivos) */
 function reprint(user: User) {
-  console.log("Reimprimiendo gafete ->", user)
   window.print()
 }
 
 /** Abrir un preview de un gafete (implementa tu modal si quieres) */
 function preview(user: User) {
-  console.log("Preview gafete ->", user)
 }
 
 /** Quitar de la lista: cambia a "No pagado" para que desaparezca del computed (solo demo) */
