@@ -350,7 +350,7 @@ const schedule: Record<string, ScheduleItem[]> = {
       location: "Cancha Techada",
       speaker: "Alumnos de IDGS",
       description:
-        "Demostración del potencial de PyGame para el desarrollo de videojuegos.",
+        "Demostración del potencial de PyGame para el desarrollo de videojuegos. / Presentacion de plataforma de mini hackathon Cibersieguridad CTF",
       tag: "Charla",
     },
     
