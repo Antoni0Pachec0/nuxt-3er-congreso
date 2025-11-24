@@ -22,6 +22,12 @@
         <SvgIcon type="mdi" :path="mdiCardAccountDetails" class="icon" />
         <span class="nav-text">Gafetes</span>
       </NuxtLink>
+
+      <NuxtLink to="/admin/attendance" class="nav-item" active-class="active">
+        <SvgIcon type="mdi" :path="mdiCardAccountDetails" class="icon" />
+        <span class="nav-text">Lector QR</span>
+      </NuxtLink>
+
     </nav>
   </header>
 </template>

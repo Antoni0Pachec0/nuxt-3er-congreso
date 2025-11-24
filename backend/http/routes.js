@@ -21,14 +21,14 @@ export const ROUTES = {
   USERS: {
     LIST: '/users',
     BY_ID: (id) => `/users/${id}`,
-    ENROLL_WORKSHOP: '/users/me/workshop', // 👈 NUEVO
+    ENROLL_WORKSHOP: '/users/me/workshop',
   },
 
   WORKSHOPS: {
     LIST: '/workshops',
     PUBLIC: '/workshops/public',
     BY_ID: (id) => `/workshops/${id}`,
-    AVAILABLE: '/workshops/available/list'
+    AVAILABLE: '/workshops/available/list',
   },
 
   ADMIN: {
@@ -37,6 +37,14 @@ export const ROUTES = {
       FILTER_OPTIONS: '/admin/users/filter-options',
       ACTIVATION: (id) => `/admin/users/${id}/activation`,
       ACTIVATION_BULK: '/admin/users/activation-bulk',
-    }
-  }
+    },
+
+    ATTENDANCE: {
+      WORKSHOPS: '/admin/attendance/workshops',
+      USERS_BY_TYPE: (workshopId) =>
+        `/admin/attendance/workshops/${workshopId}/users-by-type`,
+      SCAN_QR: '/admin/attendance/scan-qr',
+    },
+  },
+
 }
