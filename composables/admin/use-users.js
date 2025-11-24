@@ -127,7 +127,7 @@ export function useAdminUsers() {
 
     busy.value = true
     try {
-      const data = await AdminUsersApi.list({
+      const run = () => AdminUsersApi.list({
         q: (opts.q !== undefined ? opts.q : q.value) || undefined,
         filter: filter || undefined,
         grade: normGrade || undefined,
@@ -135,6 +135,9 @@ export function useAdminUsers() {
         page: (opts.page !== undefined ? opts.page : page.value),
         pageSize: (opts.pageSize !== undefined ? opts.pageSize : pageSize.value),
       }, { timeout: 20000 })
+
+      // 👇 ahora usamos backoff para manejar ThrottlerException
+      const data = await withBackoff(run, { attempts: 4, base: 400 })
 
       users.value = (data?.data || []).map(u => ({
         ...u,
@@ -159,7 +162,7 @@ export function useAdminUsers() {
         }
         gradeOptions.value = Array.from(gset).filter(Boolean)
         groupOptions.value = Array.from(grset).filter(Boolean)
-      } catch { }
+      } catch {}
     } catch (e) {
       const msg = e?.response?.data?.message || e?.message || 'No se pudo cargar usuarios'
       toast.err('Error', String(msg))
@@ -169,9 +172,10 @@ export function useAdminUsers() {
     }
   }
 
+
   // ===== selección =====
   const selectionMode = ref(false)
-  const selectedIds = ref(new Set())
+  const selectedIds = useState('selected-ids', () => new Set())
   function clearSelection() { selectedIds.value.clear() }
   function toggleSelectMode(next) {
     const val = typeof next === 'boolean' ? next : !selectionMode.value
@@ -419,6 +423,7 @@ export function useAdminUsers() {
     groupOptions, selectedGroup, pickGroup,
     clearFilters,
     totalPages, goPage: (p) => { if (p >= 1 && p <= totalPages.value && !busy.value) fetchUsers({ page: p }) }, onChangePageSize,
+    selectedIds,
     mapTypeColor, getIdLabel,
     selectionMode, toggleSelectModeAndClear, toggleSelectMode, clearSelection,
     isSelected, toggleSelect, toggleSelectPage, isPageFullySelected,
@@ -426,6 +431,7 @@ export function useAdminUsers() {
     openBulkConfirm, showBulk, bulkActivateFlag, bulkActivate, bulkActivateUI,
     showModal, pendingActivate, currentUser, confirmBtn,
     onToggleActivation, onToggleActivationUI, applyToggle, cancelToggle,
-    exportData, logout
+    exportData, logout,
+    fetchUsers,
   }
 }

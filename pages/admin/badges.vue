@@ -1,239 +1,353 @@
-<!-- pages/admin/badges.vue -->
 <template>
-  <div class="table-container">
-    <!-- Encabezado -->
-    <div class="header">
-      <h1 class="title">Gafetes</h1>
-      <p class="subtitle">Previsualiza e imprime gafetes para los usuarios seleccionados</p>
-    </div>
+  <div class="admin-users-view">
+    <div class="table-container">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-content">
+          <div class="header-text">
+            <h1 class="title">Generación de Gafetes</h1>
+            <p class="subtitle">Filtra, selecciona y genera gafetes en una sola vista.</p>
+          </div>
 
-    <div class="hr-line"></div>
+          <!-- Acciones -->
+          <div class="header-actions">
+            <button class="btn-logout" @click="logout">
+              <SvgIcon type="mdi" :path="mdiLogout" class="icon-left" />
+              Cerrar sesión
+            </button>
 
-    <!-- Acciones -->
-    <div class="actions-row">
-      <div class="paid-users">
-        <span class="label">Usuarios con estatus de pagado</span>
-        <span class="count">({{ paidCount }})</span>
+            <button class="btn-outline" @click="clearSelection">
+              <SvgIcon type="mdi" :path="mdiClose" class="icon-left" />
+              Limpiar selección
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="actions-right">
-        <button class="btn-outline" @click="onExportPdf" aria-label="Exportar PDF">
-          <SvgIcon type="mdi" :path="mdiDownload" class="icon-left" />
-          Exportar PDF
-        </button>
+      <div class="hr-line"></div>
 
-        <button class="btn-solid" @click="onPrintBadges" aria-label="Imprimir gafetes">
-          <SvgIcon type="mdi" :path="mdiPrinter" class="icon-left" />
-          Imprimir Gafetes
+      <!-- Filtros -->
+      <div class="filters">
+        <div class="search-container">
+          <input
+            :value="searchInput"
+            @input="onSearchInput($event.target.value)"
+            type="text"
+            placeholder="Buscar por nombre, correo o matrícula/ID…"
+            class="search-input"
+            aria-label="Buscar"
+          />
+        </div>
+
+        <div class="filter-row">
+          <FilterMini
+            label="Tipo"
+            :options="typeOptions"
+            :model-value="selectedType"
+            @update:model-value="pickType"
+          />
+
+          <FilterMini
+            label="Estado"
+            :options="stateOptions"
+            :model-value="selectedState"
+            @update:model-value="pickState"
+          />
+
+          <FilterMini
+            label="Pago"
+            :options="payOptions"
+            :model-value="selectedPay"
+            @update:model-value="pickPay"
+          />
+
+          <FilterMini
+            label="Grado"
+            :options="gradeOptions"
+            :model-value="selectedGrade"
+            @update:model-value="pickGrade"
+          />
+
+          <FilterMini
+            label="Grupo"
+            :options="groupOptions"
+            :model-value="selectedGroup"
+            @update:model-value="pickGroup"
+          />
+
+          <div class="filter-group grow-right">
+            <label class="filter-label">&nbsp;</label>
+            <div class="actions-row">
+              <button class="btn-secondary" @click="clearFilters" :disabled="busyCombined">
+                Limpiar
+              </button>
+
+              <div class="page-size">
+                <label for="psel" class="psel-label">Mostrar</label>
+                <select
+                  id="psel"
+                  class="psel"
+                  :value="pageSize"
+                  @change="onChangePageSize($event.target.value)"
+                  :disabled="busyCombined"
+                >
+                  <option :value="10">10</option>
+                  <option :value="20">20</option>
+                  <option :value="50">50</option>
+                  <option :value="100">100</option>
+                </select>
+              </div>
+
+              <label class="checkbox-inline">
+                <input type="checkbox" v-model="showOnlyPendingBadges" />
+                Solo pendientes de imprimir
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-info">
+        <span class="muted">Total: {{ total }}</span>
+        <span class="muted">|</span>
+        <span class="muted">Página {{ page }} de {{ totalPages }}</span>
+        <span class="muted">|</span>
+        <span class="muted">Seleccionados: {{ selectedCount }}</span>
+      </div>
+
+      <!-- Tabla -->
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th class="col-min">
+              <button
+                class="chip-select"
+                :class="{ active: isPageFullySelected }"
+                @click="toggleSelectPage"
+                title="Seleccionar página actual"
+              >
+                ✓
+              </button>
+            </th>
+            <th>Usuario</th>
+            <th>Tipo</th>
+            <th>Grado/Grupo</th>
+            <th>Matrícula/ID</th>
+            <th>Impresión</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="busyCombined">
+            <td colspan="6" style="text-align:center; padding:16px;">Cargando…</td>
+          </tr>
+          <tr v-else-if="visibleUsers.length === 0">
+            <td colspan="6" style="text-align:center; padding:16px;">
+              No hay usuarios para los filtros actuales.
+            </td>
+          </tr>
+          <tr
+            v-else
+            v-for="u in visibleUsers"
+            :key="u.id"
+            :class="{ 'row-selected': isSelected(u.id) }"
+            @click="toggleSelect(u.id)"
+            style="cursor: pointer;"
+          >
+            <td class="col-min">
+              <button
+                class="chip-select"
+                :class="{ active: isSelected(u.id) }"
+                @click.stop="toggleSelect(u.id)"
+              >
+                ✓
+              </button>
+            </td>
+
+            <td>
+              <div class="name-user">{{ u.name }}</div>
+              <div class="email">{{ u.email }}</div>
+            </td>
+
+            <td>
+              <span class="badge" :class="mapTypeColor(u.type)">{{ u.type }}</span>
+            </td>
+
+            <td>
+              <div class="grade-group">
+                <span v-if="u.grade" class="grade">{{ u.grade }}</span>
+                <span v-if="u.group" class="group">{{ u.group }}</span>
+                <span v-if="!u.grade && !u.group" class="no-data">-</span>
+              </div>
+            </td>
+
+            <td class="code">{{ u.code }}</td>
+
+            <td>
+              <span v-if="u.isBadgePrinted" class="badge badge-printed">Impreso</span>
+              <span v-else class="badge badge-pending">Pendiente</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div class="pagination" v-if="totalPages > 1">
+        <button :disabled="page <= 1 || busyCombined" @click="goPage(page - 1)">Anterior</button>
+        <span>Página {{ page }} de {{ totalPages }}</span>
+        <button :disabled="page >= totalPages || busyCombined" @click="goPage(page + 1)">
+          Siguiente
         </button>
+      </div>
+
+      <!-- Barra de acción masiva SIEMPRE visible -->
+      <div class="bulk-bar-sticky">
+        <div class="bulk-left">
+          <span class="muted">
+            Listos para generar:
+            <strong>{{ selectedCount }}</strong>
+          </span>
+        </div>
+        <div class="bulk-right">
+          <button
+            class="btn success lg"
+            :disabled="busyCombined || selectedCount === 0"
+            @click="generateBadges"
+          >
+            Generar PDF de Gafetes
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="hr-line"></div>
-
-    <!-- Lista tipo chips (Activos y Pagados) -->
-    <h2 class="section-title">Pendientes de imprimir</h2>
-    <p class="section-subtitle">Usuarios activos y con pago confirmado.</p>
-
-    <!-- ✅ Animación al quitar: transition-group -->
-    <transition-group name="card" tag="div" class="badge-list">
-      <article
-        v-for="u in paidUsers"
-        :key="u.code"
-        class="badge-item"
-        aria-label="Usuario pagado activo"
-      >
-        <!-- Avatar con iniciales -->
-        <div class="avatar" aria-hidden="true">
-          <span>{{ initials(u.name) }}</span>
-        </div>
-
-        <!-- Info -->
-        <div class="info">
-          <div class="name">{{ u.name }}</div>
-          <div class="email">{{ u.email }}</div>
-          <div class="meta">
-            <span class="code">{{ u.code }}</span>
-            <span class="chip" :class="u.typeColor">{{ u.type }}</span>
-          </div>
-        </div>
-
-        <!-- Acciones por item (activos) -->
-        <div class="actions">
-          <button
-            class="icon-btn"
-            aria-label="Ver previsualización del gafete"
-            @click="preview(u)"
-            title="Previsualizar"
-          >
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10z" fill="none" stroke="currentColor" stroke-width="2"/>
-            </svg>
-          </button>
-
-          <button
-            class="icon-btn"
-            aria-label="Quitar de la lista de gafetes"
-            @click="remove(u.code)"
-            title="Quitar"
-          >
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2"/>
-            </svg>
-          </button>
-        </div>
-      </article>
-
-      <p v-if="!paidUsers.length" key="empty-paid" class="empty">No hay usuarios pagados activos.</p>
-    </transition-group>
-
-    <!-- Separador -->
-    <div class="hr-line hr-spaced"></div>
-
-    <!-- Lista de inactivos con badge "Gafete impreso" -->
-    <h2 class="section-title">Gafetes ya impresos (inactivos)</h2>
-    <p class="section-subtitle">Usuarios cuyo gafete ya fue impreso. Puedes reimprimir si es necesario.</p>
-
-    <!-- ✅ También con transition-group por si en el futuro mueves ítems -->
-    <transition-group name="card" tag="div" class="badge-list printed-list">
-      <article
-        v-for="u in printedUsers"
-        :key="u.code"
-        class="badge-item printed"
-        aria-label="Usuario inactivo con gafete impreso"
-      >
-        <!-- Avatar -->
-        <div class="avatar" aria-hidden="true">
-          <span>{{ initials(u.name) }}</span>
-        </div>
-
-        <!-- Info -->
-        <div class="info">
-          <div class="name">
-            {{ u.name }}
-            <span class="badge-printed" aria-label="Gafete impreso">Gafete impreso</span>
-          </div>
-          <div class="email">{{ u.email }}</div>
-          <div class="meta">
-            <span class="code">{{ u.code }}</span>
-            <span class="chip" :class="u.typeColor">{{ u.type }}</span>
-          </div>
-        </div>
-
-        <!-- Acciones por item (inactivos: solo reimprimir) -->
-        <div class="actions">
-          <button
-            class="icon-btn reprint"
-            aria-label="Reimprimir gafete"
-            @click="reprint(u)"
-            title="Reimprimir"
-          >
-            <SvgIcon type="mdi" :path="mdiPrinter" class="icon-left" />
-          </button>
-        </div>
-      </article>
-
-      <p v-if="!printedUsers.length" key="empty-printed" class="empty">No hay gafetes impresos aún.</p>
-    </transition-group>
+    <div class="toast-container"></div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { reactive, computed } from "vue"
-// @ts-expect-error
-import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiDownload, mdiPrinter } from "@mdi/js"
-import '@/assets/css/styles/admin/badges.css';
+<script setup>
+import { computed, ref } from 'vue'
+import SvgIcon from '@jamescoyle/vue-icon'
+import { mdiLogout, mdiClose } from '@mdi/js'
+import { useAdminUsers } from '@/composables/admin/use-users'
+import { useBadges } from '@/composables/admin/use-badges'
+import FilterMini from '@/components/admin/filter-mini.vue'
+import '@/assets/css/styles/admin/users.css'
 
 definePageMeta({
   name: 'admin-badges',
   path: '/admin/badges',
   alias: ['/admin-badges'],
-  requiresAuth: true
+  requiresAuth: true,
 })
 
-type User = {
-  name: string
-  email: string
-  code: string
-  type: "Estudiante" | "Docente" | "Ponente/Tallerista" | "Externo"
-  typeColor: string
-  state: "Activo" | "Inactivo"
-  stateColor: string
-  payment: "Pagado" | "No pagado" | "No aplica"
-  paymentColor: string
-}
+const {
+  users,
+  total,
+  page,
+  pageSize,
+  busy: listBusy,
+  searchInput,
+  onSearchInput,
+  typeOptions,
+  selectedType,
+  pickType,
+  stateOptions,
+  selectedState,
+  pickState,
+  payOptions,
+  selectedPay,
+  pickPay,
+  gradeOptions,
+  selectedGrade,
+  pickGrade,
+  groupOptions,
+  selectedGroup,
+  pickGroup,
+  clearFilters,
+  totalPages,
+  goPage,
+  onChangePageSize,
+  selectedIds,
+  isSelected,
+  toggleSelect,
+  toggleSelectPage,
+  isPageFullySelected,
+  clearSelection,
+  selectedCount,
+  mapTypeColor,
+  logout,
+  fetchUsers,
+} = useAdminUsers()
 
-/* === Datos demo === */
-const users = reactive<User[]>([
-  // Activos + Pagados (pendientes de imprimir)
-  { name: "Laura Hernández Torres", email: "laura.hernandez@universidad.edu.mx", code: "EST2024002", type: "Estudiante", typeColor: "type-estudiante", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Fernando López", email: "fernando.lopez@yahoo.com", code: "EXT2024002", type: "Externo", typeColor: "type-externo", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Sofía Martínez", email: "sofia.martinez@universidad.edu.mx", code: "EST2024003", type: "Estudiante", typeColor: "type-estudiante", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Lic. Andrés Ramírez", email: "andres.ramirez@universidad.edu.mx", code: "DOC2024003", type: "Docente", typeColor: "type-docente", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Ing. Daniela Pineda", email: "daniela.pineda@empresa.com", code: "EMP2024003", type: "Ponente/Tallerista", typeColor: "type-ponente", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Alejandro Cruz", email: "alejandro.cruz@gmail.com", code: "EXT2024003", type: "Externo", typeColor: "type-externo", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Mtra. Karla Villaseñor", email: "karla.villasenor@universidad.edu.mx", code: "DOC2024004", type: "Docente", typeColor: "type-docente", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Juan Pablo Estrada", email: "juanpablo.estrada@universidad.edu.mx", code: "EST2024004", type: "Estudiante", typeColor: "type-estudiante", state: "Activo", stateColor: "state-activo", payment: "Pagado", paymentColor: "payment-pagado" },
-  // Inactivos (ya impresos, listados abajo)
-  { name: "Arq. Beatriz Salas", email: "beatriz.salas@estudio.com", code: "EMP2024004", type: "Ponente/Tallerista", typeColor: "type-ponente", state: "Inactivo", stateColor: "state-inactivo", payment: "Pagado", paymentColor: "payment-pagado" },
-  { name: "Verónica Chávez", email: "veronica.chavez@gmail.com", code: "EXT2024004", type: "Externo", typeColor: "type-externo", state: "Inactivo", stateColor: "state-inactivo", payment: "Pagado", paymentColor: "payment-pagado" },
-])
+const showOnlyPendingBadges = ref(true)
 
-/** Listas computadas */
-const paidUsers = computed(() =>
-  users.filter((u: { payment: string; state: string }) => u.payment === "Pagado" && u.state === "Activo")
+const visibleUsers = computed(() =>
+  users.value.filter((u) => (showOnlyPendingBadges.value ? !u.isBadgePrinted : true)),
 )
 
-const printedUsers = computed(() =>
-  users.filter((u: { state: string }) => u.state === "Inactivo")
-)
+const { busy: badgesBusy, downloadBadges } = useBadges(selectedIds)
 
-/** Iniciales para el avatar (máx. 2 letras) */
-const initials = (name: string) =>
-  name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(n => n[0]!.toUpperCase())
-    .join("")
+const busyCombined = computed(() => listBusy.value || badgesBusy.value)
 
-/** Contador visible en el header de acciones (solo activos pagados) */
-const paidCount = computed(() => paidUsers.value.length)
-
-/** Placeholder: exportar PDF (demo visual) */
-function onExportPdf() {
-  window.print()
-}
-
-/** Imprimir gafetes (vista actual) */
-function onPrintBadges() {
-  window.print()
-}
-
-/** Reimprimir gafete individual (inactivos) */
-function reprint(user: User) {
-  window.print()
-}
-
-/** Abrir un preview de un gafete (implementa tu modal si quieres) */
-function preview(user: User) {
-}
-
-/** Quitar de la lista: cambia a "No pagado" para que desaparezca del computed (solo demo) */
-function togglePaidByCode(code: string) {
-  const u = users.find((u: { code: string }) => u.code === code)
-  if (!u) return
-  if (u.payment === "Pagado") {
-    u.payment = "No pagado"
-    u.paymentColor = "payment-no"
-  } else {
-    u.payment = "Pagado"
-    u.paymentColor = "payment-pagado"
-  }
-}
-
-function remove(code: string) {
-  togglePaidByCode(code)
+async function generateBadges() {
+  await downloadBadges(true)
+  await fetchUsers()
+  clearSelection()
 }
 </script>
+
+<style scoped>
+.row-selected {
+  background-color: rgba(25, 118, 210, 0.08);
+}
+
+.badge-printed {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.badge-pending {
+  background-color: #f57c00;
+  color: #fff;
+}
+
+.checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-left {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* 👉 Barra siempre visible, fija abajo de la pantalla solo en esta vista */
+.bulk-bar-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* opcional: que no quede pegado a los bordes en pantallas grandes */
+.admin-users-view .bulk-bar-sticky {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* botón de generar, consistente con el resto del admin */
+.bulk-bar-sticky .btn.success.lg {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+}
+</style>
