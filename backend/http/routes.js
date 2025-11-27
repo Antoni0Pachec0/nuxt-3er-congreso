@@ -37,6 +37,8 @@ export const ROUTES = {
       FILTER_OPTIONS: '/admin/users/filter-options',
       ACTIVATION: (id) => `/admin/users/${id}/activation`,
       ACTIVATION_BULK: '/admin/users/activation-bulk',
+      GENERATE_BADGES: '/admin/users/generate-badges',
+      SEND_CERTIFICATES: '/admin/users/send-certificates', // 👈 nuevo
     },
 
     ATTENDANCE: {

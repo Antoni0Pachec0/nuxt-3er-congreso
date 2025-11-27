@@ -215,6 +215,14 @@
           >
             Generar PDF de Gafetes
           </button>
+
+          <button
+            class="btn outline lg"
+            :disabled="busyCombined || selectedCount === 0"
+            @click="sendSelectedCertificates"
+          >
+            Certificados
+          </button>
         </div>
       </div>
     </div>
@@ -229,6 +237,7 @@ import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiLogout, mdiClose } from '@mdi/js'
 import { useAdminUsers } from '@/composables/admin/use-users'
 import { useBadges } from '@/composables/admin/use-badges'
+import { useCertificates } from '@/composables/admin/use-certificates' // 👈 nuevo
 import FilterMini from '@/components/admin/filter-mini.vue'
 import '@/assets/css/styles/admin/users.css'
 
@@ -284,15 +293,24 @@ const visibleUsers = computed(() =>
   users.value.filter((u) => (showOnlyPendingBadges.value ? !u.isBadgePrinted : true)),
 )
 
+// 👉 aquí ya usas dos composables: gafetes y certificados
 const { busy: badgesBusy, downloadBadges } = useBadges(selectedIds)
+const { busy: certsBusy, sendCertificates } = useCertificates(selectedIds)
 
-const busyCombined = computed(() => listBusy.value || badgesBusy.value)
+// 👉 busyCombined ahora también considera el envío de certificados
+const busyCombined = computed(() => listBusy.value || badgesBusy.value || certsBusy.value)
 
 async function generateBadges() {
   await downloadBadges(true)
   await fetchUsers()
   clearSelection()
 }
+
+// 👉 esta función la llama el botón "Certificados"
+async function sendSelectedCertificates() {
+  await sendCertificates()
+}
+
 </script>
 
 <style scoped>
@@ -350,4 +368,83 @@ async function generateBadges() {
   color: #fff;
   border: none;
 }
+
+.row-selected {
+  background-color: rgba(25, 118, 210, 0.08);
+}
+
+.badge-printed {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.badge-pending {
+  background-color: #f57c00;
+  color: #fff;
+}
+
+.checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-left {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* 👉 Barra siempre visible, fija abajo de la pantalla solo en esta vista */
+.bulk-bar-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.admin-users-view .bulk-bar-sticky {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Botones de la barra */
+.bulk-right {
+  display: flex;
+  gap: 8px;
+}
+
+.bulk-bar-sticky .btn.success.lg {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+/* nuevo botón outline */
+.bulk-bar-sticky .btn.outline.lg {
+  background-color: transparent;
+  color: #1976d2;
+  border-radius: 999px;
+  border: 1px solid #1976d2;
+  padding: 8px 18px;
+  font-weight: 500;
+}
+
+.bulk-bar-sticky .btn.outline.lg:disabled,
+.bulk-bar-sticky .btn.success.lg:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 </style>
