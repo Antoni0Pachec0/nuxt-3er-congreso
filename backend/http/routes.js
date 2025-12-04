@@ -38,7 +38,7 @@ export const ROUTES = {
       ACTIVATION: (id) => `/admin/users/${id}/activation`,
       ACTIVATION_BULK: '/admin/users/activation-bulk',
       GENERATE_BADGES: '/admin/users/generate-badges',
-      SEND_CERTIFICATES: '/admin/users/send-certificates', // 👈 nuevo
+      SEND_CERTIFICATES: '/admin/users/send-certificates',
     },
 
     ATTENDANCE: {
@@ -46,6 +46,12 @@ export const ROUTES = {
       USERS_BY_TYPE: (workshopId) =>
         `/admin/attendance/workshops/${workshopId}/users-by-type`,
       SCAN_QR: '/admin/attendance/scan-qr',
+    },
+
+    FINANCE: {
+      SUMMARY: '/admin/finance/summary',
+      CATEGORIES: '/admin/finance/categories',
+      MOVEMENTS: '/admin/finance/movements',
     },
   },
 

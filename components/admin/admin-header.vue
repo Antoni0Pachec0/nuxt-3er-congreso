@@ -28,6 +28,11 @@
         <span class="nav-text">Lector QR</span>
       </NuxtLink>
 
+      <NuxtLink to="/admin/finance" class="nav-item" active-class="active">
+        <SvgIcon type="mdi" :path="mdiCardAccountDetails" class="icon" />
+        <span class="nav-text">Finanzas</span>
+      </NuxtLink>
+
     </nav>
   </header>
 </template>

@@ -28,6 +28,7 @@ export const APP_ROUTES = {
   adminHome: { name: 'admin-home', path: '/admin', title: 'Administración' }, // Ruta principal de admin (opcional, pero útil)
   adminAnalysis: { name: 'admin-analysis', path: '/admin/analysis', title: 'Análisis' },
   adminBadges: { name: 'admin-badges', path: '/admin/badges', title: 'Insignias' },
+  adminBadges: { name: 'admin-finance', path: '/admin/finance', title: 'Finanzas' },
   adminBadges: { name: 'admin-attendance', path: '/admin/attendance', title: 'Lector de QR' },
   adminSchedule: { name: 'admin-schedule', path: '/admin/schedule', title: 'Agenda' },
   adminUsers: { name: 'admin-users', path: '/admin/users', title: 'Usuarios' },
