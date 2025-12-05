@@ -27,9 +27,11 @@
 }
 
 /* Caja del carrito */
+/* Carrito ocupa todo el alto de la pantalla */
 .cart-floating {
   width: 340px;
-  height: 100%;
+  min-height: 100vh;
+  height: 100vh;
   background: #fff;
   border-top-left-radius: 16px;
   box-shadow: -6px 0 20px rgba(0, 0, 0, 0.18);
@@ -160,5 +162,7 @@
 @media (max-width: 480px) {
   .cart-floating {
     width: 100%;
+    min-height: 100vh;
+    height: 100vh;
   }
 }

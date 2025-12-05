@@ -102,4 +102,4 @@ const total = computed(() =>
 );
 </script>
 
-<style scoped src="@/assets/css/styles/pages/store/cart-drawer.css"></style>
+<style src="@/assets/css/styles/pages/store/cart-drawer.css"></style>

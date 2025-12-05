@@ -427,7 +427,7 @@ function handleAdd(p: Product) {
     qty: 1,
     unitPrice: p.price,
   });
-
+  showCart.value = true; // Abrir el carrito automáticamente
   alertMessage.value = "✔️ Producto agregado al carrito";
   alertType.value = "success";
   showAlert.value = true;
