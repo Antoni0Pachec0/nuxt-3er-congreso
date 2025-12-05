@@ -4,8 +4,18 @@ import { ROUTES } from '@/backend/http/routes'
 
 export const AdminAttendanceApi = {
   async listWorkshops () {
-    const { data } = await api.get(ROUTES.ADMIN.ATTENDANCE.WORKSHOPS)
-    return Array.isArray(data) ? data : data.workshops || []
+    try {
+      const { data } = await api.get(ROUTES.ADMIN.ATTENDANCE.WORKSHOPS)
+      console.log('🟢 listWorkshops RAW data:', data)
+      return Array.isArray(data) ? data : data.workshops || []
+    } catch (e) {
+      console.error('❌ listWorkshops ERROR:', {
+        status: e?.response?.status,
+        data: e?.response?.data,
+        url: ROUTES.ADMIN.ATTENDANCE.WORKSHOPS,
+      })
+      throw e
+    }
   },
 
   async scanQr ({ qrValue, workshopId, scheduleId }) {
@@ -15,14 +25,32 @@ export const AdminAttendanceApi = {
       scheduleId: scheduleId || undefined,
     }
 
-    const { data } = await api.post(ROUTES.ADMIN.ATTENDANCE.SCAN_QR, payload)
-    return data
+    try {
+      const { data } = await api.post(ROUTES.ADMIN.ATTENDANCE.SCAN_QR, payload)
+      return data
+    } catch (e) {
+      console.error('❌ scanQr ERROR:', {
+        status: e?.response?.status,
+        data: e?.response?.data,
+        url: ROUTES.ADMIN.ATTENDANCE.SCAN_QR,
+        payload,
+      })
+      throw e
+    }
   },
 
   async listAttendance ({ workshopId }) {
     const url = ROUTES.ADMIN.ATTENDANCE.USERS_BY_TYPE(workshopId)
-    const { data } = await api.get(url)
-    // devolvemos { workshop, all, byType }
-    return data
+    try {
+      const { data } = await api.get(url)
+      return data
+    } catch (e) {
+      console.error('❌ listAttendance ERROR:', {
+        status: e?.response?.status,
+        data: e?.response?.data,
+        url,
+      })
+      throw e
+    }
   },
 }
