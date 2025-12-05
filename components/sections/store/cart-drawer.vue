@@ -19,15 +19,17 @@
       <section class="cart-body">
         <div v-if="items.length">
           <div v-for="(item, idx) in items" :key="idx" class="cart-item">
-            <img :src="item.image" class="thumb" />
+            <img :src="item.image" class="cart-thumb" />
 
-            <div class="info">
-              <div class="title">{{ item.product.title }}</div>
-              <div class="meta">
-                <span v-if="item.color" class="tag">
+            <div class="cart-info">
+              <div class="cart-item-title">{{ item.product.title }}</div>
+              <div class="cart-item-meta">
+                <span v-if="item.color" class="cart-tag">
                   Color: <span :style="{ color: item.color }">●</span>
                 </span>
-                <span v-if="item.size" class="tag">Talla: {{ item.size }}</span>
+                <span v-if="item.size" class="cart-tag">
+                  Talla: {{ item.size }}
+                </span>
               </div>
 
               <!-- Control de cantidad -->
@@ -43,7 +45,9 @@
                 <button class="qty-btn" @click="incQty(idx)">+</button>
               </div>
 
-              <div class="price">${{ item.unitPrice * item.qty }}</div>
+              <div class="cart-item-price">
+                ${{ item.unitPrice * item.qty }}
+              </div>
             </div>
 
             <v-btn icon size="small" variant="text" @click="removeItem(idx)">
@@ -60,7 +64,7 @@
 
       <!-- Footer -->
       <footer class="cart-footer">
-        <div class="total">
+        <div class="cart-total-row">
           <span>Total:</span>
           <strong>${{ total }}</strong>
         </div>
@@ -80,13 +84,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import "@/assets/css/styles/pages/store/cart-drawer.css";
 import { X, ShoppingCart, Trash2 } from "lucide-vue-next";
 
-/**
- * El tipo del item del carrito. Aquí solo usamos product.title,
- * pero dejamos id por si lo necesitas para llaves, etc.
- */
 type CartItem = {
   product: {
     id: number;

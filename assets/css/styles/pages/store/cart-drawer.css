@@ -1,4 +1,3 @@
-/* Fondo oscuro */
 .overlay {
   position: fixed;
   inset: 0;
@@ -16,7 +15,7 @@
   opacity: 0;
 }
 
-/* Carrito - TODO EN UNA SOLA DEFINICIÓN */
+/* Carrito */
 .cart-floating {
   position: fixed;
   top: 0;
@@ -29,20 +28,14 @@
   background: #fff;
   box-shadow: -6px 0 20px rgba(0, 0, 0, 0.18);
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 14px !important; /* tamaño base solo dentro del carrito */
+  font-size: 14px;
   line-height: 1.4;
   z-index: 100000;
   transition: all 0.35s ease;
 }
 
-/* FORZAR TAMAÑOS DE TEXTO SOLO DENTRO DEL CARRITO */
-.cart-floating,
-.cart-floating *:not(.material-icons):not(.lucide) {
-  font-size: inherit !important;
-}
-
 /* Header */
-.cart-floating .cart-header {
+.cart-header {
   padding: 12px 14px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
@@ -52,20 +45,20 @@
   color: #fff;
 }
 
-.cart-floating .cart-title {
-  font-size: 16px !important;
+.cart-title {
+  font-size: 16px;
   font-weight: 700;
   margin: 0;
 }
 
 /* Body */
-.cart-floating .cart-body {
+.cart-body {
   flex: 1;
   overflow-y: auto;
   padding: 10px 12px;
 }
 
-.cart-floating .cart-item {
+.cart-item {
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -73,26 +66,26 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.cart-floating .thumb {
+.cart-thumb {
   width: 44px;
   height: 44px;
   border-radius: 8px;
   object-fit: cover;
 }
 
-.cart-floating .info {
+.cart-info {
   flex: 1;
 }
 
-.cart-floating .title {
+.cart-item-title {
   font-weight: 600;
-  font-size: 13px !important;
+  font-size: 13px;
   margin-bottom: 4px;
   line-height: 1.3;
 }
 
-.cart-floating .meta {
-  font-size: 11px !important;
+.cart-item-meta {
+  font-size: 11px;
   color: #666;
   display: flex;
   flex-wrap: wrap;
@@ -100,51 +93,51 @@
   margin-bottom: 6px;
 }
 
-.cart-floating .tag {
+.cart-tag {
   background: rgba(0, 0, 0, 0.04);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 10px !important;
+  font-size: 10px;
 }
 
-.cart-floating .price {
-  font-size: 13px !important;
+.cart-item-price {
+  font-size: 13px;
   font-weight: 700;
   color: #153885;
   margin-top: 4px;
 }
 
-.cart-floating .empty {
+.empty {
   text-align: center;
   padding: 30px 16px;
   color: #666;
 }
 
-.cart-floating .icon-empty {
+.icon-empty {
   margin-bottom: 10px;
   color: #999;
 }
 
-.cart-floating .empty p {
-  font-size: 14px !important;
+.empty p {
+  font-size: 14px;
   margin: 0;
 }
 
 /* Cantidad */
-.cart-floating .qty-control {
+.qty-control {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-top: 4px;
 }
 
-.cart-floating .qty-btn {
+.qty-btn {
   width: 22px;
   height: 22px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   background: #fff;
-  font-size: 12px !important;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -154,51 +147,51 @@
   line-height: 1;
 }
 
-.cart-floating .qty-btn:hover:not(:disabled) {
+.qty-btn:hover:not(:disabled) {
   background: #2563eb;
   color: #fff;
   border-color: #2563eb;
 }
 
-.cart-floating .qty-num {
+.qty-num {
   min-width: 20px;
   text-align: center;
-  font-size: 12px !important;
+  font-size: 12px;
 }
 
 /* Footer */
-.cart-floating .cart-footer {
+.cart-footer {
   padding: 12px 14px;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   background: #fafafa;
 }
 
-.cart-floating .total {
+.cart-total-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
-  font-size: 14px !important;
+  font-size: 14px;
 }
 
-.cart-floating .total strong {
-  font-size: 15px !important;
+.cart-total-row strong {
+  font-size: 15px;
 }
 
-/* ANULACIÓN ESPECÍFICA PARA BOTONES DE VUETIFY */
-.cart-floating .v-btn {
-  font-size: 14px !important;
-  letter-spacing: normal !important;
-  text-transform: none !important;
+/* Ajustes de botones Vuetify dentro del carrito */
+.cart-footer :deep(.v-btn) {
+  font-size: 14px;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
-.cart-floating .v-btn--size-large {
-  font-size: 15px !important;
+.cart-footer :deep(.v-btn--size-large) {
+  font-size: 15px;
 }
 
-.cart-floating .v-btn--icon {
-  min-width: auto !important;
-  width: auto !important;
-  height: auto !important;
+.cart-header :deep(.v-btn--icon) {
+  min-width: auto;
+  width: auto;
+  height: auto;
 }
 
 /* Animación del carrito */
@@ -211,42 +204,39 @@
   transform: translateX(100%);
 }
 
-/* ============================
-  RESPONSIVIDAD PARA DISPOSITIVOS MÓVILES
-================================ */
-
+/* Responsive */
 @media (max-width: 480px) {
   .cart-floating {
     width: 100%;
-    font-size: 13px !important;
+    font-size: 13px;
   }
 
-  .cart-floating .cart-title {
-    font-size: 15px !important;
+  .cart-title {
+    font-size: 15px;
   }
 
-  .cart-floating .title {
-    font-size: 12px !important;
+  .cart-item-title {
+    font-size: 12px;
   }
 
-  .cart-floating .meta {
-    font-size: 10px !important;
+  .cart-item-meta {
+    font-size: 10px;
   }
 
-  .cart-floating .tag {
-    font-size: 9px !important;
+  .cart-tag {
+    font-size: 9px;
   }
 
-  .cart-floating .price {
-    font-size: 12px !important;
+  .cart-item-price {
+    font-size: 12px;
   }
 
-  .cart-floating .v-btn {
-    font-size: 13px !important;
+  .cart-footer :deep(.v-btn) {
+    font-size: 13px;
   }
 
-  .cart-floating .v-btn--size-large {
-    font-size: 14px !important;
+  .cart-footer :deep(.v-btn--size-large) {
+    font-size: 14px;
   }
 }
 
