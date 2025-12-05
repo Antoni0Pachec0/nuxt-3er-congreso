@@ -83,18 +83,40 @@ import { computed } from "vue";
 import "@/assets/css/styles/pages/store/cart-drawer.css";
 import { X, ShoppingCart, Trash2 } from "lucide-vue-next";
 
+/**
+ * El tipo del item del carrito. Aquí solo usamos product.title,
+ * pero dejamos id por si lo necesitas para llaves, etc.
+ */
+type CartItem = {
+  product: {
+    id: number;
+    title: string;
+  };
+  color: string | null;
+  size: string | null;
+  qty: number;
+  unitPrice: number;
+  image: string;
+};
+
 const open = defineModel<boolean>({ default: false });
-const items = defineModel<any[]>("items", { default: [] });
+const items = defineModel<CartItem[]>("items", { default: [] });
 
 function removeItem(idx: number) {
   items.value.splice(idx, 1);
 }
+
 function incQty(idx: number) {
-  items.value[idx].qty++;
+  const item = items.value[idx];
+  if (!item) return;
+  item.qty++;
 }
+
 function decQty(idx: number) {
-  if (items.value[idx].qty > 1) {
-    items.value[idx].qty--;
+  const item = items.value[idx];
+  if (!item) return;
+  if (item.qty > 1) {
+    item.qty--;
   }
 }
 
@@ -102,4 +124,3 @@ const total = computed(() =>
   items.value.reduce((sum, i) => sum + i.unitPrice * i.qty, 0).toFixed(0)
 );
 </script>
-

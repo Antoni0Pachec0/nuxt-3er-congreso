@@ -8,7 +8,6 @@ import { useAuthStore } from '@/security/stores/auth'
 // Asegúrate de que esta ruta a tu AuthApi sea la correcta
 import { AuthApi } from '@/backend/auth/login-api'
 
-// ✅ PROTEGER ESTA PÁGINA
 definePageMeta({
     requiresAuth: true
 })

@@ -43,6 +43,10 @@
         <template v-if="isAuthenticated">
           <NuxtLink :to="R.path('game')" class="desktop-nav-btn">Game</NuxtLink>
 
+          <NuxtLink to="/souvenirs" class="desktop-nav-btn" @click="closeAllMenus">
+            Souvenirs
+          </NuxtLink>
+
           <NuxtLink
             v-if="authStore.userRole === 5"
             to="/admin/users"

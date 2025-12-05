@@ -1,284 +1,741 @@
 <template>
-  <section class="speakers" id="speakers">
-    <div class="speakers-header">
-      <h2 class="speakers-title">Conferencistas Destacados</h2>
-      <div class="faq__underline"></div>
+  <section class="collection" id="productos">
+    <v-container class="py-12">
+      <!-- Encabezado -->
+      <header class="text-center mb-8">
+        <h2 class="font-orbitron text-h4 text-md-h3 font-weight-black mb-2">
+          Colección Completa
+        </h2>
+        <div class="faq__underline"></div>
 
-      <p class="speakers-subtitle">
-        Participa en las conferencias guiadas por ponentes de gran trayectoria.
-        Sus aportes fortalecen la formación académica y profesional de nuestra
-        comunidad.
-      </p>
-    </div>
+        <p class="text-medium-emphasis text-body-2 text-md-body-1">
+          Explora productos oficiales del Congreso TI: calidad, estilo y
+          espíritu tech.
+        </p>
+      </header>
 
-    <div class="speakers-grid">
-      <article
-        v-for="speaker in speakers"
-        :key="speaker.name"
-        class="spk-card"
-        :class="{
-          'spk-card--magistral': speaker.level === 'magistral',
-          'spk-card--empresarial': speaker.level === 'empresarial',
-        }"
-      >
-        <div class="spk-card__bar"></div>
+      <!-- Filtros -->
+      <div class="d-flex flex-wrap justify-center gap-2 mb-8">
+        <v-chip-group
+          v-model="activeCategory"
+          selected-class="chip-active"
+          class="filter-group"
+          mandatory
+        >
+          <v-chip value="all" variant="text" class="chip-item">
+            <Grid :size="18" stroke-width="1.5" class="mr-2" />
+            <span>Todos</span>
+          </v-chip>
 
-        <div class="spk-card__body">
-          <div class="spk-head">
-            <div class="spk-icon">
-              <component :is="speaker.iconComponent" :size="28" />
+          <v-chip value="playera" variant="text" class="chip-item">
+            <Shirt :size="18" stroke-width="1.5" class="mr-2" />
+            <span>Playeras</span>
+          </v-chip>
+
+          <v-chip value="termo" variant="text" class="chip-item">
+            <BottleWine :size="18" stroke-width="1.5" class="mr-2" />
+            <span>Termos</span>
+          </v-chip>
+        </v-chip-group>
+      </div>
+
+      <!-- Grid -->
+      <v-row dense>
+        <v-col
+          v-for="p in filteredProducts"
+          :key="p.id"
+          cols="12"
+          sm="6"
+          md="4"
+          lg="3"
+          class="d-flex"
+        >
+          <v-card
+            variant="flat"
+            elevation="0"
+            class="product-card d-flex flex-column flex-grow-1"
+          >
+            <!-- Badge -->
+            <div class="card-badges">
+              <v-chip
+                size="x-small"
+                variant="flat"
+                color="primary"
+                class="text-capitalize"
+              >
+                {{ p.category }}
+              </v-chip>
             </div>
-            <div class="spk-titlebox">
-              <span class="spk-pill">{{ speaker.level }}</span>
-              <h3 class="spk-name">{{ speaker.name }}</h3>
+
+            <!-- Imagen dinámica -->
+            <v-img
+              :src="getImage(p)"
+              :alt="p.title"
+              class="media"
+              cover
+              aspect-ratio="4/3"
+            />
+
+            <!-- Contenido -->
+            <v-card-item class="pt-4">
+              <v-card-title class="name">{{ p.title }}</v-card-title>
+              <v-card-subtitle class="desc">
+                {{ p.description }}
+              </v-card-subtitle>
+            </v-card-item>
+
+            <v-card-text class="body">
+              <!-- Colores (oculto si solo hay un color) -->
+              <div v-if="(p.colors?.length || 0) > 1" class="section-block">
+                <div class="label">Colores</div>
+                <div class="d-flex align-center flex-wrap gap-4">
+                  <button
+                    v-for="(c, i) in p.colors"
+                    :key="i"
+                    class="swatch"
+                    :class="{ active: selectedColor[p.id] === c }"
+                    :style="{ backgroundColor: c }"
+                    @click="selectedColor[p.id] = c"
+                  />
+                </div>
+              </div>
+
+              <!-- Tallas -->
+              <div v-if="p.sizes?.length" class="section-block">
+                <div class="label">Tallas</div>
+                <div class="d-flex flex-wrap gap-3">
+                  <button
+                    v-for="(s, i) in p.sizes"
+                    :key="i"
+                    class="size-btn"
+                    :class="{ active: selectedSize[p.id] === s }"
+                    @click="selectedSize[p.id] = s"
+                  >
+                    {{ s }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Precio + stock -->
+              <div class="d-flex align-center justify-space-between">
+                <div class="price">
+                  <span class="amount">${{ p.price }}</span>
+                  <span class="curr">MXN</span>
+                </div>
+                <div :class="p.stock > 0 ? 'stock ok' : 'stock no'">
+                  {{ p.stock > 0 ? "Stock disponible" : "Agotado" }}
+                </div>
+              </div>
+            </v-card-text>
+
+            <!-- Footer -->
+            <div class="card-footer">
+              <v-btn
+                variant="outlined"
+                rounded="xl"
+                :prepend-icon="Eye"
+                class="btn-outline-custom"
+                @click="onDetails(p)"
+              >
+                Detalles
+              </v-btn>
+              <v-btn
+                :disabled="p.stock === 0"
+                rounded="xl"
+                :prepend-icon="ShoppingCart"
+                class="btn-solid-custom"
+                @click="handleAdd(p)"
+              >
+                Agregar
+              </v-btn>
             </div>
-          </div>
+          </v-card>
+        </v-col>
+      </v-row>
 
-          <h4 class="spk-talk">{{ speaker.talk }}</h4>
-
-          <p class="spk-desc">{{ speaker.summary }}</p>
-        </div>
-      </article>
-    </div>
+      <div v-if="filteredProducts.length === 0" class="text-center py-12">
+        <p class="text-medium-emphasis">
+          No hay productos para esta categoría.
+        </p>
+      </div>
+    </v-container>
   </section>
+
+  <!-- Modal Detalles -->
+  <ProductDetailsDialog
+    v-if="selected"
+    v-model="showDialog"
+    :product="selected"
+    @add-to-cart="onAddToCart"
+  />
+
+  <!-- Botón flotante de carrito -->
+  <v-btn class="cart-fab" color="primary" @click="showCart = true">
+    <ShoppingCart :size="26" />
+    <span v-if="totalCartQty" class="badge">{{ totalCartQty }}</span>
+  </v-btn>
+
+  <CartDrawer v-model="showCart" v-model:items="cartItems" />
+
+  <CustomAlert
+    v-model:show="showAlert"
+    :title="alertTitle"
+    :message="alertMessage"
+    :alertType="alertType"
+  />
 </template>
 
-<script setup>
-import '@/assets/css/styles/pages/conferees/speakers.css';
-import {
-  Briefcase,
-  Lightbulb,
-  Shield,
-  Code,
-  Users,
-  Award,
-} from 'lucide-vue-next';
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import ProductDetailsDialog from "@/components/sections/store/product-details-dialog.vue";
+import CartDrawer from "@/components/sections/store/cart-drawer.vue";
+import CustomAlert from "@/components/sections/store/custom-alert.vue";
 
-const speakers = [
+import tshirt_app_dev from "@/assets/img/pages/store/t-shirt/tshirt-app-dev.webp";
+import tshirt_chrome_dino from "@/assets/img/pages/store/t-shirt/tshirt-chrome-dino.webp";
+import tshirt_cisco from "@/assets/img/pages/store/t-shirt/tshirt-cisco.webp";
+import tshirt_coffee_code from "@/assets/img/pages/store/t-shirt/tshirt-coffee-code.webp";
+import tshirt_github from "@/assets/img/pages/store/t-shirt/tshirt-github.webp";
+import tshirt_html from "@/assets/img/pages/store/t-shirt/tshirt-html.webp";
+import tshirt_kali from "@/assets/img/pages/store/t-shirt/tshirt-kali.webp";
+import tshirt_miku_coding from "@/assets/img/pages/store/t-shirt/tshirt-miku-coding.webp";
+
+import { Grid, Shirt, Eye, ShoppingCart, BottleWine } from "lucide-vue-next";
+
+type Product = {
+  id: number;
+  title: string;
+  description: string;
+  category: "playera" | "termo";
+  price: number;
+  stock: number;
+  colors: string[];
+  sizes?: string[];
+  imagesByColor: Record<string, string>;
+};
+
+type CartItem = {
+  product: Product;
+  color: string | null;
+  size: string | null;
+  qty: number;
+  unitPrice: number;
+  image: string;
+};
+
+// Selección de color y talla
+const selectedSize = ref<Record<number, string>>({});
+const selectedColor = ref<Record<number, string>>({});
+
+// ALERTAS
+const showAlert = ref(false);
+const alertMessage = ref("");
+const alertType = ref<"success" | "error" | "info" | "warning">("info");
+const alertTitle = ref<string | undefined>(undefined);
+
+// Productos (SOLO NEGRO)
+const products = ref<Product[]>([
   {
-    name: 'Nazly Borrero',
-    level: 'empresarial',
-    talk: 'Los juegos del hambre y los 6 Distritos de la Ciberguidad.',
-    summary:
-      'Una mirada a cómo la supervivencia digital se convierte en un juego de poder, control e información. En los 6 Distritos de la Ciberguidad, cada decisión define estrategias, amenazas y alianzas que marcan nuestra defensa tecnológica.',
-    iconComponent: Shield,
+    id: 1,
+    title: "Playera App Dev Studio (Negro)",
+    description:
+      "Algodón premium, corte unisex. Inspirada en desarrollo de apps.",
+    category: "playera",
+    price: 450,
+    stock: 20,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_app_dev },
   },
   {
-    name: 'Elena Martínez',
-    level: 'magistral',
-    talk: 'Arquitecturas de agentes y LLMs locales',
-    summary:
-      'Cómo ensamblar agentes multi-herramienta con modelos locales, colas de tareas y observabilidad sin perder seguridad.',
-    iconComponent: Lightbulb,
+    id: 2,
+    title: "Playera Chrome Dino Offline (Negro)",
+    description: "El clásico dino runner para cuando no hay internet.",
+    category: "playera",
+    price: 450,
+    stock: 18,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_chrome_dino },
   },
   {
-    name: 'Carlos Sánchez',
-    level: 'empresarial',
-    talk: 'Innovación y disrupción en el mercado tecnológico',
-    summary:
-      'Exploramos las claves para liderar en un entorno cambiante, adaptando estrategias y adoptando nuevas tecnologías para mantener la competitividad.',
-    iconComponent: Briefcase,
+    id: 3,
+    title: "Playera Cisco Networking (Negro)",
+    description: "Redes, routing y switching con estilo.",
+    category: "playera",
+    price: 450,
+    stock: 15,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_cisco },
   },
   {
-    name: 'Ana García',
-    level: 'magistral',
-    talk: 'El futuro del desarrollo web con Vue 4',
-    summary:
-      'Un vistazo a las próximas características de Vue, optimizaciones de rendimiento y las mejores prácticas para construir aplicaciones escalables.',
-    iconComponent: Code,
+    id: 4,
+    title: "Playera Coffee • Code • Repeat (Negro)",
+    description: "Cafeína y código: la dupla perfecta.",
+    category: "playera",
+    price: 450,
+    stock: 22,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_coffee_code },
   },
   {
-    name: 'Ricardo Pérez',
-    level: 'empresarial',
-    talk: 'Gestión de equipos remotos en la era digital',
-    summary:
-      'Estrategias efectivas para construir y mantener la cohesión en equipos distribuidos, fomentando la productividad y el bienestar.',
-    iconComponent: Users,
+    id: 5,
+    title: "Playera GitHub OctoDev (Negro)",
+    description: "Commits con flow para tu outfit.",
+    category: "playera",
+    price: 450,
+    stock: 17,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_github },
   },
   {
-    name: 'Laura Fernández',
-    level: 'magistral',
-    talk: 'Inteligencia Artificial y Ética: Desafíos y Oportunidades',
-    summary:
-      'Análisis de las implicaciones éticas de la IA, cómo diseñar sistemas responsables y el papel de los profesionales en su desarrollo.',
-    iconComponent: Award,
+    id: 6,
+    title: "Playera HTML Markup (Negro)",
+    description: "<header>Tu estilo</header> en todas partes.",
+    category: "playera",
+    price: 450,
+    stock: 25,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_html },
   },
-];
+  {
+    id: 7,
+    title: "Playera Kali Pentesting (Negro)",
+    description: "Para entornos de hacking ético y pentesting.",
+    category: "playera",
+    price: 450,
+    stock: 14,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_kali },
+  },
+  {
+    id: 8,
+    title: "Playera Miku Coding Session (Negro)",
+    description: "Vibes de código con estilo idol.",
+    category: "playera",
+    price: 450,
+    stock: 16,
+    colors: ["#000000"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    imagesByColor: { "#000000": tshirt_miku_coding },
+  },
+]);
+
+// Asignar color negro por defecto al montar
+onMounted(() => {
+  products.value.forEach((p) => {
+    selectedColor.value[p.id] = p.colors?.[0] || "#000000";
+  });
+});
+
+// Filtro categoría
+const activeCategory = ref<"all" | "playera" | "termo">("all");
+const filteredProducts = computed(() =>
+  activeCategory.value === "all"
+    ? products.value
+    : products.value.filter((p) => p.category === activeCategory.value)
+);
+
+// Imagen por color seleccionado
+function getImage(p: Product) {
+  const color = selectedColor.value[p.id];
+  return color ? p.imagesByColor[color] : Object.values(p.imagesByColor)[0];
+}
+
+// --- Modal de detalles ---
+const showDialog = ref(false);
+const selected = ref<Product | null>(null);
+function onDetails(p: Product) {
+  selected.value = p;
+  showDialog.value = true;
+}
+
+// --- Carrito ---
+const showCart = ref(false);
+const cartItems = ref<CartItem[]>([]);
+
+// total de piezas en el carrito (para el badge)
+const totalCartQty = computed(() =>
+  cartItems.value.reduce((sum, item) => sum + item.qty, 0)
+);
+
+function onAddToCart(payload: {
+  productId: number;
+  color: string | null;
+  size: string | null;
+  qty: number;
+  unitPrice: number;
+}) {
+  const product = products.value.find((p) => p.id === payload.productId);
+  if (!product) return;
+
+  const { color, size, qty, unitPrice } = payload;
+
+  // Buscar si ya existe el mismo producto con mismo color y talla
+  const existing = cartItems.value.find(
+    (item) =>
+      item.product.id === product.id &&
+      item.color === color &&
+      item.size === size
+  );
+
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cartItems.value.push({
+      product,
+      color,
+      size,
+      qty,
+      unitPrice,
+      image: (() => {
+        if (color && product.imagesByColor[color]) {
+          return product.imagesByColor[color];
+        }
+        const firstImage = Object.values(product.imagesByColor)[0];
+        return typeof firstImage === 'string' ? firstImage : '';
+      })(),
+    });
+  }
+
+  showCart.value = true;
+}
+
+// --- Agregar al carrito con alertas ---
+function handleAdd(p: Product) {
+  const color = selectedColor.value[p.id] || p.colors?.[0] || null;
+  const size = selectedSize.value[p.id] || null;
+
+  if (p.category === "playera") {
+    if ((p.sizes?.length || 0) > 0 && !size) {
+      alertMessage.value = "⚠️ Selecciona una talla antes de agregar.";
+      alertType.value = "warning";
+      showAlert.value = true;
+      return;
+    }
+  }
+
+  onAddToCart({
+    productId: p.id,
+    color,
+    size,
+    qty: 1,
+    unitPrice: p.price,
+  });
+
+  alertMessage.value = "✔️ Producto agregado al carrito";
+  alertType.value = "success";
+  showAlert.value = true;
+}
 </script>
 
-<style>
-/* Sección */
-.speakers {
-  --card: #ffffff; /* fondo tarjeta */
-  --ink: #0b1534; /* texto principal */
-  --muted: #6b7280; /* texto secundario */
-  --primary: #2563eb; /* azul marca por defecto */
-  --primary-2: #5b8aff; /* azul claro para gradiente por defecto */
-  --shadow: 0 20px 45px rgba(4, 14, 44, 0.18);
-
-  background: var(--bg);
-  padding: clamp(1.6rem, 4vw, 3rem) 1rem;
+<style scoped>
+/* ====== TOKENS AISLADOS AL CONTENEDOR (funcionan con scoped) ====== */
+.collection {
+  --g1: #1e66ff;
+  --g2: #1ca2ff;
+  --card-br: rgba(30, 102, 255, 0.14);
+  --shadow: 0 10px 30px rgba(11, 26, 66, 0.12);
 }
 
-.speakers-header {
-  max-width: 980px;
-  margin: 0 auto 1.4rem;
-  text-align: center;
-  color: #e5e7eb;
-}
-.speakers-title {
-  margin: 0;
-  font-weight: 800;
-  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
-  color: #0b1534;
-}
-.faq__underline {
-  width: 92px;
+/* Encabezado */
+.underline {
+  width: 120px;
   height: 4px;
+  background: linear-gradient(90deg, var(--g1), var(--g2));
   border-radius: 999px;
-  margin: 0.6rem auto 0.9rem;
-  background: var(--primary);
-}
-.speakers-subtitle {
-  margin: 0 auto;
-  max-width: 820px;
-  color: #0b1534;
-  line-height: 1.65;
-  font-size: clamp(0.95rem, 1.7vw, 1.05rem);
 }
 
-/* Grid */
-.speakers-grid {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(1rem, 2.2vw, 1.2rem);
-}
-
-/* Card */
-.spk-card {
-  grid-column: span 12; /* por defecto una por fila */
-  background: var(--card);
-  border-radius: 18px;
+/* ====== CARD ====== */
+.product-card {
+  border-radius: 20px;
+  border: 1px solid var(--card-br);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.98)
+  );
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  display: flex;
 }
-.spk-card:hover {
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 38px rgba(11, 26, 66, 0.18);
+  border-color: rgba(30, 102, 255, 0.28);
+}
+
+/* badge */
+.card-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+}
+
+/* media */
+.media {
+  border-bottom: 1px solid rgba(30, 102, 255, 0.08);
+}
+
+/* texto */
+.name {
+  font-size: 1.05rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.desc {
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.62) !important;
+}
+.body {
+  padding-top: 6px !important;
+}
+
+/* etiquetas */
+.label {
+  font-size: 0.78rem;
+  color: rgba(0, 0, 0, 0.54);
+  margin-bottom: 4px;
+}
+
+/* Swatches (colores) — UNA SOLA DEFINICIÓN */
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  outline: 2px solid transparent;
+  transition: all 0.25s ease;
+  margin: 4px;
+}
+.swatch:hover {
+  outline-color: rgba(30, 102, 255, 0.25);
+  transform: scale(1.05);
+}
+.swatch.active {
+  outline-color: #2563eb;
+  transform: scale(1.15);
+}
+
+/* Botones de tallas */
+.size-btn {
+  min-width: 44px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin: 4px;
+}
+.size-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+.size-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
   transform: translateY(-2px);
-  box-shadow: 0 26px 60px rgba(4, 14, 44, 0.22);
 }
 
-/* Modificadores de color para tarjetas */
-.spk-card--magistral .spk-card__bar {
-  background: linear-gradient(90deg, #973bf9, #b86eff); /* Morado */
-}
-.spk-card--magistral .spk-icon {
-  color: #973bf9;
-  background: #f0e6ff;
-  box-shadow: inset 0 -2px 0 #e0ccff;
-}
-.spk-card--magistral .spk-pill {
-  color: #973bf9;
-  background: #f0e6ff;
-  border: 1px solid #e0ccff;
-}
-
-.spk-card--empresarial .spk-card__bar {
-  background: linear-gradient(90deg, #3b6df9, #6a95ff); /* Azul */
-}
-.spk-card--empresarial .spk-icon {
-  color: #3b6df9;
-  background: #e6f0ff;
-  box-shadow: inset 0 -2px 0 #ccddff;
-}
-.spk-card--empresarial .spk-pill {
-  color: #3b6df9;
-  background: #e6f0ff;
-  border: 1px solid #ccddff;
-}
-
-/* Barra superior */
-.spk-card__bar {
-  height: 14px;
-  background: linear-gradient(90deg, var(--primary), var(--primary-2)); /* Fallback */
-}
-
-/* Cuerpo */
-.spk-card__body {
-  padding: clamp(1rem, 2.6vw, 1.4rem) clamp(1rem, 3vw, 1.6rem);
-}
-
-/* Cabecera: icono + nombre + pill */
-.spk-head {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  align-items: center;
-  margin-bottom: 0.35rem;
-}
-.spk-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  color: #4f75ff; /* Fallback */
-  background: #e9efff; /* Fallback */
-  box-shadow: inset 0 -2px 0 #dbe7ff; /* Fallback */
-}
-.spk-titlebox {
-  display: grid;
-  gap: 0.25rem;
-}
-.spk-pill {
+/* precio + stock */
+.price {
   display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.amount {
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+.curr {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+.stock.ok {
+  color: #12b886;
+  font-size: 0.78rem;
+}
+.stock.no {
+  color: #e03131;
+  font-size: 0.78rem;
+}
+
+/* ====== footer anclado (botones alineados SIEMPRE) ====== */
+.card-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 16px 18px;
+  margin-top: auto;
+  border-top: 1px solid rgba(30, 102, 255, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.9)
+  );
+}
+/* Botón outline con gradiente */
+.btn-outline-custom {
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 999px !important;
+  padding: 0 30px;
+  height: 46px;
+  text-transform: none;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(90deg, #2563eb, #1ca2ff);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  color: #2563eb !important;
+  transition: all 0.25s ease;
+}
+.btn-outline-custom:hover {
+  background-image: linear-gradient(90deg, #2563eb, #1ca2ff);
+  color: #fff !important;
+}
+
+/* Botón sólido primario */
+.btn-solid-custom {
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 999px !important;
+  padding: 0 24px;
+  height: 46px;
+  text-transform: none;
+  background: linear-gradient(90deg, #2563eb, #1ca2ff);
+  color: #fff !important;
+  transition: all 0.25s ease;
+}
+.btn-solid-custom:hover {
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ====== FILTROS (Vuetify) ====== */
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* chips base */
+.filter-group :deep(.v-chip) {
+  border-radius: 999px;
+  background: transparent !important;
+  color: #6b7280 !important;
+  justify-content: center;
+  gap: 8px;
+  min-width: 150px;
+  font-weight: 600;
+  padding-inline: 14px;
+  font-size: 14px;
+}
+/* hover */
+.filter-group :deep(.v-chip:hover) {
+  color: #4b5563 !important;
+}
+.filter-group :deep(.v-chip:hover .v-icon) {
+  color: #6b7280 !important;
+}
+/* seleccionado */
+.filter-group :deep(.v-chip.chip-active) {
+  background: linear-gradient(90deg, #153885, #3473ff) !important;
+  color: #fff !important;
+}
+.filter-group :deep(.v-chip.chip-active .v-icon) {
+  color: #ffffff !important;
+}
+
+/* ====== responsive ====== */
+@media (max-width: 599.98px) {
+  .card-footer {
+    grid-template-columns: 1fr;
+  }
+  .media {
+    aspect-ratio: 16/10;
+  }
+}
+@media (min-width: 1280px) {
+  .amount {
+    font-size: 1.25rem;
+  }
+}
+
+/* Ajustes móviles para chips */
+@media (max-width: 767px) {
+  .filter-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .filter-group :deep(.v-chip) {
+    min-width: 100px;
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+}
+@media (max-width: 320px) {
+  .filter-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-group :deep(.v-chip) {
+    min-width: 80px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
+
+/* FAB Carrito */
+.cart-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  width: 64px;
+  height: 64px;
+  border-radius: 50% !important;
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: 22px;
-  padding: 0 0.6rem;
-  font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 0.2px;
-  border-radius: 999px;
-  color: #2b59ff; /* Fallback */
-  background: #eaf1ff; /* Fallback */
-  border: 1px solid #dbe7ff; /* Fallback */
-  width: fit-content;
-}
-.spk-name {
-  margin: 0;
-  font-weight: 800;
-  font-size: clamp(1.05rem, 2.2vw, 1.28rem);
-  color: var(--ink);
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-/* Título charla */
-.spk-talk {
-  margin: 0.35rem 0 0.4rem 0;
-  font-weight: 800;
-  color: #1f2a44;
-  font-size: clamp(1rem, 2.1vw, 1.05rem);
-}
-
-/* Descripción */
-.spk-desc {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: clamp(0.95rem, 1.6vw, 1rem);
-}
-
-/* Responsive */
-@media (min-width: 700px) {
-  .spk-card {
-    grid-column: span 6;
-  } /* 2 por fila */
-}
-@media (min-width: 1000px) {
-  .spk-card {
-    grid-column: span 6;
-  } /* 2 por fila (cozy) */
+/* Badge con contador */
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #100c0c;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
 }
 </style>
