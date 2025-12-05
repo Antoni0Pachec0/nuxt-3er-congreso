@@ -1,11 +1,14 @@
-.overlay {
+/* ============================
+   FONDO OSCURO DEL CARRITO
+============================= */
+.cart-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
   z-index: 9998;
 }
 
-/* Fade del fondo */
+/* Animación del fondo */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.35s ease;
@@ -15,34 +18,37 @@
   opacity: 0;
 }
 
-/* Carrito */
-.cart-floating {
+/* WRAPPER GENERAL PARA AISLAR ESTILOS */
+.cart-floating-wrapper {
   position: fixed;
   top: 0;
   right: 0;
+  z-index: 100000;
+}
+
+/* Caja del carrito */
+.cart-floating {
   width: 340px;
   height: 100%;
+  background: #fff;
+  border-top-left-radius: 16px;
+  box-shadow: -6px 0 20px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
-  border-top-left-radius: 16px;
-  background: #fff;
-  box-shadow: -6px 0 20px rgba(0, 0, 0, 0.18);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.4;
-  z-index: 100000;
   transition: all 0.35s ease;
 }
 
-/* Header */
+/* HEADER */
 .cart-header {
   padding: 12px 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(90deg, #153885, #3473ff);
+  color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(90deg, #153885, #3473ff);
-  color: #fff;
 }
 
 .cart-title {
@@ -51,7 +57,7 @@
   margin: 0;
 }
 
-/* Body */
+/* BODY */
 .cart-body {
   flex: 1;
   overflow-y: auto;
@@ -61,7 +67,6 @@
 .cart-item {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
   padding: 8px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -78,79 +83,38 @@
 }
 
 .cart-item-title {
-  font-weight: 600;
   font-size: 13px;
-  margin-bottom: 4px;
-  line-height: 1.3;
+  font-weight: 600;
 }
 
 .cart-item-meta {
+  margin-top: 3px;
   font-size: 11px;
-  color: #666;
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 6px;
+  gap: 6px;
 }
 
 .cart-tag {
-  background: rgba(0, 0, 0, 0.04);
+  background: #f1f1f1;
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 10px;
 }
 
-.cart-item-price {
-  font-size: 13px;
-  font-weight: 700;
-  color: #153885;
-  margin-top: 4px;
-}
-
-.empty {
-  text-align: center;
-  padding: 30px 16px;
-  color: #666;
-}
-
-.icon-empty {
-  margin-bottom: 10px;
-  color: #999;
-}
-
-.empty p {
-  font-size: 14px;
-  margin: 0;
-}
-
-/* Cantidad */
 .qty-control {
+  margin-top: 6px;
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 4px;
 }
 
 .qty-btn {
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  background: #fff;
   font-size: 12px;
-  font-weight: 600;
+  border: 1px solid #bbb;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-.qty-btn:hover:not(:disabled) {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
 }
 
 .qty-num {
@@ -159,39 +123,27 @@
   font-size: 12px;
 }
 
-/* Footer */
+.cart-item-price {
+  margin-top: 6px;
+  font-weight: bold;
+  color: #153885;
+}
+
+/* FOOTER */
 .cart-footer {
   padding: 12px 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid #eee;
   background: #fafafa;
 }
 
 .cart-total-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
   font-size: 14px;
 }
 
 .cart-total-row strong {
   font-size: 15px;
-}
-
-/* Ajustes de botones Vuetify dentro del carrito */
-.cart-footer :deep(.v-btn) {
-  font-size: 14px;
-  letter-spacing: normal;
-  text-transform: none;
-}
-
-.cart-footer :deep(.v-btn--size-large) {
-  font-size: 15px;
-}
-
-.cart-header :deep(.v-btn--icon) {
-  min-width: auto;
-  width: auto;
-  height: auto;
 }
 
 /* Animación del carrito */
@@ -208,40 +160,5 @@
 @media (max-width: 480px) {
   .cart-floating {
     width: 100%;
-    font-size: 13px;
-  }
-
-  .cart-title {
-    font-size: 15px;
-  }
-
-  .cart-item-title {
-    font-size: 12px;
-  }
-
-  .cart-item-meta {
-    font-size: 10px;
-  }
-
-  .cart-tag {
-    font-size: 9px;
-  }
-
-  .cart-item-price {
-    font-size: 12px;
-  }
-
-  .cart-footer :deep(.v-btn) {
-    font-size: 13px;
-  }
-
-  .cart-footer :deep(.v-btn--size-large) {
-    font-size: 14px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .cart-floating {
-    width: 380px;
   }
 }
