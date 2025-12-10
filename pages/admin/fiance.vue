@@ -121,7 +121,9 @@
         </div>
 
         <div class="right-actions">
-          <span class="muted small">Movimientos visibles: {{ visibleMovements.length }}</span>
+          <span class="muted small">
+            Movimientos visibles: {{ visibleMovements.length }}
+          </span>
         </div>
       </div>
 
@@ -144,7 +146,25 @@
           :class="{ active: selectedCategoryId === cat.id }"
           @click="selectedCategoryId = cat.id"
         >
-          {{ cat.nombre }}
+          <span class="chip-cat-name">{{ cat.nombre }}</span>
+
+          <!-- Editar categoría -->
+          <span
+            class="chip-cat-edit"
+            @click.stop="onEditCategory(cat)"
+            title="Editar categoría"
+          >
+            ✎
+          </span>
+
+          <!-- Eliminar categoría -->
+          <span
+            class="chip-cat-delete"
+            @click.stop="onDeleteCategory(cat)"
+            title="Eliminar categoría"
+          >
+            ×
+          </span>
         </button>
 
         <button class="chip-cat add" @click="onAddCategory">
@@ -157,7 +177,13 @@
       <div class="content-grid">
         <!-- LISTA DE MOVIMIENTOS -->
         <div class="movements-panel">
-          <h3 class="panel-title">Movimientos registrados</h3>
+          <div class="panel-header">
+            <h3 class="panel-title">Movimientos registrados</h3>
+
+            <button class="btn-secondary" @click="onDownloadPdf">
+              Descargar PDF
+            </button>
+          </div>
 
           <div v-if="busyMovements" class="state-text">
             Cargando movimientos…
@@ -340,8 +366,23 @@ import {
   mdiDotsVertical
 } from '@mdi/js'
 
+import api from '@/backend/http/api'
+import { ROUTES } from '@/backend/http/routes'
+import { createNotifyAdapter } from '@/utils/notify/adapter'
 import { useFinance } from '@/composables/admin/use-finance'
 import '@/assets/css/styles/admin/users.css'
+
+// -------------------------
+// Toasts personalizados
+// -------------------------
+const notify =
+  typeof createNotifyAdapter === 'function' ? createNotifyAdapter() : null
+
+const toast = {
+  ok: (t, m) => notify?.('success', t, m),
+  err: (t, m) => notify?.('error', t, m),
+  warn: (t, m) => notify?.('warning', t, m)
+}
 
 // Middleware admin
 const adminOnly = defineNuxtRouteMiddleware((to, from) => {
@@ -386,9 +427,11 @@ const {
   busyCreate,
   setTicketPrice,
   addCategory,
+  editCategory,
   addMovement,
   updateMovement,
-  deleteMovement
+  deleteMovement,
+  deleteCategory
 } = useFinance()
 
 // menú de 3 puntos
@@ -422,8 +465,39 @@ async function onChangePrice() {
 
 async function onAddCategory() {
   const nombre = window.prompt('Nombre de la nueva categoría:')
-  if (!nombre) return
-  await addCategory(nombre)
+  if (!nombre || !nombre.trim()) return
+  await addCategory(nombre.trim())
+}
+
+// Editar nombre de categoría
+async function onEditCategory(cat) {
+  if (!cat?.id) return
+  const nuevoNombre = window.prompt(
+    'Nuevo nombre para la categoría:',
+    cat.nombre || ''
+  )
+  if (!nuevoNombre || !nuevoNombre.trim() || nuevoNombre === cat.nombre) {
+    return
+  }
+
+  await editCategory(cat.id, nuevoNombre.trim())
+}
+
+// Eliminar categoría (solo si el backend lo permite)
+async function onDeleteCategory(cat) {
+  if (!cat?.id) return
+
+  const ok = window.confirm(
+    `¿Eliminar la categoría "${cat.nombre}"?\n\nSolo se eliminará si no tiene movimientos asociados.`
+  )
+  if (!ok) return
+
+  await deleteCategory(cat.id)
+
+  // Si la categoría eliminada era la seleccionada, regresamos a "Todas"
+  if (selectedCategoryId.value === cat.id) {
+    selectedCategoryId.value = 0
+  }
 }
 
 function toggleMenu(id) {
@@ -444,12 +518,75 @@ function onEditMovement(m) {
 
 async function onDeleteMovement(m) {
   activeMenuId.value = null
-  if (!confirm('¿Eliminar este movimiento?')) return
+  const ok = window.confirm('¿Eliminar este movimiento?')
+  if (!ok) return
   await deleteMovement(m.id)
+}
+
+// Descargar PDF usando axios + manejo de error (mensaje del backend)
+async function onDownloadPdf() {
+  const tipo = selectedTipo.value || 'ALL'
+  const categoriaId = selectedCategoryId.value || 0
+
+  try {
+    const pdfRoute = `${ROUTES.ADMIN.FINANCE.MOVEMENTS}/pdf`
+
+    const response = await api.get(pdfRoute, {
+      params: { tipo, categoriaId },
+      responseType: 'blob',
+      withCredentials: true,
+      timeout: 300000
+    })
+
+    // Si todo bien, debe ser un PDF
+    const blob = response.data
+    if (!blob) {
+      toast.err('PDF de movimientos', 'No se pudo generar el PDF.')
+      return
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'reporte-financiero.pdf'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+
+    toast.ok('PDF de movimientos', 'Reporte descargado correctamente.')
+  } catch (err) {
+    console.error(err)
+
+    // Intentar leer el mensaje real que viene del backend
+    let msg =
+      'Ocurrió un error al descargar el PDF. Revisa el servidor o los parámetros.'
+    const res = err?.response
+    const data = res?.data
+
+    if (data instanceof Blob) {
+      try {
+        const text = await data.text()
+        // Puede ser JSON de Nest con { message, error, statusCode }
+        const json = JSON.parse(text)
+        if (json?.message) {
+          msg = Array.isArray(json.message) ? json.message.join(', ') : json.message
+        }
+      } catch {
+        // si no es JSON, lo dejamos con el mensaje por defecto
+      }
+    }
+
+    toast.err('PDF de movimientos', msg)
+  }
 }
 
 async function onSubmitMovement() {
   if (!form.value.id_categoria || !form.value.monto || form.value.monto <= 0) {
+    toast.warn(
+      'Movimiento',
+      'Completa el monto y selecciona una categoría válida.'
+    )
     return
   }
 
