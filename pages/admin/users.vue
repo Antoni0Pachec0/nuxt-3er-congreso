@@ -105,9 +105,11 @@
       </div>
 
       <div class="top-info">
-        <span class="muted">Total: {{ total }}</span>
+        <span class="muted">Usuarios Totales: {{ total }}</span>
         <span class="muted">|</span>
         <span class="muted">Página {{ page }} de {{ totalPages }}</span>
+        <span class="muted">|</span>
+        <span class="muted">Usuarios Filtrados: {{ total_filtro }}</span>
       </div>
 
       <!-- Tabla -->
@@ -121,6 +123,7 @@
             <th>Estado</th>
             <th>Pago</th>
             <th>Acceso al evento</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -195,6 +198,15 @@
                 </span>
               </div>
             </td>
+
+            <td class="actions-cell">
+              <button
+                class="btn-icon delete-btn"
+                @click.stop="confirmDelete(u)"
+              >
+                <SvgIcon type="mdi" :path="mdiDelete" class="icon-delete"/>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -206,6 +218,33 @@
         <button :disabled="page>=totalPages || busy" @click="goPage(page+1)">Siguiente</button>
       </div>
     </div>
+
+
+    <!-- Modal eliminar usuario -->
+    <transition name="overlay-fade">
+      <div v-if="showDelete" class="modal-overlay">
+        <transition name="modal-pop">
+          <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+              <h3>Eliminar usuario</h3>
+            </div>
+
+            <div class="modal-body">
+              <p>
+                ¿Seguro que deseas eliminar a 
+                <strong>{{ userToDelete?.name }}</strong>?
+              </p>
+              <p class="muted">Esta acción no se puede deshacer.</p>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn danger" @click="deleteUser">Eliminar</button>
+              <button class="btn cancel" @click="showDelete = false">Cancelar</button>
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
 
     <!-- Barra de acciones masivas -->
     <transition name="slide-up">
@@ -278,7 +317,7 @@
 
 <script setup>
 import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiDownload, mdiLogout, mdiSelect, mdiClose } from '@mdi/js'
+import { mdiDownload, mdiLogout, mdiSelect, mdiClose, mdiDelete } from '@mdi/js'
 import { useAdminUsers } from '@/composables/admin/use-users'
 import FilterMini from '@/components/admin/filter-mini.vue'
 import '@/assets/css/styles/admin/users.css'
@@ -305,7 +344,7 @@ definePageMeta({
 
 const {
   // estado
-  users, total, page, pageSize, busy,
+  users, total, total_filtro, page, pageSize, busy,
 
   // búsqueda y filtros
   searchInput, onSearchInput,
@@ -334,9 +373,15 @@ const {
   showModal, pendingActivate, currentUser, confirmBtn,
   onToggleActivationUI, applyToggle, cancelToggle,
 
+  showDelete,
+  userToDelete,
+  confirmDelete,
+  deleteUser,
+
   // otros
   exportData, logout
 } = useAdminUsers()
+
 </script>
 
 <style scoped>
@@ -395,4 +440,34 @@ const {
   z-index: 9999;
   pointer-events: none;
 }
+
+.actions-cell {
+  text-align: center;
+  padding: 6px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.btn-icon:hover {
+  background: rgba(255, 0, 0, 0.08);
+}
+
+.icon-delete {
+  width: 22px;
+  height: 22px;
+  fill: #d32f2f;
+  color: #d32f2f !important; 
+}
+
+.btn-icon:hover .icon-delete {
+  color: #b71c1c !important;
+}
+
 </style>

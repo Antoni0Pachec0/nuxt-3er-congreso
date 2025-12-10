@@ -35,6 +35,7 @@ export function useAdminUsers() {
   const busy = ref(false)
   const users = ref([])
   const total = ref(0)
+  const total_filtro = ref(0)
   const page = ref(1)
   const pageSize = ref(20)
 
@@ -45,6 +46,9 @@ export function useAdminUsers() {
   const fPay = ref('')
   const grade = ref('')
   const group = ref('')
+
+  const showDelete = ref(false)
+  const userToDelete = ref(null)
 
   // UI filtros
   const searchInput = ref('')
@@ -75,6 +79,28 @@ export function useAdminUsers() {
 
   const totalPages = computed(() => Math.max(1, Math.ceil((+total.value || 0) / (+pageSize.value || 20))))
   function onChangePageSize(val) { const ps = Math.max(1, Math.min(200, Number(val) || 20)); if (ps === pageSize.value) return; pageSize.value = ps; fetchUsers({ page: 1 }).catch(() => { }) }
+
+  function confirmDelete(u) {
+    userToDelete.value = u
+    showDelete.value = true
+  }
+
+  async function deleteUser() {
+    if (!userToDelete.value) return
+    try {
+      await AdminUsersApi.deleteUser(userToDelete.value.id)
+      toast.ok("Eliminado", `El usuario ${userToDelete.value.name} fue eliminado.`)
+
+      // refrescar lista
+      await fetchUsers({ page: page.value })
+
+    } catch (e) {
+      toast.err("Error", e?.response?.data?.message || "Error al eliminar usuario")
+    } finally {
+      showDelete.value = false
+      userToDelete.value = null
+    }
+  }
 
   // búsqueda con debounce
   let _deb = null
@@ -149,6 +175,7 @@ export function useAdminUsers() {
       else if (fPay.value === 'No pagado') users.value = users.value.filter(u => !u.status_event)
 
       total.value = Number(data?.total) || users.value.length
+      total_filtro.value = Number(data?.total_filtro) || users.value.length
       page.value = Number(data?.page) || 1
       pageSize.value = Number(data?.pageSize) || pageSize.value
 
@@ -414,7 +441,7 @@ export function useAdminUsers() {
   onBeforeUnmount(() => { })
 
   return {
-    users, total, page, pageSize, busy,
+    users, total, total_filtro, page, pageSize, busy,
     searchInput, onSearchInput,
     typeOptions, selectedType, pickType,
     stateOptions, selectedState, pickState,
@@ -433,5 +460,10 @@ export function useAdminUsers() {
     onToggleActivation, onToggleActivationUI, applyToggle, cancelToggle,
     exportData, logout,
     fetchUsers,
-  }
+
+    showDelete,
+    userToDelete,
+    confirmDelete,
+    deleteUser,
+    }
 }

@@ -39,6 +39,7 @@ export const ROUTES = {
       ACTIVATION_BULK: '/admin/users/activation-bulk',
       GENERATE_BADGES: '/admin/users/generate-badges',
       SEND_CERTIFICATES: '/admin/users/send-certificates',
+      DELETE: (id) => `/admin/users/${id}`,
     },
 
     ATTENDANCE: {

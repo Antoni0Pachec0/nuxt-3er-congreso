@@ -14,6 +14,14 @@ export const AdminUsersApi = {
     return data
   },
 
+  async deleteUser(id, { timeout = 15000 } = {}) {
+    const { data } = await api.delete(
+      ROUTES.ADMIN.USERS.DELETE(id),
+      { withCredentials: true, timeout }
+    )
+    return data
+  },
+
   async getFilterOptions({ timeout = 10000 } = {}) {
     const { data } = await api.get(ROUTES.ADMIN.USERS.FILTER_OPTIONS, {
       withCredentials: true,
