@@ -178,11 +178,17 @@
         <!-- LISTA DE MOVIMIENTOS -->
         <div class="movements-panel">
           <div class="panel-header">
-            <h3 class="panel-title">Movimientos registrados</h3>
+           <h3 class="panel-title">Movimientos registrados</h3>
 
-            <button class="btn-secondary" @click="onDownloadPdf">
-              Descargar PDF
-            </button>
+            <div class="panel-actions">
+              <button class="btn-secondary" @click="onDownloadGeneralPdf">
+                Descargar análisis general
+              </button>
+
+              <button class="btn-secondary" @click="onDownloadPdf">
+                Descargar categoría
+              </button>
+            </div>
           </div>
 
           <div v-if="busyMovements" class="state-text">
@@ -521,6 +527,60 @@ async function onDeleteMovement(m) {
   const ok = window.confirm('¿Eliminar este movimiento?')
   if (!ok) return
   await deleteMovement(m.id)
+}
+
+async function onDownloadGeneralPdf() {
+  try {
+    // Usamos el precio actual del boleto para que el análisis incluya
+    // correctamente los ingresos por boletos.
+    const response = await api.get(ROUTES.ADMIN.FINANCE.ANALYSIS_PDF, {
+      params: {
+        price: ticketPrice.value || 380, // fallback por si va vacío
+      },
+      responseType: 'blob',
+      withCredentials: true,
+      timeout: 300000,
+    })
+
+    const blob = response.data
+    if (!blob) {
+      toast.err('Análisis general', 'No se pudo generar el PDF.')
+      return
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'analisis-general-finanzas.pdf'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+
+    toast.ok('Análisis general', 'PDF descargado correctamente.')
+  } catch (err) {
+    console.error(err)
+
+    let msg =
+      'Ocurrió un error al descargar el análisis general. Revisa el servidor.'
+
+    const res = err?.response
+    const data = res?.data
+
+    if (data instanceof Blob) {
+      try {
+        const text = await data.text()
+        const json = JSON.parse(text)
+        if (json?.message) {
+          msg = Array.isArray(json.message) ? json.message.join(', ') : json.message
+        }
+      } catch {
+        // no era JSON, dejamos el mensaje por defecto
+      }
+    }
+
+    toast.err('Análisis general', msg)
+  }
 }
 
 // Descargar PDF usando axios + manejo de error (mensaje del backend)

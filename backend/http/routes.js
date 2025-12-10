@@ -53,6 +53,7 @@ export const ROUTES = {
       SUMMARY: '/admin/finance/summary',
       CATEGORIES: '/admin/finance/categories',
       MOVEMENTS: '/admin/finance/movements',
+      ANALYSIS_PDF: '/admin/finance/analysis/pdf',
     },
   },
 
