@@ -340,112 +340,127 @@ async function sendSelectedCertificates() {
   fill: currentColor;
 }
 
-/* 👉 Barra siempre visible, fija abajo de la pantalla solo en esta vista */
-.bulk-bar-sticky {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 24px;
-  background: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.06);
-}
-
-/* opcional: que no quede pegado a los bordes en pantallas grandes */
+/* 👉 Barra fija corregida - con estilos completos */
 .admin-users-view .bulk-bar-sticky {
-  max-width: 1200px;
-  margin: 0 auto;
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 16px 24px !important;
+  background: #ffffff !important;
+  border-top: 1px solid #e0e0e0 !important;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1) !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* botón de generar, consistente con el resto del admin */
-.bulk-bar-sticky .btn.success.lg {
-  background-color: #1976d2;
-  color: #fff;
-  border: none;
+/* Ajuste del contenedor principal */
+.admin-users-view .table-container {
+  padding-bottom: 100px !important;
 }
 
-.row-selected {
-  background-color: rgba(25, 118, 210, 0.08);
+/* Estructura de la barra */
+.admin-users-view .bulk-bar-sticky .bulk-left,
+.admin-users-view .bulk-bar-sticky .bulk-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
 }
 
-.badge-printed {
-  background-color: #4caf50;
-  color: #fff;
+/* Botones específicos para esta vista */
+.admin-users-view .bulk-bar-sticky .btn.success.lg {
+  background-color: #00B394 !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-height: 44px !important;
+  white-space: nowrap !important;
 }
 
-.badge-pending {
-  background-color: #f57c00;
-  color: #fff;
+.admin-users-view .bulk-bar-sticky .btn.outline.lg {
+  background-color: transparent !important;
+  color: #1976d2 !important;
+  border: 2px solid #1976d2 !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-height: 44px !important;
+  white-space: nowrap !important;
 }
 
-.checkbox-inline {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+/* Hover states */
+.admin-users-view .bulk-bar-sticky .btn.success.lg:hover:not(:disabled) {
+  background-color: #009580 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 179, 148, 0.3) !important;
 }
 
-.icon-left {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
+.admin-users-view .bulk-bar-sticky .btn.outline.lg:hover:not(:disabled) {
+  background-color: rgba(25, 118, 210, 0.08) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2) !important;
 }
 
-/* 👉 Barra siempre visible, fija abajo de la pantalla solo en esta vista */
-.bulk-bar-sticky {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 24px;
-  background: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.06);
+/* Estados deshabilitados */
+.admin-users-view .bulk-bar-sticky .btn.success.lg:disabled,
+.admin-users-view .bulk-bar-sticky .btn.outline.lg:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-.admin-users-view .bulk-bar-sticky {
-  max-width: 1200px;
-  margin: 0 auto;
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-users-view .bulk-bar-sticky {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+  
+  .admin-users-view .bulk-bar-sticky .bulk-left,
+  .admin-users-view .bulk-bar-sticky .bulk-right {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .admin-users-view .bulk-bar-sticky .bulk-right {
+    flex-wrap: wrap !important;
+  }
+  
+  .admin-users-view .bulk-bar-sticky .btn.success.lg,
+  .admin-users-view .bulk-bar-sticky .btn.outline.lg {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+  
+  .admin-users-view .table-container {
+    padding-bottom: 160px !important;
+  }
 }
 
-/* Botones de la barra */
-.bulk-right {
-  display: flex;
-  gap: 8px;
+@media (max-width: 480px) {
+  .admin-users-view .bulk-bar-sticky {
+    padding: 12px 16px !important;
+  }
+  
+  .admin-users-view .bulk-bar-sticky .btn.success.lg,
+  .admin-users-view .bulk-bar-sticky .btn.outline.lg {
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+  }
 }
-
-.bulk-bar-sticky .btn.success.lg {
-  background-color: #1976d2;
-  color: #fff;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-/* nuevo botón outline */
-.bulk-bar-sticky .btn.outline.lg {
-  background-color: transparent;
-  color: #1976d2;
-  border-radius: 999px;
-  border: 1px solid #1976d2;
-  padding: 8px 18px;
-  font-weight: 500;
-}
-
-.bulk-bar-sticky .btn.outline.lg:disabled,
-.bulk-bar-sticky .btn.success.lg:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 </style>
- 
